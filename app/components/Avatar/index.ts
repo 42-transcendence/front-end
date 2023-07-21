@@ -1,0 +1,1 @@
+export { AvatarWithIcon } from "./AvatarWithIcon";

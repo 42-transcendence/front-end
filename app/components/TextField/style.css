@@ -1,0 +1,155 @@
+.text-field {
+  align-items: center;
+  display: flex;
+  height: 44px;
+  mix-blend-mode: color-burn;
+  overflow: hidden;
+  position: relative;
+  width: 305px;
+}
+
+.text-field .value {
+  flex: 1;
+  font-family: "SF Pro-Medium", Helvetica;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 22px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.text-field .cursor-and-value {
+  align-self: stretch;
+  position: relative;
+}
+
+.text-field .text-wrapper {
+  color: #fffffff5;
+  font-family: "SF Pro-Regular", Helvetica;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.4px;
+  line-height: 22px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.text-field .cursor {
+  background-color: #0a84ff;
+  border-radius: 10px;
+  height: 20px;
+  min-width: 2px;
+  position: relative;
+}
+
+.text-field .highlight {
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(94, 94, 94, 0.14) 0%,
+    rgba(94, 94, 94, 0) 100%
+  );
+  border-radius: 132px/44px;
+  height: 88px;
+  width: 264px;
+}
+
+.text-field .clear-button {
+  position: relative;
+}
+
+.text-field .clear {
+  color: #fffffff5;
+  font-family: "SF Pro-Semibold", Helvetica;
+  font-size: 13px;
+  font-weight: 400;
+  height: 16px;
+  left: 7px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: center;
+  top: 5px;
+}
+
+.text-field.disabled {
+  background-color: #00000014;
+  padding: 0px 20px;
+}
+
+.text-field.hover {
+  background-color: #0000001a;
+  box-shadow: inset 1px 1.5px 4px #0000001a, inset 1px 1.5px 4px #00000014,
+    inset 0px -0.5px 1px #ffffff40, inset 0px -0.5px 1px #ffffff4c;
+  padding: 0px 20px 0px 18px;
+}
+
+.text-field.idle {
+  background-color: #0000001a;
+  box-shadow: inset 1px 1.5px 4px #0000001a, inset 1px 1.5px 4px #00000014,
+    inset 0px -0.5px 1px #ffffff40, inset 0px -0.5px 1px #ffffff4c;
+  padding: 0px 20px;
+}
+
+.text-field.pill {
+  border-radius: 100px;
+}
+
+.text-field.typing {
+  background-color: #0000001a;
+  box-shadow: inset 1px 1.5px 4px #0000001a, inset 1px 1.5px 4px #00000014,
+    inset 0px -0.5px 1px #ffffff40, inset 0px -0.5px 1px #ffffff4c;
+  padding: 0px 8px 0px 20px;
+}
+
+.text-field.rounded-rect {
+  border-radius: 12px;
+}
+
+.text-field.idle .value {
+  color: #545454;
+  mix-blend-mode: lighten;
+}
+
+.text-field:hover .value {
+  color: #5e5e5e36;
+}
+
+.text-field.disabled .value {
+  color: #5e5e5e36;
+}
+
+.text-field.typing .value {
+  color: #5e5e5e36;
+}
+
+.text-field.hover .cursor-and-value {
+  height: 44px;
+  min-width: 2px;
+}
+
+.text-field.typing .cursor-and-value {
+  align-items: center;
+  display: flex;
+  flex: 1;
+}
+
+.text-field.hover .clear-button {
+  color: #545454;
+  flex: 1;
+  font-family: "SF Pro-Medium", Helvetica;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 22px;
+  mix-blend-mode: lighten;
+  white-space: nowrap;
+}
+
+.text-field.typing .clear-button {
+  background-color: #5e5e5e2e;
+  border-radius: 100px;
+  height: 28px;
+  min-width: 28px;
+}
