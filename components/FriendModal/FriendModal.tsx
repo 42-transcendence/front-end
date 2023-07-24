@@ -1,8 +1,9 @@
+"use client";
 import PropTypes from "prop-types";
 import React from "react";
-import { ProfileItem, ProfileItemConfig } from "../ProfileItem";
 import "./style.css";
 import { useState } from "react";
+import { ProfileItem, ProfileItemConfig } from "../ProfileItem";
 
 //TODO change contents with query data.
 const profiles: ProfileItemConfig[] = [
@@ -45,9 +46,10 @@ const profiles: ProfileItemConfig[] = [
 
 export function FriendModal(): React.ReactElement {
     const [selectedId, setSelectedId] = useState<number>();
+    //TODO: fetch profile datas
 
     return (
-        <div className="friend-modal">
+        <div className="friend-modal relative m-3.5 flex w-[262px] flex-col items-start rounded-[14px] bg-windowGlass/20 p-px shadow-[var(--blur)] backdrop-blur-[50px] backdrop-brightness-[100%] before:pointer-events-none before:absolute before:inset-0 before:rounded-[14px] before:p-px before:content-['']">
             {profiles.map((profile: ProfileItemConfig) => (
                 <ProfileItem
                     key={profile.id}
@@ -55,7 +57,7 @@ export function FriendModal(): React.ReactElement {
                     selected={profile.id === selectedId}
                     onClick={() => {
                         setSelectedId(
-                            profile.id !== selectedId ? profile.id : undefined
+                            profile.id !== selectedId ? profile.id : undefined,
                         );
                     }}
                 />

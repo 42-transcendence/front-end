@@ -5,8 +5,7 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 
 import PropTypes from "prop-types";
 import React, { MouseEventHandler } from "react";
-import { AvatarWithIcon } from "../Avatar";
-import "./style.css";
+import { Avatar } from "../Avatar";
 import { TextField } from "../TextField";
 import {
     ProfileItemConfig as ProfileItemInternlConfig,
@@ -35,10 +34,10 @@ export function ProfileItem({
             <div className="selectable-area" onClick={onClick}>
                 <div className="card disable-select">
                     <div className="avatar-frame">
-                        <AvatarWithIcon size="medium" />
+                        <Avatar className="" size="w-11" />
                     </div>
                     <div className="info-frame">
-                        <div className="user-id">{config.name}</div>
+                        <div className="user-id text-left">{config.name}</div>
                         {config.showStatusMessage && (
                             <div className="status-message">
                                 {config.statusMessage}

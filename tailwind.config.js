@@ -6,6 +6,11 @@ module.exports = {
         "./app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
+        colors: {
+            primary: "rgb(var(--color-primary), <alpha-value>)",
+            secondary: "rgb(var(--color-secondary), <alpha-value>)",
+            windowGlass: "rgb(var(--windows-glass), <alpha-value>)",
+        },
         extend: {
             backgroundImage: {
                 "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

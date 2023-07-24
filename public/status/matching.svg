@@ -1,8 +1,8 @@
-<svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
   <g filter="url(#filter0_bd_207_1383)">
-    <circle cx="23" cy="21" r="16" fill="url(#paint0_linear_207_1383)" shape-rendering="crispEdges"/>
-    <circle cx="23" cy="21" r="17.5" stroke="#D6D6D6" stroke-opacity="0.45" stroke-width="3" stroke-linecap="round" style="mix-blend-mode:color-burn" shape-rendering="crispEdges"/>
-    <circle cx="23" cy="21" r="17.5" stroke="black" stroke-opacity="0.08" stroke-width="3" stroke-linecap="round" style="mix-blend-mode:luminosity" shape-rendering="crispEdges"/>
+    <circle cx="19" cy="19" r="16" fill="url(#paint0_linear_207_1383)" shape-rendering="crispEdges"/>
+    <circle cx="19" cy="19" r="17.5" stroke="#D6D6D6" stroke-opacity="0.45" stroke-width="3" stroke-linecap="round" style="mix-blend-mode:color-burn" shape-rendering="crispEdges"/>
+    <circle cx="19" cy="19" r="17.5" stroke="black" stroke-opacity="0.08" stroke-width="3" stroke-linecap="round" style="mix-blend-mode:luminosity" shape-rendering="crispEdges"/>
   </g>
   <defs>
     <filter id="filter0_bd_207_1383" x="-96" y="-98" width="238" height="238" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">

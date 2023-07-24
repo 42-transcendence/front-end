@@ -5,11 +5,10 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 */
 
 import React from "react";
-import "./style.css";
 import { Status } from "../Status";
 import Image from "next/image";
 
-type userExample = {
+type AvatarProp = {
     profileImage: string;
     userStatus:
         | "online"
@@ -21,25 +20,35 @@ type userExample = {
         | "in-game";
 };
 
-const temp: userExample = {
+const dummyAvatar: AvatarProp = {
     profileImage: "/hdoo.png",
-    userStatus: "online",
+    userStatus: "idle",
 };
 
 export const Avatar = ({
     className,
+    size,
 }: {
     className: string;
+    size: string;
 }): React.ReactElement => {
+    //TODO: fetch Avatar datas
+
     return (
-        <div className="relative flex w-16">
+        <div
+            className={`relative flex aspect-square ${size} flex-shrink-0 items-start gap-2.5 rounded-full bg-[#ffffff40] ${className}`}
+        >
             <Image
-                className={`${className}`}
-                src={temp.profileImage}
+                className="relative flex-1 flex-grow self-stretch rounded-full"
+                src={dummyAvatar.profileImage}
                 alt="Avatar"
-                fill
+                fill={true}
             />
-            <Status className="relative w-4" type={temp.userStatus} />
+            <div
+                className={`absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full`}
+            >
+                <Status type={dummyAvatar.userStatus} />
+            </div>
         </div>
     );
 };
