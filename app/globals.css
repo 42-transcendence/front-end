@@ -61,8 +61,8 @@
     --color-grey-900: 33, 33, 33;
 
     --colorsgreen: 50, 215, 75;
-    --controls-hover: color-mix(in srgb, #ffffff 5%, #5a5a5a 6%);
-    --controls-selected: color-mix(in srgb, #ffffff 6%, #5a5a5a 16%);
+    --controls-hover: color-mix(in srgb, #ffffff 5%, #5e5e5e 6%);
+    --controls-selected: color-mix(in srgb, #ffffff 6%, #5e5e5e 16%);
 
     /* font style */
     --headline-font-family: "Roboto", sans-serif;
@@ -122,12 +122,14 @@
 
 body {
     color: rgb(var(--foreground-rgb));
-    background: linear-gradient(
-            to bottom,
-            transparent,
-            rgb(var(--background-end-rgb))
-        )
-        rgb(var(--background-start-rgb));
+    background-image: url("/space.jpg");
+    background-size: cover;
+    /* background: linear-gradient( */
+    /*         to bottom, */
+    /*         transparent, */
+    /*         rgb(var(--background-end-rgb)) */
+    /*     ) */
+    /*     rgb(var(--background-start-rgb)); */
 }
 
 /*  TODO: post css로 옮기기..?  */

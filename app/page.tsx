@@ -7,10 +7,8 @@ import { FriendModal } from "@/components/FriendModal";
 export default function Home() {
     return (
         <main className=" flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="z-10 w-full max-w-5xl items-center justify-end font-mono text-sm lg:flex">
-                <div className="from-white via-white dark:from-black dark:via-black fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t lg:static lg:h-auto lg:w-auto lg:bg-none">
-                    <FriendModal />
-                </div>
+            <div className="z-10 w-full max-w-7xl items-stretch justify-end lg:flex">
+                <FriendModal />
             </div>
 
             <div className="relative flex place-items-center">
