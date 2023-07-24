@@ -1,1 +1,0 @@
-export { FriendModal } from "./FriendModal";
