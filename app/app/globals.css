@@ -61,8 +61,8 @@
     --color-grey-900: 33, 33, 33;
 
     --colorsgreen: 50, 215, 75;
-    --controls-hover: color-mix(in srgb, #ffffff 5%, #5e5e5e 6%);
-    --controls-selected: color-mix(in srgb, #ffffff 6%, #5e5e5e 16%);
+    --controls-hover: color-mix(in srgb, #ffffff 36%, #5e5e5e 16%);
+    --controls-selected: color-mix(in srgb, #ffffff 100%, #5e5e5e 16%);
 
     /* font style */
     --headline-font-family: "Roboto", sans-serif;

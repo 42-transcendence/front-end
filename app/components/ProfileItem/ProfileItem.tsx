@@ -32,7 +32,7 @@ export function ProfileItem({
 }): React.ReactElement {
     return (
         <div
-            className={`relative flex w-[260px] flex-col items-start rounded-xl py-4 ${config.className}`}
+            className={`relative flex w-[260px] flex-col items-start rounded-[28px] py-4 ${config.className} transition-all ease-in-out hover:bg-primary active:bg-priVar focus:outline-none focus:ring focus:ring-violet-300`}
         >
             <div
                 className="relative flex w-full flex-row items-center space-x-4 self-stretch px-4"
