@@ -7,28 +7,30 @@ import React from "react";
 import clsx from "clsx";
 import Image from "next/image";
 
+export type StatusType =
+    | "online"
+    | "invisible"
+    | "offline"
+    | "idle"
+    | "matching"
+    | "do-not-disturb"
+    | "in-game";
+
 export function Status({
+    className,
     type,
-    size,
 }: {
-    type:
-        | "online"
-        | "invisible"
-        | "offline"
-        | "idle"
-        | "matching"
-        | "do-not-disturb"
-        | "in-game";
-    size: number;
+    className: string;
+    type: StatusType;
 }): React.ReactElement {
     clsx(type);
     return (
         <>
             <Image
+                className={className}
                 src={`/status/${type}.svg`}
                 alt={`status is ${type}`}
-                width={size}
-                height={size}
+                fill
             />
         </>
     );
