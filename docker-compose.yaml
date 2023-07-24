@@ -1,0 +1,15 @@
+services:
+  front:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/app
+      - module_volume:/app/node_modules
+      - cache_volume:/app/cache
+      - next_volume:/app/.next
+
+volumes:
+  module_volume:
+  cache_volume:
+  next_volume:
