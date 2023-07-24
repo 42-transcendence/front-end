@@ -12,6 +12,7 @@ export type ContextMenuItemProp = {
 export function ContextMenuItem({
     name,
     description,
+
     className,
     disabled,
 }: ContextMenuItemProp): React.ReactElement {

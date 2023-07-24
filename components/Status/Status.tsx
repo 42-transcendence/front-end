@@ -16,21 +16,15 @@ export type StatusType =
     | "do-not-disturb"
     | "in-game";
 
-export function Status({
-    className,
-    type,
-}: {
-    className: string;
-    type: StatusType;
-}): React.ReactElement {
+export function Status({ type }: { type: StatusType }): React.ReactElement {
     clsx(type);
     return (
         <>
             <Image
-                className={className}
                 src={`/status/${type}.svg`}
                 alt={`status is ${type}`}
-                fill
+                fill={true}
+                objectFit="contain"
             />
         </>
     );
