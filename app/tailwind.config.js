@@ -9,6 +9,7 @@ module.exports = {
         extend: {
             colors: {
                 primary: "rgb(var(--color-primary), <alpha-value>)",
+                priVar: "rgb(var(--color-primary-varient), <alpha-value>)",
                 secondary: "rgb(var(--color-secondary), <alpha-value>)",
                 windowGlass: "rgb(var(--windows-glass), <alpha-value>)",
                 controlsHover: "rgb(var(--controls-hover), <alpha-value>)",
