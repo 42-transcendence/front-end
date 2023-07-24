@@ -5,12 +5,16 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 First, run the development server:
 
 ```bash
-npm run dev
+# to run the server in a local environment
+cd app/ && npm run dev
 # or
-yarn dev
+cd app/ && yarn dev
 # or
-pnpm dev
+cd app/ && pnpm dev
+# or use docker
+docker compose up
 ```
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
