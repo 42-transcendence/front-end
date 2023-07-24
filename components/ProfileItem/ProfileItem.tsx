@@ -6,6 +6,7 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 import PropTypes from "prop-types";
 import React, { MouseEventHandler } from "react";
 import { Avatar } from "../Avatar";
+import "./style.css";
 import { TextField } from "../TextField";
 import {
     ProfileItemConfig as ProfileItemInternlConfig,
@@ -30,16 +31,23 @@ export function ProfileItem({
     onClick: MouseEventHandler;
 }): React.ReactElement {
     return (
-        <div className={`profile-item ${config.className}`}>
-            <div className="selectable-area" onClick={onClick}>
-                <div className="card disable-select">
-                    <div className="avatar-frame">
-                        <Avatar className="" size="w-11" />
+        <div
+            className={`relative flex w-[260px] flex-col items-start rounded-xl py-4 ${config.className}`}
+        >
+            <div
+                className="relative flex w-full flex-row items-center space-x-4 self-stretch px-4"
+                onClick={onClick}
+            >
+                <div className="disable-select relative flex items-center gap-2 space-x-4 rounded-xl">
+                    <div className="relative flex items-center justify-center">
+                        <Avatar className="" size="w-[45px]" />
                     </div>
-                    <div className="info-frame">
-                        <div className="user-id text-left">{config.name}</div>
+                    <div className="relative, flex w-fit flex-col items-start gap-1">
+                        <div className="text-bold relative w-fit whitespace-nowrap font-sans text-base leading-none tracking-normal text-gray-50">
+                            {config.name}
+                        </div>
                         {config.showStatusMessage && (
-                            <div className="status-message">
+                            <div className="text-normal text-xs text-gray-300">
                                 {config.statusMessage}
                             </div>
                         )}

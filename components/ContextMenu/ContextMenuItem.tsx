@@ -23,7 +23,7 @@ export function ContextMenuItem({
             }`}
         >
             <div className="relative flex h-[19px] w-[260px] flex-col justify-center px-4 py-1">
-                <div className="font-family: var(--headline-font-family) font-style: var(--headline-font-style) disable-select relative mb-[-0.5px] mt-[-2.5px] whitespace-nowrap text-center text-[length:var(--headline-font-size)] font-[number:var(--headline-font-weight)] leading-[var(--headline-line-height)] tracking-[var(--headline-letter-spacing)] text-[color:var(--text-invert)]">
+                <div className="font-family: var(--headline-font-family) font-style: var(--headline-font-style) disable-select relative mb-[-0.5px] mt-[-2.5px] whitespace-nowrap text-start text-[length:var(--headline-font-size)] font-[number:var(--headline-font-weight)] leading-[var(--headline-line-height)] tracking-[var(--headline-letter-spacing)] text-[color:var(--text-invert)]">
                     {name}
                 </div>
                 {description && (
