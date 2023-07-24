@@ -40,7 +40,7 @@
 }
 
 .profile-item .user-id {
-    color: var(--text-invert);
+    color: white;
     font-family: var(--headline-font-family);
     font-size: var(--headline-font-size);
     font-weight: var(--headline-font-weight);
@@ -53,7 +53,7 @@
 }
 
 .profile-item .status-message {
-    color: var(--text-invert);
+    color: white;
     font-family: var(--sub-font-family);
     font-size: var(--sub-font-size);
     font-weight: var(--sub-font-weight);

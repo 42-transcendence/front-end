@@ -49,7 +49,7 @@ export function FriendModal(): React.ReactElement {
     //TODO: fetch profile datas
 
     return (
-        <div className="friend-modal relative m-3.5 flex w-[262px] flex-col items-start rounded-[14px] bg-windowGlass/20 p-px shadow-[var(--blur)] backdrop-blur-[50px] backdrop-brightness-[100%] before:pointer-events-none before:absolute before:inset-0 before:rounded-[14px] before:p-px before:content-['']">
+        <div className="friend-modal before:pointer-elvents-none relative flex w-[262px] flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']">
             {profiles.map((profile: ProfileItemConfig) => (
                 <ProfileItem
                     key={profile.id}
