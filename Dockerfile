@@ -1,8 +1,8 @@
 FROM node:20-alpine3.17
 
-COPY ./app /app
+COPY ./front /front
 
-WORKDIR /app
+WORKDIR /front
 
 RUN ["npm", "i", "-g", "npm"]
 RUN ["npm", "ci"]
