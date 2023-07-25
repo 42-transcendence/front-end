@@ -6,17 +6,12 @@ import { FriendModal } from "@/components/FriendModal";
 
 export default function Home() {
     return (
-        <main className=" flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="z-10 w-full max-w-7xl items-stretch justify-end lg:flex">
-                <FriendModal />
-            </div>
+        <main className="flex min flex-col items-center justify-between p-24">
 
+        <FriendModal />
             <div className="relative flex place-items-center">
-                <a
-                    href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-                    className="border-transparent hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 group rounded-lg border px-5 py-4 transition-colors"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <div
+                    className="gradient-border before:pointer-elvents-none relative flex w-[262px] flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-[''] border-transparent hover:bg-primary hover:dark:border-purple-700 hover:dark:bg-neutral-800/30 active:bg-violet-700 focus:outline-gray-100 focus:ring focus:ring-violet-300 focus:outline-2 px-5 py-4 transition-colors gap-2 group"
                 >
                     <h2 className={"mb-3 text-2xl font-semibold"}>
                         Game Start{" "}
@@ -24,12 +19,15 @@ export default function Home() {
                             -&gt;
                         </span>
                     </h2>
-                    <p className={"m-0 max-w-[30ch] text-sm opacity-50"}>
+                    <p className={"m-0 max-w-[30ch] text-sm opacity-50 disable-select"}>
                         Find in-depth information about Next.js features and
                         API.
                     </p>
-                </a>
+                </div>
             </div>
         </main>
     );
 }
+
+
+// border-transparent gradient-border before:pointer-elvents-none relative flex w-[262px] flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-[''] hover:bg-primary hover:dark:border-purple-700 hover:dark:bg-neutral-800/30 active:bg-violet-700 focus:outline-gray-100 focus:ring focus:ring-violet-300 group border px-5 py-4 transition-colors gap-2
