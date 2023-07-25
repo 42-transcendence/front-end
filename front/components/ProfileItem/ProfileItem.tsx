@@ -32,12 +32,10 @@ export function ProfileItem({
 }): React.ReactElement {
     return (
         <div
-            className={`relative flex w-[260px] flex-col items-start rounded-[28px] py-4 ${config.className} transition-all ease-in-out hover:bg-primary active:bg-priVar focus:outline-none focus:ring focus:ring-violet-300`}
+            className={`relative flex w-[260px] flex-col items-start rounded-[28px] py-4 ${config.className} hover:bg-primary/50 focus:outline-none focus:ring focus:ring-violet-300 active:bg-priVar/50`}
+            onClick={onClick}
         >
-            <div
-                className="relative flex w-full flex-row items-center space-x-4 self-stretch px-4 group"
-                onClick={onClick}
-            >
+            <div className="group relative flex w-full flex-row items-center space-x-4 self-stretch px-4">
                 <div className="disable-select relative flex items-center gap-2 space-x-4 rounded-xl">
                     <div className="relative flex items-center justify-center">
                         <Avatar className="" size="w-[45px]" />
