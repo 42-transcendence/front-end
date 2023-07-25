@@ -24,7 +24,6 @@ export function Status({ type }: { type: StatusType }): React.ReactElement {
                 src={`/status/${type}.svg`}
                 alt={`status is ${type}`}
                 fill={true}
-                objectFit="contain"
             />
         </>
     );
