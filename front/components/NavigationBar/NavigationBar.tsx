@@ -6,10 +6,8 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 import React from "react";
 // import { DoubleSharp } from "../../icons/DoubleSharp";
 import "./style.css";
-
-interface Props {
-    navBarBackgroundClassName: any;
-}
+import { Icon } from "../Icon/Icon";
+import { Avatar } from "../Avatar";
 
 export function NavigationBar({
     navBarBackgroundClassName,
@@ -26,6 +24,22 @@ export function NavigationBar({
                     />
                 </div>
             </div>
+        </div>
+    );
+}
+
+
+export function NavigationBar({ }): React.ReactElement {
+    // TODO: fetch account data.
+
+    return (
+        <div className="navigation-bar nav-margin">
+            <div className={`nav-bar-background`}>
+                <Icon className="" type="doubleSharp" size={20} />
+                <div className="profile-photo right-side-icons" >
+                    <Avatar size={""} />
+                </div>
+           </div>
         </div>
     );
 }
