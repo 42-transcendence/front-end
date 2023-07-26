@@ -25,13 +25,13 @@ const dummyAvatar: AvatarProp = {
     userStatus: "idle",
 };
 
-export const Avatar = ({
+export function Avatar({
     className,
     size,
 }: {
     className: string;
     size: string;
-}): React.ReactElement => {
+}): React.ReactElement {
     //TODO: fetch Avatar datas
 
     return (
@@ -51,4 +51,4 @@ export const Avatar = ({
             </div>
         </div>
     );
-};
+}
