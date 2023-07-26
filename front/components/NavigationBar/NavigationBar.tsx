@@ -9,29 +9,9 @@ import "./style.css";
 import { Icon } from "../Icon/Icon";
 import { Avatar } from "../Avatar";
 
-export function NavigationBar({
-    navBarBackgroundClassName,
-}: Props): React.ReactElement {
-    return (
-        <div className="navigation-bar nav-margin">
-            <div className={`nav-bar-background ${navBarBackgroundClassName}`}>
-                {/* <DoubleSharp className="double-sharp" /> */}
-                <div className="right-side-icons">
-                    <img
-                        className="profile-photo"
-                        alt="Profile photo"
-                        src="https://anima-uploads.s3.amazonaws.com/projects/64b14af317e3b2a0728b3aa2/releases/64b14bc1c6eacef1ee7ae8ab/img/profilephoto@2x.png"
-                    />
-                </div>
-            </div>
-        </div>
-    );
-}
-
-
 export function NavigationBar({ }): React.ReactElement {
     // TODO: fetch account data.
-
+    // TODO: change to tailwind css 
     return (
         <div className="navigation-bar nav-margin">
             <div className={`nav-bar-background`}>
