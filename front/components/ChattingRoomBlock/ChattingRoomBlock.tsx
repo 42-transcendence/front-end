@@ -73,9 +73,9 @@ export default function ChattingRoomBlock() {
                         <div className="text-sans overflow-hidden text-ellipsis text-right text-[13px] font-normal not-italic leading-[18px] text-[color:var(--text-secondary,rgba(255,255,255,0.23))]">
                             12월 30일
                         </div>
-                        {/* TODO : 999+ 와 같이 긴 숫자 나올 때, 바뀐 숫자 길이만큼 빨간 배경 늘어나도록 하기 */}
                         <div className="flex flex-col items-center justify-center rounded-[100px] bg-red-500 p-0.5 px-1">
                             <div className="flex text-center text-[12px] text-base font-thin not-italic leading-[normal] text-white ">
+                                {/* 숫자 많으면 +로 바뀌도록 처리하기 (아주 나중이 될듯 ㅋㅋ api언제만듬~~) */}
                                 999+
                             </div>
                         </div>
