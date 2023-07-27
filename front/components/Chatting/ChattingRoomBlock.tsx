@@ -4,6 +4,8 @@ import { Icon } from "../Icon/Icon";
 import Image from "next/image";
 import { useState } from "react";
 
+
+
 type AvatarProp = {
     profileImage: string;
     userStatus:
@@ -31,11 +33,11 @@ export default function ChattingRoomBlock() {
     return (
         <>
             {/* for spacing */}
-            <div className="invisible border-4"></div>
+            <div className="invisible flex border-4"></div>
 
             {/* chatrooms - image */}
-            <div className="flex h-[57.5px] shrink-0 items-center gap-4 self-stretch overflow-hidden">
-                <div className="flex h-[57.5px] w-[57.5px] items-center justify-center gap-2.5">
+            <div className="flex h-fit shrink-0 items-center gap-4 self-stretch overflow-hidden">
+                <div className="flex items-center justify-center gap-2.5">
                     <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-slate-600">
                         <Image
                             className=""
@@ -65,7 +67,7 @@ export default function ChattingRoomBlock() {
                         </div>
 
                         <div className="text-sans h-8 max-w-[160px] overflow-hidden truncate text-[13px] font-normal not-italic text-[color:var(--text-secondary,rgba(255,255,255,0.23))]">
-                            돈까스가 먹고싶어요 맛있는 돈까스 안심돈까스
+                            돈까스가 먹고싶어요 맛있는 돈까스 등심돈까스
                         </div>
                     </div>
 
