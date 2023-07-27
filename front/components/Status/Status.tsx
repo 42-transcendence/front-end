@@ -4,7 +4,6 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 */
 
 import React from "react";
-import clsx from "clsx";
 import Image from "next/image";
 
 export type StatusType =
@@ -17,7 +16,6 @@ export type StatusType =
     | "in-game";
 
 export function Status({ type }: { type: StatusType }): React.ReactElement {
-    clsx(type);
     return (
         <>
             <Image
