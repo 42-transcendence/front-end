@@ -12,11 +12,14 @@ export const metadata: Metadata = {
 export default function RootLayout({
     children,
 }: {
-    children: React.ReactNode;
+    children: React.ReactNode,
+    login: React.ReactNode,
 }) {
     return (
         <html lang="en">
-            <body className={`h-screen ${roboto.className}`}>{children}</body>
+            <body className={roboto.className}>
+                {children}
+            </body>
         </html>
     );
 }
