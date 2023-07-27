@@ -1,6 +1,6 @@
 import { Icon } from "../Icon/Icon";
 
-export default function Chatting() {
+export default function Chat() {
     return (
         <div className="flex h-screen w-[370px] shrink-0 flex-col items-start p-4 backdrop-blur-[50px]">
             <div className="flex items-center justify-between self-stretch px-4 py-5">

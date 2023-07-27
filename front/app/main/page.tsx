@@ -10,8 +10,8 @@ export default function Main() {
                 <title>Main Screen</title>
             </Head>
 
-            <div className="text-center">
-                <div className=" text-4xl font-extrabold">
+            <div className="">
+                <div className="flex h-screen flex-col text-4xl font-extrabold">
                     <ChatLayout />
                 </div>
             </div>

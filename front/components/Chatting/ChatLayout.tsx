@@ -1,5 +1,5 @@
 "use client";
-import ChattingSideBar from "./ChattingSideBar";
+import ChatSideBar from "./ChatSideBar";
 import ChatMainPage from "./ChatMainPage";
 import { NavigationBar } from "../NavigationBar";
 
@@ -9,9 +9,9 @@ export function ChatLayout(): React.ReactElement {
             <div>
                 <NavigationBar />
             </div>
-            <div className="flex h-fill flex-row justify-start">
-                <ChattingSideBar />
-                {/* <ChatMainPage/> */}
+            <div className="flex h-full flex-row justify-start">
+                <ChatSideBar />
+                <ChatMainPage />
             </div>
         </>
     );

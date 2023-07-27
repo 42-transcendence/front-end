@@ -4,8 +4,6 @@ import { Icon } from "../Icon/Icon";
 import Image from "next/image";
 import { useState } from "react";
 
-
-
 type AvatarProp = {
     profileImage: string;
     userStatus:
@@ -23,7 +21,7 @@ const dummyAvatar: AvatarProp = {
     userStatus: "in-game",
 };
 
-export default function ChattingRoomBlock() {
+export default function ChatRoomBlock() {
     const [messageCount, setMessageCount] = useState(1);
 
     function addMessageCount() {
