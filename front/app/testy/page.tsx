@@ -1,10 +1,9 @@
-import ChattingRoomBlock from "@/components/Chatting/Chatting";
-
+import ChatRoomBlock from "@/components/Chat/Chat";
 
 export default function Main() {
     return (
         <div>
-            <ChattingRoomBlock/>
+            <ChatRoomBlock />
         </div>
     );
 }
