@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { ChatLayout } from "@/components/Chat/ChatLayout";
 
 export default function Main() {
