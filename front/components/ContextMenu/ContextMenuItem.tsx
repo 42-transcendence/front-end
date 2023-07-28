@@ -21,7 +21,7 @@ export function ContextMenuItem({
             }`}
         >
             <div className="relative flex h-[19px] w-[260px] flex-col justify-center px-4 py-1">
-                <div className="font-family: var(--headline-font-family) font-style: var(--headline-font-style) disable-select relative mb-[-0.5px] mt-[-2.5px] whitespace-nowrap text-start text-[length:var(--headline-font-size)] font-[number:var(--headline-font-weight)] leading-[var(--headline-line-height)] tracking-[var(--headline-letter-spacitext-gray-50 text-gray-50">
+                <div className="font-family: var(--headline-font-family) font-style: var(--headline-font-style) disable-select tracking-[var(--headline-letter-spacitext-gray-50 relative mb-[-0.5px] mt-[-2.5px] whitespace-nowrap text-start text-[length:var(--headline-font-size)] font-[number:var(--headline-font-weight)] leading-[var(--headline-line-height)] text-gray-50">
                     {name}
                 </div>
                 {description && (
