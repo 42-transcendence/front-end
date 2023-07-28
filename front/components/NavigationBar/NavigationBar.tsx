@@ -6,6 +6,7 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import "./style.css";
 import { Icon } from "../Icon/Icon";
 import { Avatar } from "../Avatar";
@@ -46,7 +47,9 @@ export function NavigationBar({ }): React.ReactElement {
     return (
         <div className="navigation-bar nav-margin">
             <div className="nav-bar-background">
-                <Icon className="" type="doubleSharp" size={20} />
+                <Link href="/main">
+                    <Icon className="" type="doubleSharp" size={20} />
+                </Link>
                 <div className="flex flex-row justify-between">
                     <SocialButton />
                     <Icon className="" type="chat" size={20} />
