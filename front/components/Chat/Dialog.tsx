@@ -1,9 +1,10 @@
-"use client"
+"use client";
 import React from "react";
 
 function MessageInputArea() {
-
-    const handleClick = () => { console.log("heello"); };
+    const handleClick = () => {
+        console.log("heello");
+    };
 
     return (
         <>

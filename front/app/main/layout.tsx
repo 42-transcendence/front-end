@@ -1,4 +1,3 @@
-
 let isLoginned = true;
 
 export default function MainLayout({

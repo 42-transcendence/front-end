@@ -161,3 +161,8 @@ body {
     -webkit-mask-composite: xor;
     mask-composite: exclude;
 }
+
+html,
+body {
+    height: 100%;
+}
