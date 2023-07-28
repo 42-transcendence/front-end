@@ -1,3 +1,4 @@
+// TODO: get login status from backend 
 let isLoginned = true;
 
 export default function MainLayout({
