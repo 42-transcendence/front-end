@@ -32,7 +32,7 @@ function SocialButton() {
                 <Icon className="" type="chat" size={20} />
             </button>
             {showModal && createPortal(
-                <div className="flex h-full w-full flex-col text-4xl font-extrabold">
+                <div className="absolute flex h-full w-full flex-col text-4xl font-extrabold">
                     <ChatLayout />
                 </div>
                 , mainNode)}

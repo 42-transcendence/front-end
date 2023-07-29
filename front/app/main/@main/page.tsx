@@ -6,7 +6,7 @@ import { Avatar } from "@/components/Avatar";
 
 export default function Home() {
     return (
-        <main className="flex flex-col items-center justify-between p-24">
+        <main className="relative justify-self-stretch flex flex-col items-center justify-between p-24">
             <Link
                 href="/main/dropdown"
                 className="relative flex place-items-center"
