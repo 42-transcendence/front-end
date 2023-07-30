@@ -1,4 +1,4 @@
-"use client"
+"use client";
 /*
 We're constantly improving the code you see.
 Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
@@ -31,16 +31,18 @@ function SocialButton() {
             <button type="button" onClick={handleClick}>
                 <Icon className="" type="chat" size={20} />
             </button>
-            {showModal && createPortal(
-                <div className="absolute flex h-full w-full flex-col text-4xl font-extrabold">
-                    <ChatLayout />
-                </div>
-                , mainNode)}
+            {showModal &&
+                createPortal(
+                    <div className="absolute flex h-full w-full flex-col text-4xl font-extrabold">
+                        <ChatLayout />
+                    </div>,
+                    mainNode,
+                )}
         </>
     );
 }
 
-export function NavigationBar({ }): React.ReactElement {
+export function NavigationBar({}): React.ReactElement {
     // TODO: fetch account data.
     // TODO: change to tailwind css
 
@@ -54,7 +56,7 @@ export function NavigationBar({ }): React.ReactElement {
                     <SocialButton />
                     <Icon className="" type="chat" size={20} />
                     <div className="profile-photo right-side-icons">
-                        <Avatar size={"h-12 w-12"} className={""} />
+                        <Avatar size={"w-12"} accountId={1} className={""} />
                     </div>
                 </div>
             </div>
