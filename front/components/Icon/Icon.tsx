@@ -23,12 +23,20 @@ export function Icon({
         | "externalWindowInsideWindow"
         | "filledStar"
         | "friend"
+        | "hamburger"
+        | "line hdoo"
         | "lock"
+        | "members"
+        | "next"
         | "password"
+        | "plus"
         | "search"
+        | "send"
         | "setting"
         | "sidebar"
-        | "social";
+        | "social"
+        | "vercel"
+        | "x";
     size: number;
 }): React.ReactElement {
     return (
