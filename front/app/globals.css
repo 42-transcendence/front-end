@@ -60,39 +60,13 @@
     --color-grey-800: 66, 66, 66;
     --color-grey-900: 33, 33, 33;
 
-    --colorsgreen: 50, 215, 75;
     --controls-hover: color-mix(in srgb, #ffffff 36%, #5e5e5e 16%);
     --controls-selected: color-mix(in srgb, #ffffff 100%, #5e5e5e 16%);
 
-    /* font style */
-    --headline-font-family: "Roboto", sans-serif;
-    --headline-font-size: 17px;
-    --headline-font-style: italic;
-    --headline-font-weight: 700;
-    --headline-letter-spacing: 0px;
-    --headline-line-height: 22px;
-
-    /* sub font style */
-    --sub-font-family: "Roboto", sans-serif;
-    --sub-font-size: 11px;
-    --sub-font-style: normal;
-    --sub-font-weight: 400;
-    --sub-letter-spacing: 0px;
-    --sub-line-height: normal;
-
     /* UI background glass effect */
     --windows-glass: 128, 128, 128; /* 0.3 */
-
     --section: 214, 214, 214, 0.45;
     --separator: 255, 255, 255, 0.07;
-
-    --text-invert: var(--color-grey-50);
-    --text-invert-secondary: var(--color-grey-300);
-    --text-primary: var(--color-grey-900);
-    --text-secondary: var(--color-grey-600);
-    --text-default: #353740;
-    --text-disabled: #acacbe;
-    --text-error: var(--color-error) --color-error: #ef4146;
 
     --color-primary: var(--color-purple-500);
     --color-secondary: var(--color-aqua-500);
@@ -102,7 +76,23 @@
     --color-secondary-lighter: var(--color-aqua-300);
     --gradient-primary: linear-gradient(90deg, #a29bd4, #989fdd);
 
+    --color-ultra-dark: color-mix(in srgb, #000000 10%, #dadada 92%);
+    --color-darker: color-mix(in srgb, #000000 8%, #d6d6d6 45%);
+
     --viewsstroke-recessed-specular: 0, 0, 0, 0;
+    --views-ultra-dark: linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0.1) 100%
+        ),
+        rgba(218, 218, 218, 0.92);
+
+    --icon-trinary: linear-gradient(
+            0deg,
+            rgba(94, 94, 94, 0.64) 0%,
+            rgba(94, 94, 94, 0.64) 100%
+        ),
+        rgba(255, 255, 255, 0.22);
 
     /* actual background settings */
     --foreground-rgb: 0, 0, 0;
@@ -135,6 +125,7 @@ body {
 /*  TODO: post css로 옮기기..?  */
 .disable-select {
     @apply pointer-events-none select-none;
+    user-select: none;
     -khtml-user-select: none;
     -o-user-select: none;
     -webkit-touch-callout: none;

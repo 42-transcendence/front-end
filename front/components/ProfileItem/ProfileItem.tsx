@@ -40,7 +40,11 @@ export function ProfileItem({
             >
                 <div className="disable-select relative flex items-center gap-2 space-x-4 rounded-xl">
                     <div className="relative flex items-center justify-center">
-                        <Avatar className="" size="w-[45px]" />
+                        <Avatar
+                            className=""
+                            accountId={config.id}
+                            size="w-[45px]"
+                        />
                     </div>
                     <div className="relative, flex w-fit flex-col items-start gap-1">
                         <div className="text-bold relative w-fit whitespace-nowrap font-sans text-base leading-none tracking-normal text-gray-50">
