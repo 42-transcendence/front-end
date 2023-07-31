@@ -1,9 +1,26 @@
 import { GameChipProfile } from "@/components/Game/GameUserProfile";
 import CharacterSelector from "@/components/Game/GameCharacterSelector";
 import GameStartButton from "@/components/Game/GameStartButton";
+// import { useRouter } from "next/navigation";
 import { ChatDialog } from "@/components/Chat/ChatDialog";
 
 export default function GamePage() {
+    // const newGameId = await createNewGameId();
+
+    // const router = useRouter();
+
+    // const handleClick = async () => {
+
+    //     const res = await fetch("http://www.randomnumberapi.com/api/v1.0/random?min=100&max=1000&count=1",
+    //         /*{ cache: "no-store", next: { revalidate: 0 } }*/);
+    //     if (!res.ok) {
+    //         throw new Error("fetch failure");
+    //     }
+    //     const newGameId = await res.json();
+
+    //     router.push(`/main/game/${newGameId}`);
+
+    // }
     return (
         <main className="relative flex h-full flex-col items-center justify-end gap-2.5 self-stretch p-2.5">
             <div className="flex flex-col items-center justify-center ">
