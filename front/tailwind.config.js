@@ -15,12 +15,11 @@ module.exports = {
                 windowGlass: "rgb(var(--windows-glass), <alpha-value>)",
                 controlsHover: "rgb(var(--controls-hover), <alpha-value>)",
                 controlsSelected: "rgb(var(--controls-selected), <alpha-value)",
+                ultraDark: "var(--views-ultra-dark)",
+                iconTrinary: "var(--icon-trinary)",
+                darker: "var(--color-darker)",
             },
-            backgroundImage: {
-                "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-                "gradient-conic":
-                    "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-            },
+            backgroundImage: {},
         },
     },
     plugins: [],
