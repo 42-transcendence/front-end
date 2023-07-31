@@ -15,9 +15,12 @@ module.exports = {
                 windowGlass: "rgb(var(--windows-glass), <alpha-value>)",
                 controlsHover: "rgb(var(--controls-hover), <alpha-value>)",
                 controlsSelected: "rgb(var(--controls-selected), <alpha-value)",
-                ultraDark: "var(--views-ultra-dark)",
+                ultraDark: "var(--color-ultra-dark)",
                 iconTrinary: "var(--icon-trinary)",
                 darker: "var(--color-darker)",
+            },
+            animation: {
+                "spin-slow": "spin 2s ease-in-out infinite",
             },
             backgroundImage: {},
         },
