@@ -172,3 +172,37 @@ html,
 body {
     height: 100%;
 }
+
+/* COMPONENT - AchivementCard */
+.AchivementCardBackground {
+    @apply inline-flex flex-col items-center justify-center gap-[21px] rounded-[30px] px-4 py-4 shadow-[0px_8px_4px_0px_rgba(0,0,0,0.25)];
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.AchivementCardExplainBox {
+    @apply m-6 flex flex-col items-center justify-center rounded-[20px] px-5 py-6;
+    background: rgba(0, 0, 0, 0.36);
+}
+
+.AchivementCardSubTitle {
+    @apply flex flex-col justify-center text-center text-lg leading-[normal] text-[color:var(--color-purple-100,#E7CEFF)];
+    font-feature-settings:
+        "clig" off,
+        "liga" off;
+    font-family: Inter;
+}
+.AchivementCardTitle {
+    @apply flex flex-col justify-center pt-2 text-center text-4xl font-bold not-italic leading-[normal] text-[color:var(--color-purple-100,#E7CEFF)];
+    font-feature-settings:
+        "clig" off,
+        "liga" off;
+    font-family: Inter;
+}
+
+.AchivementCardContent {
+    @apply flex h-[92px] w-[326px] flex-col justify-center text-center text-base font-normal text-white;
+    font-feature-settings:
+        "clig" off,
+        "liga" off;
+    font-family: Inter;
+}
