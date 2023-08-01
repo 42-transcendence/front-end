@@ -153,6 +153,21 @@ body {
     mask-composite: exclude;
 }
 
+@layer components {
+    .ultra-dark {
+        background: var(
+            --views-ultra-dark,
+            linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0%,
+                rgba(0, 0, 0, 0.1) 100%
+            ),
+            rgba(218, 218, 218, 0.92)
+        );
+        background-blend-mode: luminosity, color-burn;
+    }
+}
+
 html,
 body {
     height: 100%;
