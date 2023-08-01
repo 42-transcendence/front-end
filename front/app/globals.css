@@ -76,8 +76,8 @@
     --color-secondary-lighter: var(--color-aqua-300);
     --gradient-primary: linear-gradient(90deg, #a29bd4, #989fdd);
 
-    --color-ultra-dark: color-mix(in srgb, #000000 10%, #dadada 92%);
-    --color-darker: color-mix(in srgb, #000000 8%, #d6d6d6 45%);
+    --color-ultra-dark: color-mix(in srgb, #000000, #dadada);
+    --color-darker: color-mix(in srgb, #000000, #d6d6d6);
 
     --viewsstroke-recessed-specular: 0, 0, 0, 0;
     --views-ultra-dark: linear-gradient(
