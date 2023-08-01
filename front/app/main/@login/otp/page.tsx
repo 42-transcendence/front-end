@@ -1,6 +1,5 @@
 "use client";
 import { userAgent } from "next/server";
-import "./loginPage.css";
 import { useEffect, useRef } from "react";
 
 // function VerificationCdeBlock() {
