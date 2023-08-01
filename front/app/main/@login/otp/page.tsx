@@ -32,27 +32,27 @@ export default function LoginPage() {
                     <div className="flex items-start gap-2 pt-14">
                         <input
                             maxLength={1}
-                            className="VerificationCdeBlock"
+                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
                         ></input>
                         <input
                             maxLength={1}
-                            className="VerificationCdeBlock"
+                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
                         ></input>
                         <input
                             maxLength={1}
-                            className="VerificationCdeBlock"
+                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
                         ></input>
                         <input
                             maxLength={1}
-                            className="VerificationCdeBlock"
+                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
                         ></input>
                         <input
                             maxLength={1}
-                            className="VerificationCdeBlock"
+                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
                         ></input>
                         <input
                             maxLength={1}
-                            className="VerificationCdeBlock"
+                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
                         ></input>
                     </div>
                 </div>
