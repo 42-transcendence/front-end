@@ -185,14 +185,14 @@ body {
 }
 
 .AchivementCardSubTitle {
-    @apply flex flex-col justify-center text-center text-lg leading-[normal] text-[color:var(--color-purple-100,#E7CEFF)];
+    @apply flex flex-col justify-center text-center text-lg leading-[normal] text-[color:#E7CEFF];
     font-feature-settings:
         "clig" off,
         "liga" off;
     font-family: Inter;
 }
 .AchivementCardTitle {
-    @apply flex flex-col justify-center pt-2 text-center text-4xl font-bold not-italic leading-[normal] text-[color:var(--color-purple-100,#E7CEFF)];
+    @apply flex flex-col justify-center pt-2 text-center text-4xl font-bold not-italic leading-[normal] text-[color:#E7CEFF];
     font-feature-settings:
         "clig" off,
         "liga" off;
