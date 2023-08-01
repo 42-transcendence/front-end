@@ -1,18 +1,71 @@
 "use client";
-import { userAgent } from "next/server";
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 
-// function VerificationCdeBlock() {
-//     const inputRef = useRef(null);
+function VerificationCodeBlock({ ref, index, setSingleValue, setFocusIndex }: {
+    ref: any, //TODO
+    index: number,
+    setSingleValue: (x: string) => void,
+    setFocusIndex: (x: number) => void,
+}) {
 
-//     useEffect(() => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("target value", e.target.value);
+        const currentValue = e.target.value;
+        const replacedValue = e.target.value.replace(/[^0-9.]/g, '');
 
-//     })
+        if (e.target.value.length === 0) {
+            setSingleValue(replacedValue.charAt(0));
+            setFocusIndex(index + 1);
+        } else {
+        }
+    }
 
-//     return (
-//         <input ref={inputRef} className="VerificationCdeBlock"></input>
-//     )
-// }
+    const handleFocus = () => {
+    }
+
+    const handleBlur = () => {
+    }
+
+    return (
+        <input
+            onChange={handleChange}
+            type="tel"
+            maxLength={1}
+            // value={value}
+            className="ultra-dark flex appearance-none h-12 w-12 items-center rounded opacity-80"
+        />
+    )
+}
+
+function VerificationCodeBlocks({ length }: { length: number }) {
+    const [values, setValues] = useState(new Array(length));
+    const [focusIndex, setFocusIndex] = useState(-1);
+    const childrenRef = useRef([]);
+
+    const setSingleValue = (idx: number) => {
+        return (x: string) => {
+            const newValue = [...values];
+            newValue[idx] = x;
+            setValues(newValue);
+        }
+    }
+
+    const children = [0, 1, 2, 3, 4, 5].map((x) => {
+        return <VerificationCodeBlock ref={childrenRef.current[x]} index={x} setSingleValue={setSingleValue(x)} setFocusIndex={setFocusIndex} />
+    });
+
+    useEffect(() => {
+        if (0 < focusIndex && focusIndex < length) {
+            childrenRef.current[focusIndex].focus();
+        }
+    }, [focusIndex]);
+
+    return (
+        <div className="flex items-start gap-2 pt-14">
+            {children}
+        </div>
+    );
+}
 
 export default function LoginPage() {
     return (
@@ -28,32 +81,7 @@ export default function LoginPage() {
                     </div>
                     {/* verify code block*/}
                     {/* TODO: 나중에 컴포넌트로 빼야 함! 근데 생각해보니.. 굳이..? 6개밖에 안쓸텐데... 흠..*/}
-                    <div className="flex items-start gap-2 pt-14">
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                    </div>
+                    <VerificationCodeBlocks length={6} />
                 </div>
             </div>
         </main>
