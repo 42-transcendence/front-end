@@ -1,68 +1,86 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 
-function VerificationCodeBlock({ ref, index, setSingleValue, setFocusIndex }: {
-    ref: any, //TODO
-    index: number,
-    setSingleValue: (x: string) => void,
-    setFocusIndex: (x: number) => void,
-}) {
+const updateInputConfig = (element: HTMLInputElement, disabledStatus: boolean) => {
+    element.disabled = disabledStatus;
+    if (!disabledStatus) {
+        element.focus();
+    } else {
+        element.blur();
+    }
+};
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("target value", e.target.value);
-        const currentValue = e.target.value;
-        const replacedValue = e.target.value.replace(/[^0-9.]/g, '');
+function VerificationCodeBlock({ length, inputCount, setInputCount, }) {
+    const [value, setValue] = useState("");
 
-        if (e.target.value.length === 0) {
-            setSingleValue(replacedValue.charAt(0));
-            setFocusIndex(index + 1);
-        } else {
+    const childEventListener = (e) => {
+        const replacedValue = e.target.value.replace(/[^0-9]/g, "").charAt(0);
+
+        if (replacedValue.length === 1) {
+            updateInputConfig(e.target, true);
+            if (inputCount < length && e.key !== "Backspace") {
+                if (inputCount < length - 1) {
+                    updateInputConfig(e.target.nextElementSibling, false);
+                }
+            }
+            setInputCount(inputCount + 1);
+        } else if (replacedValue.length === 0 && e.key === "Backspace") {
+            if (inputCount === 0) {
+                updateInputConfig(e.target, false);
+                return false;
+            }
+            updateInputConfig(e.target, true);
+            e.target.previousElementSibling.value = "";
+            updateInputConfig(e.target.previousElementSibling, false);
+            setInputCount(inputCount - 1);
         }
-    }
-
-    const handleFocus = () => {
-    }
-
-    const handleBlur = () => {
     }
 
     return (
         <input
-            onChange={handleChange}
-            type="tel"
+            onKeyUp={childEventListener}
+            type="text"
+            inputMode="numeric"
             maxLength={1}
+            autoComplete="one-time-code"
+            disabled
             // value={value}
             className="ultra-dark flex appearance-none h-12 w-12 items-center rounded opacity-80"
         />
     )
 }
 
-function VerificationCodeBlocks({ length }: { length: number }) {
-    const [values, setValues] = useState(new Array(length));
-    const [focusIndex, setFocusIndex] = useState(-1);
-    const childrenRef = useRef([]);
+function VerificationCodeBlocks({ length, }: { length: number, }) {
 
-    const setSingleValue = (idx: number) => {
-        return (x: string) => {
-            const newValue = [...values];
-            newValue[idx] = x;
-            setValues(newValue);
-        }
-    }
-
-    const children = [0, 1, 2, 3, 4, 5].map((x) => {
-        return <VerificationCodeBlock ref={childrenRef.current[x]} index={x} setSingleValue={setSingleValue(x)} setFocusIndex={setFocusIndex} />
-    });
+    const [inputCount, setInputCount] = useState(0);
+    const parentRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
-        if (0 < focusIndex && focusIndex < length) {
-            childrenRef.current[focusIndex].focus();
+        const windowEventListener = (e: any) => { //TODO keyup event type
+            // TODO: for keyup event, is inputCount updated before this line?
+            if (inputCount >= length) {
+                alert("finalValue"); // TODO: submit value, validate
+                if (e.key === "Backspace") {
+                    const parentElement = parentRef.current;
+                    const lastChild = parentElement?.lastElementChild;
+                    if (lastChild) {
+                        updateInputConfig(lastChild, false);
+                        lastChild.value = "";
+                        setInputCount(inputCount - 1);
+                    }
+                }
+            }
         }
-    }, [focusIndex]);
+
+        window.addEventListener("keyup", windowEventListener);
+        return () => {
+            window.removeEventListener("keyup", windowEventListener);
+        }
+    }, [inputCount, length]);
 
     return (
-        <div className="flex items-start gap-2 pt-14">
-            {children}
+        <div ref={parentRef} className="flex items-start gap-2 pt-14">
+            <VerificationCodeBlock length={length} inputCount={inputCount} />
         </div>
     );
 }
