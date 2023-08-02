@@ -4,7 +4,7 @@ We're constantly improving the code you see.
 Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
 */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import "./style.css";
@@ -21,18 +21,6 @@ function SocialButton() {
 
     const mainNode = document.querySelector("main");
 
-    if (mainNode === null) {
-        return (
-            <button type="button" onClick={handleClick}>
-                <Social
-                    className="text-white drop-shadow-[0_0_0.3rem_#00000030] dark:text-white dark:drop-shadow-[0_0_0.3rem_#ffffff70]"
-                    width={42}
-                    height="100%"
-                />
-            </button>
-        );
-    }
-
     return (
         <>
             <button type="button" onClick={handleClick}>
@@ -42,7 +30,8 @@ function SocialButton() {
                     height="100%"
                 />
             </button>
-            {showModal &&
+            {mainNode !== null &&
+                showModal &&
                 createPortal(
                     <div className="absolute flex h-full w-full flex-col text-4xl font-extrabold">
                         <ChatLayout />
