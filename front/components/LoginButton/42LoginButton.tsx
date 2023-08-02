@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useEffect } from "react";
 import React from "react";
-import FtLogo from "/public/42Logo.svg";
+import FtLogo from "/public/42logo.svg";
 
 export function FtLoginButton({}): React.ReactElement {
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -9,24 +9,13 @@ export function FtLoginButton({}): React.ReactElement {
     useEffect(() => {
         const buttonElement = buttonRef.current;
 
-        if (buttonElement === null)
-            return;
+        if (buttonElement === null) return;
 
-        const url = new URL("https://accounts.google.com/gsi/select");
-        const params = new URLSearchParams({
-            client_id: "990339570472-k6nqn1tpmitg8pui82bfaun3jrpmiuhs.apps.googleusercontent.com",
-            as: "PbXs9bDCM2TVCG7QFPY%2FBA",
-            channel_id: "6452d8a3f9ee221df174e4dd671e46d81d580ec363f33016aa70433ad30c3b8c",
-            auto_select: "true",
-            ux_mode: "popup",
-            ui_mode: "card",
-            context: "signin",
-        });
-
-        url.search = params.toString();
+        const url = new URL("https://back.stri.dev/auth/42");
+        url.searchParams.set("device_id", "");
 
         const target = "42 Login";
-        const features = "popup=true, width=500, height=500";
+        const features = ["popup=true", "width=500", "height=500"].join(" ");
 
         const popupLink = () => {
             window.open(url, target, features);
@@ -38,7 +27,7 @@ export function FtLoginButton({}): React.ReactElement {
             if (buttonElement !== null) {
                 buttonElement.removeEventListener("click", popupLink);
             }
-        }
+        };
     }, []);
 
     return (
@@ -51,7 +40,6 @@ export function FtLoginButton({}): React.ReactElement {
                 <div className="flex items-center gap-2 py-2.5">
                     <FtLogo width={17} height="100%" />
                     <p className="font-sans text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                        {" "}
                         Sign in with 42
                     </p>
                 </div>
