@@ -9,8 +9,10 @@ import GameAchievementCard, {
 export default function Main() {
     return (
         <div>
-            {/* <AchivementCard/> */}
-            {/* <GameUserFrame/> */}
+            <AchivementCard />
+            <div className=" m-20"></div>
+            <GameUserFrame />
+            <div className=" m-20"></div>
             <ClikNotificationCard />
             <div className=" m-20"></div>
             <GameAchievementCard />
