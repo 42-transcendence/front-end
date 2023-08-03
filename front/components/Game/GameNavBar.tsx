@@ -1,3 +1,1 @@
-export default function GameNavBar(){
-	
-}
+export default function GameNavBar() {}

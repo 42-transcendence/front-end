@@ -13,12 +13,14 @@ function MessageInputArea() {
                 className="h-fit max-h-20 w-full resize-none bg-transparent text-[22px] outline-none"
                 placeholder="Send a message"
             />
-            <button type="button" onClick={handleClick}>send</button>
+            <button type="button" onClick={handleClick}>
+                send
+            </button>
         </>
     );
 }
 
-export function Dialog({ }): React.ReactElement {
+export function Dialog({}): React.ReactElement {
     return (
         <div className="flex flex-[1_0_0%] flex-col items-start justify-end gap-4 self-stretch bg-white p-4 ">
             <div className="flex h-full w-full flex-[1_0_0%] flex-col items-center rounded-xl bg-black px-4 py-0">

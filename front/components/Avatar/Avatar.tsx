@@ -59,7 +59,7 @@ export function Avatar({
 
     return (
         <div
-            className={`relative flex aspect-square ${size} flex-shrink-0 items-start gap-2.5 rounded-full bg-[#ffffff40] ${className}`}
+            className={`relative flex aspect-square ${size} flex-shrink-0 items-start gap-2.5 rounded-full ${className}`}
         >
             <Image
                 className="relative flex-1 flex-grow self-stretch rounded-full"
