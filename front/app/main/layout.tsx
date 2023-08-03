@@ -1,5 +1,5 @@
 // TODO: get login status from backend
-const isLoginned = false;
+const isLoginned = true;
 
 export default function MainLayout({
     login,
