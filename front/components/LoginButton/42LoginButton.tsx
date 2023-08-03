@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useEffect } from "react";
 import React from "react";
-import FtLogo from "/public/42Logo.svg";
+import FtLogo from "/public/42logo.svg";
 
 export function FtLoginButton({}): React.ReactElement {
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -52,7 +52,6 @@ export function FtLoginButton({}): React.ReactElement {
                 <div className="flex items-center gap-2 py-2.5">
                     <FtLogo width={17} height="100%" />
                     <p className="font-sans text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                        {" "}
                         Sign in with 42
                     </p>
                 </div>

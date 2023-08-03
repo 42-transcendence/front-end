@@ -51,7 +51,6 @@ export function GoogleLoginButton({}): React.ReactElement {
                 <div className="flex items-center gap-2 py-2.5">
                     <GoogleLogo width={17} height="100%" />
                     <p className="font-sans text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                        {" "}
                         Sign in with Google
                     </p>
                 </div>

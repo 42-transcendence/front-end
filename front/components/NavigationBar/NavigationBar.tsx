@@ -4,7 +4,7 @@ We're constantly improving the code you see.
 Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
 */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Avatar } from "../Avatar";
@@ -42,7 +42,8 @@ function SocialButton() {
                     height="100%"
                 />
             </button>
-            {showModal &&
+            {mainNode !== null &&
+                showModal &&
                 createPortal(
                     <div className="absolute inset-0 flex h-full w-full flex-col text-4xl font-extrabold">
                         <ChatLayout />
