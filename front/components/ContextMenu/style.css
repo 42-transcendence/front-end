@@ -1,13 +1,36 @@
 .context-menu-item {
-    align-items: center; display: flex; height: 64px; width: 260px; position: relative; box-shadow: var(--blur); background-color: var(--windows-glass);
+    align-items: center;
+    display: flex;
+    height: 64px;
+    width: 260px;
+    position: relative;
+    box-shadow: var(--blur);
+    background-color: var(--windows-glass);
 }
 
 .context-menu-item .context-menu-frame {
-    align-items: flex-start; display: flex; flex-direction: column; height: 19px; justify-content: center; padding: 4px 16px; position: relative; width: 260px;
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    height: 19px;
+    justify-content: center;
+    padding: 4px 16px;
+    position: relative;
+    width: 260px;
 }
 
 .context-menu-item .context-menu-name {
-    font-family: var(--headline-font-family); font-size: var(--headline-font-size); font-style: var(--headline-font-style); font-weight: var(--headline-font-weight); letter-spacing: var(--headline-letter-spacing); line-height: var(--headline-line-height); margin-bottom: -0.5px; margin-top: -2.5px; position: relative; text-align: center; white-space: nowrap;
+    font-family: var(--headline-font-family);
+    font-size: var(--headline-font-size);
+    font-style: var(--headline-font-style);
+    font-weight: var(--headline-font-weight);
+    letter-spacing: var(--headline-letter-spacing);
+    line-height: var(--headline-line-height);
+    margin-bottom: -0.5px;
+    margin-top: -2.5px;
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .context-menu-item .context-menu-name {

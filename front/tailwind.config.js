@@ -14,10 +14,13 @@ module.exports = {
                 secondary: "rgb(var(--color-secondary), <alpha-value>)",
                 windowGlass: "rgb(var(--windows-glass), <alpha-value>)",
                 controlsHover: "rgb(var(--controls-hover), <alpha-value>)",
-                controlsSelected: "rgb(var(--controls-selected), <alpha-value)",
-                ultraDark: "var(--color-ultra-dark)",
-                iconTrinary: "var(--icon-trinary)",
-                darker: "var(--color-darker)",
+                controlsSelected:
+                    "rgb(var(--controls-selected), <alpha-value>)",
+                ultraDark: "rgb(197 197 197 / <alpha-value>)",
+                iconTrinary: "color-mix(in srgb, #5e5e5e 64%, #ffffff 22%)",
+                iconSecondary: "rgb(105 105 105 / <alpha-value>)",
+                iconPrimary: "rgb(230 230 230 / <alpha-value>)",
+                darker: "color-mix(in srgb, #000000 8%, #d6d6d6 45%)",
             },
             animation: {
                 "spin-slow": "spin 2s ease-in-out infinite",
