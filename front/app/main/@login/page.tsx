@@ -5,7 +5,7 @@ import DoubleSharp from "/public/doubleSharp.svg";
 
 export default function LoginPage() {
     return (
-        <section>
+        <main>
             <div className="relative flex h-screen w-screen flex-col items-center justify-center ">
                 <div className="relative flex h-full items-end justify-center">
                     <DoubleSharp
@@ -19,6 +19,6 @@ export default function LoginPage() {
                     <FtLoginButton />
                 </div>
             </div>
-        </section>
+        </main>
     );
 }
