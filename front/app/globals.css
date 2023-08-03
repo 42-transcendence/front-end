@@ -173,7 +173,6 @@ body {
 }
 
 .gameNameTag {
-    @apply flex items-center gap-[250px] rounded-[50px] px-[106px] py-10 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)];
     background: linear-gradient(
         270deg,
         #ff008a 0%,
