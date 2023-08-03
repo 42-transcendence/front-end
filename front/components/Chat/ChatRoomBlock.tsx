@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Icon } from "../Icon/Icon";
+import LockIcon from "/public/lock.svg";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -53,10 +53,10 @@ export default function ChatRoomBlock() {
                         <div className="inilne-block text-sans h-4 text-ellipsis text-[17px] font-normal not-italic leading-6 text-[color:var(--labels-primary-dark,#FFF)]">
                             <span className="pr-2">Title!</span>
                             <span className="top-[2.5px]e absolute items-center space-x-1">
-                                <Icon
-                                    className="inline-block "
-                                    type="lock"
-                                    size={20}
+                                <LockIcon
+                                    width={15}
+                                    height="100%"
+                                    className="text-gray-50"
                                 />
                                 <span className="text-sans overflow-hidden text-ellipsis text-[13px] font-normal not-italic leading-[19px] text-[color:var(--text-tertiary,rgba(255,255,255,0.11))]">
                                     4
@@ -64,7 +64,7 @@ export default function ChatRoomBlock() {
                             </span>
                         </div>
 
-                        <div className="text-sans h-8 max-w-[160px] overflow-hidden truncate text-[13px] font-normal not-italic text-[color:var(--text-secondary,rgba(255,255,255,0.23))]">
+                        <div className="text-sans h-8 max-w-[160px] overflow-hidden truncate text-[13px] font-normal not-italic text-white/30">
                             돈까스가 먹고싶어요 맛있는 돈까스 등심돈까스
                         </div>
                     </div>
