@@ -16,7 +16,7 @@ import { useEffect, useRef } from "react";
 
 export default function LoginPage() {
     return (
-        <section>
+        <main>
             <div className="flex items-center justify-center">
                 <div className="flex h-[124px] min-h-[100dvh] flex-col items-center justify-center self-stretch px-0 py-[9px]">
                     {/* text */}
@@ -56,6 +56,6 @@ export default function LoginPage() {
                     </div>
                 </div>
             </div>
-        </section>
+        </main>
     );
 }
