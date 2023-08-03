@@ -1,5 +1,7 @@
 import React from "react";
-import { Icon } from "../Icon/Icon";
+import SidebarIcon from "/public/sidebar.svg";
+import EditIcon from "/public/edit.svg";
+import SearchIcon from "/public/search.svg";
 import ChatRoomBlock from "./ChatRoomBlock";
 
 const chatRoomsDummy: {
@@ -56,29 +58,41 @@ const chatRoomsDummy: {
 
 function ChatSideBarHeader() {
     return (
-        <div className="flex h-16 shrink-0 items-center justify-between self-stretch px-2 py-4">
-            <div className="flex w-fit items-center gap-2 self-stretch rounded-md">
-                <Icon type="edit" size={40} className="" />
-                <p className="font-sm font-sans leading-4 text-gray-50 ">
-                    Chat
-                </p>
-            </div>
-            <Icon type="sidebar" size={20} className="" />
-        </div>
-    );
-}
+        <div>
+            <div className="gradient-border float-left flex h-full shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-['']">
+                <div className="flex h-16 shrink-0 items-center justify-between self-stretch px-2 py-4">
+                    <div className="flex w-fit items-center gap-2 self-stretch rounded-md">
+                        <EditIcon
+                            className="text-gray-50"
+                            width={22}
+                            height="100%"
+                        />
+                        <p className="font-sans text-2xl leading-4 text-gray-50 ">
+                            Chat
+                        </p>
+                    </div>
+                    <SidebarIcon
+                        className="text-gray-50"
+                        width={42}
+                        height="100%"
+                    />
+                </div>
 
-//TODO name ChatRoomSearch, SearchChatRoom, + new ChatRoom Button..?
-function ChatRoomSearch() {
-    return (
-        <div className="rounded-xl; flex h-8 shrink-0 items-center gap-2 self-stretch px-2 py-0">
-            <div className="flex h-8 w-[305px] shrink-0 items-center gap-2 self-stretch rounded-xl px-2 py-0 shadow-[1px_1.5px_4px_0px_rgba(0,0,0,0.10)_inset,1px_1.5px_4px_0px_rgba(0,0,0,0.08)_inset,0px_-0.5px_1px_0px_rgba(255,255,255,0.25)_inset,0px_-0.5px_1px_0px_rgba(255,255,255,0.30)_inset]">
-                {/* <Icon className="float-left" type="search" size={30} /> */}
-                <div className="flex-[1_0_0] text-sm font-normal not-italic leading-[22px] text-[color:var(--text-secondary,rgba(255,255,255,0.23))]">
-                    <input
-                        type="text"
-                        className="w-[260px] overflow-hidden text-ellipsis border-[none] bg-transparent outline-none"
-                    ></input>
+                {/* searchBar */}
+                <div className="flex h-8 shrink-0 items-center gap-2 self-stretch rounded-xl bg-black/30 px-2 py-0 shadow-3xl">
+                    <div className="flex h-8 w-[305px] shrink-0 items-center gap-2 self-stretch rounded-xl px-2 py-0 ">
+                        {/* <Icon className="float-left" type="search" size={30} /> */}
+                        <div className="flex-[1_0_0] overflow-hidden text-ellipsis text-sm font-normal not-italic leading-[22px] text-[color:var(--text-secondary,rgba(255,255,255,0.23))]">
+                            <input className="w-[260px] border-[none] bg-transparent outline-none"></input>
+                        </div>
+                        <button>
+                            <SearchIcon
+                                className="text-gray-50"
+                                width={20}
+                                height="100%"
+                            />
+                        </button>
+                    </div>
                 </div>
                 <button>
                     <Icon className="float-left" type="search" size={30} />

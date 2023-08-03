@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Icon } from "../Icon/Icon";
+import LockIcon from "/public/lock.svg";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -84,13 +84,11 @@ export default function ChatRoomBlock({
                                     chatRoomInfo.members.toString()}
                             </span>
                             <span className="top-[2.5px]e absolute items-center space-x-1">
-                                {chatRoomInfo.isLocked ? (
-                                    <Icon
-                                        className="inline-block "
-                                        type="lock"
-                                        size={20}
-                                    />
-                                ) : null}
+                                <LockIcon
+                                    width={15}
+                                    height="100%"
+                                    className="text-gray-50"
+                                />
                                 <span className="text-sans overflow-hidden text-ellipsis text-[13px] font-normal not-italic leading-[19px] text-[color:var(--text-tertiary,rgba(255,255,255,0.11))]">
                                     {chatRoomInfo.members.length}
                                 </span>
