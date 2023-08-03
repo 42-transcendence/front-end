@@ -4,45 +4,59 @@ import EditIcon from "/public/edit.svg";
 import SearchIcon from "/public/search.svg";
 import ChatRoomBlock from "./ChatRoomBlock";
 
-const chatRoomsDummy = [
+const chatRoomsDummy: {
+    id: number;
+    members: string[];
+    tag: string;
+    latestMessage: string;
+    nonReadYetMsgNum: number;
+    title?: string;
+    isLocked: boolean;
+}[] = [
     {
         id: 1,
-        member: "hdoo",
+        members: ["hdoo", "hdoo", "chanhpar", "iyun", "jkong"],
         tag: "#000011",
         latestMessage: "맛있는 돈까스가 먹고싶어요 난 등심이 좋더라..",
-        nonReadYet: true,
+        nonReadYetMsgNum: 0,
+        isLocked: true,
     },
     {
         id: 2,
-        member: "chanhpar",
+        members: ["chanhpar"],
         tag: "#000012",
         latestMessage: "옹옹엉양ㄹ오라ㅣㅁㄴ오맂다넝로미어ㅏ로미단로이머니",
         nonReadYetMsgNum: 10,
+        isLocked: true,
+        title: "Title!",
     },
     {
         id: 3,
-        member: "iyun",
+        members: ["iyun"],
         tag: "#000013",
         latestMessage: "I'm IU ,,>ㅅ<,,",
         nonReadYetMsgNum: 120,
+        isLocked: false,
     },
     {
         id: 4,
-        member: "jkong",
+        members: ["jkong"],
         tag: "#000014",
         latestMessage: "I'm Jkong!",
         nonReadYetMsgNum: 3,
+        isLocked: true,
     },
     {
         id: 5,
-        member: "jisookim",
+        members: ["jisookim"],
         tag: "#000015",
         latestMessage: "Hi I'm jisoo",
         nonReadYetMsgNum: 1029,
+        isLocked: false,
     },
 ];
 
-export default function ChatSideBar() {
+function ChatSideBarHeader() {
     return (
         <div>
             <div className="gradient-border float-left flex h-full shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-['']">
@@ -80,16 +94,30 @@ export default function ChatSideBar() {
                         </button>
                     </div>
                 </div>
+                <button>
+                    <Icon className="float-left" type="search" size={30} />
+                </button>
+            </div>
+        </div>
+    );
+}
 
-                {/* {chatRoomsDummy.map((elem) => (
+export default function ChatSideBar() {
+    const chatRoomList = chatRoomsDummy; // TODO: get chatRoomList from server
+    const chatRoomBlocklist = chatRoomList.map((chatRoomInfo) => (
+        <ChatRoomBlock key={chatRoomInfo.id} chatRoomInfo={chatRoomInfo} />
+    ));
 
-                    <ChatRoomBlock key={elem.id} {...elem}/>
-                ))} */}
-
-                <ChatRoomBlock />
-                <ChatRoomBlock />
-                <ChatRoomBlock />
-                <ChatRoomBlock />
+    return (
+        <div>
+            <div className="float-left flex h-full shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] p-4 backdrop-blur-[50px]">
+                <ChatSideBarHeader />
+                <ChatRoomSearch />
+                <>
+                    {" "}
+                    {/* div같은걸로 감싸는게 안낫나요? */}
+                    {chatRoomBlocklist}
+                </>
             </div>
         </div>
     );
