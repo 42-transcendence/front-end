@@ -36,11 +36,7 @@ export function ChatHeader({}): React.ReactElement {
                 </div>
             </div>
             <button>
-                <MembersIcon
-                    className="text-white/70"
-                    width={30}
-                    height="100%"
-                />
+                <Icon type="friend" size={15} className="float flex" />
             </button>
             {opened && <ContextMenu_Social profile={config} />}
         </div>
