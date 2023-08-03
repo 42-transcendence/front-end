@@ -10,7 +10,7 @@ function MessageInputArea() {
         <>
             <textarea
                 rows={1}
-                className="h-fit max-h-20 w-full resize-none bg-transparent text-[22px] outline-none"
+                className="max-w-10 h-fit max-h-20 w-full resize-none bg-transparent text-[22px] outline-none"
                 placeholder="Send a message"
             />
             <button type="button" onClick={handleClick}>
