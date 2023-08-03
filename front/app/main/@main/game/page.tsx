@@ -6,9 +6,9 @@ import { ChatDialog } from "@/components/Chat/ChatDialog";
 
 export default function GamePage() {
     return (
-        <main className="flex h-full w-full items-center justify-start bg-game">
-            <div className="flex h-full w-full shrink-0 flex-col items-center justify-start bg-black/30 p-32 backdrop-blur-[50px]">
-                <div className="flex flex-[1_0_0] flex-col items-center justify-start self-stretch px-2.5 ">
+        <div className="flex shrink-0 flex-col items-center justify-end justify-between gap-2.5 self-stretch p-2.5 backdrop-blur-[3px]">
+            <div className="flex shrink-0 flex-col items-center justify-center ">
+                <div className="flex flex-[1_0_0] flex-col items-center justify-between self-stretch px-2.5 py-[30px]">
                     {/* name tag */}
                     <div className="gameNameTag flex items-center gap-[250px] rounded-[50px] px-[106px] py-10 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
                         <div className="flex flex-col justify-center text-center text-2xl font-bold italic leading-[normal] text-white">

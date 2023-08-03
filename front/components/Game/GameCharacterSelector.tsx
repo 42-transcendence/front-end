@@ -63,7 +63,7 @@ const dummyData = {
 
 export default function CharacterSelector() {
     return (
-        <div className="flex h-[330px] w-fit items-center justify-end rounded-[32px] bg-white/30 px-4 py-3 shadow-[0px_8px_4px_0px_rgba(0,0,0,0.25)]">
+        <div className="flex h-[330px] w-[600px] items-center justify-end rounded-[32px] bg-white/30 px-4 py-3 shadow-[0px_8px_4px_0px_rgba(0,0,0,0.25)]">
             {/* left part */}
             {/* NOTE: WIP!!!!! 안쪼그라드게 만들기!! */}
 
