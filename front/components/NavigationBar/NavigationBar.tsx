@@ -60,7 +60,7 @@ export function NavigationBar({}): React.ReactElement {
 
     return (
         <>
-            <div className="relative flex h-16 w-full flex-row items-center justify-between bg-black/80 px-5 py-2.5 backdrop-blur-[20px] backdrop-brightness-100 dark:bg-priVar/30">
+            <div className="relative flex h-16 w-full flex-row items-center justify-between bg-black/80 px-5 py-2.5 backdrop-blur-[20px] backdrop-brightness-100 ">
                 <Link className="relative" href="/main">
                     <DoubleSharp
                         className="text-white drop-shadow-[0_0_0.3rem_#ffffff70]"
@@ -74,8 +74,8 @@ export function NavigationBar({}): React.ReactElement {
                     <Avatar
                         size={"w-10"}
                         accountId={1}
-                        className={"bg-white/30 dark:bg-black/30"}
-                    />
+                        className={"bg-white/30 "}
+                    />{" "}
                 </div>
             </div>
         </>
