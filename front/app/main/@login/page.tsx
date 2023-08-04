@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/Button/Button";
+import { LoginButton } from "@/components/Button/LoginButton";
 import DoubleSharp from "/public/doubleSharp.svg";
 import FtLogo from "/public/42logo.svg";
 import GoogleLogo from "/public/googleLogo.svg";
@@ -31,18 +31,18 @@ export default function LoginPage() {
                     />
                 </div>
                 <div className="relative flex h-[90%] w-fit flex-col items-center justify-center gap-1">
-                    <Button
-                        action={popup42Login}
+                    <LoginButton
+                        onClick={popup42Login}
                         icon={<FtLogo width={17} height="100%" />}
                     >
                         Sign in with 42
-                    </Button>
-                    <Button
-                        action={popupGoogleLogin}
+                    </LoginButton>
+                    <LoginButton
+                        onClick={popupGoogleLogin}
                         icon={<GoogleLogo width={17} height="100%" />}
                     >
                         Sign in with Google
-                    </Button>
+                    </LoginButton>
                 </div>
             </div>
         </main>

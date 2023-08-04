@@ -3,13 +3,13 @@
 import { useRef, useEffect } from "react";
 import React from "react";
 
-export function Button({
+export function LoginButton({
     children,
     icon,
-    action,
+    onClick,
 }: React.PropsWithChildren<{
     icon?: React.ReactElement | undefined;
-    action: (this: HTMLButtonElement, ev: MouseEvent) => void;
+    onClick: (this: HTMLButtonElement, ev: MouseEvent) => void;
 }>) {
     const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -18,12 +18,12 @@ export function Button({
 
         if (buttonElement === null) return;
 
-        buttonElement.addEventListener("click", action);
+        buttonElement.addEventListener("click", onClick);
 
         return () => {
-            buttonElement.removeEventListener("click", action);
+            buttonElement.removeEventListener("click", onClick);
         };
-    }, [action]);
+    }, [onClick]);
 
     return (
         <button
