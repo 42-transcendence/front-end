@@ -8,7 +8,7 @@ export default function StartBegin({ params }: { params: { src: string } }) {
     const [redirectURI, setRedirectURI] = useState<string>();
     useEffect(() => {
         const url = new URL(`https://back.stri.dev/auth/${params.src}`);
-        url.searchParams.set("redirect_uri", `https://front.stri.dev/auth`);
+        url.searchParams.set("redirect_uri", `${window.location.origin}/auth`);
         fetch(url).then((response) => {
             setStatus(response.status);
             if (response.ok) {
