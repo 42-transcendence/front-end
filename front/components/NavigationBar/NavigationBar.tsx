@@ -75,7 +75,7 @@ export function NavigationBar({}): React.ReactElement {
                         size={"w-10"}
                         accountId={1}
                         className={"bg-white/30 "}
-                    />{" "}
+                    />
                 </div>
             </div>
         </>
