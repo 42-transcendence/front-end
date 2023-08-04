@@ -1,8 +1,23 @@
 "use client";
 
-import { FtLoginButton } from "@/components/LoginButton/42LoginButton";
-import { GoogleLoginButton } from "@/components/LoginButton/GoogleLoginButton";
+import { Button } from "@/components/Button/Button";
 import DoubleSharp from "/public/doubleSharp.svg";
+import FtLogo from "/public/42logo.svg";
+import GoogleLogo from "/public/googleLogo.svg";
+
+function popup42Login() {
+    const url = new URL("https://front.stri.dev/auth/42");
+    const target = "42 Login";
+    const features = ["popup=true", "width=600", "height=600"].join(",");
+    window.open(url, target, features);
+}
+
+function popupGoogleLogin() {
+    const url = new URL("https://front.stri.dev/auth/google");
+    const target = "Google Login";
+    const features = ["popup=true", "width=600", "height=600"].join(",");
+    window.open(url, target, features);
+}
 
 export default function LoginPage() {
     return (
@@ -16,8 +31,18 @@ export default function LoginPage() {
                     />
                 </div>
                 <div className="relative flex h-[90%] w-fit flex-col items-center justify-center gap-1">
-                    <GoogleLoginButton />
-                    <FtLoginButton />
+                    <Button
+                        action={popup42Login}
+                        icon={<FtLogo width={17} height="100%" />}
+                    >
+                        Sign in with 42
+                    </Button>
+                    <Button
+                        action={popupGoogleLogin}
+                        icon={<GoogleLogo width={17} height="100%" />}
+                    >
+                        Sign in with Google
+                    </Button>
                 </div>
             </div>
         </main>
