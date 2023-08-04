@@ -5,19 +5,25 @@ import DoubleSharp from "/public/doubleSharp.svg";
 import FtLogo from "/public/42logo.svg";
 import GoogleLogo from "/public/googleLogo.svg";
 
-function popup42Login() {
-    const url = new URL("https://front.stri.dev/auth/42");
-    const target = "42 Login";
-    const features = ["popup=true", "width=600", "height=600"].join(",");
-    window.open(url, target, features);
-}
-
-function popupGoogleLogin() {
-    const url = new URL("https://front.stri.dev/auth/google");
-    const target = "Google Login";
-    const features = ["popup=true", "width=600", "height=600"].join(",");
-    window.open(url, target, features);
-}
+const popupFeatures = ["popup=true", "width=600", "height=600"].join(",");
+const loginList = [
+    {
+        key: "42",
+        logo: <FtLogo width={17} height="100%" />,
+        action: () => {
+            window.open("/auth/42", "42 Login", popupFeatures);
+        },
+        innerText: "Sign in with 42",
+    },
+    {
+        key: "google",
+        logo: <GoogleLogo width={17} height="100%" />,
+        action: () => {
+            window.open("/auth/google", "Google Login", popupFeatures);
+        },
+        innerText: "Sign in with Google",
+    },
+];
 
 export default function LoginPage() {
     return (
@@ -31,18 +37,15 @@ export default function LoginPage() {
                     />
                 </div>
                 <div className="relative flex h-[90%] w-fit flex-col items-center justify-center gap-1">
-                    <LoginButton
-                        onClick={popup42Login}
-                        icon={<FtLogo width={17} height="100%" />}
-                    >
-                        Sign in with 42
-                    </LoginButton>
-                    <LoginButton
-                        onClick={popupGoogleLogin}
-                        icon={<GoogleLogo width={17} height="100%" />}
-                    >
-                        Sign in with Google
-                    </LoginButton>
+                    {loginList.map((e) => (
+                        <LoginButton
+                            key={e.key}
+                            onClick={e.action}
+                            icon={e.logo}
+                        >
+                            {e.innerText}
+                        </LoginButton>
+                    ))}
                 </div>
             </div>
         </main>
