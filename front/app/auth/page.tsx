@@ -25,10 +25,6 @@ export default function AuthCallback() {
                         "refresh_token",
                         json.refresh_token,
                     );
-                    window.opener.postMessage(
-                        "OK",
-                        "*",
-                    );
                 });
             }
         });

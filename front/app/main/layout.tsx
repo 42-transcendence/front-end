@@ -9,23 +9,20 @@ export default function MainLayout({
     login: React.ReactNode;
     main: React.ReactNode;
 }) {
+    //TODO: 기존에 이미 인증된 상태(스토리지에 토큰이 있는 상태)라면 백으로 한번 보내서 검증시켜봐야 함.
     const [loggedin, setLoggedin] = useState<boolean>(false);
     useEffect(() => {
-        const receiveMessage = (event: MessageEvent) => {
-            console.log(event);
-            console.log(event.origin);
-            if (event.origin !== "https://front.stri.dev") return;
-
-            console.log(event.data);
-            if (event.data === "OK") {
+        const receiveMessage = (event: StorageEvent) => {
+            if (event.key === "access_token") {
+                //TODO: 토큰의 유효성 검증? 위의 로직과 겹칠 가능성이 있으므로 함수로 분리하는게 나을 수도
                 setLoggedin(true);
             }
         };
 
-        window.addEventListener("message", receiveMessage, false);
+        window.addEventListener("storage", receiveMessage);
 
         return () => {
-            window.removeEventListener("message", receiveMessage, false);
+            window.removeEventListener("storage", receiveMessage);
         };
     }, []);
 
