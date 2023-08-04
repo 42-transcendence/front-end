@@ -1,1 +1,1 @@
-export { TextField } from "./TextField";
+export { SearchBox } from "./SearchBox";
