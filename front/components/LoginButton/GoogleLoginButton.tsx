@@ -1,4 +1,5 @@
 "use client";
+
 import { useRef, useEffect } from "react";
 import GoogleLogo from "/public/googleLogo.svg";
 
@@ -10,25 +11,13 @@ export function GoogleLoginButton({}): React.ReactElement {
 
         if (buttonElement === null) return;
 
-        const url = new URL("https://accounts.google.com/gsi/select");
-        const params = new URLSearchParams({
-            client_id:
-                "990339570472-k6nqn1tpmitg8pui82bfaun3jrpmiuhs.apps.googleusercontent.com",
-            as: "PbXs9bDCM2TVCG7QFPY%2FBA",
-            channel_id:
-                "6452d8a3f9ee221df174e4dd671e46d81d580ec363f33016aa70433ad30c3b8c",
-            auto_select: "true",
-            ux_mode: "popup",
-            ui_mode: "card",
-            context: "signin",
-        });
-
-        url.search = params.toString();
-
-        const target = "Google Login";
-        const features = "popup=true, width=600, height=600";
-
         const popupLink = () => {
+            const url = new URL("https://front.stri.dev/auth/google");
+            const target = "Google Login";
+            const features = ["popup=true", "width=600", "height=600"].join(
+                ",",
+            );
+
             window.open(url, target, features);
         };
 
