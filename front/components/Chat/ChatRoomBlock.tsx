@@ -18,7 +18,7 @@ type AvatarProp = {
         | "in-game";
 };
 
-function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
+export function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
     return chatRoom.title
         ? chatRoom.title
         : chatRoom.members

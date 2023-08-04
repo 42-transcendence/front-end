@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from "react";
-import { Icon } from "../Icon/Icon";
 import { ContextMenu_Social } from "../ContextMenu/ContextMenu_Social";
 import { ProfileItemConfig } from "../ContextMenu";
 import SidebarIcon from "/public/sidebar.svg";
