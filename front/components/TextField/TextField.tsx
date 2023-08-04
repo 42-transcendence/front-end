@@ -1,54 +1,22 @@
-import PropTypes from "prop-types";
 import React from "react";
-import "./style.css";
+import SearchIcon from "/public/search.svg";
 
-interface Props {
-    value: string;
-    showCursor: boolean;
-    state: "hover" | "typing" | "idle" | "disabled";
-    shape: "pill" | "rounded-rect";
-    className: any;
-}
-
-export const TextField = ({
-    value = "Value",
-    showCursor = true,
-    state,
-    shape,
-    className,
-}: Props): JSX.Element => {
+export const TextField = ({}): JSX.Element => {
     return (
-        <div className={`text-field ${state} ${shape} ${className}`}>
-            {["disabled", "idle"].includes(state) && (
-                <div className="value">{value}</div>
-            )}
-
-            {["hover", "typing"].includes(state) && (
-                <>
-                    <div className="cursor-and-value">
-                        {state === "typing" && (
-                            <>
-                                <div className="text-wrapper">{value}</div>
-                                <>{showCursor && <div className="cursor" />}</>
-                            </>
-                        )}
-
-                        {state === "hover" && <div className="highlight" />}
-                    </div>
-                    <div className="clear-button">
-                        {state === "typing" && <div className="clear">􀆄</div>}
-
-                        {state === "hover" && <>{value}</>}
-                    </div>
-                </>
-            )}
+        <div className="shadow-3xl flex h-8 shrink-0 items-center gap-2 self-stretch rounded-xl bg-black/30 px-2 py-0">
+            <div className="flex h-8 w-[305px] shrink-0 items-center gap-2 self-stretch rounded-xl px-2 py-0 ">
+                {/* <Icon className="float-left" type="search" size={30} /> */}
+                <div className="flex-[1_0_0] overflow-hidden text-ellipsis text-sm font-normal not-italic leading-[22px] text-[color:var(--text-secondary,rgba(255,255,255,0.23))]">
+                    <input className="w-[260px] border-[none] bg-transparent outline-none"></input>
+                </div>
+                <button>
+                    <SearchIcon
+                        className="text-gray-50"
+                        width={20}
+                        height="100%"
+                    />
+                </button>
+            </div>
         </div>
     );
-};
-
-TextField.propTypes = {
-    value: PropTypes.string,
-    showCursor: PropTypes.bool,
-    state: PropTypes.oneOf(["hover", "typing", "idle", "disabled"]),
-    shape: PropTypes.oneOf(["pill", "rounded-rect"]),
 };
