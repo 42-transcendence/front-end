@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import SidebarIcon from "/public/sidebar.svg";
 import EditIcon from "/public/edit.svg";
-import ChatRoomBlock from "./ChatRoomBlock";
+import ChatRoomBlock, { getRoomDisplayTitle } from "./ChatRoomBlock";
 import { SearchBox } from "../TextField";
+import SearchIcon from "/public/search.svg";
+import { FzfHighlight, useFzf } from "react-fzf";
+import { TextField } from "../TextField/SearchBox";
 
 type User = {
     id: number;
@@ -61,6 +64,16 @@ export const chatRoomsDummy: ChatRoomInfo[] = [
 ];
 
 export default function ChatSideBar() {
+    const [query, setQuery] = useState("");
+    const { results, getFzfHighlightProps } = useFzf({
+        items: chatRoomsDummy,
+        itemToString(item) {
+            return getRoomDisplayTitle(item);
+        },
+        limit: 5,
+        query,
+    });
+
     return (
         <div>
             <div className="gradient-border float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-['']">
@@ -83,10 +96,22 @@ export default function ChatSideBar() {
                 </div>
 
                 {/* searchBar */}
-                <SearchBox />
+                <TextField
+                    value={query}
+                    placeholder="Search..."
+                    onChange={(event) => setQuery(event.target.value)}
+                >
+                    <button>
+                        <SearchIcon
+                            className="text-gray-50"
+                            width={20}
+                            height="100%"
+                        />
+                    </button>
+                </TextField>
 
                 <div>
-                    {chatRoomsDummy.map((room) => (
+                    {results.map((room) => (
                         <ChatRoomBlock key={room.id} chatRoom={room} />
                     ))}
                 </div>
