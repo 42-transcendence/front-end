@@ -12,22 +12,18 @@ export function FtLoginButton({}): React.ReactElement {
 
         if (buttonElement === null) return;
 
-        const popupLink = () => {
-            const url = new URL("https://front.stri.dev/auth/42");
-            const target = "42 Login";
-            const features = ["popup=true", "width=600", "height=600"].join(
-                ",",
-            );
+        const url = new URL("https://front.stri.dev/auth/42");
+        const target = "42 Login";
+        const features = ["popup=true", "width=600", "height=600"].join(",");
 
+        const popupLink = () => {
             window.open(url, target, features);
         };
 
         buttonElement.addEventListener("click", popupLink);
 
         return () => {
-            if (buttonElement !== null) {
-                buttonElement.removeEventListener("click", popupLink);
-            }
+            buttonElement.removeEventListener("click", popupLink);
         };
     }, []);
 

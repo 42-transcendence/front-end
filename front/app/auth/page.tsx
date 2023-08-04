@@ -15,8 +15,20 @@ export default function AuthCallback() {
         fetch(url).then((response) => {
             setStatus(response.status);
             if (response.ok) {
-                response.text().then((text) => {
-                    setToken(text);
+                response.json().then((json) => {
+                    setToken(JSON.stringify(json));
+                    window.localStorage.setItem(
+                        "access_token",
+                        json.access_token,
+                    );
+                    window.localStorage.setItem(
+                        "refresh_token",
+                        json.refresh_token,
+                    );
+                    window.opener.postMessage(
+                        "OK",
+                        "*",
+                    );
                 });
             }
         });

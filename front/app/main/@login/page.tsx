@@ -1,4 +1,5 @@
 "use client";
+
 import { FtLoginButton } from "@/components/LoginButton/42LoginButton";
 import { GoogleLoginButton } from "@/components/LoginButton/GoogleLoginButton";
 import DoubleSharp from "/public/doubleSharp.svg";
