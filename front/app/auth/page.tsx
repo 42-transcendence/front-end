@@ -16,7 +16,7 @@ export default function AuthCallback() {
             setStatus(response.status);
             if (response.ok) {
                 response.json().then((json) => {
-                    setToken(JSON.stringify(json));
+                    setToken(JSON.stringify(json)); // TODO: For debug - remove after
                     window.localStorage.setItem(
                         "access_token",
                         json.access_token,
