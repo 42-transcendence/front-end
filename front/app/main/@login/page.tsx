@@ -1,7 +1,29 @@
 "use client";
-import { FtLoginButton } from "@/components/LoginButton/42LoginButton";
-import { GoogleLoginButton } from "@/components/LoginButton/GoogleLoginButton";
+
+import { LoginButton } from "@/components/Button/LoginButton";
 import DoubleSharp from "/public/doubleSharp.svg";
+import FtLogo from "/public/42logo.svg";
+import GoogleLogo from "/public/googleLogo.svg";
+
+const popupFeatures = ["popup=true", "width=600", "height=600"].join(",");
+const loginList = [
+    {
+        key: "42",
+        logo: <FtLogo width={17} height="100%" />,
+        action: () => {
+            window.open("/auth/42", "42 Login", popupFeatures);
+        },
+        innerText: "Sign in with 42",
+    },
+    {
+        key: "google",
+        logo: <GoogleLogo width={17} height="100%" />,
+        action: () => {
+            window.open("/auth/google", "Google Login", popupFeatures);
+        },
+        innerText: "Sign in with Google",
+    },
+];
 
 export default function LoginPage() {
     return (
@@ -15,8 +37,15 @@ export default function LoginPage() {
                     />
                 </div>
                 <div className="relative flex h-[90%] w-fit flex-col items-center justify-center gap-1">
-                    <GoogleLoginButton />
-                    <FtLoginButton />
+                    {loginList.map((e) => (
+                        <LoginButton
+                            key={e.key}
+                            onClick={e.action}
+                            icon={e.logo}
+                        >
+                            {e.innerText}
+                        </LoginButton>
+                    ))}
                 </div>
             </div>
         </main>
