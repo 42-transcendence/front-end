@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import SidebarIcon from "/public/sidebar.svg";
 import EditIcon from "/public/edit.svg";
-import ChatRoomBlock, { getRoomDisplayTitle } from "./ChatRoomBlock";
+import ChatRoomBlock from "./ChatRoomBlock";
 import { SearchBox } from "../TextField";
 import SearchIcon from "/public/search.svg";
 import { FzfHighlight, useFzf } from "react-fzf";
@@ -12,6 +12,14 @@ type User = {
     name: string;
 };
 
+function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
+    return chatRoom.title
+        ? chatRoom.title
+        : chatRoom.members
+            .reduce((acc, member) => [...acc, member.name], [] as string[])
+            .join(", ");
+}
+
 const users = [
     { name: "chanhpar", id: 1 },
     { name: "jisookim", id: 1 },
@@ -21,7 +29,7 @@ const users = [
 export type ChatRoomInfo = {
     id: number;
     members: User[];
-    title?: string;
+    title?: any;
     latestMessage?: string;
     numberOfUnreadMessages: number;
 };
@@ -111,8 +119,22 @@ export default function ChatSideBar() {
                 </TextField>
 
                 <div>
-                    {results.map((room) => (
-                        <ChatRoomBlock key={room.id} chatRoom={room} />
+                    {results.map((item, index) => (
+                        <ChatRoomBlock
+                            key={item.id}
+                            chatRoom={{
+                                id: item.id,
+                                members: item.members,
+                                title: getFzfHighlightProps({
+                                    index,
+                                    item,
+                                    className: "text-yellow-500",
+                                }),
+                                latestMessage: item.latestMessage,
+                                numberOfUnreadMessages:
+                                    item.numberOfUnreadMessages,
+                            }}
+                        />
                     ))}
                 </div>
             </div>
