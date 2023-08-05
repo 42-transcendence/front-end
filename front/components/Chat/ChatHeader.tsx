@@ -12,7 +12,7 @@ const config: ProfileItemConfig = {
     statusMessage: "hello",
 };
 
-export function ChatHeader({}): React.ReactElement {
+export function ChatHeader() {
     const [opened, setOpened] = useState(false);
 
     return (

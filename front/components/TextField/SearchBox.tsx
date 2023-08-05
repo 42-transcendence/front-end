@@ -1,7 +1,7 @@
 import React from "react";
 
-import { useState } from "react";
-import { chatRoomsDummy } from "../Chat/ChatSideBar";
+// import { useState } from "react";
+// import { chatRoomsDummy } from "../Chat/ChatSideBar";
 
 export function TextField({
     children,
@@ -13,7 +13,7 @@ export function TextField({
     value: string;
     placeholder?: string | undefined;
     onChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
-}): React.ReactElement {
+}) {
     // TODO: reconsider children position or purpose?
     return (
         <div className="shadow-3xl relative flex h-8 shrink-0 items-center justify-between gap-2 self-stretch rounded-xl bg-black/30 px-2 py-[5px]">
@@ -33,7 +33,7 @@ export function TextField({
     );
 }
 
-export function SearchBox({}): React.ReactElement {
+export function SearchBox() {
     return (
         <div className="shadow-3xl relative flex h-8 shrink-0 items-center justify-between gap-2 self-stretch rounded-xl bg-black/30 px-2 py-[5px]">
             <div className="relative flex h-fit shrink-0 items-center justify-start gap-2 self-stretch rounded-xl px-2 py-0 ">

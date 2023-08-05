@@ -1,27 +1,27 @@
 "use client";
 import React, { ReactNode } from "react";
 import LockIcon from "/public/lock.svg";
-import Image from "next/image";
-import { useState } from "react";
+// import Image from "next/image";
+// import { useState } from "react";
 import { ChatRoomInfo } from "./ChatSideBar";
 import { Avatar } from "../Avatar";
 
-type AvatarProp = {
-    profileImage: string;
-    userStatus:
-        | "online"
-        | "invisible"
-        | "offline"
-        | "idle"
-        | "matching"
-        | "do-not-disturb"
-        | "in-game";
-};
+// type AvatarProp = {
+//     profileImage: string;
+//     userStatus:
+//     | "online"
+//     | "invisible"
+//     | "offline"
+//     | "idle"
+//     | "matching"
+//     | "do-not-disturb"
+//     | "in-game";
+// };
 
-const dummyAvatar: AvatarProp = {
-    profileImage: "/jisookim.png",
-    userStatus: "in-game",
-};
+// const dummyAvatar: AvatarProp = {
+//     profileImage: "/jisookim.png",
+//     userStatus: "in-game",
+// };
 
 export default function ChatRoomBlock({
     children,
@@ -30,12 +30,6 @@ export default function ChatRoomBlock({
     children: ReactNode;
     chatRoom: ChatRoomInfo;
 }) {
-    const [messageCount, setMessageCount] = useState(1);
-
-    function addMessageCount() {
-        setMessageCount(messageCount + 1);
-    }
-
     const numberOfUnreadMessages =
         chatRoom.numberOfUnreadMessages > 999 ? (
             <div className="flex flex-col items-center justify-center rounded-[100px] bg-red-500 p-0.5 px-1">
