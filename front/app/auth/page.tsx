@@ -8,15 +8,23 @@ export default function AuthCallback() {
     const [status, setStatus] = useState<number>();
     const [token, setToken] = useState<string>();
     useEffect(() => {
-        const url = new URL("https://back.stri.dev/auth/callback");
+        const url = new URL(`https://back.stri.dev/auth/callback`);
         for (const [key, val] of searchParams) {
             url.searchParams.append(key, val);
         }
         fetch(url).then((response) => {
             setStatus(response.status);
             if (response.ok) {
-                response.text().then((text) => {
-                    setToken(text);
+                response.json().then((json) => {
+                    setToken(JSON.stringify(json)); // TODO: For debug - remove after
+                    window.localStorage.setItem(
+                        "access_token",
+                        json.access_token,
+                    );
+                    window.localStorage.setItem(
+                        "refresh_token",
+                        json.refresh_token,
+                    );
                 });
             }
         });
@@ -27,7 +35,9 @@ export default function AuthCallback() {
             <p>Authorization Code: {searchParams.get("code")}</p>
             <p>State: {searchParams.get("state")}</p>
             <p>
-                {status === undefined ? "로오딩..." : status === 200
+                {status === undefined
+                    ? "로오딩..."
+                    : status === 200
                     ? "성공했습니다!"
                     : `실패했습니다... ${status}`}
             </p>
