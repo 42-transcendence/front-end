@@ -14,7 +14,7 @@ import Chat from "/public/chat.svg";
 import Chatfilled from "/public/chatfilled.svg";
 
 function SocialButton() {
-    const [showModal, setShowModal] = useState(false);
+    const [showModal, setShowModal] = useState(true);
     const handleClick = () => setShowModal(!showModal);
 
     const mainNode = document.querySelector("main");

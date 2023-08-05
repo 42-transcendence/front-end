@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { ChatRoomInfo } from "./ChatSideBar";
 import { Avatar } from "../Avatar";
+import { FzfHighlight } from "react-fzf";
 
 type AvatarProp = {
     profileImage: string;
@@ -17,14 +18,6 @@ type AvatarProp = {
         | "do-not-disturb"
         | "in-game";
 };
-
-export function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
-    return chatRoom.title
-        ? chatRoom.title
-        : chatRoom.members
-            .reduce((acc, member) => [...acc, member.name], [] as string[])
-            .join(", ");
-}
 
 const dummyAvatar: AvatarProp = {
     profileImage: "/jisookim.png",
@@ -79,7 +72,7 @@ export default function ChatRoomBlock({
                     <div className="flex flex-col items-start">
                         <div className="text-sans flex h-4 flex-row text-ellipsis text-[17px] font-normal not-italic leading-6 text-white/80">
                             <span className="truncate text-ellipsis pr-2">
-                                {getRoomDisplayTitle(chatRoom)}
+                                <FzfHighlight {...chatRoom.title} />
                             </span>
                             <span className="top-[2.5px] items-center space-x-1">
                                 <LockIcon
