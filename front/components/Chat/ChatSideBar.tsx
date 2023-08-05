@@ -29,7 +29,7 @@ const users = [
 export type ChatRoomInfo = {
     id: number;
     members: User[];
-    title?: any;
+    title?: string | undefined;
     latestMessage?: string;
     numberOfUnreadMessages: number;
 };
@@ -120,21 +120,15 @@ export default function ChatSideBar() {
 
                 <div>
                     {results.map((item, index) => (
-                        <ChatRoomBlock
-                            key={item.id}
-                            chatRoom={{
-                                id: item.id,
-                                members: item.members,
-                                title: getFzfHighlightProps({
+                        <ChatRoomBlock key={item.id} chatRoom={item}>
+                            <FzfHighlight
+                                {...getFzfHighlightProps({
                                     index,
                                     item,
                                     className: "text-yellow-500",
-                                }),
-                                latestMessage: item.latestMessage,
-                                numberOfUnreadMessages:
-                                    item.numberOfUnreadMessages,
-                            }}
-                        />
+                                })}
+                            />
+                        </ChatRoomBlock>
                     ))}
                 </div>
             </div>
