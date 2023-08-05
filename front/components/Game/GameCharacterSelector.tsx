@@ -1,54 +1,43 @@
 import Image from "next/image";
-import { Icon } from "../Icon/Icon";
+// import { Icon } from "../Icon/Icon";
+
+const gameCharacters = [
+    {
+        name: "cat",
+        src: "/jisookim.png",
+    },
+    {
+        name: "golden retriever",
+        src: "/jkong.png",
+    },
+    {
+        name: "tibet fox",
+        src: "/chanhpar.png",
+    },
+    {
+        name: "gazel",
+        src: "/iyun.png",
+    },
+    {
+        name: "shaggy dog",
+        src: "/hdoo.png",
+    },
+];
 
 export function CharacterSelectBar() {
     return (
         <div className="w-30 h-30 box-border flex items-start justify-between rounded-[14px] bg-black/30 p-4">
-            <button className="m-1">
-                <Image
-                    className="bg-black/50"
-                    src={"/jisookim.png"}
-                    alt="playerSelector"
-                    width="50"
-                    height="50"
-                />
-            </button>
-            <button className="m-1">
-                <Image
-                    className="bg-black/50"
-                    src={"/jkong.png"}
-                    alt="playerSelector"
-                    width="50"
-                    height="50"
-                />
-            </button>
-            <button className="m-1">
-                <Image
-                    className="bg-black/50"
-                    src={"/chanhpar.png"}
-                    alt="playerSelector"
-                    width="50"
-                    height="50"
-                />
-            </button>
-            <button className="m-1">
-                <Image
-                    className="box-content bg-black/50"
-                    src={"/iyun.png"}
-                    alt="playerSelector"
-                    width="50"
-                    height="50"
-                />
-            </button>
-            <button className="m-1">
-                <Image
-                    className="bg-black/50"
-                    src={"/hdoo.png"}
-                    alt="playerSelector"
-                    width="50"
-                    height="50"
-                />
-            </button>
+            {gameCharacters.map((gameCharacter) => (
+                <button key={gameCharacter.name} className="m-1">
+                    <Image
+                        className="box-content bg-black/50"
+                        src={gameCharacter.src}
+                        alt={gameCharacter.name}
+                        width="50"
+                        height="50"
+                    />
+                </button>
+            ))}
         </div>
     );
 }
