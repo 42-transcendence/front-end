@@ -1,8 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { /* useContext, */ useState } from "react";
 import SidebarIcon from "/public/sidebar.svg";
 import EditIcon from "/public/edit.svg";
 import ChatRoomBlock from "./ChatRoomBlock";
-import { SearchBox } from "../TextField";
+// import { SearchBox } from "../TextField";
 import SearchIcon from "/public/search.svg";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField/SearchBox";
@@ -11,6 +11,10 @@ type User = {
     id: number;
     name: string;
 };
+
+// TODO: displaytitle을 front-end에서 직접 정하는게 아니라, 백엔드에서 없으면
+// 동일 로직으로 타이틀을 만들어서 프론트에 넘겨주고, 프론트에선 타이틀을 항상
+// 존재하는 프로퍼티로 추후 변경할 수도
 
 function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
     return chatRoom.title
@@ -26,6 +30,7 @@ const users = [
     { name: "", id: 1 },
     { name: "hdoo", id: 1 },
 ];
+
 export type ChatRoomInfo = {
     id: number;
     members: User[];

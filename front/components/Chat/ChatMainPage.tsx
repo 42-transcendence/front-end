@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-undef */
-import { Icon } from "../Icon/Icon";
+// import { Icon } from "../Icon/Icon";
 import { ChatHeader as ChatHeader } from "./ChatHeader";
 import { ChatDialog as ChatDialog } from "./ChatDialog";
 

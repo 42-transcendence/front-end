@@ -27,7 +27,7 @@ export function ChatDialog({
 }: {
     rounded: string;
     width: string;
-}): React.ReactElement {
+}) {
     return (
         <div
             className={`${width} flex min-h-[200px] flex-[1_0_0%] flex-col items-start justify-end gap-4 self-stretch`}
