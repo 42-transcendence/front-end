@@ -1,11 +1,10 @@
 "use client";
-import React from "react";
+import React, { ReactNode } from "react";
 import LockIcon from "/public/lock.svg";
 import Image from "next/image";
 import { useState } from "react";
 import { ChatRoomInfo } from "./ChatSideBar";
 import { Avatar } from "../Avatar";
-import { FzfHighlight } from "react-fzf";
 
 type AvatarProp = {
     profileImage: string;
@@ -25,8 +24,10 @@ const dummyAvatar: AvatarProp = {
 };
 
 export default function ChatRoomBlock({
+    children,
     chatRoom,
 }: {
+    children: ReactNode;
     chatRoom: ChatRoomInfo;
 }) {
     const [messageCount, setMessageCount] = useState(1);
@@ -50,6 +51,7 @@ export default function ChatRoomBlock({
             </div>
         ) : null;
 
+    console.log(chatRoom.title);
     return (
         <>
             {/* for spacing */}
@@ -72,7 +74,7 @@ export default function ChatRoomBlock({
                     <div className="flex flex-col items-start">
                         <div className="text-sans flex h-4 flex-row text-ellipsis text-[17px] font-normal not-italic leading-6 text-white/80">
                             <span className="truncate text-ellipsis pr-2">
-                                <FzfHighlight {...chatRoom.title} />
+                                {children}
                             </span>
                             <span className="top-[2.5px] items-center space-x-1">
                                 <LockIcon
