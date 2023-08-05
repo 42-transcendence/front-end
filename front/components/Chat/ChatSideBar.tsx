@@ -17,11 +17,12 @@ type User = {
 // 존재하는 프로퍼티로 추후 변경할 수도
 
 function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
-    return chatRoom.title
-        ? chatRoom.title
-        : chatRoom.members
+    return (
+        chatRoom.title ??
+        chatRoom.members
             .reduce((acc, member) => [...acc, member.name], [] as string[])
-            .join(", ");
+            .join(", ")
+    );
 }
 
 const users = [

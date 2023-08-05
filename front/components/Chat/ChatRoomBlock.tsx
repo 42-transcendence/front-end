@@ -31,16 +31,12 @@ export default function ChatRoomBlock({
     chatRoom: ChatRoomInfo;
 }) {
     const numberOfUnreadMessages =
-        chatRoom.numberOfUnreadMessages > 999 ? (
+        chatRoom.numberOfUnreadMessages > 0 ? (
             <div className="flex flex-col items-center justify-center rounded-[100px] bg-red-500 p-0.5 px-1">
                 <div className="flex text-center text-[12px] text-base font-thin not-italic leading-[normal] text-white ">
-                    999+
-                </div>
-            </div>
-        ) : chatRoom.numberOfUnreadMessages > 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[100px] bg-red-500 p-0.5 px-1">
-                <div className="flex text-center text-[12px] text-base font-thin not-italic leading-[normal] text-white ">
-                    {chatRoom.numberOfUnreadMessages.toString()}
+                    {chatRoom.numberOfUnreadMessages > 999
+                        ? "999+"
+                        : chatRoom.numberOfUnreadMessages.toString()}
                 </div>
             </div>
         ) : null;
