@@ -21,10 +21,20 @@ function MessageInputArea() {
     );
 }
 
-export function Dialog({}): React.ReactElement {
+export function ChatDialog({
+    rounded,
+    width,
+}: {
+    rounded: string;
+    width: string;
+}) {
     return (
-        <div className="flex flex-[1_0_0%] flex-col items-start justify-end gap-4 self-stretch p-4 ">
-            <div className="flex h-full w-full flex-[1_0_0%] flex-col items-center justify-end rounded-xl bg-black/30 p-4">
+        <div
+            className={`${width} flex min-h-[200px] flex-[1_0_0%] flex-col items-start justify-end gap-4 self-stretch`}
+        >
+            <div
+                className={`${rounded} flex h-full w-full flex-[1_0_0%] flex-col items-center justify-end bg-black/30 p-4`}
+            >
                 {/* TODO: add 말풍선 */}
                 <div className="flex flex-col items-center justify-center self-stretch">
                     <div className="flex w-full max-w-[640px] flex-[1_0_0%] items-center rounded-xl bg-black/30 px-5 py-0">

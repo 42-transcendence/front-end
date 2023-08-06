@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from "react";
-import { Icon } from "../Icon/Icon";
 import { ContextMenu_Social } from "../ContextMenu/ContextMenu_Social";
 import { ProfileItemConfig } from "../ContextMenu";
 import SidebarIcon from "/public/sidebar.svg";
@@ -13,7 +12,7 @@ const config: ProfileItemConfig = {
     statusMessage: "hello",
 };
 
-export function ChatHeader({}): React.ReactElement {
+export function ChatHeader() {
     const [opened, setOpened] = useState(false);
 
     return (
@@ -38,7 +37,7 @@ export function ChatHeader({}): React.ReactElement {
             <button>
                 <MembersIcon
                     className="text-white/70"
-                    width={30}
+                    width={42}
                     height="100%"
                 />
             </button>

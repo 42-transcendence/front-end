@@ -22,10 +22,14 @@ module.exports = {
                 iconPrimary: "rgb(230 230 230 / <alpha-value>)",
                 darker: "color-mix(in srgb, #000000 8%, #d6d6d6 45%)",
             },
+
             animation: {
                 "spin-slow": "spin 2s ease-in-out infinite",
             },
-            backgroundImage: {},
+            backgroundImage: {
+                game: "url(/background_game.jpg)",
+                main: "url(/background_main.jpg)",
+            },
         },
     },
     plugins: [],
