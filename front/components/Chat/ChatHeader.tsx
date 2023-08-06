@@ -29,7 +29,7 @@ export function ChatHeader() {
                         height={48}
                     />
                 </button>
-                <div className="flex items-center justify-center gap-2.5 text-base backdrop-blur-[50px]">
+                <div className="flex items-center justify-center gap-2.5 text-base">
                     <div className="flex flex-col items-center justify-center px-4 py-0">
                         <div className="text-center text-[17px] font-bold not-italic leading-[18px] text-white/70">
                             chatting room
