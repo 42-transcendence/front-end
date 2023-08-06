@@ -1,7 +1,11 @@
 "use client";
 import React from "react";
 import SendIcon from "/public/send.svg";
-import { ChatBubble, ChatBubbleRight } from "./ChatBubble";
+import {
+    ChatBubble,
+    ChatBubbleRight,
+    ChatBubbleWithProfile,
+} from "./ChatBubble";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -50,21 +54,26 @@ function MessageInputArea() {
 }
 
 export function ChatDialog({
-    rounded,
-    width,
+    outerFrame,
+    innerFrame,
 }: {
-    rounded: string;
-    width: string;
+    outerFrame: string;
+    innerFrame: string;
 }) {
     return (
         <div
-            className={`${width} flex min-h-[200px] flex-auto flex-col items-start justify-end gap-4 self-stretch`}
+            className={`${outerFrame} flex flex-auto flex-col items-start justify-end gap-4 self-stretch`}
         >
             <div
-                className={`${rounded} flex h-full w-full flex-col  items-start justify-end gap-4 bg-black/30 p-4`}
+                className={`${innerFrame} flex h-full w-full flex-col  items-start justify-end gap-4 bg-black/30 p-4`}
             >
-                <ChatBubbleRight />
-                <ChatBubble />
+                <div className="w-full overflow-auto">
+                    <ChatBubbleWithProfile />
+                    <ChatBubbleWithProfile />
+                    <ChatBubbleWithProfile />
+                    <ChatBubbleWithProfile />
+                    <ChatBubbleRight />
+                </div>
                 {/* TODO: add 말풍선 */}
                 <div className="flex flex-grow flex-col items-center justify-end self-stretch">
                     <div className="group flex w-full max-w-[640px] items-center rounded-xl bg-black/30 p-4">
