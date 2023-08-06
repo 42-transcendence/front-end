@@ -19,9 +19,9 @@ function MessageInputArea() {
             ></textarea>
             <button type="button" onClick={handleClick}>
                 <SendIcon
-                    className="text-gray-300/50"
-                    width={20}
-                    height="100%"
+                    className="rounded-md p-2 text-gray-300/50 group-focus-within:bg-secondary/50 group-focus-within:text-white/80"
+                    width={32}
+                    height={32}
                 />
             </button>
         </>
@@ -44,7 +44,7 @@ export function ChatDialog({
             >
                 {/* TODO: add 말풍선 */}
                 <div className="flex flex-col items-center justify-center self-stretch">
-                    <div className="flex w-full max-w-[640px] flex-[1_0_0%] items-center rounded-xl bg-black/30 p-4">
+                    <div className="group group flex w-full max-w-[640px] flex-[1_0_0%] items-center rounded-xl bg-black/30 p-4">
                         <MessageInputArea />
                     </div>
                 </div>
