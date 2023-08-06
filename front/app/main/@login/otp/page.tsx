@@ -20,17 +20,19 @@ import {
 //     )
 // }
 //
+
 function useNextInputField(): [
     React.RefObject<HTMLInputElement>,
     string,
     React.ChangeEventHandler<HTMLInputElement>,
-    ] {
+] {
     const ref = useRef<HTMLInputElement>(null);
     const [value, setValue] = useState("");
     const handleInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(e.target.value);
+        const replacedValue = e.target.value.replace(/[^0-9]*/g,"")
+        setValue(replacedValue);
 
-        if (e.target.value !== "") {
+        if (replacedValue !== "") {
             ref.current?.focus();
         }
     };
@@ -75,12 +77,16 @@ export default function LoginPage() {
                     {/* TODO: 나중에 컴포넌트로 빼야 함! 근데 생각해보니.. 굳이..? 6개밖에 안쓸텐데... 흠..*/}
                     <div className="flex items-start gap-2 pt-14">
                         <input
+                            inputMode="numeric"
+                            type="text"
                             value={value1}
                             onChange={handleInputValue1}
                             maxLength={1}
                             className="ultra-dark flex h-12 w-12 rounded text-center opacity-80"
                         ></input>
                         <input
+                            inputMode="numeric"
+                            type="text"
                             ref={ref1}
                             value={value2}
                             onChange={handleInputValue2}
@@ -88,6 +94,8 @@ export default function LoginPage() {
                             className="ultra-dark flex h-12 w-12 rounded text-center opacity-80"
                         ></input>
                         <input
+                            inputMode="numeric"
+                            type="text"
                             ref={ref2}
                             value={value3}
                             onChange={handleInputValue3}
@@ -95,6 +103,8 @@ export default function LoginPage() {
                             className="ultra-dark flex h-12 w-12 rounded text-center opacity-80"
                         ></input>
                         <input
+                            inputMode="numeric"
+                            type="text"
                             ref={ref3}
                             value={value4}
                             onChange={handleInputValue4}
@@ -102,6 +112,8 @@ export default function LoginPage() {
                             className="ultra-dark flex h-12 w-12 rounded text-center opacity-80"
                         ></input>
                         <input
+                            inputMode="numeric"
+                            type="text"
                             ref={ref4}
                             value={value5}
                             onChange={handleInputValue5}
@@ -109,6 +121,8 @@ export default function LoginPage() {
                             className="ultra-dark flex h-12 w-12 rounded text-center opacity-80"
                         ></input>
                         <input
+                            inputMode="numeric"
+                            type="text"
                             ref={ref5}
                             value={value6}
                             onChange={handleInputValue6}
