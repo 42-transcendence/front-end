@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import SendIcon from "/public/send.svg";
+import { ChatBubble } from "./ChatBubble";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -60,8 +61,9 @@ export function ChatDialog({
             className={`${width} flex min-h-[200px] flex-auto flex-col items-start justify-end gap-4 self-stretch`}
         >
             <div
-                className={`${rounded} flex h-full w-full flex-col items-center justify-end bg-black/30 p-4`}
+                className={`${rounded} flex h-full w-full flex-col items-start justify-end bg-black/30 p-4`}
             >
+                <ChatBubble />
                 {/* TODO: add 말풍선 */}
                 <div className="flex flex-grow flex-col items-center justify-end self-stretch">
                     <div className="group flex w-full max-w-[640px] items-center rounded-xl bg-black/30 p-4">
