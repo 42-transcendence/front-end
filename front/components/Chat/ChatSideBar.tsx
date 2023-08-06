@@ -1,8 +1,7 @@
-import React, { /* useContext, */ useState } from "react";
+import React, { useState } from "react";
 import SidebarIcon from "/public/sidebar.svg";
 import EditIcon from "/public/edit.svg";
 import ChatRoomBlock from "./ChatRoomBlock";
-// import { SearchBox } from "../TextField";
 import SearchIcon from "/public/search.svg";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField/SearchBox";

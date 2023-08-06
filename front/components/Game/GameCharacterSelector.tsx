@@ -1,5 +1,4 @@
 import Image from "next/image";
-// import { Icon } from "../Icon/Icon";
 
 const gameCharacters = [
     {
