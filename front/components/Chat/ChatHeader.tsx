@@ -14,7 +14,7 @@ const config: ProfileItemConfig = {
 
 export function ChatHeader() {
     return (
-        <details className="m-6 flex select-none flex-col  justify-between self-stretch">
+        <details className="m-6 flex h-12 select-none flex-col justify-between self-stretch overflow-hidden transition-all duration-500 open:h-72">
             <summary className="flex flex-row justify-between">
                 <button>
                     <SidebarIcon
