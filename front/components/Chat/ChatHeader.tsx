@@ -3,6 +3,7 @@ import React from "react";
 import { ProfileItemConfig } from "../ContextMenu";
 import SidebarIcon from "/public/sidebar.svg";
 import MembersIcon from "/public/members.svg";
+import HamburgerIcon from "/public/hamburger.svg";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 
 const config: ProfileItemConfig = {
@@ -18,7 +19,12 @@ export function ChatHeader() {
             <summary className="flex flex-row justify-between">
                 <button>
                     <SidebarIcon
-                        className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
+                        className="hidden rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80 lg:block"
+                        width={48}
+                        height={48}
+                    />
+                    <HamburgerIcon
+                        className="rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
                         width={48}
                         height={48}
                     />

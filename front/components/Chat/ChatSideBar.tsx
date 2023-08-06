@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import SidebarIcon from "/public/sidebar.svg";
+import HamburgerIcon from "/public/hamburger.svg";
 import EditIcon from "/public/edit.svg";
-import ChatRoomBlock from "./ChatRoomBlock";
 import SearchIcon from "/public/search.svg";
+import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField/SearchBox";
 
@@ -88,7 +89,7 @@ export default function ChatSideBar() {
     });
 
     return (
-        <div className="select-none text-gray-200/80 ">
+        <div className="hidden select-none text-gray-200/80 lg:block">
             <div className="gradient-border float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-['']">
                 <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
                     <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
@@ -98,7 +99,12 @@ export default function ChatSideBar() {
                         </p>
                     </div>
                     <SidebarIcon
-                        className="rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80"
+                        className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:block"
+                        width={48}
+                        height={48}
+                    />
+                    <HamburgerIcon
+                        className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
                         width={48}
                         height={48}
                     />
