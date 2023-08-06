@@ -1,5 +1,24 @@
+import { Avatar } from "../Avatar";
 import ChatBubbleTail from "/public/chat_bubble_tail.svg";
 import ChatBubbleTailRight from "/public/chat_bubble_tail_right.svg";
+
+export function ChatBubbleWithProfile() {
+    return (
+        <div className="relative flex flex-row pl-16 pt-6">
+            <Avatar
+                className="absolute left-0 top-0"
+                size={"w-12 h-12"}
+                accountId={1}
+            />
+            <div>
+                {
+                    // account.username
+                }
+            </div>
+            <ChatBubble />
+        </div>
+    );
+}
 
 export function ChatBubble({ children }: React.PropsWithChildren) {
     return (
