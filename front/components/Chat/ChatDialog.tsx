@@ -1,12 +1,11 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SendIcon from "/public/send.svg";
 
 function MessageInputArea() {
     const handleClick = () => {
         console.log("heello");
     };
-
     return (
         <>
             <textarea
@@ -19,7 +18,7 @@ function MessageInputArea() {
             ></textarea>
             <button type="button" onClick={handleClick}>
                 <SendIcon
-                    className="rounded-md p-2 text-gray-300/50 group-focus-within:bg-secondary/50 group-focus-within:text-white/80"
+                    className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
                     width={32}
                     height={32}
                 />
@@ -52,3 +51,6 @@ export function ChatDialog({
         </div>
     );
 }
+
+//absolute p-1 rounded-md md:bottom-3 md:p-2 md:right-3 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent right-2 disabled:text-gray-400 enabled:bg-brand-purple text-white bottom-1.5 transition-colors disabled:opacity-40
+//absolute p-1 rounded-md md:bottom-3 md:p-2 md:right-3 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent right-2 disabled:text-gray-400 enabled:bg-brand-purple text-white bottom-1.5 transition-colors disabled:opacity-40
