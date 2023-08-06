@@ -1,6 +1,7 @@
 "use client";
 import React, { ReactNode } from "react";
 import LockIcon from "/public/lock.svg";
+import PersonIcon from "/public/person.svg";
 import { ChatRoomInfo } from "./ChatSideBar";
 import { Avatar } from "../Avatar";
 
@@ -13,21 +14,18 @@ export default function ChatRoomBlock({
 }) {
     const numberOfUnreadMessages =
         chatRoom.numberOfUnreadMessages > 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[100px] bg-red-500 p-0.5 px-1">
-                <div className="flex text-center text-[12px] text-base font-thin not-italic leading-[normal] text-white ">
+            <div className="flex min-w-[22px] flex-col items-center justify-center rounded-[100px] bg-red-500 px-1 py-0.5">
+                <span className="flex text-center font-thin not-italic text-white ">
                     {chatRoom.numberOfUnreadMessages > 999
                         ? "999+"
                         : chatRoom.numberOfUnreadMessages.toString()}
-                </div>
+                </span>
             </div>
         ) : null;
 
     console.log(chatRoom.title);
     return (
         <>
-            {/* for spacing */}
-            <div className="invisible flex border-4"></div>
-
             {/* chatrooms - image */}
             <div className="flex h-fit shrink-0 items-center gap-4 self-stretch overflow-hidden">
                 <div className="flex items-center justify-center gap-2.5">
@@ -41,32 +39,36 @@ export default function ChatRoomBlock({
                 </div>
 
                 {/* chatrooms - info */}
-                <div className="flex h-16 flex-[1_0_0] items-center justify-between overflow-hidden py-2 pl-0 pr-3">
-                    <div className="flex flex-col items-start">
-                        <div className="text-sans flex h-4 flex-row text-ellipsis text-[17px] font-normal not-italic leading-6 text-white/80">
-                            <span className="truncate text-ellipsis pr-2">
+                <div className="flex h-fit w-full justify-between gap-4 py-2 pl-0 pr-4">
+                    <div className="h-16 p-0">
+                        <div className="flex h-8 flex-row items-center gap-2">
+                            <span className="line-clamp-1 text-ellipsis text-[16px] leading-4 text-gray-50/80">
                                 {children}
                             </span>
-                            <span className="top-[2.5px] items-center space-x-1">
+                            <span className="flex h-fit w-fit shrink-0 flex-row gap-1">
                                 <LockIcon
-                                    width={12}
-                                    height="100%"
-                                    className="text-gray-200"
+                                    width="100%"
+                                    height={12}
+                                    className="text-yellow-200/70"
                                 />
-                                <span className="text-sans overflow-hidden text-ellipsis text-[13px] font-normal not-italic leading-[19px] text-[color:var(--text-tertiary,rgba(255,255,255,0.11))]">
-                                    {chatRoom.members.length}
-                                </span>
                             </span>
                         </div>
 
-                        <div className="text-sans h-8 max-w-[160px] overflow-hidden truncate text-[13px] font-normal not-italic text-white/30">
+                        <div className="line-clamp-2 h-fit text-ellipsis font-sans text-xs font-normal text-gray-200">
                             {chatRoom.latestMessage ?? ""}
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-end gap-2 self-stretch">
-                        <div className="text-sans overflow-hidden text-ellipsis text-right text-[13px] font-normal not-italic leading-[18px] text-[color:var(--text-secondary,rgba(255,255,255,0.23))]">
-                            12월 30일
+                    <div className="relative flex flex-col items-end gap-4 text-xs leading-3">
+                        <div className="flex shrink-0 flex-row gap-1">
+                            <PersonIcon
+                                width={12}
+                                height={12}
+                                className="text-gray-200/70"
+                            />
+                            <span className="text-[12px] leading-3 text-gray-50/50">
+                                {chatRoom.members.length}
+                            </span>
                         </div>
                         {numberOfUnreadMessages}
                     </div>

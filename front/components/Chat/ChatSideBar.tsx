@@ -123,7 +123,7 @@ export default function ChatSideBar() {
                     </button>
                 </TextField>
 
-                <div>
+                <div className="flex w-full flex-col gap-2">
                     {results.map((item, index) => (
                         <ChatRoomBlock key={item.id} chatRoom={item}>
                             <FzfHighlight
