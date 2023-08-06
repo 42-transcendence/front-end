@@ -90,21 +90,21 @@ export default function ChatSideBar() {
     return (
         <div>
             <div className="gradient-border float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-['']">
-                <div className="flex h-16 shrink-0 items-center justify-between self-stretch px-2 py-4">
-                    <div className="flex items-center gap-2 self-stretch rounded-md">
+                <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch px-2">
+                    <div className="flex h-12 items-center gap-2 rounded-md p-2 hover:bg-primary/30 active:bg-secondary/80">
                         <EditIcon
-                            className="text-gray-50"
-                            width={22}
-                            height="100%"
+                            className="text-gray-200/80"
+                            width={17}
+                            height={17}
                         />
-                        <p className="font-sans text-2xl leading-4 text-gray-50 ">
-                            Chat
+                        <p className="select-none font-sans text-base leading-4 text-gray-200/80 ">
+                            Create new room
                         </p>
                     </div>
                     <SidebarIcon
-                        className="text-gray-50"
-                        width={42}
-                        height="100%"
+                        className="rounded-md p-1 text-gray-200/80 hover:bg-primary/30 active:bg-secondary/80"
+                        width={48}
+                        height={48}
                     />
                 </div>
 
@@ -116,8 +116,8 @@ export default function ChatSideBar() {
                 >
                     <button>
                         <SearchIcon
-                            className="text-gray-50"
-                            width={20}
+                            className="text-gray-200/80"
+                            width={17}
                             height="100%"
                         />
                     </button>

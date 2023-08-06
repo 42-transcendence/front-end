@@ -15,17 +15,15 @@ export default function ChatRoomBlock({
     const numberOfUnreadMessages =
         chatRoom.numberOfUnreadMessages > 0 ? (
             <div className="flex min-w-[22px] flex-col items-center justify-center rounded-[100px] bg-red-500 px-1 py-0.5">
-                <span className="flex text-center font-thin not-italic text-white ">
+                <span className="flex select-none text-center font-thin not-italic text-white ">
                     {chatRoom.numberOfUnreadMessages > 999
                         ? "999+"
                         : chatRoom.numberOfUnreadMessages.toString()}
                 </span>
             </div>
         ) : null;
-
-    console.log(chatRoom.title);
     return (
-        <>
+        <div className="rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80">
             {/* chatrooms - image */}
             <div className="flex h-fit shrink-0 items-center gap-4 self-stretch overflow-hidden">
                 <div className="flex items-center justify-center gap-2.5">
@@ -39,10 +37,10 @@ export default function ChatRoomBlock({
                 </div>
 
                 {/* chatrooms - info */}
-                <div className="flex h-fit w-full justify-between gap-4 py-2 pl-0 pr-4">
+                <div className="flex h-fit w-full justify-between gap-4 py-2 pl-0">
                     <div className="h-16 p-0">
                         <div className="flex h-8 flex-row items-center gap-2">
-                            <span className="line-clamp-1 text-ellipsis text-[16px] leading-4 text-gray-50/80">
+                            <span className="line-clamp-1 select-none text-ellipsis text-base text-white/90">
                                 {children}
                             </span>
                             <span className="flex h-fit w-fit shrink-0 flex-row gap-1">
@@ -54,7 +52,7 @@ export default function ChatRoomBlock({
                             </span>
                         </div>
 
-                        <div className="line-clamp-2 h-fit text-ellipsis font-sans text-xs font-normal text-gray-200">
+                        <div className="line-clamp-2 h-fit select-none text-ellipsis font-sans text-xs font-normal text-gray-200">
                             {chatRoom.latestMessage ?? ""}
                         </div>
                     </div>
@@ -66,7 +64,7 @@ export default function ChatRoomBlock({
                                 height={12}
                                 className="text-gray-200/70"
                             />
-                            <span className="text-[12px] leading-3 text-gray-50/50">
+                            <span className="select-none text-[12px] leading-3 text-gray-50/50">
                                 {chatRoom.members.length}
                             </span>
                         </div>
@@ -74,6 +72,6 @@ export default function ChatRoomBlock({
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
