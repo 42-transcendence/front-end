@@ -88,21 +88,17 @@ export default function ChatSideBar() {
     });
 
     return (
-        <div className="select-none ">
+        <div className="select-none text-gray-200/80 ">
             <div className="gradient-border float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-['']">
                 <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
-                    <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 active:bg-secondary/80">
-                        <EditIcon
-                            className="text-gray-200/80"
-                            width={17}
-                            height={17}
-                        />
-                        <p className="font-sans text-base leading-4 text-gray-200/80 ">
+                    <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
+                        <EditIcon className="" width={17} height={17} />
+                        <p className="font-sans text-base leading-4 ">
                             Create new room
                         </p>
                     </div>
                     <SidebarIcon
-                        className="rounded-md p-3 text-gray-200/80 hover:bg-primary/30 active:bg-secondary/80"
+                        className="rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80"
                         width={48}
                         height={48}
                     />
@@ -116,9 +112,9 @@ export default function ChatSideBar() {
                 >
                     <button>
                         <SearchIcon
-                            className="text-gray-200/80"
-                            width={17}
-                            height="100%"
+                            className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                            width={24}
+                            height={24}
                         />
                     </button>
                 </TextField>
