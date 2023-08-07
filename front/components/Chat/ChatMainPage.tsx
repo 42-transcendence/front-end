@@ -4,7 +4,7 @@ import { ChatDialog as ChatDialog } from "./ChatDialog";
 
 export default function ChatMainPage() {
     return (
-        <div className="relative flex h-full w-full select-none flex-col items-start p-4">
+        <div className="relative flex h-full w-full flex-col items-start p-4">
             <ChatHeader />
             <ChatDialog innerFrame={"rounded-lg"} outerFrame={"w-full"} />
         </div>

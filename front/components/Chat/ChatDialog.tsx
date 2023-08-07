@@ -40,7 +40,7 @@ function MessageInputArea() {
                     resize: "none",
                 }}
                 value={value}
-                className="h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
+                className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
             />
             <button type="button" onClick={handleClick}>
                 <SendIcon
@@ -65,18 +65,21 @@ export function ChatDialog({
             className={`${outerFrame} flex h-full shrink items-start justify-end gap-4`}
         >
             <div
-                className={`${innerFrame} flex h-full w-full shrink flex-col bg-black/30 p-4`}
+                className={`${innerFrame} flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4`}
             >
-                <div className="flex w-full shrink flex-col gap-2 overflow-auto">
-                    <ChatBubbleWithProfile />
+                <div className="self-stretch overflow-auto">
                     <ChatBubbleRight />
-                    <ChatBubbleRight />
-                    <ChatBubbleRight />
-                    <ChatBubbleRight />
+                    <ChatBubble />
+                    <ChatBubble />
+                    <ChatBubble />
+                    <ChatBubble />
+                    <ChatBubble />
+                    <ChatBubble />
+                    <ChatBubble />
                 </div>
                 {/* TODO: add 말풍선 */}
-                <div className="flex flex-grow flex-col items-center justify-end self-stretch">
-                    <div className="group flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 p-4">
+                <div className="relative flex justify-center self-stretch">
+                    <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 p-4">
                         <MessageInputArea />
                     </div>
                 </div>
