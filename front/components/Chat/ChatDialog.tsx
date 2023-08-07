@@ -34,7 +34,9 @@ function MessageInputArea() {
             <textarea
                 onChange={onChange}
                 rows={1}
+                autoFocus={true}
                 ref={textareaRef}
+                placeholder="Send a message"
                 style={{
                     minHeight: MIN_TEXTAREA_HEIGHT,
                     resize: "none",
@@ -62,24 +64,24 @@ export function ChatDialog({
 }) {
     return (
         <div
-            className={`${outerFrame} flex h-full shrink items-start justify-end gap-4`}
+            className={`${outerFrame} flex h-full shrink items-start justify-end gap-4 overflow-auto`}
         >
             <div
                 className={`${innerFrame} flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4`}
             >
-                <div className="self-stretch overflow-auto">
+                <div className="flex flex-col gap-1 self-stretch overflow-auto">
                     <ChatBubbleRight />
-                    <ChatBubble />
-                    <ChatBubble />
-                    <ChatBubble />
-                    <ChatBubble />
-                    <ChatBubble />
-                    <ChatBubble />
-                    <ChatBubble />
+                    <ChatBubbleWithProfile isContinued={false} dir={"left"} />
+                    <ChatBubbleWithProfile isContinued={true} />
+                    <ChatBubbleWithProfile isContinued={true} />
+                    <ChatBubbleWithProfile isContinued={true} />
+                    <ChatBubbleWithProfile isContinued={true} />
+                    <ChatBubbleWithProfile isContinued={true} />
+                    <ChatBubbleWithProfile isContinued={true} />
                 </div>
                 {/* TODO: add 말풍선 */}
                 <div className="relative flex justify-center self-stretch">
-                    <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 p-4">
+                    <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
                         <MessageInputArea />
                     </div>
                 </div>
