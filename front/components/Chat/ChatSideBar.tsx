@@ -27,9 +27,10 @@ function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
 
 const users = [
     { name: "chanhpar", id: 1 },
-    { name: "jisookim", id: 1 },
-    { name: "", id: 1 },
-    { name: "hdoo", id: 1 },
+    { name: "jisookim", id: 2 },
+    { name: "jkong", id: 3 },
+    { name: "iyun", id: 4 },
+    { name: "hdoo", id: 5 },
 ];
 
 export type ChatRoomInfo = {
@@ -49,28 +50,28 @@ export const chatRoomsDummy: ChatRoomInfo[] = [
     },
     {
         id: 2,
-        members: [users[0], users[1]],
+        members: [users[1], users[1]],
         title: "glglgkgk",
         latestMessage: "옹옹엉양ㄹ오라ㅣㅁㄴ오맂다넝로미어ㅏ로미단로이머니",
         numberOfUnreadMessages: 10,
     },
     {
         id: 3,
-        members: [users[0], users[1]],
+        members: [users[2], users[1]],
         title: "러브포엠",
         latestMessage: "I'm IU ,,>ㅅ<,,",
         numberOfUnreadMessages: 120,
     },
     {
         id: 4,
-        members: [users[0], users[1]],
+        members: [users[3], users[1]],
         title: "Not donkikong",
         latestMessage: "I'm Jkong!",
         numberOfUnreadMessages: 3,
     },
     {
         id: 5,
-        members: [users[0], users[1]],
+        members: [users[4], users[1]],
         title: "not Minsu",
         latestMessage: "Hi I'm jisoo",
         numberOfUnreadMessages: 1029,
@@ -116,16 +117,14 @@ export default function ChatSideBar() {
                     placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
                 >
-                    <button>
-                        <SearchIcon
-                            className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                            width={24}
-                            height={24}
-                        />
-                    </button>
+                    <SearchIcon
+                        className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                        width={24}
+                        height={24}
+                    />
                 </TextField>
 
-                <div className="flex w-full flex-col gap-2">
+                <div className="flex w-full scroll-m-2 flex-col gap-2 overflow-auto">
                     {results.map((item, index) => (
                         <ChatRoomBlock key={item.id} chatRoom={item}>
                             <FzfHighlight
