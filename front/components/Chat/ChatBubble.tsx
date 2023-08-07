@@ -1,12 +1,23 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { Avatar } from "../Avatar";
 import ChatBubbleTail from "/public/chat_bubble_tail.svg";
 import ChatBubbleTailRight from "/public/chat_bubble_tail_right.svg";
 
+type UUID = string
+
+export type ChatMessageType = {
+    msgId: bigint,
+    content: string,
+    timestamp: Date,
+    sender: UUID, // TODO
+}
+
 export function ChatBubbleWithProfile({
+    chatMessage,
     isContinued,
     dir,
 }: {
+    chatMessage: ChatMessageType;
     isContinued: boolean;
     dir?: "left" | "right";
 }) {
@@ -16,6 +27,7 @@ export function ChatBubbleWithProfile({
     const hidden = isContinued ? "hidden" : "";
     return (
         <div className={`relative flex shrink flex-row pl-16 pt-6`}>
+            {/* TODO: get avatar from sender info */}
             <Avatar
                 className={`${hidden}  absolute left-0 top-0`}
                 size={"w-12 h-12"}
@@ -24,12 +36,11 @@ export function ChatBubbleWithProfile({
             <div
                 className={`${hidden} absolute -top-1 left-16 font-sans text-lg font-normal text-white `}
             >
-                {
-                    "hdoo"
-                    // account.username
+                { // account.username
+                    chatMessage.sender
                 }
             </div>
-            <ChatBubble> asdflkjasdflk </ChatBubble>
+            <ChatBubble> {chatMessage.content} </ChatBubble>
         </div>
     );
 }
