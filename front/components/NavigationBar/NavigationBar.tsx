@@ -54,7 +54,7 @@ function SocialButton() {
     );
 }
 
-export function NavigationBar({}): React.ReactElement {
+export function NavigationBar() {
     // TODO: fetch account data.
     // TODO: change to tailwind css
 
