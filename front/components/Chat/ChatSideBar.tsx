@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import SidebarIcon from "/public/sidebar.svg";
+import HamburgerIcon from "/public/hamburger.svg";
 import EditIcon from "/public/edit.svg";
-import ChatRoomBlock from "./ChatRoomBlock";
 import SearchIcon from "/public/search.svg";
+import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField/SearchBox";
 
@@ -26,9 +27,10 @@ function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
 
 const users = [
     { name: "chanhpar", id: 1 },
-    { name: "jisookim", id: 1 },
-    { name: "", id: 1 },
-    { name: "hdoo", id: 1 },
+    { name: "jisookim", id: 2 },
+    { name: "jkong", id: 3 },
+    { name: "iyun", id: 4 },
+    { name: "hdoo", id: 5 },
 ];
 
 export type ChatRoomInfo = {
@@ -48,28 +50,28 @@ export const chatRoomsDummy: ChatRoomInfo[] = [
     },
     {
         id: 2,
-        members: [users[0], users[1]],
+        members: [users[1], users[1]],
         title: "glglgkgk",
         latestMessage: "옹옹엉양ㄹ오라ㅣㅁㄴ오맂다넝로미어ㅏ로미단로이머니",
         numberOfUnreadMessages: 10,
     },
     {
         id: 3,
-        members: [users[0], users[1]],
+        members: [users[2], users[1]],
         title: "러브포엠",
         latestMessage: "I'm IU ,,>ㅅ<,,",
         numberOfUnreadMessages: 120,
     },
     {
         id: 4,
-        members: [users[0], users[1]],
+        members: [users[3], users[1]],
         title: "Not donkikong",
         latestMessage: "I'm Jkong!",
         numberOfUnreadMessages: 3,
     },
     {
         id: 5,
-        members: [users[0], users[1]],
+        members: [users[4], users[1]],
         title: "not Minsu",
         latestMessage: "Hi I'm jisoo",
         numberOfUnreadMessages: 1029,
@@ -88,23 +90,24 @@ export default function ChatSideBar() {
     });
 
     return (
-        <div>
+        <div className="hidden select-none text-gray-200/80 lg:block">
             <div className="gradient-border float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-['']">
-                <div className="flex h-16 shrink-0 items-center justify-between self-stretch px-2 py-4">
-                    <div className="flex items-center gap-2 self-stretch rounded-md">
-                        <EditIcon
-                            className="text-gray-50"
-                            width={22}
-                            height="100%"
-                        />
-                        <p className="font-sans text-2xl leading-4 text-gray-50 ">
-                            Chat
+                <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
+                    <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
+                        <EditIcon className="" width={17} height={17} />
+                        <p className="font-sans text-base leading-4 ">
+                            Create new room
                         </p>
                     </div>
                     <SidebarIcon
-                        className="text-gray-50"
-                        width={42}
-                        height="100%"
+                        className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:block"
+                        width={48}
+                        height={48}
+                    />
+                    <HamburgerIcon
+                        className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
+                        width={48}
+                        height={48}
                     />
                 </div>
 
@@ -114,16 +117,14 @@ export default function ChatSideBar() {
                     placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
                 >
-                    <button>
-                        <SearchIcon
-                            className="text-gray-50"
-                            width={20}
-                            height="100%"
-                        />
-                    </button>
+                    <SearchIcon
+                        className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                        width={24}
+                        height={24}
+                    />
                 </TextField>
 
-                <div>
+                <div className="flex w-full scroll-m-2 flex-col gap-2 overflow-auto">
                     {results.map((item, index) => (
                         <ChatRoomBlock key={item.id} chatRoom={item}>
                             <FzfHighlight

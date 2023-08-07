@@ -9,7 +9,7 @@ export function ContextMenu_Social({
     profile,
 }: {
     profile: ProfileItemConfig;
-}): React.ReactElement {
+}) {
     return (
         <ContextMenuBase_Profile profile={profile}>
             <ContextMenuItem name="친구 추가하기" className="basic" />

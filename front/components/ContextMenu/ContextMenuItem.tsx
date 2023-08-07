@@ -2,8 +2,8 @@ import React from "react";
 import "./style.css";
 
 export type ContextMenuItemProp = {
-    className: "header" | "basic"; // depends on CSS => Use CSS module?
     name: string;
+    className: string;
     description?: string;
     disabled?: boolean;
 };
@@ -21,9 +21,7 @@ export function ContextMenuItem({
             }`}
         >
             <div className="relative flex h-[19px] w-[260px] flex-col justify-center px-4 py-1">
-                <div className="font-family: var(--headline-font-family) font-style: var(--headline-font-style) disable-select tracking-[var(--headline-letter-spacitext-gray-50 relative mb-[-0.5px] mt-[-2.5px] whitespace-nowrap text-start text-[length:var(--headline-font-size)] font-[number:var(--headline-font-weight)] leading-[var(--headline-line-height)] text-gray-50">
-                    {name}
-                </div>
+                <div className={`disable-select ${className}`}>{name}</div>
                 {description && (
                     <div className="disable-select text-purple-900">
                         {description}

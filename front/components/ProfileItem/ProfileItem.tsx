@@ -3,11 +3,8 @@ We're constantly improving the code you see.
 Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
 */
 
-import PropTypes from "prop-types";
 import React, { MouseEventHandler } from "react";
 import { Avatar } from "../Avatar";
-import "./style.css";
-import { TextField } from "../TextField";
 import {
     ProfileItemConfig as ProfileItemInternlConfig,
     ContextMenu_Friend,
@@ -29,7 +26,7 @@ export function ProfileItem({
     config: ProfileItemConfig;
     selected: boolean;
     onClick: MouseEventHandler;
-}): React.ReactElement {
+}) {
     return (
         <div
             className={`relative flex w-[260px] flex-col items-start rounded-[28px] py-4 ${config.className} hover:bg-primary/50 focus:outline-none focus:ring focus:ring-violet-300 active:bg-priVar/50`}
@@ -62,11 +59,3 @@ export function ProfileItem({
         </div>
     );
 }
-
-ProfileItem.propTypes = {
-    showStatusMessage: PropTypes.bool,
-    showContextMenu: PropTypes.bool,
-    type: PropTypes.oneOf(["full", "slim"]),
-    state: PropTypes.oneOf(["hover", "idle"]),
-    text: PropTypes.string,
-};

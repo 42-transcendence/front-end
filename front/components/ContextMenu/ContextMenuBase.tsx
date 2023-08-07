@@ -4,6 +4,14 @@ export { ContextMenuItem } from "./ContextMenuItem";
 
 export function ContextMenuBase({
     children,
-}: React.PropsWithChildren): React.ReactElement {
-    return <div className="">{children}</div>;
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string | undefined;
+}) {
+    return (
+        <div className={`${className} flex flex-col items-center text-white`}>
+            {children}
+        </div>
+    );
 }

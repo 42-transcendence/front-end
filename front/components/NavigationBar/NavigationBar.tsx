@@ -72,9 +72,9 @@ export function NavigationBar({}): React.ReactElement {
                     <SocialButton />
                     {/* TODO: on click Avatar in navbar, show context menu myinfo */}
                     <Avatar
-                        size={"w-10"}
+                        size={"w-10 h-10"}
                         accountId={1}
-                        className={"bg-white/30 "}
+                        className="relative bg-white/30"
                     />
                 </div>
             </div>

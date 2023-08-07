@@ -10,7 +10,7 @@ export default function MainLayout({
     main: React.ReactNode;
 }) {
     //TODO: 기존에 이미 인증된 상태(스토리지에 토큰이 있는 상태)라면 백으로 한번 보내서 검증시켜봐야 함.
-    const [loggedin, setLoggedin] = useState<boolean>(false);
+    const [loggedin, setLoggedin] = useState<boolean>(true);
     useEffect(() => {
         const receiveMessage = (event: StorageEvent) => {
             if (event.key === "access_token") {
