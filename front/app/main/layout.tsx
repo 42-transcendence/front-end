@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 
 export default function MainLayout({
     login,
@@ -9,10 +9,10 @@ export default function MainLayout({
     login: React.ReactNode;
     main: React.ReactNode;
 }) {
-    //TODO: 기존에 이미 인증된 상태(스토리지에 토큰이 있는 상태)라면 백으로 한번 보내서 검증시켜봐야 함.
     const [loggedin, setLoggedin] = useState<boolean>(false);
 
     useEffect(() => {
+        //TODO: 기존에 이미 인증된 상태(스토리지에 토큰이 있는 상태)라면 백으로 한번 보내서 검증시켜봐야 함.
         setLoggedin(window.localStorage.getItem("access_token") !== null)
         // console.log("token:", window.localStorage.getItem("access_token"));
 
