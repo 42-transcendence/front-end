@@ -8,10 +8,10 @@ import GoogleLogo from "/public/googleLogo.svg";
 const popupFeatures = ["popup=true", "width=600", "height=600"].join(",");
 const loginList = [
     {
-        key: "42",
+        key: "intra42",
         logo: <FtLogo width={17} height="100%" />,
         action: () => {
-            window.open("/auth/42", "42 Login", popupFeatures);
+            window.open("/auth/intra42", "42 Login", popupFeatures);
         },
         innerText: "Sign in with 42",
     },
