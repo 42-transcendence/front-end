@@ -47,7 +47,7 @@ export function ChatHeader() {
                     />
                 </button>
             </summary>
-            <ChatRoomMenu />
+            <ChatRoomMenu isAdmin={true} />
         </details>
     );
 }

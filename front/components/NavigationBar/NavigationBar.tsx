@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Avatar } from "../Avatar";
-import { ChatLayout } from "../Chat/ChatLayout";
+import ChatLayout from "../Chat/ChatLayout";
 import DoubleSharp from "/public/doubleSharp.svg";
 import Chat from "/public/chat.svg";
 import Chatfilled from "/public/chatfilled.svg";
@@ -54,31 +54,29 @@ function SocialButton() {
     );
 }
 
-export function NavigationBar({}): React.ReactElement {
+export function NavigationBar() {
     // TODO: fetch account data.
     // TODO: change to tailwind css
 
     return (
-        <>
-            <div className="relative flex h-16 w-full flex-row items-center justify-between bg-black/80 px-5 py-2.5 backdrop-blur-[20px] backdrop-brightness-100">
-                <Link className="relative" href="/main">
-                    <DoubleSharp
-                        className="text-white drop-shadow-[0_0_0.3rem_#ffffff70]"
-                        width={32}
-                        height="100%"
-                    />
-                </Link>
-                <div className="relative flex flex-row items-center justify-between gap-4 ">
-                    <SocialButton />
-                    {/* TODO: on click Avatar in navbar, show context menu myinfo */}
-                    <Avatar
-                        size={"w-10 h-10"}
-                        accountId={1}
-                        className="relative bg-white/30"
-                    />
-                </div>
+        <div className="relative flex h-16 w-full flex-row items-center justify-between bg-black/80 px-5 py-2.5 backdrop-blur-[20px] backdrop-brightness-100">
+            <Link className="relative" href="/main">
+                <DoubleSharp
+                    className="text-white drop-shadow-[0_0_0.3rem_#ffffff70]"
+                    width={32}
+                    height="100%"
+                />
+            </Link>
+            <div className="relative flex flex-row items-center justify-between gap-4 ">
+                <SocialButton />
+                {/* TODO: on click Avatar in navbar, show context menu myinfo */}
+                <Avatar
+                    size={"w-10 h-10"}
+                    accountId={1}
+                    className="relative bg-white/30"
+                />
             </div>
-        </>
+        </div>
     );
 }
 //

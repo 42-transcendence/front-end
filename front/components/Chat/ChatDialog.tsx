@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import SendIcon from "/public/send.svg";
 import {
-    ChatBubble,
-    ChatBubbleRight,
+    // ChatBubble,
+    // ChatBubbleRight,
     ChatBubbleWithProfile,
+    type ChatMessageType,
 } from "./ChatBubble";
 
 const MIN_TEXTAREA_HEIGHT = 24;
@@ -14,19 +15,23 @@ function MessageInputArea() {
         //TODO: create chatbubble with value
         console.log("heello");
     };
-    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-    const [value, setValue] = React.useState("");
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [value, setValue] = useState("");
     const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) =>
         setValue(event.target.value);
 
-    React.useLayoutEffect(() => {
-        // Reset height - important to shrink on delete
-        textareaRef.current!.style.height = "inherit";
-        // Set height
-        textareaRef.current!.style.height = `${Math.max(
-            textareaRef.current!.scrollHeight,
-            MIN_TEXTAREA_HEIGHT,
-        )}px`;
+    useLayoutEffect(() => {
+        const element = textareaRef.current;
+
+        if (element) {
+            // Reset height - important to shrink on delete
+            element.style.height = "inherit";
+            // Set height
+            element.style.height = `${Math.max(
+                element.scrollHeight,
+                MIN_TEXTAREA_HEIGHT,
+            )}px`;
+        }
     }, [value]);
 
     return (
@@ -34,7 +39,7 @@ function MessageInputArea() {
             <textarea
                 onChange={onChange}
                 rows={1}
-                autoFocus={true}
+                // autoFocus={true}
                 ref={textareaRef}
                 placeholder="Send a message"
                 style={{
@@ -54,6 +59,62 @@ function MessageInputArea() {
         </>
     );
 }
+const dummyChatMessages = [
+    {
+        msgId: BigInt(3),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "jkong",
+    },
+    {
+        msgId: BigInt(4),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "iyun",
+    },
+    {
+        msgId: BigInt(5),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "jkong",
+    },
+    {
+        msgId: BigInt(6),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "jkong",
+    },
+    {
+        msgId: BigInt(7),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "jkong",
+    },
+    {
+        msgId: BigInt(8),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "jkong",
+    },
+    {
+        msgId: BigInt(9),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "hdoo",
+    },
+    {
+        msgId: BigInt(10),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "chanhpar",
+    },
+    {
+        msgId: BigInt(11),
+        content: "lorem ipsum",
+        timestamp: new Date(),
+        sender: "chanhpar",
+    },
+];
 
 export function ChatDialog({
     outerFrame,
@@ -62,6 +123,21 @@ export function ChatDialog({
     outerFrame: string;
     innerFrame: string;
 }) {
+    const chatMessages = dummyChatMessages;
+    const myUUID = "chanhpar";
+
+    const isSameMinute = (a: Date, b: Date) => {
+        return new Date(a).setSeconds(0, 0) === new Date(b).setSeconds(0, 0);
+    };
+
+    const isContinued = (arr: ChatMessageType[], idx: number) => {
+        return (
+            idx > 0 &&
+            arr[idx].sender === arr[idx - 1].sender &&
+            isSameMinute(arr[idx].timestamp, arr[idx - 1].timestamp)
+        );
+    };
+
     return (
         <div
             className={`${outerFrame} flex h-full shrink items-start justify-end gap-4 overflow-auto`}
@@ -70,14 +146,17 @@ export function ChatDialog({
                 className={`${innerFrame} flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4`}
             >
                 <div className="flex flex-col gap-1 self-stretch overflow-auto">
-                    <ChatBubbleRight />
-                    <ChatBubbleWithProfile isContinued={false} dir={"left"} />
-                    <ChatBubbleWithProfile isContinued={true} />
-                    <ChatBubbleWithProfile isContinued={true} />
-                    <ChatBubbleWithProfile isContinued={true} />
-                    <ChatBubbleWithProfile isContinued={true} />
-                    <ChatBubbleWithProfile isContinued={true} />
-                    <ChatBubbleWithProfile isContinued={true} />
+                    {chatMessages.map((msg, idx, arr) => {
+                        // TODO: key for ChatBubbleWithProfile
+                        return (
+                            <ChatBubbleWithProfile
+                                key={idx}
+                                chatMessage={msg}
+                                isContinued={isContinued(arr, idx)}
+                                dir={msg.sender === myUUID ? "right" : "left"}
+                            />
+                        );
+                    })}
                 </div>
                 {/* TODO: add 말풍선 */}
                 <div className="relative flex justify-center self-stretch">
