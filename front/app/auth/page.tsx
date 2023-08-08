@@ -8,7 +8,7 @@ export default function AuthCallback() {
     const [status, setStatus] = useState<number>();
     const [token, setToken] = useState<string>();
     useEffect(() => {
-        const url = new URL(`https://back.stri.dev/auth/callback`);
+        const url = new URL(`https://back.stri.dev/auth/end`);
         for (const [key, val] of searchParams) {
             url.searchParams.append(key, val);
         }
