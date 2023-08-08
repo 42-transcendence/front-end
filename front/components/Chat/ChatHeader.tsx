@@ -15,7 +15,7 @@ const config: ProfileItemConfig = {
 
 export function ChatHeader() {
     return (
-        <div className="group relative m-6 flex shrink-0 select-none flex-col justify-center self-stretch overflow-clip transition-all duration-500">
+        <div className="group relative m-5 flex shrink-0 select-none flex-col justify-center self-stretch">
             <input
                 className="peer/headerleft hidden"
                 type="radio"
@@ -24,10 +24,10 @@ export function ChatHeader() {
             />
             <label
                 htmlFor="leftHeaderIcon"
-                className="absolute left-0 top-0 peer-checked/headerleft:hidden"
+                className="absolute left-0 top-0 w-12 overflow-clip transition-all duration-500 peer-checked/headerleft:w-0"
             >
                 <SidebarIcon
-                    className="hidden rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80 lg:block"
+                    className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 active:bg-secondary/80 lg:block"
                     width={48}
                     height={48}
                 />
@@ -37,7 +37,7 @@ export function ChatHeader() {
                     height={48}
                 />
             </label>
-            <details className="h-12 open:h-72">
+            <details className="h-12 overflow-hidden transition-all duration-500 open:h-72">
                 <summary className="flex w-full flex-row justify-center">
                     <div className="relative items-center justify-center gap-2.5 text-base">
                         <div className="flex flex-col items-center justify-center px-4 py-0">
@@ -50,7 +50,7 @@ export function ChatHeader() {
                         </div>
                     </div>
                 </summary>
-                <ChatRoomMenu />
+                <ChatRoomMenu isAdmin={true} />
             </details>
             <button>
                 <input
@@ -61,7 +61,7 @@ export function ChatHeader() {
                 />
                 <label
                     htmlFor="rightHeaderIcon"
-                    className="absolute right-0 top-0 peer-checked/headerright:hidden"
+                    className="absolute right-0 top-0 w-12 overflow-clip transition-all duration-500 peer-checked/headerright:w-0"
                 >
                     <MembersIcon
                         className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
