@@ -13,7 +13,7 @@ export default function MainLayout({
 
     useEffect(() => {
         //TODO: 기존에 이미 인증된 상태(스토리지에 토큰이 있는 상태)라면 백으로 한번 보내서 검증시켜봐야 함.
-        setLoggedin(window.localStorage.getItem("access_token") !== null)
+        setLoggedin(window.localStorage.getItem("access_token") !== null);
         // console.log("token:", window.localStorage.getItem("access_token"));
 
         const receiveMessage = (event: StorageEvent) => {
