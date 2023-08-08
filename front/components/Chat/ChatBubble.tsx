@@ -3,30 +3,34 @@ import { Avatar } from "../Avatar";
 import ChatBubbleTail from "/public/chat_bubble_tail.svg";
 import ChatBubbleTailRight from "/public/chat_bubble_tail_right.svg";
 
-type UUID = string
+type UUID = string;
 
 export type ChatMessageType = {
-    msgId: bigint,
-    content: string,
-    timestamp: Date,
-    sender: UUID, // TODO
-}
+    msgId: bigint;
+    content: string;
+    timestamp: Date;
+    sender: UUID; // TODO
+};
 
 export function ChatBubbleWithProfile({
     chatMessage,
-    isContinued,
-    dir,
+    isContinued = false,
+    dir = "left",
 }: {
     chatMessage: ChatMessageType;
     isContinued: boolean;
-    dir?: "left" | "right";
+    dir: "left" | "right";
 }) {
     //TODO: apply direction
     //TODO: hide username, tail, profile when message is continued
 
-    const hidden = isContinued ? "hidden" : "";
+    const hidden = dir === "right" || isContinued ? "hidden" : "";
     return (
-        <div className={`relative flex shrink flex-row pl-16 pt-6`}>
+        <div
+            className={`relative flex shrink flex-row pl-16 ${
+                isContinued ? "pt-0" : "pt-6"
+            }`}
+        >
             {/* TODO: get avatar from sender info */}
             <Avatar
                 className={`${hidden}  absolute left-0 top-0`}
@@ -36,42 +40,78 @@ export function ChatBubbleWithProfile({
             <div
                 className={`${hidden} absolute -top-1 left-16 font-sans text-lg font-normal text-white `}
             >
-                { // account.username
+                {
+                    // account.username
                     chatMessage.sender
                 }
             </div>
-            <ChatBubble> {chatMessage.content} </ChatBubble>
+            <ChatBubble isContinued={isContinued} dir={dir}>
+                {chatMessage.content}
+            </ChatBubble>
         </div>
     );
 }
 
-export function ChatBubble({ children }: React.PropsWithChildren) {
+function ChatBubble({
+    children,
+    isContinued,
+    dir,
+}: React.PropsWithChildren<{
+    isContinued: boolean;
+    dir: "left" | "right";
+}>) {
+    const styleOption =
+        dir === "left"
+            ? {
+                  flexDirection: "flex-row",
+                  padding: "pl-[11px] pt-[5px]",
+                  bgColor: "bg-primary",
+                  tail: (
+                      <ChatBubbleTail
+                          width="24"
+                          height="13"
+                          className="absolute left-0 top-0 text-primary"
+                      />
+                  ),
+              }
+            : {
+                  flexDirection: "flex-row-reverse",
+                  padding: "pr-[11px] pt-[5px]",
+                  bgColor: "bg-secondary",
+                  tail: (
+                      <ChatBubbleTailRight
+                          width="24"
+                          height="13"
+                          className="absolute right-0 top-0 text-secondary"
+                      />
+                  ),
+              };
+
     return (
-        <div className="relative flex h-fit w-full flex-row pl-[11px] pt-[5px]">
-            <ChatBubbleTail
-                width="24"
-                height="13"
-                className="absolute left-0 top-0 text-primary"
-            />
-            <div className="static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs whitespace-normal rounded-xl bg-primary p-3 font-sans text-base font-normal text-gray-100/90">
+        <div
+            className={`relative flex h-fit w-full ${styleOption.flexDirection} ${styleOption.padding}`}
+        >
+            {!isContinued && styleOption.tail}
+            <div
+                className={`static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs whitespace-normal rounded-xl ${styleOption.bgColor} p-3 font-sans text-base font-normal text-gray-100/90`}
+            >
                 {children}
             </div>
         </div>
     );
 }
 
-export function ChatBubbleRight({ children }: React.PropsWithChildren) {
-    return (
-        <div className="relative flex h-fit w-full flex-row-reverse pr-[11px] pt-[5px]">
-            <ChatBubbleTailRight
-                width="24"
-                height="13"
-                className="absolute right-0 top-0 text-secondary"
-            />
-            <div className="static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs whitespace-normal rounded-xl bg-secondary p-3 font-sans text-base font-normal text-gray-100/90">
-                {children}
-                asdf
-            </div>
-        </div>
-    );
-}
+// function ChatBubbleRight({ children, isContinued }: React.PropsWithChildren<{ isContinued: boolean }>) {
+//     return (
+//         <div className="relative flex h-fit w-full flex-row-reverse pr-[11px] pt-[5px]">
+//             {!isContinued && <ChatBubbleTailRight
+//                 width="24"
+//                 height="13"
+//                 className="absolute right-0 top-0 text-secondary"
+//             />}
+//             <div className="static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs whitespace-normal rounded-xl bg-secondary p-3 font-sans text-base font-normal text-gray-100/90">
+//                 {children}
+//             </div>
+//         </div>
+//     );
+// }
