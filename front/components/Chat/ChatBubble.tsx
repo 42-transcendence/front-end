@@ -100,18 +100,3 @@ function ChatBubble({
         </div>
     );
 }
-
-// function ChatBubbleRight({ children, isContinued }: React.PropsWithChildren<{ isContinued: boolean }>) {
-//     return (
-//         <div className="relative flex h-fit w-full flex-row-reverse pr-[11px] pt-[5px]">
-//             {!isContinued && <ChatBubbleTailRight
-//                 width="24"
-//                 height="13"
-//                 className="absolute right-0 top-0 text-secondary"
-//             />}
-//             <div className="static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs whitespace-normal rounded-xl bg-secondary p-3 font-sans text-base font-normal text-gray-100/90">
-//                 {children}
-//             </div>
-//         </div>
-//     );
-// }

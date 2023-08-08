@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import SendIcon from "/public/send.svg";
 import {
     // ChatBubble,
@@ -15,12 +15,12 @@ function MessageInputArea() {
         //TODO: create chatbubble with value
         console.log("heello");
     };
-    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-    const [value, setValue] = React.useState("");
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [value, setValue] = useState("");
     const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) =>
         setValue(event.target.value);
 
-    React.useLayoutEffect(() => {
+    useLayoutEffect(() => {
         const element = textareaRef.current;
 
         if (element) {
