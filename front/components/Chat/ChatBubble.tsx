@@ -1,7 +1,9 @@
 // import { useState } from "react";
 import { Avatar } from "../Avatar";
-import ChatBubbleTail from "/public/chat_bubble_tail.svg";
-import ChatBubbleTailRight from "/public/chat_bubble_tail_right.svg";
+import {
+    ChatBubbleTailLeft,
+    ChatBubbleTailRight,
+} from "@/components/ImageLibrary";
 
 type UUID = string;
 
@@ -67,7 +69,7 @@ function ChatBubble({
                   padding: "pl-[11px] pt-[5px]",
                   bgColor: "bg-primary",
                   tail: (
-                      <ChatBubbleTail
+                      <ChatBubbleTailLeft
                           width="24"
                           height="13"
                           className="absolute left-0 top-0 text-primary"

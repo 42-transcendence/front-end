@@ -1,15 +1,13 @@
 "use client";
 
 import { LoginButton } from "@/components/Button/LoginButton";
-import DoubleSharp from "/public/doubleSharp.svg";
-import FtLogo from "/public/42logo.svg";
-import GoogleLogo from "/public/googleLogo.svg";
+import { DoubleSharp, Logo42, LogoGoogle } from "@/components/ImageLibrary";
 
 const popupFeatures = ["popup=true", "width=600", "height=600"].join(",");
 const loginList = [
     {
         key: "intra42",
-        logo: <FtLogo width={17} height="100%" />,
+        logo: <Logo42 width={17} height="100%" />,
         action: () => {
             window.open("/auth/intra42", "42 Login", popupFeatures);
         },
@@ -17,7 +15,7 @@ const loginList = [
     },
     {
         key: "google",
-        logo: <GoogleLogo width={17} height="100%" />,
+        logo: <LogoGoogle width={17} height="100%" />,
         action: () => {
             window.open("/auth/google", "Google Login", popupFeatures);
         },
@@ -31,7 +29,7 @@ export default function LoginPage() {
             <div className="relative flex h-screen w-screen flex-col items-center justify-center ">
                 <div className="relative flex h-full items-end justify-center">
                     <DoubleSharp
-                        className="relative h-fit w-fit animate-spin-slow delay-300 text-white drop-shadow-[0_0_0.3rem_#ffffff70]"
+                        className="relative h-fit w-fit animate-spin-slow text-white drop-shadow-[0_0_0.3rem_#ffffff70] delay-300"
                         width={130}
                         height="100%"
                     />

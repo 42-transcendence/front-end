@@ -7,7 +7,7 @@ type TrophyImages = {
 };
 
 const dummyTrophy: TrophyImages = {
-    profileImage: "/skin_platinum.png",
+    profileImage: "/skin-platinum.png",
     type: "platinum",
 };
 

@@ -22,7 +22,7 @@ export function GameChipProfile() {
         <div className="flex shrink-0 flex-col items-center justify-between">
             <Image
                 className=""
-                src={"/chip1_dummy.png"}
+                src={"/game/game-chip-1_dummy.png"}
                 alt="character_chip"
                 width="150"
                 height="100"

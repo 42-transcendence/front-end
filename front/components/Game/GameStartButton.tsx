@@ -10,7 +10,7 @@ export default function GameStartButton() {
             <div className=" flex h-[330px] w-[268px] flex-col justify-center gap-2.5 rounded-[32px] bg-black/30 px-9 py-[50px] text-center shadow-[0px_8px_4px_0px_rgba(0,0,0,0.25)]">
                 <Image
                     className=" h-[162px] w-[268px] fill-white"
-                    src={"/gamestart.svg"}
+                    src={"/game/game-start.svg"}
                     alt="GamestartButton"
                     width="200"
                     height="200"

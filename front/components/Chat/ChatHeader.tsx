@@ -2,9 +2,7 @@
 
 import React from "react";
 import { ProfileItemConfig } from "../ContextMenu";
-import SidebarIcon from "/public/sidebar.svg";
-import MembersIcon from "/public/members.svg";
-import HamburgerIcon from "/public/hamburger.svg";
+import { Sidebar, Members, Hamburger } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 
 const config: ProfileItemConfig = {
@@ -27,12 +25,12 @@ export function ChatHeader() {
                 htmlFor="leftHeaderIcon"
                 className="absolute left-0 top-0 w-12 overflow-clip transition-all duration-500 peer-checked/headerleft:w-0"
             >
-                <SidebarIcon
+                <Sidebar
                     className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 active:bg-secondary/80 lg:block"
                     width={48}
                     height={48}
                 />
-                <HamburgerIcon
+                <Hamburger
                     className="rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
                     width={48}
                     height={48}
@@ -64,7 +62,7 @@ export function ChatHeader() {
                     htmlFor="rightHeaderIcon"
                     className="absolute right-0 top-0 w-12 overflow-clip transition-all duration-500 peer-checked/headerright:w-0"
                 >
-                    <MembersIcon
+                    <Members
                         className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
                         width={48}
                         height={48}
