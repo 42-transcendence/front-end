@@ -48,16 +48,19 @@ const dummy: AvatarInfo[] = [
 export function Avatar({
     className,
     size,
-    accountId,
+    accountId, //FIXME: delete me
+    avatarKey,
 }: {
     className: string;
     size: string;
-    accountId: number;
+    accountId?: number;
+    avatarKey?: string;
 }): React.ReactElement {
     //TODO: fetch Avatar datas
     // \-  get user profile and status from accountid
 
-    const userInfo: AvatarInfo = dummy[accountId - 1];
+    avatarKey ??= "jisookim"; //FIXME: temporary
+    const status = "online"; //FIXME: temporary
 
     return (
         <div
@@ -65,14 +68,14 @@ export function Avatar({
         >
             <Image
                 className="relative flex-1 flex-grow self-stretch rounded-full"
-                src={userInfo.profileImage}
+                src={`/${avatarKey}.png`}
                 alt="Avatar"
                 fill={true}
             />
             <div
                 className={`absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full`}
             >
-                <Status type={userInfo.userStatus} />
+                <Status type={status} />
             </div>
         </div>
     );

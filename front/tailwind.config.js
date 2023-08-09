@@ -27,8 +27,8 @@ module.exports = {
                 "spin-slow": "spin 2s ease-in-out infinite",
             },
             backgroundImage: {
-                game: "url(/background_game.jpg)",
-                main: "url(/background_main.jpg)",
+                game: "url(/background-game.jpg)",
+                main: "url(/background-main.jpg)",
             },
         },
     },

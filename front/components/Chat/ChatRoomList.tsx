@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import SidebarIcon from "/public/sidebar.svg";
-import HamburgerIcon from "/public/hamburger.svg";
-import EditIcon from "/public/edit.svg";
-import SearchIcon from "/public/search.svg";
+import { Sidebar, Hamburger, Edit, Search } from "@/components/ImageLibrary";
 import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField";
@@ -96,18 +93,18 @@ export default function ChatRoomList() {
             <div className="float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[28px] p-4 before:p-px before:content-[''] lg:rounded-[28px]">
                 <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
                     <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
-                        <EditIcon className="" width={17} height={17} />
+                        <Edit className="" width={17} height={17} />
                         <p className="font-sans text-base leading-4 ">
                             Create new room
                         </p>
                     </div>
                     <label htmlFor="leftSideBarIcon">
-                        <SidebarIcon
+                        <Sidebar
                             className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:block"
                             width={48}
                             height={48}
                         />
-                        <HamburgerIcon
+                        <Hamburger
                             className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
                             width={48}
                             height={48}
@@ -121,7 +118,7 @@ export default function ChatRoomList() {
                     placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
                 >
-                    <SearchIcon
+                    <Search
                         className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
                         width={24}
                         height={24}
