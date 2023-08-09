@@ -98,7 +98,7 @@
 /* } */
 
 body {
-    background-image: url("/background_main.jpg");
+    background-image: url("/background-main.jpg");
     background-size: cover;
 
     -webkit-user-select: none;
