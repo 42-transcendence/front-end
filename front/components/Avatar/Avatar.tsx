@@ -8,16 +8,18 @@ import React from "react";
 import { Status } from "../Status";
 import Image from "next/image";
 
+export type UserStatus =
+    | "online"
+    | "invisible"
+    | "offline"
+    | "idle"
+    | "matching"
+    | "do-not-disturb"
+    | "in-game";
+
 type AvatarInfo = {
     profileImage: string;
-    userStatus:
-        | "online"
-        | "invisible"
-        | "offline"
-        | "idle"
-        | "matching"
-        | "do-not-disturb"
-        | "in-game";
+    userStatus: UserStatus;
 };
 
 const dummy: AvatarInfo[] = [

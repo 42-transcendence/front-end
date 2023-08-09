@@ -5,7 +5,7 @@ import EditIcon from "/public/edit.svg";
 import SearchIcon from "/public/search.svg";
 import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
-import { TextField } from "../TextField/SearchBox";
+import { TextField } from "../TextField";
 
 type User = {
     id: number;
@@ -78,7 +78,7 @@ export const chatRoomsDummy: ChatRoomInfo[] = [
     },
 ];
 
-export default function ChatSideBar() {
+export default function ChatRoomList() {
     const [query, setQuery] = useState("");
     const { results, getFzfHighlightProps } = useFzf({
         items: chatRoomsDummy,
@@ -90,8 +90,8 @@ export default function ChatSideBar() {
     });
 
     return (
-        <div className="hidden select-none text-gray-200/80 lg:block">
-            <div className="gradient-border float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[0px_28px_28px_0px] bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-['']">
+        <div className="gradient-border absolute z-10 h-full w-[310px] select-none overflow-clip bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all before:rounded-[0px_28px_28px_0px] peer-checked/left:w-0 lg:relative lg:block lg:rounded-[0px_28px_28px_0px]">
+            <div className="float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[28px] p-4 before:p-px before:content-[''] lg:rounded-[28px]">
                 <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
                     <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
                         <EditIcon className="" width={17} height={17} />
@@ -99,16 +99,18 @@ export default function ChatSideBar() {
                             Create new room
                         </p>
                     </div>
-                    <SidebarIcon
-                        className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:block"
-                        width={48}
-                        height={48}
-                    />
-                    <HamburgerIcon
-                        className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
-                        width={48}
-                        height={48}
-                    />
+                    <label htmlFor="leftSideBarIcon">
+                        <SidebarIcon
+                            className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:block"
+                            width={48}
+                            height={48}
+                        />
+                        <HamburgerIcon
+                            className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
+                            width={48}
+                            height={48}
+                        />
+                    </label>
                 </div>
 
                 {/* searchBar */}
@@ -118,7 +120,7 @@ export default function ChatSideBar() {
                     onChange={(event) => setQuery(event.target.value)}
                 >
                     <SearchIcon
-                        className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                        className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
                         width={24}
                         height={24}
                     />

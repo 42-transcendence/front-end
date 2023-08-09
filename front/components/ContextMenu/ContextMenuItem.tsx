@@ -16,14 +16,14 @@ export function ContextMenuItem({
 }: ContextMenuItemProp): React.ReactElement {
     return (
         <div
-            className={`relative flex h-16 w-[260px]  items-center bg-[color:var(--windows-glass)] px-0 py-2 shadow-[var(--blur)] hover:bg-[color:var(--controls-hover)] ${
-                disabled ? "disable-select" : ""
+            className={`relative flex h-16 w-[260px]  items-center bg-[color:var(--windows-glass)] px-0 py-2 shadow-[var(--blur)] hover:bg-primary/80 active:bg-secondary/80 ${
+                disabled ? "select-none" : ""
             }`}
         >
             <div className="relative flex h-[19px] w-[260px] flex-col justify-center px-4 py-1">
-                <div className={`disable-select ${className}`}>{name}</div>
+                <div className={`${className} select-none`}>{name}</div>
                 {description && (
-                    <div className="disable-select text-purple-900">
+                    <div className="select-none text-base text-purple-900">
                         {description}
                     </div>
                 )}

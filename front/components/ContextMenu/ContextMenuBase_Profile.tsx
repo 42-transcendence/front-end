@@ -21,10 +21,10 @@ export function ContextMenuBase_Profile({
             <ContextMenuItem
                 name={profile.name}
                 description={profile.tag}
-                className="header"
+                className="text-xl"
                 disabled
             />
-            <ContextMenuItem name="태그 복사하기" className="basic" />
+            <ContextMenuItem name="태그 복사하기" className="text-base" />
             {children}
         </ContextMenuBase>
     );

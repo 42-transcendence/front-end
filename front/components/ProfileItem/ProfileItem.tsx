@@ -8,6 +8,7 @@ import { Avatar } from "../Avatar";
 import {
     ProfileItemConfig as ProfileItemInternlConfig,
     ContextMenu_Friend,
+    ContextMenu_Social,
 } from "../ContextMenu";
 
 type ProfileItemViewConfig = {
@@ -21,15 +22,17 @@ export type ProfileItemConfig = ProfileItemInternlConfig &
 export function ProfileItem({
     config,
     selected,
+    children,
     onClick,
 }: {
     config: ProfileItemConfig;
     selected: boolean;
+    children: React.ReactNode;
     onClick: MouseEventHandler;
 }) {
     return (
         <div
-            className={`relative flex w-[260px] flex-col items-start rounded-[28px] py-4 ${config.className} hover:bg-primary/50 focus:outline-none focus:ring focus:ring-violet-300 active:bg-priVar/50`}
+            className={`relative flex w-[260px] flex-col items-start rounded-[14px] ${config.className} gap-4 py-4 hover:bg-primary/30`}
         >
             <div
                 className="group relative flex w-full flex-row items-center space-x-4 self-stretch px-4"
@@ -45,7 +48,7 @@ export function ProfileItem({
                     </div>
                     <div className="relative, flex w-fit flex-col items-start gap-1">
                         <div className="text-bold relative w-fit whitespace-nowrap font-sans text-base leading-none tracking-normal text-gray-50">
-                            {config.name}
+                            {children ? children : config.name}
                         </div>
                         {config.showStatusMessage && (
                             <div className="text-normal text-xs text-gray-300">
@@ -55,7 +58,7 @@ export function ProfileItem({
                     </div>
                 </div>
             </div>
-            {selected && <ContextMenu_Friend profile={config} />}
+            {selected && <ContextMenu_Social profile={config} />}
         </div>
     );
 }
