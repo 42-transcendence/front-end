@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import SidebarIcon from "/public/sidebar.svg";
 import HamburgerIcon from "/public/hamburger.svg";

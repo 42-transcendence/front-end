@@ -1,4 +1,3 @@
-"use client";
 import ChatRoomList from "./ChatRoomList";
 import ChatMainPage from "./ChatMainPage";
 import ChatMemberList from "./ChatMemberList";
@@ -11,7 +10,7 @@ export default function ChatLayout() {
                 type="radio"
                 name="leftRadio"
                 id="leftSideBarIcon"
-                checked
+                defaultChecked
             />
             <ChatRoomList />
             <ChatMainPage />
@@ -20,7 +19,7 @@ export default function ChatLayout() {
                 type="radio"
                 name="rightRadio"
                 id="rightSideBarIcon"
-                checked
+                defaultChecked
             />
             <ChatMemberList />
         </div>

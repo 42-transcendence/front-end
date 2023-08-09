@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from "react";
 import MembersIcon from "/public/members.svg";
 import SettingIcon from "/public/setting.svg";

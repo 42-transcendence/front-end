@@ -1,4 +1,5 @@
-/* eslint-disable react/jsx-no-undef */
+"use client";
+
 import React from "react";
 import { ProfileItemConfig } from "../ContextMenu";
 import SidebarIcon from "/public/sidebar.svg";
