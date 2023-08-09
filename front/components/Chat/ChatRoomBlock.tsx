@@ -13,14 +13,15 @@ export default function ChatRoomBlock({
 }) {
     const numberOfUnreadMessages =
         chatRoom.numberOfUnreadMessages > 0 ? (
-            <div className="flex min-w-[22px] flex-col items-center justify-center rounded-[100px] bg-red-500 px-1 py-0.5">
-                <span className="flex text-center font-sans font-normal not-italic text-white ">
+            <div className="flex min-w-[22px] flex-col items-center justify-center rounded-md bg-red-500 p-1">
+                <span className="flex text-center font-sans font-medium not-italic text-white ">
                     {chatRoom.numberOfUnreadMessages > 999
                         ? "999+"
                         : chatRoom.numberOfUnreadMessages.toString()}
                 </span>
             </div>
         ) : null;
+
     return (
         <div className="rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80">
             {/* chatrooms - image */}
