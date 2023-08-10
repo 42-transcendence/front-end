@@ -1,8 +1,4 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Status } from "@/components/Status";
-import { Icon } from "@/components/Icon/Icon";
-import { Avatar } from "@/components/Avatar";
 
 export default function Home() {
     return (

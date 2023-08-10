@@ -1,8 +1,8 @@
 // import { useState } from "react";
 import { Avatar } from "../Avatar";
 import {
-    ChatBubbleTailLeft,
-    ChatBubbleTailRight,
+    Chat_ChatBubbleTailLeft,
+    Chat_ChatBubbleTailRight,
 } from "@/components/ImageLibrary";
 
 type UUID = string;
@@ -69,7 +69,7 @@ function ChatBubble({
                   padding: "pl-[11px] pt-[5px]",
                   bgColor: "bg-primary",
                   tail: (
-                      <ChatBubbleTailLeft
+                      <Chat_ChatBubbleTailLeft
                           width="24"
                           height="13"
                           className="absolute left-0 top-0 text-primary"
@@ -81,7 +81,7 @@ function ChatBubble({
                   padding: "pr-[11px] pt-[5px]",
                   bgColor: "bg-secondary",
                   tail: (
-                      <ChatBubbleTailRight
+                      <Chat_ChatBubbleTailRight
                           width="24"
                           height="13"
                           className="absolute right-0 top-0 text-secondary"

@@ -13,30 +13,11 @@ export function Icon({
 }: {
     className: string;
     type:
-        | "blankStar"
-        | "chat"
-        | "chatFromLeft"
         | "check"
-        | "doubleSharp"
+        | "double-sharp"
         | "edit"
-        | "externalWindow"
-        | "externalWindowInsideWindow"
-        | "filledStar"
-        | "friend"
-        | "hamburger"
-        | "line hdoo"
-        | "lock"
-        | "members"
-        | "next"
-        | "password"
-        | "plus"
-        | "search"
-        | "send"
-        | "setting"
-        | "sidebar"
-        | "social"
-        | "vercel"
-        | "x";
+        | "star-filled"
+        | "sidebar";
     size: number;
 }): React.ReactElement {
     return (

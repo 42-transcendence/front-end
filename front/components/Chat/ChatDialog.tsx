@@ -1,6 +1,6 @@
 "use client";
 import { useLayoutEffect, useRef, useState } from "react";
-import { Send } from "@/components/ImageLibrary";
+import { IconSend } from "@/components/ImageLibrary";
 import {
     // ChatBubble,
     // ChatBubbleRight,
@@ -41,7 +41,7 @@ function MessageInputArea() {
                 rows={1}
                 // autoFocus={true}
                 ref={textareaRef}
-                placeholder="Send a message"
+                placeholder="IconSend a message"
                 style={{
                     minHeight: MIN_TEXTAREA_HEIGHT,
                     resize: "none",
@@ -50,7 +50,7 @@ function MessageInputArea() {
                 className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
             />
             <button type="button" onClick={handleClick}>
-                <Send
+                <IconSend
                     className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
                     width={32}
                     height={32}
