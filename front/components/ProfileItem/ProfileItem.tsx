@@ -27,7 +27,7 @@ export function ProfileItem({
 }: {
     config: ProfileItemConfig;
     selected: boolean;
-    children: React.ReactNode;
+    children?: React.ReactNode | undefined;
     onClick: MouseEventHandler;
 }) {
     return (
