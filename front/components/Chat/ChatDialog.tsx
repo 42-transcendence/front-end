@@ -41,7 +41,7 @@ function MessageInputArea() {
                 rows={1}
                 // autoFocus={true}
                 ref={textareaRef}
-                placeholder="IconSend a message"
+                placeholder="Send a message"
                 style={{
                     minHeight: MIN_TEXTAREA_HEIGHT,
                     resize: "none",
