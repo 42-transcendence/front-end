@@ -1,6 +1,6 @@
 "use client";
 import React, { ReactNode } from "react";
-import { Lock, Person } from "@/components/ImageLibrary";
+import { IconLock, IconPerson } from "@/components/ImageLibrary";
 import { ChatRoomInfo } from "./ChatRoomList";
 import { Avatar } from "../Avatar";
 
@@ -43,7 +43,7 @@ export default function ChatRoomBlock({
                                 {children}
                             </span>
                             <span className="flex h-fit w-fit shrink-0 flex-row gap-1">
-                                <Lock
+                                <IconLock
                                     width="100%"
                                     height={12}
                                     className="text-yellow-200/70"
@@ -58,7 +58,7 @@ export default function ChatRoomBlock({
 
                     <div className="relative flex flex-col items-end gap-4 text-xs leading-3">
                         <div className="flex shrink-0 flex-row gap-1">
-                            <Person
+                            <IconPerson
                                 width={12}
                                 height={12}
                                 className="text-gray-200/70"

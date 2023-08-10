@@ -17,7 +17,7 @@ export default function AchivementCard() {
             {/* star icon */}
             <div className="flex items-center gap-[30px] px-20 py-4">
                 <div className="h-px w-[75px] bg-white"></div>
-                <Icon type="filledStar" size={40} className="" />
+                <Icon type="star-filled" size={40} className="" />
                 <div className="h-px w-[75px] bg-white"></div>
             </div>
             {/* trophy image */}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Members, Setting, Search } from "@/components/ImageLibrary";
+import { IconMembers, IconSetting, IconSearch } from "@/components/ImageLibrary";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField";
 import { ProfileItem, ProfileItemConfig } from "../ProfileItem";
@@ -70,7 +70,7 @@ export default function ChatMemberList() {
             <div className="gradient-border float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-[''] lg:rounded-[28px_0px_0px_28px]">
                 <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
                     <label htmlFor="rightSideBarIcon">
-                        <Members
+                        <IconMembers
                             className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
                             width={48}
                             height={48}
@@ -81,7 +81,7 @@ export default function ChatMemberList() {
                             Chat member list
                         </p>
                     </div>
-                    <Setting
+                    <IconSetting
                         className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
                         width={48}
                         height={48}
@@ -90,10 +90,10 @@ export default function ChatMemberList() {
 
                 <TextField
                     value={query}
-                    placeholder="Search..."
+                    placeholder="IconSearch..."
                     onChange={(event) => setQuery(event.target.value)}
                 >
-                    <Search
+                    <IconSearch
                         className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
                         width={24}
                         height={24}

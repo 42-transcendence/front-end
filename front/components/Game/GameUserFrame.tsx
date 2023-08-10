@@ -15,7 +15,7 @@ const dummyData: gameScore = {
 export default function GameUserFrame() {
     return (
         <div className="flex w-[322px] flex-col items-center rounded-[35px] bg-black/70 px-[38px] pb-[23px] pt-[30px]">
-            <Icon type="doubleSharp" size={20} className="" />
+            <Icon type="double-sharp" size={20} className="" />
             <GameUserProfile />
             {/* round score */}
             <GameUserRoundScore />
