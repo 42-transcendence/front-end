@@ -5,7 +5,7 @@ import { ChatDialog } from "@/components/Chat/ChatDialog";
 
 export default function GamePage() {
     return (
-        <main className="relative flex h-full flex-col items-center justify-end gap-2.5 self-stretch p-2.5">
+        <main className="relative flex h-[100dvh] flex-col items-center justify-end gap-2.5 self-stretch p-2.5">
             <div className="flex flex-col items-center justify-center ">
                 <div className="flex flex-col items-center justify-between self-stretch px-2.5 py-[30px]">
                     {/* name tag */}
