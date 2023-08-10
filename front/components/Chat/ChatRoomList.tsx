@@ -106,12 +106,12 @@ export default function ChatRoomList() {
                     </div>
                     <label htmlFor="leftSideBarIcon">
                         <IconSidebar
-                            className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:block"
+                            className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:block"
                             width={48}
                             height={48}
                         />
                         <IconHamburger
-                            className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
+                            className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:hidden"
                             width={48}
                             height={48}
                         />

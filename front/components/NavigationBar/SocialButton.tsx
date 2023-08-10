@@ -17,7 +17,7 @@ export function SocialButton() {
         <>
             <button type="button" onClick={handleClick}>
                 <ChatIcon
-                    className="rounded-lg p-2 text-primary drop-shadow-[0_0_0.3rem_#ffffff70] hover:bg-primary/30 hover:text-white focus:bg-controlsSelected"
+                    className="rounded-lg p-2 text-primary hover:bg-primary/30 hover:text-white/80 focus:bg-controlsSelected"
                     width={48}
                     height={48}
                 />
