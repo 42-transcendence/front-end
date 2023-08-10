@@ -8,11 +8,11 @@ export function TextField({
     className,
     max,
 }: {
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
     value: string;
     placeholder?: string | undefined;
     onChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
-    className?: string;
+    className?: string | undefined;
     max?: number | undefined;
 }) {
     // TODO: reconsider children position or purpose?
