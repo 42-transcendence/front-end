@@ -5,7 +5,7 @@ import { ChatDialog } from "@/components/Chat/ChatDialog";
 
 export default function GamePage() {
     return (
-        <main className="relative flex h-[100dvh] flex-col items-center justify-end gap-2.5 self-stretch p-2.5">
+        <div className="relative flex h-full flex-col items-center justify-start gap-2.5 bg-black/30  p-2.5 backdrop-blur-3xl">
             <div className="flex flex-col items-center justify-center ">
                 <div className="flex flex-col items-center justify-between self-stretch px-2.5 py-[30px]">
                     {/* name tag */}
@@ -33,7 +33,7 @@ export default function GamePage() {
                     <div className="relative flex flex-col items-center justify-center gap-10 self-stretch lg:flex-row">
                         {/* TODO: selectable chatting room / if selected, shurink other one (chat / character select)*/}
                         <ChatDialog
-                            outerFrame="rounded-[32px] min-h-[200px]"
+                            outerFrame="rounded-[32px] max-h-[400px] min-h-[200px]"
                             innerFrame="max-w-[600px]"
                         />
                         <CharacterSelector />
@@ -41,6 +41,6 @@ export default function GamePage() {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }
