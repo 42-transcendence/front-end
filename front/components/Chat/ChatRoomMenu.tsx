@@ -28,11 +28,13 @@ export function ChatRoomMenu({ isAdmin }: { isAdmin: boolean }) {
                 </MenuItem>
             )}
             {isAdmin && (
-                <MenuItem className="active:bg-red-500/80">
+                <MenuItem className="hover:bg-red-500/80 active:bg-secondary/80">
                     채팅방 삭제
                 </MenuItem>
             )}
-            <MenuItem className="active:bg-red-500/80">방 나가기</MenuItem>
+            <MenuItem className="hover:bg-red-500/80 active:bg-secondary/80">
+                방 나가기
+            </MenuItem>
         </div>
     );
 }

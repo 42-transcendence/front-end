@@ -4,7 +4,7 @@ import ChatMemberList from "./ChatMemberList";
 
 export default function ChatLayout() {
     return (
-        <div className="backblur flex h-full w-full flex-row justify-start bg-windowGlass/30 ">
+        <div className="backblur flex h-full w-full flex-row justify-start bg-windowGlass/30">
             <input
                 className="peer/left hidden"
                 type="radio"
