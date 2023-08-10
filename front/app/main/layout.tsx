@@ -44,7 +44,7 @@ export default function MainLayout({
         function checkAccessToken() {
             //TODO: 기존에 이미 인증된 상태(스토리지에 토큰이 있는 상태)라면 백으로 한번 보내서 검증시켜봐야 함.
             const accessToken = window.localStorage.getItem("access_token");
-            setLoggedin(true);
+            setLoggedin(accessToken !== null);
             if (accessToken !== null) {
                 setCookie("at", accessToken, { secure: true, "max-age": 3600 });
             }
