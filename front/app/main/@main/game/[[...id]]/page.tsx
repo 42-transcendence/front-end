@@ -86,16 +86,15 @@ function GameWaitingPage() {
     );
 }
 
+function isValidGameId(id: string | string[]) {
+    if (!Array.isArray(id)) return false;
+    return id.length === 1 && Number.isInteger(Number(id));
+};
+
 export default function GamePage() {
     const params = useParams();
 
     const paramKeys = Object.keys(params);
-
-    const isValidGameId = (id: string | string[]) => {
-        if (!Array.isArray(id)) return false;
-        return id.length === 1 && Number.isInteger(Number(id));
-    };
-
     if (paramKeys.length !== 1 || paramKeys[0] !== "id") {
         return <InputGameIdPage />;
     }
