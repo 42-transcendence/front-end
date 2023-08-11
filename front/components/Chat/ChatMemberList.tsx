@@ -70,8 +70,8 @@ export default function ChatMemberList() {
     });
 
     return (
-        <div className="absolute right-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex">
-            <div className="float-left flex h-full w-full shrink-0 flex-col items-start gap-2 bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-[''] 2xl:rounded-[28px_0px_0px_28px]">
+        <div className="absolute right-0  z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex">
+            <div className="float-left flex h-full w-full shrink-0 flex-col items-start gap-2 bg-black/30 p-4 before:rounded-[28px] before:p-px before:content-[''] 2xl:rounded-[28px_0px_0px_28px]">
                 <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
                     <label htmlFor="rightSideBarIcon">
                         <IconMembers

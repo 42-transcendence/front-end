@@ -95,8 +95,8 @@ export default function ChatRoomList() {
     });
 
     return (
-        <div className="gradient-border absolute z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip bg-black/30 text-gray-200/80 transition-all before:rounded-[0px_28px_28px_0px] peer-checked/left:w-0 peer-checked/left:min-w-0 2xl:relative 2xl:block 2xl:w-80 2xl:rounded-[0px_28px_28px_0px]">
-            <div className="float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[28px] p-4 backdrop-blur-[50px] before:p-px before:content-[''] 2xl:w-fit 2xl:rounded-[28px]">
+        <div className="absolute z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip bg-black/30  text-gray-200/80 backdrop-blur-[50px] transition-all before:rounded-[0px_28px_28px_0px] peer-checked/left:w-0 peer-checked/left:min-w-0 2xl:relative 2xl:block 2xl:w-80 2xl:rounded-[0px_28px_28px_0px]">
+            <div className="float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 p-4 before:p-px before:content-[''] 2xl:w-fit 2xl:rounded-[28px]">
                 <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
                     <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
                         <IconEdit className="" width={17} height={17} />
