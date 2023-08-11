@@ -108,7 +108,7 @@ export default function ChatMemberList() {
 
                 {results.map((item, index) => (
                     <ProfileItem
-                        className="rounded-md"
+                        type="social"
                         key={item.id}
                         config={item}
                         selected={item.id === selectedId}
