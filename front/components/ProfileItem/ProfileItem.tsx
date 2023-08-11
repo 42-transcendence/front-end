@@ -37,12 +37,12 @@ export function ProfileItem({
 }) {
     const contextMenuType = (): React.ReactNode => {
         switch (type) {
-            case "social":
-                return <ContextMenu_Social profile={config} />;
-            case "friend":
-                return <ContextMenu_Friend profile={config} />;
-            case "myprofile":
-                return <ContextMenu_MyProfile profile={config} />;
+        case "social":
+            return <ContextMenu_Social profile={config} />;
+        case "friend":
+            return <ContextMenu_Friend profile={config} />;
+        case "myprofile":
+            return <ContextMenu_MyProfile profile={config} />;
         }
     };
     return (
