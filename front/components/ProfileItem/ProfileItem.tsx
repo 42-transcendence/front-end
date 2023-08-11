@@ -26,7 +26,7 @@ export function ProfileItem({
     children,
     onClick,
 }: {
-    className: string;
+    className?: string | undefined;
     config: ProfileItemConfig;
     selected: boolean;
     children?: React.ReactNode | undefined;
