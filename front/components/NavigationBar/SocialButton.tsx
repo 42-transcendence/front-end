@@ -16,11 +16,7 @@ export function SocialButton() {
     return (
         <>
             <button type="button" onClick={handleClick}>
-                <ChatIcon
-                    className="rounded-lg p-2 shadow-white drop-shadow-[0_0_0.1rem_#ffffff30] hover:bg-primary/30 hover:text-white/80 focus:bg-controlsSelected active:bg-secondary"
-                    width={48}
-                    height={48}
-                />
+                <ChatIcon className="h-12 w-12 rounded-lg p-2 shadow-white drop-shadow-[0_0_0.1rem_#ffffff30] hover:bg-primary/30 hover:text-white/80 focus:bg-controlsSelected active:bg-secondary 2xl:h-14 2xl:w-14" />
             </button>
             {showModal &&
                 createPortal(
