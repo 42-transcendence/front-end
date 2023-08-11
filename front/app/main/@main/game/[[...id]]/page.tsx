@@ -34,7 +34,11 @@ function InputGameIdPage() {
                     <div className="gameNameTag flex items-center gap-[250px] rounded-[50px] px-[106px] py-10 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
                         <div className="flex flex-col justify-center text-center text-2xl font-bold italic leading-[normal] text-white">
                             <p>Input Game Id</p>
-                            <input className="text-black" type="text" placeholder="4242" />
+                            <input
+                                className="text-black"
+                                type="text"
+                                placeholder="4242"
+                            />
                         </div>
                         <Link href="/main">Go to main</Link>
                     </div>
@@ -89,7 +93,7 @@ function GameWaitingPage() {
 function isValidGameId(id: string | string[]) {
     if (!Array.isArray(id)) return false;
     return id.length === 1 && Number.isInteger(Number(id));
-};
+}
 
 export default function GamePage() {
     const params = useParams();
