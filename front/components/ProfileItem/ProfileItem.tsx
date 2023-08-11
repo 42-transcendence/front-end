@@ -34,13 +34,13 @@ export function ProfileItem({
 }) {
     return (
         <div
-            className={`relative flex w-full flex-col items-start rounded-[28px] ${className} gap-4 py-4 hover:bg-primary/30`}
+            className={`relative flex w-full flex-col items-start ${className} `}
         >
             <div
-                className="group relative flex w-full flex-row items-center space-x-4 self-stretch px-4"
+                className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
                 onClick={onClick}
             >
-                <div className="disable-select relative flex items-center gap-2 space-x-4 rounded-xl">
+                <div className="disable-select relative flex items-center gap-2 space-x-4 rounded">
                     <div className="relative flex items-center justify-center">
                         <Avatar
                             className=""
@@ -48,7 +48,7 @@ export function ProfileItem({
                             size="w-[45px]"
                         />
                     </div>
-                    <div className="relative, flex w-fit flex-col items-start gap-1">
+                    <div className="relative flex w-fit flex-col items-start gap-1">
                         <div className="text-bold relative w-fit whitespace-nowrap font-sans text-base leading-none tracking-normal text-gray-50">
                             {children ? children : config.name}
                         </div>
