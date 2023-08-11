@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { IconMembers, IconSetting, IconSearch } from "@/components/ImageLibrary";
+import {
+    IconMembers,
+    IconSetting,
+    IconSearch,
+} from "@/components/ImageLibrary";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField";
 import { ProfileItem, ProfileItemConfig } from "../ProfileItem";
@@ -66,9 +70,9 @@ export default function ChatMemberList() {
     });
 
     return (
-        <div className="absolute right-0 z-10 h-full w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/right:w-0 lg:relative lg:block">
-            <div className="gradient-border float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 bg-black/30 p-4 backdrop-blur-[50px] before:rounded-[28px] before:p-px before:content-[''] lg:rounded-[28px_0px_0px_28px]">
-                <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
+        <div className="absolute right-0  z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex">
+            <div className="float-left flex h-full w-full shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 2xl:rounded-[28px_0px_0px_28px] 2xl:py-4">
+                <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch 2xl:py-2">
                     <label htmlFor="rightSideBarIcon">
                         <IconMembers
                             className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
@@ -78,30 +82,33 @@ export default function ChatMemberList() {
                     </label>
                     <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
                         <p className="font-sans text-base leading-4 ">
-                            Chat member list
+                            친구 목록
                         </p>
                     </div>
                     <IconSetting
-                        className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
+                        className="shrink-0 rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
                         width={48}
                         height={48}
                     />
                 </div>
 
                 <TextField
+                    icon={
+                        <IconSearch
+                            className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                            width={24}
+                            height={24}
+                        />
+                    }
+                    className="py-1 pl-7 pr-2 transition-all focus-within:pl-2 focus-within:pr-9"
                     value={query}
-                    placeholder="IconSearch..."
+                    placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
-                >
-                    <IconSearch
-                        className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                        width={24}
-                        height={24}
-                    />
-                </TextField>
+                ></TextField>
 
                 {results.map((item, index) => (
                     <ProfileItem
+                        className="rounded-md"
                         key={item.id}
                         config={item}
                         selected={item.id === selectedId}
@@ -120,8 +127,6 @@ export default function ChatMemberList() {
                         />
                     </ProfileItem>
                 ))}
-
-                <div className="flex w-full scroll-m-2 flex-col gap-2 overflow-auto"></div>
             </div>
         </div>
     );

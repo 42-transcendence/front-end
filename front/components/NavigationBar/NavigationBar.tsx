@@ -12,7 +12,6 @@ import { DoubleSharp } from "../ImageLibrary";
 
 export async function NavigationBar() {
     // TODO: fetch account data.
-    // TODO: change to tailwind css
     // const token = cookies().get("at")?.value;
     // console.log(token);
     // const account = token
@@ -23,19 +22,19 @@ export async function NavigationBar() {
     // console.log(account);
 
     return (
-        <div className="relative flex h-16 w-full flex-row items-center justify-between bg-black/80 px-5 py-2.5 backdrop-blur-[20px] backdrop-brightness-100">
+        <div className="relative flex h-fit w-full flex-row items-center justify-between bg-primary/30 p-2 backdrop-blur-[20px] backdrop-brightness-100 2xl:px-6 2xl:py-4">
             <Link className="relative" href="/main">
                 <DoubleSharp
-                    className="text-white drop-shadow-[0_0_0.3rem_#ffffff70]"
-                    width={32}
+                    className="w-12 p-3 text-white drop-shadow-[0_0_0.3rem_#ffffff70] 2xl:p-1"
+                    width="100%"
                     height="100%"
                 />
             </Link>
-            <div className="relative flex flex-row items-center justify-between gap-4 ">
+            <div className="relative flex flex-row items-center justify-between gap-4 2xl:gap-6">
                 <SocialButton />
                 {/* TODO: on click Avatar in navbar, show context menu myinfo */}
                 <Avatar
-                    size={"w-10 h-10"}
+                    size={"w-9 h-9 2xl:w-12 2xl:h-12"}
                     // avatarKey={account?.avatarKey}
                     avatarKey={"jkong"}
                     className="relative bg-white/30"

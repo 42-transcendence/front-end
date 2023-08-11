@@ -2,7 +2,11 @@
 
 import React from "react";
 import { ProfileItemConfig } from "../ContextMenu";
-import { IconSidebar, IconMembers, IconHamburger } from "@/components/ImageLibrary";
+import {
+    IconSidebar,
+    IconMembers,
+    IconHamburger,
+} from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 
 const config: ProfileItemConfig = {
@@ -14,7 +18,7 @@ const config: ProfileItemConfig = {
 
 export function ChatHeader() {
     return (
-        <div className="group relative m-5 flex shrink-0 select-none flex-col justify-center self-stretch">
+        <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch py-2">
             <input
                 className="peer/headerleft hidden"
                 type="radio"
@@ -23,21 +27,21 @@ export function ChatHeader() {
             />
             <label
                 htmlFor="leftHeaderIcon"
-                className="absolute left-0 top-0 w-12 overflow-clip transition-all duration-500 peer-checked/headerleft:w-0"
+                className="absolute left-2 top-2 w-12 overflow-clip transition-all duration-500 peer-checked/headerleft:w-0"
             >
                 <IconSidebar
-                    className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 active:bg-secondary/80 lg:block"
+                    className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 active:bg-secondary/80 2xl:block"
                     width={48}
                     height={48}
                 />
                 <IconHamburger
-                    className="rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
+                    className="rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:hidden"
                     width={48}
                     height={48}
                 />
             </label>
-            <details className="h-12 overflow-hidden transition-all duration-500 open:h-72">
-                <summary className="flex w-full flex-row justify-center">
+            <details className="h-fit list-none overflow-hidden transition-all duration-500 open:h-[19rem]">
+                <summary className="flex h-fit w-fit shrink-0 list-none justify-center rounded-md p-2 hover:bg-primary/30 active:bg-secondary/80">
                     <div className="relative items-center justify-center gap-2.5 text-base">
                         <div className="flex flex-col items-center justify-center px-4 py-0">
                             <div className="text-center text-[17px] font-bold not-italic leading-[18px] text-white/70">
@@ -60,7 +64,7 @@ export function ChatHeader() {
                 />
                 <label
                     htmlFor="rightHeaderIcon"
-                    className="absolute right-0 top-0 w-12 overflow-clip transition-all duration-500 peer-checked/headerright:w-0"
+                    className="absolute right-2 top-2 w-12 overflow-clip transition-all duration-500 peer-checked/headerright:w-0"
                 >
                     <IconMembers
                         className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"

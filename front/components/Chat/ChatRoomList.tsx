@@ -1,10 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { IconSidebar, IconHamburger, IconEdit, IconSearch } from "@/components/ImageLibrary";
+import {
+    IconSidebar,
+    IconHamburger,
+    IconEdit,
+    IconSearch,
+} from "@/components/ImageLibrary";
 import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField";
+import { CreateNewRoom } from "./CreateNewRoom";
 
 type User = {
     id: number;
@@ -89,23 +95,23 @@ export default function ChatRoomList() {
     });
 
     return (
-        <div className="gradient-border absolute z-10 h-full w-[310px] select-none overflow-clip bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all before:rounded-[0px_28px_28px_0px] peer-checked/left:w-0 lg:relative lg:block lg:rounded-[0px_28px_28px_0px]">
-            <div className="float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 rounded-[28px] p-4 before:p-px before:content-[''] lg:rounded-[28px]">
-                <div className="flex h-16 shrink-0 flex-row items-center justify-between self-stretch">
+        <div className="absolute z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip bg-black/30  text-gray-200/80 backdrop-blur-[50px] transition-all peer-checked/left:w-0 peer-checked/left:min-w-0 2xl:relative 2xl:block 2xl:w-80 2xl:rounded-[0px_28px_28px_0px]">
+            <div className="ore:p-px float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:w-fit 2xl:rounded-[28px] 2xl:py-4">
+                <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch 2xl:py-2">
                     <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
                         <IconEdit className="" width={17} height={17} />
                         <p className="font-sans text-base leading-4 ">
-                            Create new room
+                            방 만들기
                         </p>
                     </div>
                     <label htmlFor="leftSideBarIcon">
                         <IconSidebar
-                            className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:block"
+                            className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:block"
                             width={48}
                             height={48}
                         />
                         <IconHamburger
-                            className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 lg:hidden"
+                            className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:hidden"
                             width={48}
                             height={48}
                         />
@@ -114,18 +120,20 @@ export default function ChatRoomList() {
 
                 {/* IconsearchBar */}
                 <TextField
+                    icon={
+                        <IconSearch
+                            className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                            width={24}
+                            height={24}
+                        />
+                    }
+                    className="py-1 pl-7 pr-2 transition-all focus-within:pl-2 focus-within:pr-9"
                     value={query}
-                    placeholder="IconSearch..."
+                    placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
-                >
-                    <IconSearch
-                        className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                        width={24}
-                        height={24}
-                    />
-                </TextField>
+                />
 
-                <div className="flex w-full scroll-m-2 flex-col gap-2 overflow-auto">
+                <div className="flex w-full shrink-0 scroll-m-2 flex-col gap-2 overflow-auto">
                     {results.map((item, index) => (
                         <ChatRoomBlock key={item.id} chatRoom={item}>
                             <FzfHighlight

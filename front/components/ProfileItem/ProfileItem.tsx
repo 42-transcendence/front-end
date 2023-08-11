@@ -20,19 +20,21 @@ export type ProfileItemConfig = ProfileItemInternlConfig &
     ProfileItemViewConfig;
 
 export function ProfileItem({
+    className,
     config,
     selected,
     children,
     onClick,
 }: {
+    className?: string | undefined;
     config: ProfileItemConfig;
     selected: boolean;
-    children: React.ReactNode;
+    children?: React.ReactNode | undefined;
     onClick: MouseEventHandler;
 }) {
     return (
         <div
-            className={`relative flex w-[260px] flex-col items-start rounded-[14px] ${config.className} gap-4 py-4 hover:bg-primary/30`}
+            className={`relative flex w-full flex-col items-start rounded-[28px] ${className} gap-4 py-4 hover:bg-primary/30`}
         >
             <div
                 className="group relative flex w-full flex-row items-center space-x-4 self-stretch px-4"

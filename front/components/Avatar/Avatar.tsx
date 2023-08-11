@@ -64,10 +64,10 @@ export function Avatar({
 
     return (
         <div
-            className={`${className} flex aspect-square ${size} flex-shrink-0 items-start gap-2.5 rounded-full`}
+            className={`${className} flex aspect-square ${size} items-start gap-2.5 rounded-full`}
         >
             <Image
-                className="relative flex-1 flex-grow self-stretch rounded-full"
+                className="relative rounded-full"
                 src={`/${avatarKey}.png`}
                 alt="Avatar"
                 fill={true}
