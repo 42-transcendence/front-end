@@ -1,14 +1,14 @@
 import React from "react";
 
 export function TextField({
-    children,
+    icon,
     value,
     placeholder,
     onChange,
     className,
     max,
 }: {
-    children?: React.ReactNode | undefined;
+    icon?: React.ReactNode | undefined;
     value: string;
     placeholder?: string | undefined;
     onChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
@@ -29,7 +29,7 @@ export function TextField({
                 value={value}
                 onChange={onChange}
             />
-            {children}
+            {icon}
         </form>
     );
 }

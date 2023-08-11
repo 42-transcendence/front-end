@@ -120,17 +120,18 @@ export default function ChatRoomList() {
 
                 {/* IconsearchBar */}
                 <TextField
+                    icon={
+                        <IconSearch
+                            className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                            width={24}
+                            height={24}
+                        />
+                    }
                     className="py-1 pl-7 pr-2 transition-all focus-within:pl-2 focus-within:pr-9"
                     value={query}
                     placeholder="IconSearch..."
                     onChange={(event) => setQuery(event.target.value)}
-                >
-                    <IconSearch
-                        className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                        width={24}
-                        height={24}
-                    />
-                </TextField>
+                />
 
                 <div className="flex w-full shrink-0 scroll-m-2 flex-col gap-2 overflow-auto">
                     {results.map((item, index) => (
