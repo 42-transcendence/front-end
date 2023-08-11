@@ -1,5 +1,5 @@
 import Link from "next/link";
-import CreateGame from "./CreateGame";
+import { CreateGame } from "./CreateGame";
 
 export default function Home() {
     return (
