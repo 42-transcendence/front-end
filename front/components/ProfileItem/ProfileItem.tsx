@@ -9,6 +9,7 @@ import {
     ProfileItemConfig as ProfileItemInternlConfig,
     ContextMenu_Friend,
     ContextMenu_Social,
+    ContextMenu_MyProfile,
 } from "../ContextMenu";
 
 type ProfileItemViewConfig = {
@@ -24,6 +25,7 @@ export function ProfileItem({
     config,
     selected,
     children,
+    type,
     onClick,
 }: {
     className?: string | undefined;
@@ -31,7 +33,18 @@ export function ProfileItem({
     selected: boolean;
     children?: React.ReactNode | undefined;
     onClick: MouseEventHandler;
+    type: "social" | "friend" | "myprofile";
 }) {
+    const contextMenuType = (): React.ReactNode => {
+        switch (type) {
+            case "social":
+                return <ContextMenu_Social profile={config} />;
+            case "friend":
+                return <ContextMenu_Friend profile={config} />;
+            case "myprofile":
+                return <ContextMenu_MyProfile profile={config} />;
+        }
+    };
     return (
         <div
             className={`relative flex w-full flex-col items-start ${className} `}
@@ -60,7 +73,7 @@ export function ProfileItem({
                     </div>
                 </div>
             </div>
-            {selected && <ContextMenu_Social profile={config} />}
+            {selected && contextMenuType()}
         </div>
     );
 }
