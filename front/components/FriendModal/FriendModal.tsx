@@ -52,6 +52,7 @@ export function FriendModal(): React.ReactElement {
         <div className="gradient-border relative flex w-[262px] flex-col items-start overflow-clip rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']">
             {profiles.map((profile: ProfileItemConfig) => (
                 <ProfileItem
+                    type="friend"
                     key={profile.id}
                     config={profile}
                     selected={profile.id === selectedId}
