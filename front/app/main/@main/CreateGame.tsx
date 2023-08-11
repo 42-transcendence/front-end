@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function CreateGame() {
     const router = useRouter();
 
-    // 실제로 fetch 하면 시간 걸리니까 일단 편의상 만들어둔 dummy async 함수
+    // FIXME: 실제로 fetch 하면 시간 걸리니까 일단 편의상 만들어둔 dummy async 함수
     const asyncRoute = async () => {
         await new Promise((res) => setTimeout(res, 0));
         router.push("/main/game/4242");
