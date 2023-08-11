@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export default function CreateGame() {
+export function CreateGame() {
     const router = useRouter();
 
     // FIXME: 실제로 fetch 하면 시간 걸리니까 일단 편의상 만들어둔 dummy async 함수
