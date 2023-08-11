@@ -93,20 +93,22 @@ export default function ChatMemberList() {
                 </div>
 
                 <TextField
+                    icon={
+                        <IconSearch
+                            className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                            width={24}
+                            height={24}
+                        />
+                    }
                     className="py-1 pl-7 pr-2 transition-all focus-within:pl-2 focus-within:pr-9"
                     value={query}
-                    placeholder="IconSearch..."
+                    placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
-                >
-                    <IconSearch
-                        className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                        width={24}
-                        height={24}
-                    />
-                </TextField>
+                ></TextField>
 
                 {results.map((item, index) => (
                     <ProfileItem
+                        className="rounded-md"
                         key={item.id}
                         config={item}
                         selected={item.id === selectedId}

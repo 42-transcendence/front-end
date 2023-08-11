@@ -129,7 +129,7 @@ export default function ChatRoomList() {
                     }
                     className="py-1 pl-7 pr-2 transition-all focus-within:pl-2 focus-within:pr-9"
                     value={query}
-                    placeholder="IconSearch..."
+                    placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
                 />
 
