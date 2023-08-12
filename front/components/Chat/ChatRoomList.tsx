@@ -102,6 +102,7 @@ export default function ChatRoomList() {
                         type="checkbox"
                         id="CreateNewRoom"
                         className="peer hidden"
+                        defaultChecked
                     />
                     <label
                         htmlFor="CreateNewRoom"
@@ -112,7 +113,7 @@ export default function ChatRoomList() {
                             방 만들기
                         </p>
                     </label>
-                    <CreateNewRoom className="peer-checked:hidden" />
+                    <CreateNewRoom className="transition-all peer-checked:h-0  peer-checked:py-0" />
                     <label htmlFor="leftSideBarIcon">
                         <IconSidebar
                             className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:block"
