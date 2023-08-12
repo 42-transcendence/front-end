@@ -11,58 +11,64 @@ export function CreateNewRoom({ className }: { className: string }) {
 
     return (
         <div
-            className={`${className} absolute right-0 top-24 z-50 flex h-full w-full flex-col gap-4 rounded-[28px_28px_0px_0px] bg-gray-800 p-4`}
+            className={`${className} absolute right-0 top-24 z-50 flex h-full w-full flex-col gap-2 rounded-[28px_28px_0px_0px] bg-gray-800 p-4`}
         >
-            <div>
+            <form className="flex flex-col items-center p-3">
                 <TextField
                     type="search"
-                    className="relative bg-transparent p-3 transition-all focus-within:py-5"
+                    className="relative bg-transparent text-3xl"
                     placeholder="Title..."
                     value={title}
                     onChange={(event) => {
                         setTitle(event.target.value);
                     }}
                 />
-                <hr className="border-gray-200/50" />
-            </div>
+                <hr className="mx-3 w-full border-gray-200/30 transition-all " />
+            </form>
 
-            <div className="relative flex flex-row items-center gap-3">
+            <label
+                htmlFor="private"
+                className="relative flex w-full flex-row items-center gap-3 rounded-xl p-3 hover:bg-gray-200/30"
+            >
                 <input
                     type="checkbox"
                     id="private"
                     className="peer/private hidden"
                 />
-                <label
-                    htmlFor="private"
-                    className=" gap-2 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors peer-checked/private:bg-secondary peer-checked/private:text-gray-50/80"
-                >
-                    <IconLock width={24} height={24} className="" />
-                </label>
-                <p className="text-sm peer-checked/private:hidden">공개</p>
-                <p className="hidden text-sm peer-checked/private:block">
+                <IconLock
+                    width={56}
+                    height={56}
+                    className="ext-gray-50/50 rounded-xl bg-gray-700/80 p-4 transition-colors peer-checked/private:bg-secondary peer-checked/private:text-gray-50/80"
+                />
+                <p className="relative text-sm peer-checked/private:hidden">
+                    공개
+                </p>
+                <p className="relative hidden text-sm peer-checked/private:block">
                     비공개
                 </p>
-            </div>
-            <div className="relative flex w-full flex-row items-start gap-3">
+            </label>
+
+            <label
+                htmlFor="secret"
+                className="relative flex w-full flex-row items-start gap-3 rounded-xl p-3 hover:bg-gray-200/30"
+            >
                 <input
                     type="checkbox"
                     id="secret"
                     className="peer/secret hidden"
                 />
-                <label
-                    htmlFor="secret"
-                    className=" gap-2 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors peer-checked/secret:bg-secondary peer-checked/secret:text-gray-50/80"
-                >
-                    <IconKey width={24} height={24} className="" />
-                </label>
-
-                <div className="absolute left-[4.25rem] top-4 items-end justify-center text-sm transition-all peer-checked/secret:absolute peer-checked/secret:left-[4.25rem] peer-checked/secret:top-0">
+                <IconKey
+                    width={56}
+                    height={56}
+                    className="ext-gray-50/50 rounded-xl bg-gray-700/80 p-4 transition-colors peer-checked/secret:bg-secondary peer-checked/secret:text-gray-50/80"
+                />
+                <div className="absolute left-[5rem] top-7 items-end justify-center text-sm transition-all peer-checked/secret:absolute peer-checked/secret:left-[5rem] peer-checked/secret:top-3">
                     비밀번호
                 </div>
                 <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm peer-checked/secret:flex">
                     <TextField
                         type="password"
-                        placeholder="..."
+                        placeholder="비밀번호 입력"
                         className="bg-black/30 p-4 placeholder-gray-500/30"
                         value={password}
                         onChange={(event) => {
@@ -70,7 +76,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                         }}
                     />
                 </div>
-            </div>
+            </label>
         </div>
     );
 }
