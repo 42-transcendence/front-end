@@ -1,6 +1,4 @@
-import React from "react";
-
-export function LoginButton({
+export function Button({
     children,
     icon,
     onClick,

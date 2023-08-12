@@ -1,6 +1,6 @@
 "use client";
 
-import { LoginButton } from "@/components/Button/LoginButton";
+import { Button } from "@/components/Button/Button";
 import { DoubleSharp, Logo42, LogoGoogle } from "@/components/ImageLibrary";
 
 const popupFeatures = ["popup=true", "width=600", "height=600"].join(",");
@@ -36,13 +36,13 @@ export default function LoginPage() {
                 </div>
                 <div className="relative flex h-[90%] w-fit flex-col items-center justify-center gap-1">
                     {loginList.map((e) => (
-                        <LoginButton
+                        <Button
                             key={e.key}
                             onClick={e.action}
                             icon={e.logo}
                         >
                             {e.innerText}
-                        </LoginButton>
+                        </Button>
                     ))}
                 </div>
             </div>
