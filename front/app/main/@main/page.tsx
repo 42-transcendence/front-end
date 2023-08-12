@@ -1,5 +1,6 @@
 import { CreateGameButton, QuickMatchButton } from "./GameButton";
 import { Game_Ghost3 } from "@/components/ImageLibrary";
+import { LogoutButton } from "./LogoutButton";
 
 export function HelloWorldPaper() {
     return (
@@ -39,6 +40,7 @@ export default function Home() {
                 <div className="flex h-[300px] flex-col items-center justify-center gap-[30px] px-[75px] py-[69px]">
                     <QuickMatchButton />
                     <CreateGameButton />
+                    <LogoutButton />
                 </div>
             </div>
         </div>
