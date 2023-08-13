@@ -1,40 +1,43 @@
 "use client";
 
 import {
+    Dispatch,
     LabelHTMLAttributes,
     ReactElement,
     ReactNode,
-    useEffect,
+    SetStateAction,
     useState,
 } from "react";
 
 type ToggleButtonProp = LabelHTMLAttributes<HTMLLabelElement> & {
     id: string;
+    bgClassName?: string;
+    checked: boolean;
+    setChecked: Dispatch<SetStateAction<boolean>>;
     icon: ReactElement;
     children: ReactNode;
 };
 
 export function ToggleButton(props: ToggleButtonProp) {
-    const [state, setState] = useState(false);
-    const { id, icon, children, ...rest } = props;
+    const { id, icon, bgClassName, checked, setChecked, children, ...rest } =
+        props;
 
     return (
         <label
             htmlFor={id}
-            aria-checked={state}
-            className="group relative flex w-full flex-row items-center gap-3 rounded-xl p-3 hover:bg-gray-500/30"
-            {...rest}
+            aria-checked={checked}
+            className={`group relative flex w-full flex-row items-center ${bgClassName}`}
         >
+            {icon}
             <input
                 onChange={() => {
-                    setState(!state);
+                    setChecked(!checked);
                 }}
-                checked={state}
+                checked={checked}
                 type="checkbox"
                 id={id}
-                className={``}
+                className="hidden"
             />
-            {icon}
             {children}
         </label>
     );
