@@ -8,9 +8,9 @@ export function CreateNewRoom({ className }: { className: string }) {
     const [title, setTitle] = useState("");
     const [password, setPassword] = useState("");
     const [limit, setLimit] = useState(1);
-    const [privateChecked, setPrivateChecked] = useState(true);
-    const [passwordChecked, setPasswordChecked] = useState(true);
-    const [limitChecked, setLimitChecked] = useState(true);
+    const [privateChecked, setPrivateChecked] = useState(false);
+    const [passwordChecked, setPasswordChecked] = useState(false);
+    const [limitChecked, setLimitChecked] = useState(false);
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();

@@ -15,8 +15,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en">
-            <body className={`text-white ${roboto.className}`}>{children}</body>
+        <html className="overflow-x-hidden" lang="en">
+            <body
+                className={`relative overflow-x-hidden text-white ${roboto.className}`}
+            >
+                {children}
+            </body>
         </html>
     );
 }

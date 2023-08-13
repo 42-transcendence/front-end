@@ -40,7 +40,7 @@ export default function ChatRoomBlock({
                 <div className="flex h-fit w-full justify-between gap-4 py-2 pl-0">
                     <div className="h-16 p-0">
                         <div className="flex h-8 flex-row items-center gap-2">
-                            <span className="line-clamp-1 text-ellipsis text-base text-white/90">
+                            <span className="relative line-clamp-1 w-full text-ellipsis font-sans text-base font-bold leading-none tracking-normal text-white/90">
                                 {children}
                             </span>
                             <span className="flex h-fit w-fit shrink-0 flex-row gap-1">

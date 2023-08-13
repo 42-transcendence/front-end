@@ -100,8 +100,8 @@ export default function ChatRoomList() {
     }
 
     return (
-        <div className="absolute z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all peer-checked/left:w-0 peer-checked/left:min-w-0 2xl:relative 2xl:block 2xl:w-80 2xl:rounded-[0px_28px_28px_0px]">
-            <div className="flex h-full w-[310px] shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:rounded-[28px] 2xl:py-4">
+        <div className="absolute left-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/left:w-0 peer-checked/left:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[0px_28px_28px_0px]">
+            <div className="flex h-full w-[310px] shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 backdrop-blur-[50px] 2xl:py-4">
                 <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch peer-checked:text-gray-200/80 2xl:py-2">
                     <label
                         aria-checked={checked}
@@ -126,7 +126,6 @@ export default function ChatRoomList() {
                         />
                     </label>
                 </div>
-
                 <input
                     type="checkbox"
                     checked={checked}
@@ -136,22 +135,21 @@ export default function ChatRoomList() {
                 />
                 <CreateNewRoom className="hidden peer-checked:block peer-checked:py-0" />
                 {/* IconsearchBar */}
+                <TextField
+                    type="search"
+                    icon={
+                        <IconSearch
+                            className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                            width={24}
+                            height={24}
+                        />
+                    }
+                    className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9 peer-checked:hidden"
+                    value={query}
+                    placeholder="Search..."
+                    onChange={(event) => setQuery(event.target.value)}
+                />
                 <div className="peer-checked:hidden">
-                    <TextField
-                        type="search"
-                        icon={
-                            <IconSearch
-                                className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                                width={24}
-                                height={24}
-                            />
-                        }
-                        className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9"
-                        value={query}
-                        placeholder="Search..."
-                        onChange={(event) => setQuery(event.target.value)}
-                    />
-
                     <div className="flex w-full shrink-0 scroll-m-2 flex-col gap-2 overflow-auto">
                         {results.map((item, index) => (
                             <ChatRoomBlock key={item.id} chatRoom={item}>

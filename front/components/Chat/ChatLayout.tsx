@@ -10,7 +10,6 @@ export default function ChatLayout() {
                 type="radio"
                 name="leftRadio"
                 id="leftSideBarIcon"
-                defaultChecked
             />
             <ChatRoomList />
             <ChatMainPage />
