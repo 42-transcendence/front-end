@@ -2,7 +2,7 @@
 
 import { DoubleSharp, IconArrow3, IconSearch } from "@/components/ImageLibrary";
 import { TextField } from "@/components/TextField";
-import UIFrame from "@/components/UIFrame/UiFrame";
+import UIFrame from "@/components/UIFrame/UIFrame";
 import { useState } from "react";
 
 export default function Welcome() {
