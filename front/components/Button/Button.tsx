@@ -4,7 +4,7 @@ export function Button({
     onClick,
 }: React.PropsWithChildren<{
     icon?: React.ReactElement | undefined;
-    onClick: React.MouseEventHandler<HTMLButtonElement>;
+    onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }>) {
     return (
         <button

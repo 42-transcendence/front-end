@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/Button/Button";
 import { useRouter } from "next/navigation";
 
 // TODO: 나중에 잘 정리해서 컴포넌트로 만들기 가능할듯?
