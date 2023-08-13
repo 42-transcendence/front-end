@@ -49,20 +49,24 @@ export function FriendModal(): React.ReactElement {
     //TODO: fetch profile datas
 
     return (
-        <div className="gradient-border relative flex w-[262px] flex-col items-start overflow-clip rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']">
-            {profiles.map((profile: ProfileItemConfig) => (
-                <ProfileItem
-                    type="friend"
-                    key={profile.id}
-                    config={profile}
-                    selected={profile.id === selectedId}
-                    onClick={() => {
-                        setSelectedId(
-                            profile.id !== selectedId ? profile.id : undefined,
-                        );
-                    }}
-                />
-            ))}
+        <div className="gradient-border relative flex w-[262px] flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']">
+            <div className="w-full overflow-clip rounded-[28px] ">
+                {profiles.map((profile: ProfileItemConfig) => (
+                    <ProfileItem
+                        type="friend"
+                        key={profile.id}
+                        config={profile}
+                        selected={profile.id === selectedId}
+                        onClick={() => {
+                            setSelectedId(
+                                profile.id !== selectedId
+                                    ? profile.id
+                                    : undefined,
+                            );
+                        }}
+                    />
+                ))}
+            </div>
         </div>
     );
 }

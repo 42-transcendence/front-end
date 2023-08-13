@@ -37,17 +37,17 @@ export function ProfileItem({
 }) {
     const contextMenuType = (): React.ReactNode => {
         switch (type) {
-        case "social":
-            return <ContextMenu_Social profile={config} />;
-        case "friend":
-            return <ContextMenu_Friend profile={config} />;
-        case "myprofile":
-            return <ContextMenu_MyProfile profile={config} />;
+            case "social":
+                return <ContextMenu_Social profile={config} />;
+            case "friend":
+                return <ContextMenu_Friend profile={config} />;
+            case "myprofile":
+                return <ContextMenu_MyProfile profile={config} />;
         }
     };
     return (
         <div
-            className={`relative flex w-full flex-col items-start ${className} `}
+            className={`relative flex h-fit w-full shrink-0 flex-col items-start ${className} `}
         >
             <div
                 className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
