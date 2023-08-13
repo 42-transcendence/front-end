@@ -1,16 +1,13 @@
-import Link from "next/link";
-import { CreateGame } from "./CreateGame";
-import { QuickMatch } from "./QuickMatch";
-import { DoubleSharp } from "@/components/ImageLibrary";
+import { CreateGameButton, QuickMatchButton } from "./GameButton";
 import { Game_Ghost3 } from "@/components/ImageLibrary";
 
-export function HelloWorld() {
+export function HelloWorldPaper() {
     return (
         <div className="z-10 min-w-max">
             <div className="flex flex-row gap-[25px] pt-[10px]">
                 <Game_Ghost3 width="80" height="80" color="#00FFD1" />
                 <div className="flex flex-col pb-[59px] text-center text-[32px] font-bold italic leading-[45px] text-[#00FFD1]">
-                    <div>HELLO, IT'S</div>
+                    <div>HELLO, IT&lsquo;S</div>
                     <div>DOUBLE SHARP!</div>
                 </div>
             </div>
@@ -33,16 +30,15 @@ export function HelloWorld() {
 
 export default function Home() {
     return (
-        <div className="backblur h-full w-full bg-black/30 before:backdrop-blur-[3px] before:lg:backdrop-blur-[1px] flex items-center justify-center">
-        
+        <div className="backblur flex h-full w-full items-center justify-center bg-black/30 before:backdrop-blur-[3px] before:lg:backdrop-blur-[1px]">
             <div className="flex flex-[1_0_0] flex-col items-center justify-center gap-2.5 self-stretch px-[700px] py-[147px] lg:flex-row">
                 <div className="flex flex-col items-start">
-                    <HelloWorld />
+                    <HelloWorldPaper />
                 </div>
 
                 <div className="flex h-[300px] flex-col items-center justify-center gap-[30px] px-[75px] py-[69px]">
-                    <QuickMatch />
-                    <CreateGame />
+                    <QuickMatchButton />
+                    <CreateGameButton />
                 </div>
             </div>
         </div>

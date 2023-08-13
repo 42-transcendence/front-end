@@ -1,7 +1,7 @@
 "use client";
 
 import { DoubleSharp, IconArrow3 } from "@/components/ImageLibrary";
-import UIFrame from "@/components/UIFrame/UIFrame";
+import { Card } from "@/components/Card/Card";
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 
@@ -51,7 +51,7 @@ export default function Welcome2() {
     );
     const observer = useMemo(
         () => new IntersectionObserver(handleIntersect, observerOptions),
-        [],
+        [handleIntersect, observerOptions],
     );
     useEffect(() => {
         if (rootRef.current === null) {
@@ -63,11 +63,11 @@ export default function Welcome2() {
         }
 
         return () => observer.disconnect();
-    }, []);
+    }, [observer]);
 
     return (
         <>
-            <UIFrame className="w-[30rem]">
+            <Card className="w-[30rem]">
                 <div className="flex flex-col items-center gap-[30px]">
                     <DoubleSharp width="24" height="24" />
                     <p>기본 프로필을 선택해주세요.</p>
@@ -109,7 +109,7 @@ export default function Welcome2() {
 
                 {/* TODO : 서버에서 닉네임이 중복되었는지, 가능한 닉네임인지 확인 */}
                 <IconArrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
-            </UIFrame>
+            </Card>
         </>
     );
 }

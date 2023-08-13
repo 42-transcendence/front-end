@@ -1,4 +1,4 @@
-export default function UIFrame({
+export function Card({
     children,
     className,
 }: {
