@@ -3,74 +3,66 @@
 import { DoubleSharp, IconArrow3 } from "@/components/ImageLibrary";
 import UIFrame from "@/components/UIFrame/UIFrame";
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+
+const defaultProfilesKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
 export default function Welcome2() {
     const [profileName, setProfileName] = useState("");
     const rootRef = useRef<HTMLDivElement>(null);
     const targetRefs = useRef<Map<string, HTMLImageElement> | null>(null);
+    const observerOptions = useMemo(
+        () => ({
+            root: rootRef.current,
+            rootMargin: "0px",
+            threshold: 1.0,
+        }),
+        [],
+    );
+    const handleIntersect = useCallback(
+        (
+            entries: IntersectionObserverEntry[],
+            _observer: IntersectionObserver,
+        ) => {
+            const entry = entries.filter((e) => e.isIntersecting).shift();
+            if (entry === undefined) {
+                return;
+            }
 
-    const observerOptions = {
-        root: rootRef.current,
-        rootMargin: "0px",
-        threshold: 1.0,
-    };
+            const target = entry.target;
+            if (target instanceof HTMLImageElement) {
+                setProfileName(target.alt);
+            }
+        },
+        [],
+    );
+    const referenceTarget = useCallback(
+        (name: string, node: HTMLImageElement | null) => {
+            targetRefs.current ??= new Map();
+            const map = targetRefs.current;
 
-    const handleIntersect = (
-        entries: IntersectionObserverEntry[],
-        _observer: IntersectionObserver,
-    ) => {
-        entries.forEach((entry) => {
-            setProfileName(entry.target.alt); // TODO target이 HTMLImageElement 라는걸 어떻게? alt 대신 name이나 key로 변경?
-        });
-    };
-
-    function getMap(): Map<string, HTMLImageElement> {
-        if (targetRefs.current === null) {
-            targetRefs.current = new Map();
-        }
-        return targetRefs.current;
-    }
-
-    const observer = new IntersectionObserver(handleIntersect, observerOptions);
-
-    const defaultProfiles = [
-        "jisookim",
-        "iyun",
-        "hdoo",
-        "jkong",
-        "chanhpar",
-    ].map((name) => {
-        return (
-            <div
-                key={name}
-                className="z-10 flex-shrink-0 snap-center snap-always overflow-hidden"
-            >
-                <Image
-                    ref={(node) => {
-                        const map = getMap();
-                        if (map === null) return;
-                        node ? map.set(name, node) : map.delete(name);
-                    }}
-                    className="box-content "
-                    src={`/${name}.png`}
-                    alt={name}
-                    width="250"
-                    height="250"
-                />
-            </div>
-        );
-    });
-
+            if (node !== null) {
+                map.set(name, node);
+            } else {
+                map.delete(name);
+            }
+        },
+        [],
+    );
+    const observer = useMemo(
+        () => new IntersectionObserver(handleIntersect, observerOptions),
+        [],
+    );
     useEffect(() => {
-        if (rootRef.current === null) return;
+        if (rootRef.current === null) {
+            return;
+        }
 
-        if (targetRefs.current)
-            targetRefs.current.forEach((x) => observer.observe(x));
+        if (targetRefs.current) {
+            targetRefs.current.forEach((e) => observer.observe(e));
+        }
 
-        return () => {
-            observer.disconnect();
-        };
+        return () => observer.disconnect();
     }, []);
 
     return (
@@ -93,7 +85,21 @@ export default function Welcome2() {
                             <div className="w-4 shrink-0"></div>
                         </div>
                         <div className="flex-shrink-0 snap-center snap-always"></div>
-                        {defaultProfiles}
+                        {defaultProfilesKey.map((name) => (
+                            <div
+                                key={name}
+                                className="z-10 flex-shrink-0 snap-center snap-always overflow-hidden"
+                            >
+                                <Image
+                                    ref={(node) => referenceTarget(name, node)}
+                                    className="box-content"
+                                    src={`/${name}.png`}
+                                    alt={name}
+                                    width="250"
+                                    height="250"
+                                />
+                            </div>
+                        ))}
                         <div className="shrink-0 snap-center">
                             <div className="w-4 shrink-0"></div>
                         </div>
