@@ -1,7 +1,7 @@
 "use client";
 
 import { DoubleSharp, IconArrow3 } from "@/components/ImageLibrary";
-import UIFrame from "@/components/UIFrame/UiFrame";
+import UIFrame from "@/components/UIFrame/UIFrame";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 
