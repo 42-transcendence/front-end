@@ -113,6 +113,7 @@ export default function ChatRoomList() {
                             방 만들기
                         </p>
                     </label>
+
                     <label htmlFor="leftSideBarIcon">
                         <IconSidebar
                             className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:block"
@@ -126,6 +127,7 @@ export default function ChatRoomList() {
                         />
                     </label>
                 </div>
+
                 <input
                     type="checkbox"
                     checked={checked}
@@ -133,7 +135,9 @@ export default function ChatRoomList() {
                     id="CreateNewRoom"
                     className="peer hidden"
                 />
+
                 <CreateNewRoom className="hidden peer-checked:block peer-checked:py-0" />
+
                 {/* IconsearchBar */}
                 <TextField
                     type="search"
@@ -149,6 +153,7 @@ export default function ChatRoomList() {
                     placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
                 />
+
                 <div className="peer-checked:hidden">
                     <div className="flex w-full shrink-0 scroll-m-2 flex-col gap-2 overflow-auto">
                         {results.map((item, index) => (
