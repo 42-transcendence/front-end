@@ -16,12 +16,10 @@ export function ContextMenuItem({
 }: ContextMenuItemProp): React.ReactElement {
     return (
         <div
-            className={`relative flex h-fit w-full items-center rounded-lg bg-[color:var(--windows-glass)] px-0 py-3 shadow-[var(--blur)] hover:bg-primary/80 active:bg-secondary/80 ${
-                disabled ? "select-none" : ""
-            }`}
+            className={`relative ${className} flex h-fit w-full items-center rounded py-3 hover:bg-primary/30 active:bg-secondary/80 `}
         >
-            <div className="relative flex h-5 w-full flex-col justify-center px-4 py-1">
-                <div className={`${className} select-none`}>{name}</div>
+            <div className="relative flex w-full flex-col justify-center px-4 py-1">
+                <div className={` select-none`}>{name}</div>
                 {description && (
                     <div className="select-none text-base text-purple-900">
                         {description}

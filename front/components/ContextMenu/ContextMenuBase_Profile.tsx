@@ -17,7 +17,7 @@ export function ContextMenuBase_Profile({
     //TODO: if profile.id is undefined, throw error
 
     return (
-        <ContextMenuBase>
+        <ContextMenuBase className="w-full">
             <ContextMenuItem
                 name={profile.name}
                 description={profile.tag}

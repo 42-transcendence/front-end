@@ -9,6 +9,7 @@ import {
     ProfileItemConfig as ProfileItemInternlConfig,
     ContextMenu_Friend,
     ContextMenu_Social,
+    ContextMenu_MyProfile,
 } from "../ContextMenu";
 
 type ProfileItemViewConfig = {
@@ -24,6 +25,7 @@ export function ProfileItem({
     config,
     selected,
     children,
+    type,
     onClick,
 }: {
     className?: string | undefined;
@@ -31,16 +33,27 @@ export function ProfileItem({
     selected: boolean;
     children?: React.ReactNode | undefined;
     onClick: MouseEventHandler;
+    type: "social" | "friend" | "myprofile";
 }) {
+    const contextMenuType = (): React.ReactNode => {
+        switch (type) {
+            case "social":
+                return <ContextMenu_Social profile={config} />;
+            case "friend":
+                return <ContextMenu_Friend profile={config} />;
+            case "myprofile":
+                return <ContextMenu_MyProfile profile={config} />;
+        }
+    };
     return (
         <div
-            className={`relative flex w-full flex-col items-start rounded-[28px] ${className} gap-4 py-4 hover:bg-primary/30`}
+            className={`relative flex h-fit w-full shrink-0 flex-col items-start ${className} `}
         >
             <div
-                className="group relative flex w-full flex-row items-center space-x-4 self-stretch px-4"
+                className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
                 onClick={onClick}
             >
-                <div className="disable-select relative flex items-center gap-2 space-x-4 rounded-xl">
+                <div className="disable-select relative flex items-center gap-2 space-x-4 rounded">
                     <div className="relative flex items-center justify-center">
                         <Avatar
                             className=""
@@ -60,7 +73,7 @@ export function ProfileItem({
                     </div>
                 </div>
             </div>
-            {selected && <ContextMenu_Social profile={config} />}
+            {selected && contextMenuType()}
         </div>
     );
 }
