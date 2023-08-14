@@ -11,6 +11,7 @@ import {
     IconExclamationMark,
 } from "@/components/ImageLibrary";
 
+// TODO: 시간이 지나면 사라지는 기능 추가
 function PositionTopLeft() {
     return (
         <div className="fixed box-border overflow-auto pt-[22rem] lg:ml-[-80%] lg:flex lg:pt-10">
@@ -19,6 +20,7 @@ function PositionTopLeft() {
     );
 }
 
+// TODO: 시간이 지나면 사라지는 기능 추가
 function PositionTopRight() {
     return (
         <div className="fixed box-border overflow-auto pt-10 lg:mr-[-80%] lg:flex">
