@@ -11,9 +11,11 @@ import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
+import { setNowChatRoom } from "@/utils/clientUtils"
+import { ChatMembers, ChatMessages, ChatRoom, NowChatRoom } from "@/utils/utils";
 
 type User = {
-    id: number;
+    uuid: string;
     name: string;
 };
 
@@ -21,13 +23,8 @@ type User = {
 // 동일 로직으로 타이틀을 만들어서 프론트에 넘겨주고, 프론트에선 타이틀을 항상
 // 존재하는 프로퍼티로 추후 변경할 수도
 
-function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
-    return (
-        chatRoom.title ??
-        chatRoom.members
-            .reduce((acc, member) => [...acc, member.name], [] as string[])
-            .join(", ")
-    );
+function getRoomDisplayTitle(roomInfo: NowChatRoom): string {
+    return roomInfo.chatRoom!.title;
 }
 
 const users = [
@@ -39,59 +36,29 @@ const users = [
 ];
 
 export type ChatRoomInfo = {
-    id: number;
     members: User[];
-    title?: string | undefined;
     latestMessage?: string;
     numberOfUnreadMessages: number;
-};
+} & ChatRoom;
 
-export const chatRoomsDummy: ChatRoomInfo[] = [
-    {
-        id: 1,
-        members: users,
-        latestMessage: "맛있는 돈까스가 먹고싶어요 난 등심이 좋더라..",
-        numberOfUnreadMessages: 0,
-    },
-    {
-        id: 2,
-        members: [users[1], users[1]],
-        title: "glglgkgk",
-        latestMessage: "옹옹엉양ㄹ오라ㅣㅁㄴ오맂다넝로미어ㅏ로미단로이머니",
-        numberOfUnreadMessages: 10,
-    },
-    {
-        id: 3,
-        members: [users[2], users[1]],
-        title: "러브포엠",
-        latestMessage: "I'm IU ,,>ㅅ<,,",
-        numberOfUnreadMessages: 120,
-    },
-    {
-        id: 4,
-        members: [users[3], users[1]],
-        title: "Not donkikong",
-        latestMessage: "I'm Jkong!",
-        numberOfUnreadMessages: 3,
-    },
-    {
-        id: 5,
-        members: [users[4], users[1]],
-        title: "not Minsu",
-        latestMessage: "Hi I'm jisoo",
-        numberOfUnreadMessages: 1029,
-    },
-];
+function getRoomInfo() {
+    const chatRooms: ChatRoom[] = JSON.parse(String(window.localStorage.getItem('chatRooms')));
+    const roomInfos: NowChatRoom[] = [];
+    for (const chatRoom of chatRooms) {
+        roomInfos.push(setNowChatRoom(chatRoom.uuid));
+    }
+    return roomInfos;
+}
 
 export default function ChatRoomList() {
+    const chatRooms = getRoomInfo();
     const [query, setQuery] = useState("");
     const [checked, setChecked] = useState(false);
     const { results, getFzfHighlightProps } = useFzf({
-        items: chatRoomsDummy,
+        items: chatRooms,
         itemToString(item) {
             return getRoomDisplayTitle(item);
         },
-        limit: 5,
         query,
     });
 
@@ -154,10 +121,10 @@ export default function ChatRoomList() {
                     onChange={(event) => setQuery(event.target.value)}
                 />
 
-                <div className="peer-checked:hidden">
+                <div className="peer-checked:hidden w-full">
                     <div className="flex w-full shrink-0 scroll-m-2 flex-col gap-2 overflow-auto">
                         {results.map((item, index) => (
-                            <ChatRoomBlock key={item.id} chatRoom={item}>
+                            <ChatRoomBlock key={item.chatRoom?.uuid} chatRoom={item}>
                                 <FzfHighlight
                                     {...getFzfHighlightProps({
                                         index,

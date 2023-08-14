@@ -8,7 +8,7 @@ export default function AuthCallback() {
     const [status, setStatus] = useState<number>();
     const [token, setToken] = useState<string>();
     useEffect(() => {
-        const url = new URL("https://back.stri.dev/auth/end");
+        const url = new URL("http://localhost:3001/auth/end");
         for (const [key, val] of searchParams) {
             url.searchParams.append(key, val);
         }
@@ -38,8 +38,8 @@ export default function AuthCallback() {
                 {status === undefined
                     ? "로오딩..."
                     : status === 200
-                    ? "성공했습니다!"
-                    : `실패했습니다... ${status}`}
+                        ? "성공했습니다!"
+                        : `실패했습니다... ${status}`}
             </p>
             <br />
             <p>{token}</p>

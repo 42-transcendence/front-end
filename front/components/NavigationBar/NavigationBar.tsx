@@ -10,7 +10,7 @@ import { Avatar } from "../Avatar";
 import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "../ImageLibrary";
 
-export async function NavigationBar() {
+export function NavigationBar() {
     // TODO: fetch account data.
     // const token = cookies().get("at")?.value;
     // console.log(token);

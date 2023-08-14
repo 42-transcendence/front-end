@@ -53,7 +53,7 @@ export function Avatar({
 }: {
     className: string;
     size: string;
-    accountId?: number;
+    accountId?: string;
     avatarKey?: string;
 }): React.ReactElement {
     //TODO: fetch Avatar datas

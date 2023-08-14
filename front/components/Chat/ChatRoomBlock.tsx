@@ -1,26 +1,27 @@
 "use client";
 import React, { ReactNode } from "react";
 import { IconLock, IconPerson } from "@/components/ImageLibrary";
-import { ChatRoomInfo } from "./ChatRoomList";
+
 import { Avatar } from "../Avatar";
+import { NowChatRoom } from "@/utils/utils";
 
 export default function ChatRoomBlock({
     children,
     chatRoom,
 }: {
     children: ReactNode;
-    chatRoom: ChatRoomInfo;
+    chatRoom: NowChatRoom;
 }) {
-    const numberOfUnreadMessages =
-        chatRoom.numberOfUnreadMessages > 0 ? (
-            <div className="flex min-w-[22px] flex-col items-center justify-center rounded-md bg-red-500 p-1">
-                <span className="flex text-center font-sans font-medium not-italic text-white ">
-                    {chatRoom.numberOfUnreadMessages > 999
-                        ? "999+"
-                        : chatRoom.numberOfUnreadMessages.toString()}
-                </span>
-            </div>
-        ) : null;
+    // const numberOfUnreadMessages =
+    //     chatRoom.numberOfUnreadMessages > 0 ? (
+    //         <div className="flex min-w-[22px] flex-col items-center justify-center rounded-md bg-red-500 p-1">
+    //             <span className="flex text-center font-sans font-medium not-italic text-white ">
+    //                 {chatRoom.numberOfUnreadMessages > 999
+    //                     ? "999+"
+    //                     : chatRoom.numberOfUnreadMessages.toString()}
+    //             </span>
+    //         </div>
+    //     ) : null;
 
     return (
         <div className="rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80">
@@ -31,7 +32,7 @@ export default function ChatRoomBlock({
                         <Avatar
                             className={"relative"}
                             size={"w-10 h-10"}
-                            accountId={chatRoom.members[0].id}
+                            accountId={chatRoom.members!.members[0].account.uuid}
                         />
                     </div>
                 </div>
@@ -53,7 +54,7 @@ export default function ChatRoomBlock({
                         </div>
 
                         <div className="line-clamp-2 h-fit  text-ellipsis font-sans text-xs font-normal text-gray-200">
-                            {chatRoom.latestMessage ?? ""}
+                            {chatRoom.messages?.messages[0]?.content ?? ""}
                         </div>
                     </div>
 
@@ -65,10 +66,10 @@ export default function ChatRoomBlock({
                                 className="text-gray-200/70"
                             />
                             <span className=" text-[12px] leading-3 text-gray-50/50">
-                                {chatRoom.members.length}
+                                {chatRoom.members?.members.length}
                             </span>
                         </div>
-                        {numberOfUnreadMessages}
+                        {/* {numberOfUnreadMessages} */}
                     </div>
                 </div>
             </div>

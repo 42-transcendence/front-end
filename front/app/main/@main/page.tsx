@@ -1,5 +1,13 @@
-import { CreateGameButton, QuickMatchButton } from "./GameButton";
-import { Game_Ghost3 } from "@/components/ImageLibrary";
+"use client"
+
+import { ByteBuffer } from '../../../utils/libs/byte-buffer'
+import { useEffect, useRef, useState } from 'react'
+import { acceptChatOpCode, sendChat, sendConnectMessage, sendCreateRoom, sendEnter, sendInvite, sendJoinRoom, sendKick, sendPart } from '@/utils/clientUtils';
+import { Account, ChatMembers, ChatMessages, ChatRoom, CreateChat, NowChatRoom, CreateChatMessaage } from '@/utils/utils';
+import { CreateGameButton, QuickMatchButton } from './GameButton';
+import { Game_Ghost3 } from '@/components/ImageLibrary';
+import { create } from 'domain';
+import { SocketContext } from './SocketContext';
 
 export function HelloWorldPaper() {
     return (
@@ -28,7 +36,47 @@ export function HelloWorldPaper() {
     );
 }
 
+function sendMessage(ws: WebSocket, msg: string) {
+    if (msg == 'create') {
+        const createRoom: CreateChat = {
+            chat: {
+                title: 'kiki',
+                modeFlags: 1,
+                password: '',
+                limit: 3
+            },
+            members: ['2fa545d1-c11c-468e-b458-122f9badc6c2', 'a8c5b90a-077b-4871-af93-803579447e33']
+        }
+        sendCreateRoom(ws, createRoom);
+    }
+    else if (msg == 'join') {
+        sendJoinRoom(ws, { uuid: 'a63fcbe4-ef94-42dd-bf73-41555a6cd2ae', password: '2222' })
+    }
+    else if (msg == 'enter') {
+        sendEnter(ws, 'a63fcbe4-ef94-42dd-bf73-41555a6cd2ae')
+    }
+    else if (msg == 'invite') {
+        sendInvite(ws, { chatUUID: 'a63fcbe4-ef94-42dd-bf73-41555a6cd2ae', members: ['51b65155-c8da-43dc-be9b-572101a37a07', '0b265762-f519-4af2-983f-17ebacd52a0a'] })
+    }
+    else if (msg == 'part') {
+        sendPart(ws, '70dfc81f-2c2a-445f-b095-15a7766f0d99')
+    }
+    else if (msg == 'kick') {
+        sendKick(ws, { chatUUID: '3f358e0c-4ffa-401d-ac70-cc044d869c0f', members: ['2fa545d1-c11c-468e-b458-122f9badc6c2', '51b65155-c8da-43dc-be9b-572101a37a07'] })
+    }
+    else if (msg == 'chat') {
+        const msg: CreateChatMessaage = {
+            chatUUID: 'a63fcbe4-ef94-42dd-bf73-41555a6cd2ae',
+            content: 'hello!!',
+            modeFalgs: 0
+        }
+        sendChat(ws, msg);
+    }
+}
+
 export default function Home() {
+    const [text, setText] = useState<string>("");
+
     return (
         <div className="flex h-full w-full items-center justify-center bg-black/30 lg:backdrop-blur-[3px]">
             <div className="flex flex-[1_0_0] flex-col items-center justify-center gap-2.5 self-stretch px-[700px] py-[147px] lg:flex-row">
@@ -42,5 +90,6 @@ export default function Home() {
                 </div>
             </div>
         </div>
+
     );
 }

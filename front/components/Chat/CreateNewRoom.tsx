@@ -1,11 +1,15 @@
 "use client";
 
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useContext, useState } from "react";
 import { TextField } from "@/components/TextField";
 import { IconKey, IconLock, IconMembers } from "@/components/ImageLibrary";
 import { ToggleButton } from "@/components/Button/ToggleButton";
+import { ChatRoomMode, CreateChat } from "@/utils/utils";
+import { SocketContext } from "@/app/main/@main/SocketContext";
+import { sendCreateRoom } from "@/utils/clientUtils";
 
 export function CreateNewRoom({ className }: { className: string }) {
+    const webSocket: WebSocket | undefined = useContext(SocketContext);
     const [title, setTitle] = useState("");
     const [password, setPassword] = useState("");
     const [limit, setLimit] = useState(1);
@@ -15,7 +19,21 @@ export function CreateNewRoom({ className }: { className: string }) {
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
-        //TODO: make new room with title, password, limit;
+        if (webSocket === undefined) {
+            console.log("undefined");
+            return;
+        }
+        const createRoom: CreateChat = {
+            chat: {
+                title: title,
+                modeFlags: (privateChecked ? ChatRoomMode.PRIVATE : 0) | (passwordChecked ? ChatRoomMode.SECRET : 0),
+                password: password,
+                limit: (limitChecked ? limit : 1500)
+            },
+            members: []
+        }
+        console.log("here");
+        sendCreateRoom(webSocket, createRoom);
     };
 
     return (
@@ -138,9 +156,9 @@ export function CreateNewRoom({ className }: { className: string }) {
                 </div>
 
                 <div className="relative w-full rounded-xl p-3 hover:bg-gray-500/30">
-                    <div className="flex w-full justify-center rounded-lg bg-gray-700/80 p-3 group-valid:bg-green-700/80">
+                    <button className="flex w-full justify-center rounded-lg bg-gray-700/80 p-3 group-valid:bg-green-700/80">
                         만들기
-                    </div>
+                    </button>
                 </div>
             </div>
         </form>
