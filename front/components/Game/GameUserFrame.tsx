@@ -12,7 +12,7 @@ const dummyData: gameScore = {
     changeAmount: 37,
 };
 
-export default function GameUserFrame() {
+export function GameUserFrame() {
     return (
         <div className="flex w-[322px] flex-col items-center rounded-[35px] bg-black/70 px-[38px] pb-[23px] pt-[30px]">
             <Icon type="double-sharp" size={20} className="" />
