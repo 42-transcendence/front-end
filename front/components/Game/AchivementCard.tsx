@@ -1,4 +1,4 @@
-import { Icon } from "@/components/Icon/Icon";
+import { IconStarFilled } from "@/components/ImageLibrary";
 import Image from "next/image";
 
 type TrophyImages = {
@@ -7,17 +7,17 @@ type TrophyImages = {
 };
 
 const dummyTrophy: TrophyImages = {
-    profileImage: "/skin-platinum.png",
+    profileImage: "/game/skin-platinum.png",
     type: "platinum",
 };
 
 export default function AchivementCard() {
     return (
-        <div className="AchivementCardBackground">
+        <div className="inline-flex flex-col items-center justify-center gap-[21px] rounded-[30px] bg-white/10 px-4 py-4 shadow-[0px_8px_4px_0px_rgba(0,0,0,0.25)]">
             {/* star icon */}
             <div className="flex items-center gap-[30px] px-20 py-4">
                 <div className="h-px w-[75px] bg-white"></div>
-                <Icon type="star-filled" size={40} className="" />
+                <IconStarFilled width="24" height="24" />
                 <div className="h-px w-[75px] bg-white"></div>
             </div>
             {/* trophy image */}
@@ -28,9 +28,13 @@ export default function AchivementCard() {
                 width="200"
                 height="300"
             />
-            <div className="AchivementCardExplainBox">
-                <div className="AchivementCardSubTitle">[도움말]</div>
-                <div className="AchivementCardTitle">업적</div>
+            <div className="m-6 flex flex-col items-center justify-center rounded-[20px] bg-black/40 px-5 py-6">
+                <div className="flex flex-col justify-center text-center text-lg leading-[normal] text-[color:#E7CEFF]">
+                    [도움말]
+                </div>
+                <div className="flex flex-col justify-center pt-2 text-center text-4xl font-bold not-italic leading-[normal] text-[color:#E7CEFF]">
+                    업적
+                </div>
                 <div className="h-[33px] w-[183px] shrink-0">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +52,7 @@ export default function AchivementCard() {
                         />
                     </svg>
                 </div>
-                <div className="AchivementCardContent">
+                <div className="flex h-[92px] w-[326px] flex-col justify-center text-center text-base font-normal text-white">
                     특정 조건에서 해금되는 업적란! 게임 속 숨겨져 있는 여러
                     업적들을 찾아 깨보세요!! 업적 마스터가 되어보자~!
                 </div>

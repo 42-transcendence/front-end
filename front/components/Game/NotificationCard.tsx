@@ -1,4 +1,4 @@
-import { Icon } from "../Icon/Icon";
+import { IconCheck } from "@/components/ImageLibrary";
 
 export function ClikNotificationCard() {
     return (
@@ -13,7 +13,7 @@ export function ClikNotificationCard() {
                 </div>
             </div>
             <button className="flex h-[125px] w-[80px] shrink-0 flex-col items-center justify-center overflow-hidden rounded-br-[30px] rounded-tr-[30px] bg-[#FFD600]/70 px-0 ">
-                <Icon type="check" size={35} className="" />
+                <IconCheck width="24" height="24" />
             </button>
         </div>
     );
