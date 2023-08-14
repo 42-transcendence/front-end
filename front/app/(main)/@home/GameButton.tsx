@@ -30,7 +30,7 @@ export function QuickMatchButton() {
     // FIXME: 실제로 fetch 하면 시간 걸리니까 일단 편의상 만들어둔 dummy async 함수
     const asyncRoute = async () => {
         await new Promise((res) => setTimeout(res, 0));
-        router.push("/main/game/4242");
+        router.push("/game/4242");
     };
 
     // TODO: 실제로는 백에서 채팅방 받아와야. fetch할때 방 정보, 모드 등 parameter로 붙여서 요청
@@ -45,7 +45,7 @@ export function QuickMatchButton() {
     //     }
     //     const newGameId = await res.json();
 
-    //     router.push(`/main/game/${newGameId}`);
+    //     router.push(`/game/${newGameId}`);
     // }
 
     return <GameButtonBase onClick={asyncRoute}>Quick Match</GameButtonBase>;
