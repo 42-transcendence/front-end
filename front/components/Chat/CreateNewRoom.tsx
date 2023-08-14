@@ -30,7 +30,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                         <div className="w-full p-3">
                             <TextField
                                 type="text"
-                                className="group-aria relative bg-transparent text-xl"
+                                className="relative bg-transparent text-xl"
                                 placeholder="Title..."
                                 pattern=".{4,32}"
                                 required
@@ -52,15 +52,15 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <IconLock
                                         width={56}
                                         height={56}
-                                        className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked]:bg-secondary group-data-[checked]:text-gray-50/80"
+                                        className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
                                     />
                                 }
                             >
                                 <div>
-                                    <p className="relative text-sm group-data-[checked]:hidden">
+                                    <p className="relative text-sm group-data-[checked=true]:hidden">
                                         공개
                                     </p>
-                                    <p className="relative hidden text-sm group-data-[checked]:block">
+                                    <p className="relative hidden text-sm group-data-[checked=true]:block">
                                         비공개
                                     </p>
                                 </div>
@@ -75,7 +75,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <IconKey
                                         width={56}
                                         height={56}
-                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked]:bg-secondary group-data-[checked]:text-gray-50/80"
+                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
                                     />
                                 }
                             >
@@ -83,7 +83,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <div className="justify-center text-sm transition-all">
                                         비밀번호
                                     </div>
-                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked]:flex">
+                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
                                         <TextField
                                             type="new-password"
                                             placeholder="비밀번호 입력"
@@ -106,7 +106,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <IconMembers
                                         width={56}
                                         height={56}
-                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked]:bg-secondary group-data-[checked]:text-gray-50/80"
+                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
                                     />
                                 }
                             >
@@ -114,7 +114,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <h2 className="items-end justify-center text-sm transition-all">
                                         인원제한
                                     </h2>
-                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked]:flex">
+                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
                                         <TextField
                                             type="number"
                                             disabled={!limitChecked}

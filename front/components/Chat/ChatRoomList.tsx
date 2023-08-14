@@ -106,7 +106,7 @@ export default function ChatRoomList() {
                     <label
                         data-checked={checked}
                         htmlFor="CreateNewRoom"
-                        className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white data-[checked]:bg-secondary/80"
+                        className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white data-[checked=true]:bg-secondary/80"
                     >
                         <IconEdit className="" width={17} height={17} />
                         <p className="font-sans text-base leading-4 ">
