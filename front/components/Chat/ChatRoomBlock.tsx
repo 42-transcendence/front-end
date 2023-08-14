@@ -23,7 +23,7 @@ export default function ChatRoomBlock({
         ) : null;
 
     return (
-        <div className="rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80">
+        <div className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80">
             {/* chatrooms - image */}
             <div className="flex h-fit shrink-0 items-center gap-4 self-stretch overflow-hidden">
                 <div className="flex items-center justify-center gap-2.5">
