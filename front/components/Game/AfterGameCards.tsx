@@ -12,6 +12,7 @@ const dummyTrophy: TrophyImages = {
     profileImage: "/game/skin-platinum.png",
     type: "platinum",
 };
+//TODO: 고정길이 px로 된 것들 적절한 auto값으로 바꿔주기~!!
 
 export function PlayAgainCard() {
     return (
