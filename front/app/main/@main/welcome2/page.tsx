@@ -24,14 +24,14 @@ export default function Welcome2() {
             entries: IntersectionObserverEntry[],
             _observer: IntersectionObserver,
         ) => {
-            const entry = entries.filter((e) => e.isIntersecting).shift();
+            const entry = entries.find((e) => e.isIntersecting);
             if (entry === undefined) {
                 return;
             }
 
             const target = entry.target;
-            if (target instanceof HTMLImageElement) {
-                setProfileName(target.alt);
+            if (target instanceof HTMLElement) {
+                setProfileName(target.dataset["name"] ?? "");
             }
         },
         [],
@@ -94,7 +94,8 @@ export default function Welcome2() {
                                     ref={(node) => referenceTarget(name, node)}
                                     className="box-content"
                                     src={`/${name}.png`}
-                                    alt={name}
+                                    alt={`${name}'s Avatar`}
+                                    data-name={name}
                                     width="250"
                                     height="250"
                                 />
