@@ -25,7 +25,7 @@ export function ToggleButton(props: ToggleButtonProp) {
     return (
         <label
             htmlFor={id}
-            aria-checked={checked}
+            data-checked={checked}
             className={`group relative flex w-full flex-row items-center ${bgClassName}`}
         >
             {icon}

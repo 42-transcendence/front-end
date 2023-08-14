@@ -52,15 +52,15 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <IconLock
                                         width={56}
                                         height={56}
-                                        className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-aria-checked:bg-secondary group-aria-checked:text-gray-50/80"
+                                        className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked]:bg-secondary group-data-[checked]:text-gray-50/80"
                                     />
                                 }
                             >
                                 <div>
-                                    <p className="relative text-sm group-aria-checked:hidden">
+                                    <p className="relative text-sm group-data-[checked]:hidden">
                                         공개
                                     </p>
-                                    <p className="relative hidden text-sm group-aria-checked:block">
+                                    <p className="relative hidden text-sm group-data-[checked]:block">
                                         비공개
                                     </p>
                                 </div>
@@ -75,7 +75,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <IconKey
                                         width={56}
                                         height={56}
-                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-aria-checked:bg-secondary group-aria-checked:text-gray-50/80"
+                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked]:bg-secondary group-data-[checked]:text-gray-50/80"
                                     />
                                 }
                             >
@@ -83,7 +83,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <div className="justify-center text-sm transition-all">
                                         비밀번호
                                     </div>
-                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-aria-checked:flex">
+                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked]:flex">
                                         <TextField
                                             type="new-password"
                                             placeholder="비밀번호 입력"
@@ -106,7 +106,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <IconMembers
                                         width={56}
                                         height={56}
-                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-aria-checked:bg-secondary group-aria-checked:text-gray-50/80"
+                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked]:bg-secondary group-data-[checked]:text-gray-50/80"
                                     />
                                 }
                             >
@@ -114,7 +114,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                                     <h2 className="items-end justify-center text-sm transition-all">
                                         인원제한
                                     </h2>
-                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-aria-checked:flex">
+                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked]:flex">
                                         <TextField
                                             type="number"
                                             disabled={!limitChecked}

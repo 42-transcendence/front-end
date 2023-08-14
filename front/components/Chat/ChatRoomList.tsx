@@ -104,9 +104,9 @@ export default function ChatRoomList() {
             <div className="flex h-full w-[310px] shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 backdrop-blur-[50px] 2xl:py-4">
                 <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch peer-checked:text-gray-200/80 2xl:py-2">
                     <label
-                        aria-checked={checked}
+                        data-checked={checked}
                         htmlFor="CreateNewRoom"
-                        className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white aria-checked:bg-secondary/80"
+                        className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white data-[checked]:bg-secondary/80"
                     >
                         <IconEdit className="" width={17} height={17} />
                         <p className="font-sans text-base leading-4 ">
