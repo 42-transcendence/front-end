@@ -5,12 +5,11 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 
 import React from "react";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { Avatar } from "../Avatar";
 import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "../ImageLibrary";
 
-export async function NavigationBar() {
+export function NavigationBar() {
     // TODO: fetch account data.
     // const token = cookies().get("at")?.value;
     // console.log(token);
