@@ -32,7 +32,7 @@ function Score() {
         <>
             <PositionTopLeft /> {/* NewAchievementCard */}
             <PositionTopRight /> {/* PlayAgainCard */}
-            <div className="flex items-center justify-center gap-6 px-[245px] pb-24 pt-32">
+            <div className="flex items-center justify-center gap-6 px-[15rem] pb-24 pt-32">
                 <Image
                     className=""
                     src={"/left-flag.png"}
@@ -71,18 +71,18 @@ function Score() {
 export default function Main() {
     return (
         <div>
-            <div className="flex h-screen  flex-col items-center bg-white/30">
+            <div className="flex h-screen flex-col items-center bg-white/30">
                 <Score />
                 <div className="flex flex-row items-center gap-5">
                     <GameUserFrame />
                     <GameUserFrame />
-                    <div className="m-6 h-[165px] w-px bg-white"></div>
+                    <div className="m-6 h-[10rem] w-px bg-white"></div>
                     {/* TODO */}
                     <GameUserFrame />
                     <GameUserFrame />
                 </div>
-                {/* <div className=" m-20"></div>
-                <TrophyCard /> */}
+                <div className="m-20"></div>
+                {/* <TrophyCard /> */}
             </div>
         </div>
     );
