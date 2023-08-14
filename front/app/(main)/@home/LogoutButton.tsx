@@ -8,7 +8,7 @@ export function LogoutButton() {
             onClick={() => {
                 window.localStorage.removeItem("access_token");
                 window.localStorage.removeItem("refresh_token");
-                window.location.assign("/main"); // TODO: fix logic
+                window.location.assign("/"); // TODO: fix logic
             }}
         >
             Log out

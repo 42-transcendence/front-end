@@ -33,10 +33,10 @@ function setCookie(
 
 export default function MainLayout({
     login,
-    main,
+    home,
 }: {
     login: React.ReactNode;
-    main: React.ReactNode;
+    home: React.ReactNode;
 }) {
     const [loggedin, setLoggedin] = useState<boolean>(false);
 
@@ -65,5 +65,5 @@ export default function MainLayout({
         };
     }, [loggedin]);
 
-    return <>{loggedin ? main : login}</>;
+    return <>{loggedin ? home : login}</>;
 }

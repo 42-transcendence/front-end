@@ -6,7 +6,7 @@ export default function DefaultPage() {
     return (
         <main>
             <p>default page</p>
-            <Link href="/main">go to main</Link>
+            <Link href="/">go to main</Link>
         </main>
     );
 }

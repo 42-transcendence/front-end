@@ -17,7 +17,7 @@ function InvalidGameIdPage() {
                         <div className="flex flex-col justify-center text-center text-2xl font-bold italic leading-[normal] text-white">
                             Invalid Game Id
                         </div>
-                        <Link href="/main">Go to main</Link>
+                        <Link href="/">Go to main</Link>
                     </div>
                 </div>
             </div>
@@ -40,7 +40,7 @@ function InputGameIdPage() {
                                 placeholder="4242"
                             />
                         </div>
-                        <Link href="/main">Go to main</Link>
+                        <Link href="/">Go to main</Link>
                     </div>
                 </div>
             </div>
