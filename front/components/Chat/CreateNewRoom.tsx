@@ -1,9 +1,9 @@
 "use client";
 
 import { FormEventHandler, useState } from "react";
-import { TextField } from "../TextField";
-import { IconKey, IconLock, IconMembers } from "../ImageLibrary";
-import { ToggleButton } from "../Button/ToggleButton";
+import { TextField } from "@/components/TextField";
+import { IconKey, IconLock, IconMembers } from "@/components/ImageLibrary";
+import { ToggleButton } from "@/components/Button/ToggleButton";
 
 export function CreateNewRoom({ className }: { className: string }) {
     const [title, setTitle] = useState("");
