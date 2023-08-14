@@ -1,35 +1,23 @@
-import React from "react";
+import React, { InputHTMLAttributes } from "react";
 
-export function TextField({
-    icon,
-    value,
-    placeholder,
-    onChange,
-    className,
-    max,
-}: {
+type TextFieldProps = InputHTMLAttributes<HTMLInputElement> & {
     icon?: React.ReactNode | undefined;
-    value: string;
-    placeholder?: string | undefined;
-    onChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
     className?: string | undefined;
-    max?: number | undefined;
-}) {
+};
+
+export function TextField(props: TextFieldProps) {
     // TODO: reconsider children position or purpose?
+    const { icon, className, ...rest } = props;
+
     return (
-        <form
-            className={`shadow-3xl group relative flex h-8 shrink-0 items-center justify-between gap-2 self-stretch rounded-xl bg-black/30 ${className}`}
+        <fieldset
+            className={`${className} shadow-3xl group relative flex h-8 shrink-0 items-center justify-center gap-2 self-stretch rounded-xl bg-black/30`}
         >
             <input
-                min="1"
-                max={max}
-                className="peer h-6 w-full resize-none border-[none] bg-transparent font-sans text-sm font-normal placeholder-gray-200/80 outline-none"
-                type="search"
-                placeholder={placeholder}
-                value={value}
-                onChange={onChange}
+                className="peer h-6 w-full resize-none border-[none] bg-transparent font-sans font-normal placeholder-gray-200/30 outline-none"
+                {...rest}
             />
             {icon}
-        </form>
+        </fieldset>
     );
 }

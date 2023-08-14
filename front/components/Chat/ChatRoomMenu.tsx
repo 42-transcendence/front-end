@@ -13,9 +13,17 @@ function MenuItem({
     );
 }
 
-export function ChatRoomMenu({ isAdmin }: { isAdmin: boolean }) {
+export function ChatRoomMenu({
+    className,
+    isAdmin,
+}: {
+    className: string;
+    isAdmin: boolean;
+}) {
     return (
-        <div className="flex flex-col items-center text-base font-bold text-gray-100/80">
+        <div
+            className={`${className} flex-col items-center text-base font-bold text-gray-100/80`}
+        >
             <MenuItem className="active:bg-secondary/80">알림 설정</MenuItem>
             {isAdmin && (
                 <MenuItem className="active:bg-secondary/80">

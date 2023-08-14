@@ -85,6 +85,7 @@ export const chatRoomsDummy: ChatRoomInfo[] = [
 
 export default function ChatRoomList() {
     const [query, setQuery] = useState("");
+    const [checked, setChecked] = useState(false);
     const { results, getFzfHighlightProps } = useFzf({
         items: chatRoomsDummy,
         itemToString(item) {
@@ -94,16 +95,25 @@ export default function ChatRoomList() {
         query,
     });
 
+    function handleChecked() {
+        setChecked(!checked);
+    }
+
     return (
-        <div className="absolute z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip bg-black/30  text-gray-200/80 backdrop-blur-[50px] transition-all peer-checked/left:w-0 peer-checked/left:min-w-0 2xl:relative 2xl:block 2xl:w-80 2xl:rounded-[0px_28px_28px_0px]">
-            <div className="ore:p-px float-left flex h-full w-[310px] shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:w-fit 2xl:rounded-[28px] 2xl:py-4">
-                <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch 2xl:py-2">
-                    <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
+        <div className="absolute left-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/left:w-0 peer-checked/left:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[0px_28px_28px_0px]">
+            <div className="flex h-full w-[310px] shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 backdrop-blur-[50px] 2xl:py-4">
+                <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch peer-checked:text-gray-200/80 2xl:py-2">
+                    <label
+                        data-checked={checked}
+                        htmlFor="CreateNewRoom"
+                        className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white data-[checked=true]:bg-secondary/80"
+                    >
                         <IconEdit className="" width={17} height={17} />
                         <p className="font-sans text-base leading-4 ">
                             방 만들기
                         </p>
-                    </div>
+                    </label>
+
                     <label htmlFor="leftSideBarIcon">
                         <IconSidebar
                             className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:block"
@@ -118,8 +128,19 @@ export default function ChatRoomList() {
                     </label>
                 </div>
 
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={handleChecked}
+                    id="CreateNewRoom"
+                    className="peer hidden"
+                />
+
+                <CreateNewRoom className="hidden peer-checked:block peer-checked:py-0" />
+
                 {/* IconsearchBar */}
                 <TextField
+                    type="search"
                     icon={
                         <IconSearch
                             className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
@@ -127,24 +148,26 @@ export default function ChatRoomList() {
                             height={24}
                         />
                     }
-                    className="py-1 pl-7 pr-2 transition-all focus-within:pl-2 focus-within:pr-9"
+                    className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9 peer-checked:hidden"
                     value={query}
                     placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
                 />
 
-                <div className="flex w-full shrink-0 scroll-m-2 flex-col gap-2 overflow-auto">
-                    {results.map((item, index) => (
-                        <ChatRoomBlock key={item.id} chatRoom={item}>
-                            <FzfHighlight
-                                {...getFzfHighlightProps({
-                                    index,
-                                    item,
-                                    className: "text-yellow-500",
-                                })}
-                            />
-                        </ChatRoomBlock>
-                    ))}
+                <div className="peer-checked:hidden">
+                    <div className="flex w-full shrink-0 scroll-m-2 flex-col gap-2 overflow-auto">
+                        {results.map((item, index) => (
+                            <ChatRoomBlock key={item.id} chatRoom={item}>
+                                <FzfHighlight
+                                    {...getFzfHighlightProps({
+                                        index,
+                                        item,
+                                        className: "text-yellow-500",
+                                    })}
+                                />
+                            </ChatRoomBlock>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

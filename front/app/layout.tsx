@@ -15,8 +15,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en">
-            <body className={`text-white ${roboto.className}`}>{children}</body>
+        <html className="overscroll-none" lang="en">
+            <body
+                className={`relative overscroll-none text-white ${roboto.className}`}
+            >
+                {children}
+            </body>
         </html>
     );
 }
