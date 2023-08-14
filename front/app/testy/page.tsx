@@ -73,7 +73,7 @@ function Score() {
 export default function Main() {
     return (
         <div>
-            <div className="flex h-screen flex-col items-center bg-white/30">
+            <div className="flex h-screen flex-col items-center backdrop-blur-lg">
                 <Score />
                 <div className="flex flex-row items-center gap-5">
                     <GameUserFrame />
