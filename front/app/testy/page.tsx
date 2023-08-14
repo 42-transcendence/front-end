@@ -1,21 +1,20 @@
-import AchivementCard from "@/components/Game/AchivementCard";
-import GameNavBar from "@/components/Game/GameNavBar";
-import NotificationCard from "@/components/Game/NotificationCard";
-import GameUserFrame from "@/components/Game/GameUserFrame";
-import GameAchievementCard, {
-    ClikNotificationCard,
-} from "@/components/Game/NotificationCard";
+import { GameUserFrame } from "@/components/Game/GameUserFrame";
+import {
+    PlayAgainCard,
+    NewAchievementCard,
+    TrophyCard,
+} from "@/components/Game/AfterGameCards";
 
 export default function Main() {
     return (
         <div>
-            <AchivementCard />
-            <div className=" m-20"></div>
             <GameUserFrame />
             <div className=" m-20"></div>
-            <ClikNotificationCard />
+            <TrophyCard />
             <div className=" m-20"></div>
-            <GameAchievementCard />
+            <PlayAgainCard />
+            <div className=" m-20"></div>
+            <NewAchievementCard />
         </div>
     );
 }

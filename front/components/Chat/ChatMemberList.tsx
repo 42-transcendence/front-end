@@ -70,8 +70,8 @@ export default function ChatMemberList() {
     });
 
     return (
-        <div className="absolute right-0  z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex">
-            <div className="float-left flex h-full w-full shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 2xl:rounded-[28px_0px_0px_28px] 2xl:py-4">
+        <div className="absolute right-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px_0px_0px_28px]">
+            <div className="flex h-full w-full shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 backdrop-blur-[20px] 2xl:py-4">
                 <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch 2xl:py-2">
                     <label htmlFor="rightSideBarIcon">
                         <IconMembers
@@ -93,6 +93,7 @@ export default function ChatMemberList() {
                 </div>
 
                 <TextField
+                    type="search"
                     icon={
                         <IconSearch
                             className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
@@ -100,11 +101,11 @@ export default function ChatMemberList() {
                             height={24}
                         />
                     }
-                    className="py-1 pl-7 pr-2 transition-all focus-within:pl-2 focus-within:pr-9"
+                    className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9"
                     value={query}
                     placeholder="Search..."
                     onChange={(event) => setQuery(event.target.value)}
-                ></TextField>
+                />
 
                 {results.map((item, index) => (
                     <ProfileItem

@@ -30,6 +30,7 @@ import _IconExternalWindow from "/public/icon/external-window.svg"; export const
 import _IconHamburger from "/public/icon/hamburger.svg"; export const IconHamburger = _IconHamburger;
 import _IconKey from "/public/icon/key.svg"; export const IconKey = _IconKey;
 import _IconLock from "/public/icon/lock.svg"; export const IconLock = _IconLock;
+import _IconLockOpen from "/public/icon/lock-open.svg"; export const IconLockOpen = _IconLockOpen;
 import _IconMembers from "/public/icon/members.svg"; export const IconMembers = _IconMembers;
 import _IconPerson from "/public/icon/person.svg"; export const IconPerson = _IconPerson;
 import _IconPlus from "/public/icon/plus.svg"; export const IconPlus = _IconPlus;

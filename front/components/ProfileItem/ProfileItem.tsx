@@ -62,7 +62,7 @@ export function ProfileItem({
                         />
                     </div>
                     <div className="relative flex w-fit flex-col items-start gap-1">
-                        <div className="text-bold relative w-fit whitespace-nowrap font-sans text-base leading-none tracking-normal text-gray-50">
+                        <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
                             {children ? children : config.name}
                         </div>
                         {config.showStatusMessage && (

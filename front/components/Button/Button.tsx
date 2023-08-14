@@ -1,12 +1,10 @@
-import React from "react";
-
-export function LoginButton({
+export function Button({
     children,
     icon,
     onClick,
 }: React.PropsWithChildren<{
     icon?: React.ReactElement | undefined;
-    onClick: React.MouseEventHandler<HTMLButtonElement>;
+    onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }>) {
     return (
         <button
