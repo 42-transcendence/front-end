@@ -79,7 +79,6 @@ export default function Main() {
                     <GameUserFrame />
                     <GameUserFrame />
                     <div className="m-6 h-[10rem] w-px bg-white"></div>
-                    {/* TODO */}
                     <GameUserFrame />
                     <GameUserFrame />
                 </div>
