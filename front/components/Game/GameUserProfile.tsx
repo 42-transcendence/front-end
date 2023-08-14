@@ -41,13 +41,13 @@ export function GameChipProfile() {
 // 게임 끝나고 나오는 검은색 점수창. 라운드마다 몇 골을 넣었는지, 최종점수가 어떻게 되는지 확인 할 수 있다.
 export default function GameUserProfile() {
     return (
-        <div className="flex w-[239px] items-center justify-center gap-[22px] py-7">
+        <div className="flex items-center justify-center gap-[22px] py-7">
             <Avatar
                 size={"w-9 h-9 2xl:w-12 2xl:h-12"}
                 avatarKey={"jkong"}
                 className="relative bg-white/30"
             />
-            <div className="flex h-[67px] shrink-0 flex-col justify-center text-center text-2xl font-bold not-italic leading-[normal] text-white">
+            <div className="flex shrink-0 flex-col justify-center text-center text-2xl font-bold  text-white">
                 jkong
             </div>
         </div>
