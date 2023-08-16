@@ -5,7 +5,6 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 
 import React, { MouseEventHandler } from "react";
 import { Avatar } from "../Avatar";
-import { ProfileItemConfig } from "./ProfileItem";
 
 export function ProfileItemSelectable({
     className,
@@ -21,31 +20,31 @@ export function ProfileItemSelectable({
     onClick: MouseEventHandler;
 }) {
     return (
-        <div
+        <li
             className={`relative flex h-fit w-full shrink-0 flex-col items-start ${className} `}
         >
             <div
-                className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
+                className="group relative flex flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
                 onClick={onClick}
             >
-                <div className="relative flex select-none items-center gap-2 space-x-4 rounded">
+                <div className="relative flex w-full select-none items-center gap-4 rounded">
                     <div className="relative flex items-center justify-center">
                         <Avatar
                             className=""
                             accountUUID={accountUUID}
-                            size="w-[45px]"
+                            size="w-[32px]"
                         />
                     </div>
-                    <div className="relative flex w-fit flex-col items-start gap-1">
-                        <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                            {children ? children : accountUUID.substring(1, 4) /* nickname*/ }
-                        </div>
+                    <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 ">
+                        {
+                            children
+                                ? children
+                                : accountUUID.substring(1, 4) /* nickname*/
+                        }
                     </div>
-                    {selected && <div className="bg-green-500">
-                        glgl
-                        </div>}
+                    {selected && <div className="bg-green-500">glgl</div>}
                 </div>
             </div>
-        </div>
+        </li>
     );
 }

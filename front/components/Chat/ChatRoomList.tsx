@@ -91,7 +91,6 @@ export default function ChatRoomList() {
         itemToString(item) {
             return getRoomDisplayTitle(item);
         },
-        limit: 5,
         query,
     });
 

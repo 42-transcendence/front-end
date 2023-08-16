@@ -1,10 +1,11 @@
 "use client";
 
-import { FormEventHandler, MouseEvent, useReducer, useState } from "react";
+import { FormEventHandler, useReducer, useState } from "react";
 import { TextField } from "@/components/TextField";
 import { IconKey, IconLock, IconMembers } from "@/components/ImageLibrary";
 import { ToggleButton } from "@/components/Button/ToggleButton";
 import { ProfileItemSelectable } from "../ProfileItem/ProfileItemSelectable";
+import { FzfHighlight, useFzf } from "react-fzf";
 
 const FriendListMockup = [
     { accountUUID: "4281c108-c015-4e3f-8504-60a248bd96df" },
@@ -242,6 +243,14 @@ export function CreateNewRoom({ className }: { className: string }) {
     const [privateChecked, setPrivateChecked] = useState(false);
     const [passwordChecked, setPasswordChecked] = useState(false);
     const [limitChecked, setLimitChecked] = useState(false);
+    const [query, setQuery] = useState("");
+    const { results, getFzfHighlightProps } = useFzf({
+        items: FriendListMockup,
+        itemToString(item) {
+            return item.accountUUID;
+        },
+        query,
+    });
 
     const [selectedAccounts, dispatchSelectedAccounts] = useReducer(
         reducer,
@@ -275,96 +284,102 @@ export function CreateNewRoom({ className }: { className: string }) {
                             }}
                         />
 
-                        <div className="flex w-full flex-col py-3 transition-all">
-                            <ToggleButton
-                                id="private"
-                                checked={privateChecked}
-                                setChecked={setPrivateChecked}
-                                bgClassName="gap-3 rounded-xl p-3 hover:bg-gray-500/30"
-                                icon={
-                                    <IconLock
-                                        width={56}
-                                        height={56}
-                                        className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
-                                    />
-                                }
-                            >
-                                <div>
-                                    <p className="relative text-sm group-data-[checked=true]:hidden">
-                                        공개
-                                    </p>
-                                    <p className="relative hidden text-sm group-data-[checked=true]:block">
-                                        비공개
-                                    </p>
-                                </div>
-                            </ToggleButton>
-
-                            <ToggleButton
-                                id="secret"
-                                checked={passwordChecked}
-                                setChecked={setPasswordChecked}
-                                bgClassName="gap-3 rounded-xl p-3 hover:bg-gray-500/30"
-                                icon={
-                                    <IconKey
-                                        width={56}
-                                        height={56}
-                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
-                                    />
-                                }
-                            >
-                                <div className="flex flex-col gap-1">
-                                    <div className="justify-center text-sm transition-all">
-                                        비밀번호
-                                    </div>
-                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
-                                        <TextField
-                                            type="new-password"
-                                            placeholder="비밀번호 입력"
-                                            className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
-                                            value={password}
-                                            onChange={(event) => {
-                                                setPassword(event.target.value);
-                                            }}
+                        <div className="flex max-h-[60rem] w-full flex-col gap-4 overflow-hidden py-3 transition-all">
+                            <div className="flex flex-col">
+                                <ToggleButton
+                                    id="private"
+                                    checked={privateChecked}
+                                    setChecked={setPrivateChecked}
+                                    bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
+                                    icon={
+                                        <IconLock
+                                            width={56}
+                                            height={56}
+                                            className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
                                         />
+                                    }
+                                >
+                                    <div>
+                                        <p className="relative text-sm group-data-[checked=true]:hidden">
+                                            공개
+                                        </p>
+                                        <p className="relative hidden text-sm group-data-[checked=true]:block">
+                                            비공개
+                                        </p>
                                     </div>
-                                </div>
-                            </ToggleButton>
+                                </ToggleButton>
 
-                            <ToggleButton
-                                id="limit"
-                                checked={limitChecked}
-                                setChecked={setLimitChecked}
-                                bgClassName="gap-3 rounded-xl p-3 hover:bg-gray-500/30"
-                                icon={
-                                    <IconMembers
-                                        width={56}
-                                        height={56}
-                                        className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
-                                    />
-                                }
-                            >
-                                <div className="flex flex-col gap-1">
-                                    <h2 className="items-end justify-center text-sm transition-all">
-                                        인원제한
-                                    </h2>
-                                    <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
-                                        <TextField
-                                            type="number"
-                                            disabled={!limitChecked}
-                                            min={1}
-                                            max={1500}
-                                            placeholder="최대인원 입력"
-                                            className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
-                                            value={limit}
-                                            onChange={(event) => {
-                                                setLimit(
-                                                    Number(event.target.value),
-                                                );
-                                            }}
+                                <ToggleButton
+                                    id="secret"
+                                    checked={passwordChecked}
+                                    setChecked={setPasswordChecked}
+                                    bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
+                                    icon={
+                                        <IconKey
+                                            width={56}
+                                            height={56}
+                                            className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
                                         />
+                                    }
+                                >
+                                    <div className="flex flex-col gap-1">
+                                        <div className="justify-center text-sm transition-all">
+                                            비밀번호
+                                        </div>
+                                        <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
+                                            <TextField
+                                                type="new-password"
+                                                placeholder="비밀번호 입력"
+                                                className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
+                                                value={password}
+                                                onChange={(event) => {
+                                                    setPassword(
+                                                        event.target.value,
+                                                    );
+                                                }}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            </ToggleButton>
+                                </ToggleButton>
+
+                                <ToggleButton
+                                    id="limit"
+                                    checked={limitChecked}
+                                    setChecked={setLimitChecked}
+                                    bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
+                                    icon={
+                                        <IconMembers
+                                            width={56}
+                                            height={56}
+                                            className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
+                                        />
+                                    }
+                                >
+                                    <div className="flex flex-col gap-1">
+                                        <h2 className="items-end justify-center text-sm transition-all">
+                                            인원제한
+                                        </h2>
+                                        <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
+                                            <TextField
+                                                type="number"
+                                                disabled={!limitChecked}
+                                                min={1}
+                                                max={1500}
+                                                placeholder="최대인원 입력"
+                                                className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
+                                                value={limit}
+                                                onChange={(event) => {
+                                                    setLimit(
+                                                        Number(
+                                                            event.target.value,
+                                                        ),
+                                                    );
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </ToggleButton>
+                            </div>
 
                             <SectionHeader />
 
@@ -372,10 +387,14 @@ export function CreateNewRoom({ className }: { className: string }) {
                                 type="text"
                                 className="px-3"
                                 placeholder="Search..."
+                                value={query}
+                                onChange={(event) =>
+                                    setQuery(event.target.value)
+                                }
                             />
 
-                            <div className="flex flex-col items-center gap-1">
-                                {FriendListMockup.map((item) => {
+                            <div className="flex max-h-[100rem] flex-col items-center gap-1 overflow-auto">
+                                {results.map((item, index) => {
                                     return (
                                         <ProfileItemSelectable
                                             key={item.accountUUID}
@@ -389,7 +408,16 @@ export function CreateNewRoom({ className }: { className: string }) {
                                                     value: item.accountUUID,
                                                 })
                                             }
-                                        />
+                                        >
+                                            <FzfHighlight
+                                                {...getFzfHighlightProps({
+                                                    index,
+                                                    item,
+                                                    className:
+                                                        "text-yellow-500",
+                                                })}
+                                            />
+                                        </ProfileItemSelectable>
                                     );
                                 })}
                             </div>
@@ -409,8 +437,8 @@ export function CreateNewRoom({ className }: { className: string }) {
 
 function SectionHeader() {
     return (
-        <div className="flex h-fit w-full flex-col gap-2 py-2">
-            <hr className="border-gray-300/80" />
+        <div className="flex h-fit w-full flex-col gap-2">
+            <hr className="border-gray-300/30" />
             <p className="px-1 text-sm">초대 상대 선택</p>
         </div>
     );
