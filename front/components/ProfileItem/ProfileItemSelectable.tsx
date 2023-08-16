@@ -22,10 +22,10 @@ export function ProfileItemSelectable({
 }) {
     return (
         <li
-            className={`relative flex h-fit w-full shrink-0 flex-col items-start ${className} `}
+            className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className} `}
         >
             <div
-                className="group relative flex flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
+                className="relative flex flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
                 onClick={onClick}
             >
                 <div className="relative flex w-full select-none items-center gap-4 rounded">
@@ -36,12 +36,14 @@ export function ProfileItemSelectable({
                             size="w-[32px]"
                         />
                     </div>
-                    <div className="relative line-clamp-1 w-full font-sans text-base font-bold leading-none tracking-normal text-gray-50 ">
-                        {
-                            children
-                                ? children
-                                : accountUUID.substring(1, 4) /* nickname*/
-                        }
+                    <div className="overflow-hidden">
+                        <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-full group-hover/profile:overflow-visible group-hover/profile:duration-[3000ms]">
+                            {
+                                children
+                                    ? children
+                                    : accountUUID.substring(1, 4) /* nickname*/
+                            }
+                        </div>
                     </div>
                     {selected ? (
                         <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/80 outline-gray-300/60">
