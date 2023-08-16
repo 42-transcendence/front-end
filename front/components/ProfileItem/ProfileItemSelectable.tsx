@@ -5,6 +5,7 @@ Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcN
 
 import React, { MouseEventHandler } from "react";
 import { Avatar } from "../Avatar";
+import { IconCheck } from "../ImageLibrary";
 
 export function ProfileItemSelectable({
     className,
@@ -35,14 +36,20 @@ export function ProfileItemSelectable({
                             size="w-[32px]"
                         />
                     </div>
-                    <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 ">
+                    <div className="relative line-clamp-1 w-full font-sans text-base font-bold leading-none tracking-normal text-gray-50 ">
                         {
                             children
                                 ? children
                                 : accountUUID.substring(1, 4) /* nickname*/
                         }
                     </div>
-                    {selected && <div className="bg-green-500">glgl</div>}
+                    {selected ? (
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/80 outline-gray-300/60">
+                            <IconCheck className="p-0.5 text-white" />
+                        </div>
+                    ) : (
+                        <div className="h-6 w-6 shrink-0 rounded-full outline outline-1 outline-gray-300/60"></div>
+                    )}
                 </div>
             </div>
         </li>
