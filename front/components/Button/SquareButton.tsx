@@ -1,4 +1,4 @@
-export function Button({
+export function SquareButton({
     children,
     icon,
     onClick,
