@@ -37,7 +37,7 @@ export function ProfileItemSelectable({
                         />
                     </div>
                     <div className="overflow-hidden">
-                        <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-full group-hover/profile:overflow-visible group-hover/profile:duration-[3000ms]">
+                        <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-[150%] group-hover/profile:overflow-visible group-hover/profile:duration-[3000ms]">
                             {
                                 children
                                     ? children
