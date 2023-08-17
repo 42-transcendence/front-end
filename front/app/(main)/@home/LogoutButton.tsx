@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/Button/Button";
+import { SquareButton } from "@/components/Button/SquareButton";
 
 export function LogoutButton() {
     return (
-        <Button
+        <SquareButton
             onClick={() => {
                 window.localStorage.removeItem("access_token");
                 window.localStorage.removeItem("refresh_token");
@@ -12,6 +12,6 @@ export function LogoutButton() {
             }}
         >
             Log out
-        </Button>
+        </SquareButton>
     );
 }

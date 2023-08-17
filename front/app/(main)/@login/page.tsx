@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/Button/Button";
+import { SquareButton } from "@/components/Button/SquareButton";
 import { DoubleSharp, Logo42, LogoGoogle } from "@/components/ImageLibrary";
 
 const popupFeatures = ["popup=true", "width=600", "height=600"].join(",");
@@ -36,13 +36,13 @@ export default function LoginPage() {
                 </div>
                 <div className="relative flex h-[90%] w-fit flex-col items-center justify-center gap-1">
                     {loginList.map((e) => (
-                        <Button
+                        <SquareButton
                             key={e.key}
                             onClick={e.action}
                             icon={e.logo}
                         >
                             {e.innerText}
-                        </Button>
+                        </SquareButton>
                     ))}
                 </div>
             </div>

@@ -20,7 +20,7 @@ export function SocialButton() {
             </button>
             {showModal &&
                 createPortal(
-                    <div className="absolute inset-0 flex h-full w-full flex-col text-4xl font-extrabold">
+                    <div className="absolute inset-0 flex h-full w-full flex-col font-extrabold">
                         <ChatLayout />
                     </div>,
                     portalRoot!,

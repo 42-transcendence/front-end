@@ -48,18 +48,16 @@ const dummy: AvatarInfo[] = [
 export function Avatar({
     className,
     size,
-    accountId, //FIXME: delete me
-    avatarKey,
+    accountUUID,
 }: {
     className: string;
     size: string;
-    accountId?: number;
-    avatarKey?: string;
+    accountUUID?: string;
 }): React.ReactElement {
     //TODO: fetch Avatar datas
     // \-  get user profile and status from accountid
 
-    avatarKey ??= "jisookim"; //FIXME: temporary
+    const avatarKey = "jisookim"; //FIXME: temporary
     const status = "online"; //FIXME: temporary
 
     return (
