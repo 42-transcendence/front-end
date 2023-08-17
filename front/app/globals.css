@@ -72,6 +72,7 @@
     --color-secondary: var(--color-aqua-500);
     --color-primary-varient: var(--color-purple-700);
     --color-secondary-varient: var(--color-aqua-700);
+    --color-secondary-varient2: var(--color-aqua-900);
     --color-primary-lighter: var(--color-purple-300);
     --color-secondary-lighter: var(--color-aqua-300);
     --gradient-primary: linear-gradient(90deg, #a29bd4, #989fdd);

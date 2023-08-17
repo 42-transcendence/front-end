@@ -12,7 +12,9 @@ module.exports = {
                 primary: "rgb(var(--color-primary), <alpha-value>)",
                 priVar: "rgb(var(--color-primary-varient), <alpha-value>)",
                 secondary: "rgb(var(--color-secondary), <alpha-value>)",
-                secondary: "rgb(var(--color-secondary-varient), <alpha-value>)",
+                seconVar: "rgb(var(--color-secondary-varient), <alpha-value>)",
+                seconVar2:
+                    "rgb(var(--color-secondary-varient2), <alpha-value>)",
                 windowGlass: "rgb(var(--windows-glass), <alpha-value>)",
                 controlsHover: "rgb(var(--controls-hover), <alpha-value>)",
                 controlsSelected:
