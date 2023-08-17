@@ -4,6 +4,7 @@ import { DoubleSharp, IconArrow3 } from "@/components/ImageLibrary";
 import { Card } from "@/components/Card/Card";
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { UploadBox } from "./UploadBox";
 
 const defaultProfilesKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
@@ -101,6 +102,8 @@ export default function Welcome2() {
                                 />
                             </div>
                         ))}
+                        { /* TODO: appropriate file size limit? */}
+                        <UploadBox accept="image/*" maxFileCount={3} maxFileSize={1048576} />
                         <div className="shrink-0 snap-center">
                             <div className="w-4 shrink-0"></div>
                         </div>
