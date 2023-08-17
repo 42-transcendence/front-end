@@ -744,7 +744,7 @@ function useDetectSticky(): [
         const cachedRef = ref.current;
         const observer = new IntersectionObserver(
             ([e]) => {
-                setIsSticky(e.intersectionRatio < 1);
+                setIsSticky(e.intersectionRatio > 0 && e.intersectionRatio < 1);
             },
             { threshold: [1] },
         );
