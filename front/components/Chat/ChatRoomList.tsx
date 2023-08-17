@@ -32,6 +32,7 @@ type User = {
 };
 
 const titlePattern = ".{4,32}";
+const maxMemberLimit = 1500;
 
 // TODO: displaytitle을 front-end에서 직접 정하는게 아니라, 백엔드에서 없으면
 // 동일 로직으로 타이틀을 만들어서 프론트에 넘겨주고, 프론트에선 타이틀을 항상
@@ -109,15 +110,16 @@ export default function ChatRoomList() {
         },
         query,
     });
+
     const [title, setTitle] = useState("");
     const [password, setPassword] = useState("");
     const [limit, setLimit] = useState(1);
     const [privateChecked, setPrivateChecked] = useState(false);
-    const [passwordChecked, setPasswordChecked] = useState(false);
+    const [secretChecked, setSecretChecked] = useState(false);
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
     const [selectedAccounts, dispatchSelectedAccounts] = useReducer(
-        reducer,
+        selectedAccountsReducer,
         undefined,
         () => new Set<string>(),
     );
@@ -126,10 +128,6 @@ export default function ChatRoomList() {
         event.preventDefault();
         //TODO: make new room with title, password, limit;
     };
-
-    function handleChecked() {
-        setChecked(!checked);
-    }
 
     return (
         <div className="absolute left-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/left:w-0 peer-checked/left:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[0px_28px_28px_0px]">
@@ -163,7 +161,7 @@ export default function ChatRoomList() {
                 <input
                     type="checkbox"
                     checked={checked}
-                    onChange={handleChecked}
+                    onChange={(e) => setChecked(e.target.checked)}
                     id="CreateNewRoom"
                     className="peer hidden"
                 />
@@ -202,6 +200,7 @@ export default function ChatRoomList() {
                     </div>
                 </div>
 
+                {/*  TODO: extract to other file */}
                 <form
                     autoComplete="off"
                     onSubmit={handleSubmit}
@@ -217,9 +216,9 @@ export default function ChatRoomList() {
                                     pattern={titlePattern}
                                     required
                                     value={title}
-                                    onChange={(event) => {
-                                        setTitle(event.target.value);
-                                    }}
+                                    onChange={(event) =>
+                                        setTitle(event.target.value)
+                                    }
                                 />
 
                                 <div className="flex flex-col">
@@ -248,8 +247,8 @@ export default function ChatRoomList() {
 
                                     <ToggleButton
                                         id="secret"
-                                        checked={passwordChecked}
-                                        setChecked={setPasswordChecked}
+                                        checked={secretChecked}
+                                        setChecked={setSecretChecked}
                                         bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
                                         icon={
                                             <IconKey
@@ -269,11 +268,11 @@ export default function ChatRoomList() {
                                                     placeholder="비밀번호 입력"
                                                     className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
                                                     value={password}
-                                                    onChange={(event) => {
+                                                    onChange={(event) =>
                                                         setPassword(
                                                             event.target.value,
-                                                        );
-                                                    }}
+                                                        )
+                                                    }
                                                 />
                                             </div>
                                         </div>
@@ -301,18 +300,18 @@ export default function ChatRoomList() {
                                                     type="number"
                                                     disabled={!limitChecked}
                                                     min={1}
-                                                    max={1500}
+                                                    max={maxMemberLimit}
                                                     placeholder="최대인원 입력"
                                                     className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
                                                     value={limit}
-                                                    onChange={(event) => {
+                                                    onChange={(event) =>
                                                         setLimit(
                                                             Number(
                                                                 event.target
                                                                     .value,
                                                             ),
-                                                        );
-                                                    }}
+                                                        )
+                                                    }
                                                 />
                                             </div>
                                         </div>
@@ -336,15 +335,13 @@ export default function ChatRoomList() {
                         />
                     </div>
                 </form>
-
-                {/*<CreateNewRoom className="hidden peer-checked:block peer-checked:py-0" />*/}
             </div>
         </div>
     );
 }
 
 const FriendListMockup = [
-    { accountUUID: "4281c108-c015-4e3f-8504", tag: "60a248bd96df" },
+    { accountUUID: "123", tag: "42" },
     { accountUUID: "0eb0761e-4b92-41ea-ae6d", tag: "a3746330085e" },
     { accountUUID: "be67e302-27a3-460d-9fcf", tag: "59b3d8d9460b" },
     { accountUUID: "e3eb8922-ce6d-4eb0-991e", tag: "1a7dc7d9ce7f" },
@@ -357,188 +354,181 @@ const FriendListMockup = [
 ];
 
 type AccountSelectAction = {
-    command: "add" | "delete" | "toggle";
     value: string;
 };
 
-function reducer(state: Set<string>, action: AccountSelectAction): Set<string> {
+function selectedAccountsReducer(
+    state: Set<string>, //TODO: string specify type to AccountUUID?
+    action: AccountSelectAction,
+): Set<string> {
     const newSet = new Set<string>(state);
     const value = action.value;
-    switch (action.command) {
-        case "add":
-            newSet.add(value);
-            break;
-        case "delete":
-            newSet.delete(value);
-            break;
-        case "toggle":
-            if (newSet.has(value)) {
-                newSet.delete(value);
-            } else {
-                newSet.add(value);
-            }
-            break;
+
+    if (newSet.has(value)) {
+        newSet.delete(value);
+    } else {
+        newSet.add(value);
     }
     return newSet;
 }
 
-export function CreateNewRoom({ className }: { className: string }) {
-    const [title, setTitle] = useState("");
-    const [password, setPassword] = useState("");
-    const [limit, setLimit] = useState(1);
-    const [privateChecked, setPrivateChecked] = useState(false);
-    const [passwordChecked, setPasswordChecked] = useState(false);
-    const [limitChecked, setLimitChecked] = useState(false);
-    const [inviteChecked, setInviteChecked] = useState(false);
-    const [selectedAccounts, dispatchSelectedAccounts] = useReducer(
-        reducer,
-        undefined,
-        () => new Set<string>(),
-    );
-
-    const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-        event.preventDefault();
-        //TODO: make new room with title, password, limit;
-    };
-
-    return (
-        <div className={`${className} group relative h-full w-full shrink `}>
-            <form
-                autoComplete="off"
-                className="h-full w-full"
-                onSubmit={handleSubmit}
-            >
-                <div className="relative flex h-full w-full shrink flex-col items-start justify-between gap-2 p-4 px-4 py-2 backdrop-blur-[50px] 2xl:py-4">
-                    <div className="flex flex-col gap-1 self-stretch">
-                        <div className="relative flex h-fit w-full flex-col py-2">
-                            <TextField
-                                type="text"
-                                className="relative bg-black/30 px-4 py-1 text-xl"
-                                placeholder="Title..."
-                                pattern=".{0,32}"
-                                required
-                                value={title}
-                                onChange={(event) => {
-                                    setTitle(event.target.value);
-                                }}
-                            />
-
-                            <div className="flex flex-col">
-                                <ToggleButton
-                                    id="private"
-                                    checked={privateChecked}
-                                    setChecked={setPrivateChecked}
-                                    bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
-                                    icon={
-                                        <IconLock
-                                            width={56}
-                                            height={56}
-                                            className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
-                                        />
-                                    }
-                                >
-                                    <div>
-                                        <p className="relative text-sm group-data-[checked=true]:hidden">
-                                            공개
-                                        </p>
-                                        <p className="relative hidden text-sm group-data-[checked=true]:block">
-                                            비공개
-                                        </p>
-                                    </div>
-                                </ToggleButton>
-
-                                <ToggleButton
-                                    id="secret"
-                                    checked={passwordChecked}
-                                    setChecked={setPasswordChecked}
-                                    bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
-                                    icon={
-                                        <IconKey
-                                            width={56}
-                                            height={56}
-                                            className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
-                                        />
-                                    }
-                                >
-                                    <div className="flex flex-col gap-1">
-                                        <div className="justify-center text-sm transition-all">
-                                            비밀번호
-                                        </div>
-                                        <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
-                                            <TextField
-                                                type="new-password"
-                                                placeholder="비밀번호 입력"
-                                                className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
-                                                value={password}
-                                                onChange={(event) => {
-                                                    setPassword(
-                                                        event.target.value,
-                                                    );
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </ToggleButton>
-
-                                <ToggleButton
-                                    id="limit"
-                                    checked={limitChecked}
-                                    setChecked={setLimitChecked}
-                                    bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
-                                    icon={
-                                        <IconMembers
-                                            width={56}
-                                            height={56}
-                                            className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
-                                        />
-                                    }
-                                >
-                                    <div className="flex flex-col gap-1">
-                                        <h2 className="items-end justify-center text-sm transition-all">
-                                            인원제한
-                                        </h2>
-                                        <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
-                                            <TextField
-                                                type="number"
-                                                disabled={!limitChecked}
-                                                min={1}
-                                                max={1500}
-                                                placeholder="최대인원 입력"
-                                                className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
-                                                value={limit}
-                                                onChange={(event) => {
-                                                    setLimit(
-                                                        Number(
-                                                            event.target.value,
-                                                        ),
-                                                    );
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </ToggleButton>
-                            </div>
-                        </div>
-
-                        <InviteFriendToggle
-                            checked={inviteChecked}
-                            setChecked={setInviteChecked}
-                            selectedAccounts={selectedAccounts}
-                            dispatchSelectedAccounts={dispatchSelectedAccounts}
-                        />
-                    </div>
-
-                    <div className="relative flex justify-center self-stretch">
-                        <ButtonOnRight
-                            buttonText="만들기"
-                            className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
-                        />
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
-}
+// export function CreateNewRoom({ className }: { className: string }) {
+//     const [title, setTitle] = useState("");
+//     const [password, setPassword] = useState("");
+//     const [limit, setLimit] = useState(1);
+//     const [privateChecked, setPrivateChecked] = useState(false);
+//     const [passwordChecked, setPasswordChecked] = useState(false);
+//     const [limitChecked, setLimitChecked] = useState(false);
+//     const [inviteChecked, setInviteChecked] = useState(false);
+//     const [selectedAccounts, dispatchSelectedAccounts] = useReducer(
+//         selectedAccountsReducer,
+//         undefined,
+//         () => new Set<string>(),
+//     );
+//
+//     const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+//         event.preventDefault();
+//         //TODO: make new room with title, password, limit;
+//     };
+//
+//     return (
+//         <div className={`${className} group relative h-full w-full shrink `}>
+//             <form
+//                 autoComplete="off"
+//                 className="h-full w-full"
+//                 onSubmit={handleSubmit}
+//             >
+//                 <div className="relative flex h-full w-full shrink flex-col items-start justify-between gap-2 p-4 px-4 py-2 backdrop-blur-[50px] 2xl:py-4">
+//                     <div className="flex flex-col gap-1 self-stretch">
+//                         <div className="relative flex h-fit w-full flex-col py-2">
+//                             <TextField
+//                                 type="text"
+//                                 className="relative bg-black/30 px-4 py-1 text-xl"
+//                                 placeholder="Title..."
+//                                 pattern=".{0,32}"
+//                                 required
+//                                 value={title}
+//                                 onChange={(event) => {
+//                                     setTitle(event.target.value);
+//                                 }}
+//                             />
+//
+//                             <div className="flex flex-col">
+//                                 <ToggleButton
+//                                     id="private"
+//                                     checked={privateChecked}
+//                                     setChecked={setPrivateChecked}
+//                                     bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
+//                                     icon={
+//                                         <IconLock
+//                                             width={56}
+//                                             height={56}
+//                                             className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
+//                                         />
+//                                     }
+//                                 >
+//                                     <div>
+//                                         <p className="relative text-sm group-data-[checked=true]:hidden">
+//                                             공개
+//                                         </p>
+//                                         <p className="relative hidden text-sm group-data-[checked=true]:block">
+//                                             비공개
+//                                         </p>
+//                                     </div>
+//                                 </ToggleButton>
+//
+//                                 <ToggleButton
+//                                     id="secret"
+//                                     checked={passwordChecked}
+//                                     setChecked={setPasswordChecked}
+//                                     bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
+//                                     icon={
+//                                         <IconKey
+//                                             width={56}
+//                                             height={56}
+//                                             className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
+//                                         />
+//                                     }
+//                                 >
+//                                     <div className="flex flex-col gap-1">
+//                                         <div className="justify-center text-sm transition-all">
+//                                             비밀번호
+//                                         </div>
+//                                         <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
+//                                             <TextField
+//                                                 type="new-password"
+//                                                 placeholder="비밀번호 입력"
+//                                                 className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
+//                                                 value={password}
+//                                                 onChange={(event) => {
+//                                                     setPassword(
+//                                                         event.target.value,
+//                                                     );
+//                                                 }}
+//                                             />
+//                                         </div>
+//                                     </div>
+//                                 </ToggleButton>
+//
+//                                 <ToggleButton
+//                                     id="limit"
+//                                     checked={limitChecked}
+//                                     setChecked={setLimitChecked}
+//                                     bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
+//                                     icon={
+//                                         <IconMembers
+//                                             width={56}
+//                                             height={56}
+//                                             className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
+//                                         />
+//                                     }
+//                                 >
+//                                     <div className="flex flex-col gap-1">
+//                                         <h2 className="items-end justify-center text-sm transition-all">
+//                                             인원제한
+//                                         </h2>
+//                                         <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
+//                                             <TextField
+//                                                 type="number"
+//                                                 disabled={!limitChecked}
+//                                                 min={1}
+//                                                 max={1500}
+//                                                 placeholder="최대인원 입력"
+//                                                 className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
+//                                                 value={limit}
+//                                                 onChange={(event) => {
+//                                                     setLimit(
+//                                                         Number(
+//                                                             event.target.value,
+//                                                         ),
+//                                                     );
+//                                                 }}
+//                                             />
+//                                         </div>
+//                                     </div>
+//                                 </ToggleButton>
+//                             </div>
+//                         </div>
+//
+//                         <InviteFriendToggle
+//                             checked={inviteChecked}
+//                             setChecked={setInviteChecked}
+//                             selectedAccounts={selectedAccounts}
+//                             dispatchSelectedAccounts={dispatchSelectedAccounts}
+//                         />
+//                     </div>
+//
+//                     <div className="relative flex justify-center self-stretch">
+//                         <ButtonOnRight
+//                             buttonText="만들기"
+//                             className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
+//                         />
+//                     </div>
+//                 </div>
+//             </form>
+//         </div>
+//     );
+// }
 
 function useDetectSticky(): [
     boolean,
@@ -600,9 +590,7 @@ function InviteFriendToggle({
                     className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
                 />
                 <input
-                    onChange={() => {
-                        setChecked(!checked);
-                    }}
+                    onChange={(e) => setChecked(e.target.checked)}
                     checked={checked}
                     type="checkbox"
                     id="sectionHeader"
@@ -631,6 +619,7 @@ function InviteList({
 }) {
     const [query, setQuery] = useState("");
     const { results, getFzfHighlightProps } = useFzf({
+        //TODO: Change mockup to real data with fetch!!
         items: FriendListMockup,
         itemToString(item) {
             return item.accountUUID + "#" + item.tag;
@@ -656,7 +645,6 @@ function InviteList({
                             selected={selectedAccounts.has(item.accountUUID)}
                             onClick={() =>
                                 dispatchSelectedAccounts({
-                                    command: "toggle",
                                     value: item.accountUUID,
                                 })
                             }
