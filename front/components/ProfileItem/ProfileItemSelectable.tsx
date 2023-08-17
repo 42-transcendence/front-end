@@ -20,6 +20,8 @@ export function ProfileItemSelectable({
     children?: React.ReactNode | undefined;
     onClick: MouseEventHandler;
 }) {
+    //TODO: Fix layout when nick length is short. add div with avatar and nick, fit size of every item.
+    //TODO: Add feature: detect length of string, if not needed, disable animation
     return (
         <li
             className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className} `}
