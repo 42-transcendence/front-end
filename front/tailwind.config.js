@@ -23,7 +23,7 @@ module.exports = {
                 ultraDark: "rgb(197 197 197 / <alpha-value>)",
                 iconPrimary: "rgb(230 230 230 / <alpha-value>)",
                 iconSecondary: "rgb(105 105 105 / <alpha-value>)",
-                iconTrinary: "color-mix(in srgb, #5e5e5e 64%, #ffffff 22%)",
+                iconTernary: "color-mix(in srgb, #5e5e5e 64%, #ffffff 22%)",
                 darker: "color-mix(in srgb, #000000 8%, #d6d6d6 45%)",
             },
 
