@@ -1,8 +1,3 @@
-/*
-We're constantly improving the code you see.
-Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
-*/
-
 import React, { MouseEventHandler } from "react";
 import { Avatar } from "../Avatar";
 import { IconCheck } from "../ImageLibrary";
@@ -20,8 +15,9 @@ export function ProfileItemSelectable({
     children?: React.ReactNode | undefined;
     onClick: MouseEventHandler;
 }) {
-    //TODO: Fix layout when nick length is short. add div with avatar and nick, fit size of every item.
-    //TODO: Add feature: detect length of string, if not needed, disable animation
+    //TODO: get nick from accountUUID by fetch
+    const nickName = "fallback";
+
     return (
         <li
             className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className} `}
@@ -38,13 +34,9 @@ export function ProfileItemSelectable({
                             size="w-[32px]"
                         />
                     </div>
-                    <div className="overflow-hidden">
-                        <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-[150%] group-hover/profile:overflow-visible group-hover/profile:duration-[3000ms]">
-                            {
-                                children
-                                    ? children
-                                    : accountUUID.substring(1, 4) /* nickname*/
-                            }
+                    <div className="w-full overflow-hidden">
+                        <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-[150%] group-hover/profile:overflow-visible group-hover/profile:delay-300 group-hover/profile:duration-[5000ms]">
+                            {children ?? nickName}
                         </div>
                     </div>
                     {selected ? (
