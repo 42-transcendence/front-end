@@ -1,6 +1,12 @@
 "use client";
 
-import { FormEventHandler, SetStateAction, Suspense, useReducer } from "react";
+import {
+    FormEventHandler,
+    SetStateAction,
+    useEffect,
+    useReducer,
+    useRef,
+} from "react";
 import {
     IconKey,
     IconLock,
@@ -19,7 +25,6 @@ import {
 import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "../TextField";
-import { ChatDialog } from "./ChatDialog";
 
 type User = {
     id: number;
@@ -115,6 +120,11 @@ export default function ChatRoomList() {
         () => new Set<string>(),
     );
 
+    const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+        event.preventDefault();
+        //TODO: make new room with title, password, limit;
+    };
+
     function handleChecked() {
         setChecked(!checked);
     }
@@ -190,10 +200,14 @@ export default function ChatRoomList() {
                     </div>
                 </div>
 
-                <form className="flex h-full w-full shrink items-start justify-end gap-4 overflow-auto">
-                    <div className="flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4">
-                        <div className="flex flex-col gap-1 self-stretch overflow-auto">
-                            <div className="relative flex h-fit w-full flex-col py-2">
+                <form
+                    autoComplete="off"
+                    onSubmit={handleSubmit}
+                    className="group hidden h-full w-full overflow-auto peer-checked:flex"
+                >
+                    <div className="flex h-full w-full flex-col justify-between gap-4">
+                        <div className="flex flex-col gap-2 self-stretch overflow-auto">
+                            <div className="relative flex h-fit w-full flex-col gap-2 py-2">
                                 <TextField
                                     type="text"
                                     className="relative bg-black/30 px-4 py-1 text-xl"
@@ -301,17 +315,17 @@ export default function ChatRoomList() {
                                             </div>
                                         </div>
                                     </ToggleButton>
+
+                                    <InviteFriendToggle
+                                        checked={inviteChecked}
+                                        setChecked={setInviteChecked}
+                                        selectedAccounts={selectedAccounts}
+                                        dispatchSelectedAccounts={
+                                            dispatchSelectedAccounts
+                                        }
+                                    />
                                 </div>
                             </div>
-
-                            <SectionHeader
-                                checked={inviteChecked}
-                                setChecked={setInviteChecked}
-                                selectedAccounts={selectedAccounts}
-                                dispatchSelectedAccounts={
-                                    dispatchSelectedAccounts
-                                }
-                            />
                         </div>
 
                         <ButtonOnRight
@@ -583,7 +597,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                 onSubmit={handleSubmit}
             >
                 <div className="relative flex h-full w-full shrink flex-col items-start justify-between gap-2 p-4 px-4 py-2 backdrop-blur-[50px] 2xl:py-4">
-                    <div className="flex flex-col gap-1 self-stretch overflow-auto">
+                    <div className="flex flex-col gap-1 self-stretch">
                         <div className="relative flex h-fit w-full flex-col py-2">
                             <TextField
                                 type="text"
@@ -694,7 +708,7 @@ export function CreateNewRoom({ className }: { className: string }) {
                             </div>
                         </div>
 
-                        <SectionHeader
+                        <InviteFriendToggle
                             checked={inviteChecked}
                             setChecked={setInviteChecked}
                             selectedAccounts={selectedAccounts}
@@ -714,7 +728,39 @@ export function CreateNewRoom({ className }: { className: string }) {
     );
 }
 
-function SectionHeader({
+function useDetectSticky(): [
+    boolean,
+    React.LegacyRef<HTMLLabelElement>,
+    React.Dispatch<React.SetStateAction<boolean>>,
+] {
+    const [isSticky, setIsSticky] = useState(false);
+    const ref = useRef<HTMLLabelElement>(undefined!);
+
+    // mount
+    useEffect(() => {
+        if (ref.current === undefined) {
+            throw new Error();
+        }
+        const cachedRef = ref.current;
+        const observer = new IntersectionObserver(
+            ([e]) => {
+                setIsSticky(e.intersectionRatio < 1);
+            },
+            { threshold: [1] },
+        );
+
+        observer.observe(cachedRef);
+
+        // unmount
+        return () => {
+            observer.unobserve(cachedRef);
+        };
+    }, [ref]);
+
+    return [isSticky, ref, setIsSticky];
+}
+
+function InviteFriendToggle({
     checked,
     setChecked,
     selectedAccounts,
@@ -725,13 +771,22 @@ function SectionHeader({
     checked: boolean;
     setChecked: React.Dispatch<SetStateAction<boolean>>;
 }) {
+    const [isSticky, ref] = useDetectSticky();
+
     return (
         <div className="flex flex-col gap-2">
             <label
-                id="sectionHeader"
+                ref={ref}
+                htmlFor="sectionHeader"
                 data-checked={checked}
-                className="group flex h-fit w-full flex-col gap-4"
+                data-sticky={isSticky}
+                className="group sticky -top-1 z-10 flex h-fit w-full flex-row items-center gap-3 rounded p-3 transition-colors hover:bg-gray-500/30 hover:text-white data-[sticky=true]:bg-secondary data-[sticky=true]:duration-0"
             >
+                <IconPerson
+                    width={56}
+                    height={56}
+                    className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
+                />
                 <input
                     onChange={() => {
                         setChecked(!checked);
@@ -741,19 +796,15 @@ function SectionHeader({
                     id="sectionHeader"
                     className="hidden"
                 />
-
-                <hr className="border-gray-300/30" />
                 <p className="px-1 text-sm group-data-[checked=true]:text-white">
                     초대 상대 선택
                 </p>
             </label>
             {checked && (
-                <Suspense fallback={<div>loading</div>}>
-                    <InviteList
-                        selectedAccounts={selectedAccounts}
-                        dispatchSelectedAccounts={dispatchSelectedAccounts}
-                    />
-                </Suspense>
+                <InviteList
+                    selectedAccounts={selectedAccounts}
+                    dispatchSelectedAccounts={dispatchSelectedAccounts}
+                />
             )}
         </div>
     );
@@ -776,7 +827,7 @@ function InviteList({
     });
 
     return (
-        <div className="flex h-fit max-h-96 flex-col gap-2">
+        <div className="flex flex-col gap-2">
             <TextField
                 type="text"
                 className="px-3"
@@ -784,7 +835,7 @@ function InviteList({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
             />
-            <div className="flex flex-col items-center gap-1 self-stretch overflow-auto">
+            <div className="flex h-full flex-col items-center gap-1 self-stretch overflow-auto">
                 {results.map((item, index) => {
                     return (
                         <ProfileItemSelectable
