@@ -9,10 +9,27 @@
     ],
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-type-checked",
         "next/core-web-vitals",
         "prettier"
     ],
-    "rules": {
-    }
+    "overrides": [
+        {
+            "files": ["*.ts", "*.tsx"],
+            "rules": {
+                "@typescript-eslint/no-unused-vars": [
+                    "error", {
+                        "varsIgnorePattern": "^_",
+                        "argsIgnorePattern": "^_"
+                    }
+                ],
+                "@typescript-eslint/strict-boolean-expressions": [
+                    "error"
+                ]
+            },
+            "parserOptions": {
+                "project": ["./tsconfig.json"]
+            }
+        }
+    ]
 }

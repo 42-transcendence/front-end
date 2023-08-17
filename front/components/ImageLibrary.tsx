@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable   */
+/* prettier-ignore  */
 import _DoubleSharp from "/public/double-sharp.svg"; export const DoubleSharp = _DoubleSharp;
 import _Logo42 from "/public/logo-42.svg"; export const Logo42 = _Logo42;
 import _LogoGoogle from "/public/logo-google.svg"; export const LogoGoogle = _LogoGoogle;
