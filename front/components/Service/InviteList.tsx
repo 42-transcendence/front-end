@@ -18,7 +18,7 @@ const FriendListMockup = [
     { accountUUID: "fe5429ea-d841-4301-98c1", tag: "9ae9fa40ab81" },
 ];
 
-export function InviteList() {
+export function InviteList({ className }: { className?: string | undefined }) {
     const [query, setQuery] = useState("");
     const { results, getFzfHighlightProps } = useFzf({
         //TODO: Change mockup to real data with fetch!!
@@ -31,7 +31,7 @@ export function InviteList() {
     const [hasAccountUUID, toggleAccountUUID] = useUUIDSet();
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className={`flex flex-col gap-2 ${className}`}>
             <TextField
                 type="text"
                 className="px-3"
