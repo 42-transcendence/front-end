@@ -7,6 +7,7 @@ import { TextField } from "@/components/TextField";
 import { ProfileItem, ProfileItemConfig } from "@/components/ProfileItem";
 import { InviteList } from "@/components/Service/InviteList";
 import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
+import { ButtonOnRight } from "../Button/ButtonOnRight";
 
 type User = {
     id: number;
@@ -92,9 +93,14 @@ export default function ChatMemberList() {
                         type="checkbox"
                         className="hidden"
                     />
-                    <label htmlFor="invite" title="invite friend">
+                    <label
+                        htmlFor="invite"
+                        data-checked={checked}
+                        title="invite"
+                        className="group"
+                    >
                         <IconInvite
-                            className="shrink-0 rounded-md p-1 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
+                            className="shrink-0 rounded-md p-1 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80 group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50"
                             width={48}
                             height={48}
                         />
@@ -103,8 +109,19 @@ export default function ChatMemberList() {
                 {checked ? (
                     <UUIDSetContainer>
                         {/* TODO: complete form!! & add invite button */}
-                        <form className="w-full">
-                            <InviteList />
+                        <form
+                            className="h-full w-full overflow-auto"
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                            }}
+                        >
+                            <div className="flex h-full w-full flex-col justify-between gap-4">
+                                <InviteList className="overflow-auto" />
+                                <ButtonOnRight
+                                    buttonText="초대하기"
+                                    className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
+                                />
+                            </div>
                         </form>
                     </UUIDSetContainer>
                 ) : (
