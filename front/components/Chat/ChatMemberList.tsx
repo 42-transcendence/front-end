@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-    IconMembers,
-    IconSetting,
-    IconSearch,
-} from "@/components/ImageLibrary";
+import { IconMembers, IconSearch, IconInvite } from "@/components/ImageLibrary";
 import { FzfHighlight, useFzf } from "react-fzf";
-import { TextField } from "../TextField";
-import { ProfileItem, ProfileItemConfig } from "../ProfileItem";
+import { TextField } from "@/components/TextField";
+import { ProfileItem, ProfileItemConfig } from "@/components/ProfileItem";
+import { InviteList } from "@/components/Service/InviteList";
+import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
 
 type User = {
     id: number;
@@ -68,6 +66,7 @@ export default function ChatMemberList() {
         limit: 5,
         query,
     });
+    const [checked, setChecked] = useState(false);
 
     return (
         <div className="absolute right-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px_0px_0px_28px]">
@@ -82,52 +81,73 @@ export default function ChatMemberList() {
                     </label>
                     <div className="flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white active:bg-secondary/80">
                         <p className="font-sans text-base leading-4 ">
-                            친구 목록
+                            멤버 목록
                         </p>
                     </div>
-                    <IconSetting
-                        className="shrink-0 rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
-                        width={48}
-                        height={48}
+
+                    <input
+                        onClick={() => setChecked(!checked)}
+                        checked={checked}
+                        id="invite"
+                        type="checkbox"
+                        className="hidden"
                     />
+                    <label htmlFor="invite" title="invite friend">
+                        <IconInvite
+                            className="shrink-0 rounded-md p-1 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
+                            width={48}
+                            height={48}
+                        />
+                    </label>
                 </div>
-
-                <TextField
-                    type="search"
-                    icon={
-                        <IconSearch
-                            className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                            width={24}
-                            height={24}
+                {checked ? (
+                    <UUIDSetContainer>
+                        {/* TODO: complete form!! & add invite button */}
+                        <form className="w-full">
+                            <InviteList />
+                        </form>
+                    </UUIDSetContainer>
+                ) : (
+                    <>
+                        <TextField
+                            type="search"
+                            icon={
+                                <IconSearch
+                                    className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                                    width={24}
+                                    height={24}
+                                />
+                            }
+                            className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9"
+                            value={query}
+                            placeholder="Search..."
+                            onChange={(event) => setQuery(event.target.value)}
                         />
-                    }
-                    className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9"
-                    value={query}
-                    placeholder="Search..."
-                    onChange={(event) => setQuery(event.target.value)}
-                />
-
-                {results.map((item, index) => (
-                    <ProfileItem
-                        type="social"
-                        key={item.id}
-                        config={item}
-                        selected={item.id === selectedId}
-                        onClick={() => {
-                            setSelectedId(
-                                item.id !== selectedId ? item.id : undefined,
-                            );
-                        }}
-                    >
-                        <FzfHighlight
-                            {...getFzfHighlightProps({
-                                index,
-                                item,
-                                className: "text-yellow-500",
-                            })}
-                        />
-                    </ProfileItem>
-                ))}
+                        {results.map((item, index) => (
+                            <ProfileItem
+                                type="social"
+                                key={item.id}
+                                config={item}
+                                selected={item.id === selectedId}
+                                onClick={() => {
+                                    setSelectedId(
+                                        item.id !== selectedId
+                                            ? item.id
+                                            : undefined,
+                                    );
+                                }}
+                            >
+                                <FzfHighlight
+                                    {...getFzfHighlightProps({
+                                        index,
+                                        item,
+                                        className: "text-yellow-500",
+                                    })}
+                                />
+                            </ProfileItem>
+                        ))}
+                    </>
+                )}
             </div>
         </div>
     );
