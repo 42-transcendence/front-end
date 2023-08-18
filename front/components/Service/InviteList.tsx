@@ -28,7 +28,7 @@ export function InviteList({ className }: { className?: string | undefined }) {
         },
         query,
     });
-    const [hasAccountUUID, toggleAccountUUID] = useUUIDSet();
+    const [accountUUIDSet, toggleAccountUUID] = useUUIDSet();
 
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
@@ -45,7 +45,7 @@ export function InviteList({ className }: { className?: string | undefined }) {
                         <ProfileItemSelectable
                             key={item.accountUUID}
                             accountUUID={item.accountUUID}
-                            selected={hasAccountUUID(item.accountUUID)}
+                            selected={accountUUIDSet.has(item.accountUUID)}
                             onClick={() => toggleAccountUUID(item.accountUUID)}
                         >
                             <FzfHighlight

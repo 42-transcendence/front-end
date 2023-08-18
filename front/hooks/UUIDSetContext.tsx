@@ -1,13 +1,6 @@
 "use client";
 
-import {
-    createContext,
-    useContext,
-    useMemo,
-    useReducer,
-    useRef,
-    useState,
-} from "react";
+import { createContext, useContext, useMemo, useReducer, useRef } from "react";
 
 class UUIDSet extends Set<string> {
     constructor(readonly forceUpdate: () => void) {
@@ -20,7 +13,10 @@ const UUIDSetContext = createContext({ set: new UUIDSet(() => {}) });
 export function UUIDSetContainer({ children }: React.PropsWithChildren) {
     const [version, forceUpdate] = useReducer((x) => x + 1, 0);
     const uuidSetRef = useRef(new UUIDSet(forceUpdate));
-    const uuidSet = useMemo(() => ({ set: uuidSetRef.current }), [version]);
+    const uuidSet = useMemo(
+        () => ({ set: uuidSetRef.current, version }),
+        [version],
+    );
     return (
         <UUIDSetContext.Provider value={uuidSet}>
             {children}
@@ -28,16 +24,9 @@ export function UUIDSetContainer({ children }: React.PropsWithChildren) {
     );
 }
 
-export function useUUIDSet(): [
-    (value: string) => boolean,
-    (value: string) => void,
-] {
+export function useUUIDSet(): [UUIDSet, (value: string) => void] {
     const context = useContext(UUIDSetContext);
     const uuidSet = context.set;
-
-    const hasUUID = (value: string) => {
-        return uuidSet.has(value);
-    };
 
     const toggleUUID = (value: string) => {
         if (uuidSet.has(value)) {
@@ -48,5 +37,5 @@ export function useUUIDSet(): [
         uuidSet.forceUpdate();
     };
 
-    return [hasUUID, toggleUUID];
+    return [uuidSet, toggleUUID];
 }
