@@ -33,13 +33,13 @@ module.exports = {
                 iconTernary: "color-mix(in srgb, #5e5e5e 64%, #ffffff 22%)",
                 darker: "color-mix(in srgb, #000000 8%, #d6d6d6 45%)",
             },
-
             animation: {
                 "spin-slow": "spin 2s ease-in-out infinite",
             },
             backgroundImage: {
                 game: "url(/background-game.jpg)",
                 main: "url(/background-main.jpg)",
+                front: "url(/background-front.png)",
             },
         },
     },
