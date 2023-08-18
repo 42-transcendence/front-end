@@ -107,6 +107,7 @@ export default function Welcome2() {
                             accept="image/*"
                             maxFileCount={3}
                             maxFileSize={1048576}
+                            previewImage={true}
                         />
                         <div className="flex-shrink-0 snap-center snap-always"></div>
                         <div className="shrink-0 snap-center">

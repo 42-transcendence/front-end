@@ -1,23 +1,14 @@
 "use client";
 
-import { byteToReadable } from "./byteConversion"
-import { useState, useRef, useEffect } from "react";
-import { DragDropArea } from "./DragDropArea"
+import { byteToReadable } from "./byteConversion";
+import { useState, useRef } from "react";
+import { DragDropArea } from "./DragDropArea";
+import { ImageViewer } from "./ImageViewer";
 
 type FileAcceptType = "image/*" | "video/*" | "audio/*";
 
-export function UploadBox({
-    accept,
-    maxFileCount,
-    maxFileSize,
-}: {
-    accept: FileAcceptType;
-    maxFileCount: number;
-    maxFileSize: number,
-}) {
+function useUploadedFiles(maxFileCount: number, maxFileSize: number) {
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-    const inputRef = useRef<HTMLInputElement>(null);
-    const isMultiple = maxFileCount > 1;
 
     const clearInput = () => {
         setUploadedFiles([]);
@@ -54,6 +45,24 @@ export function UploadBox({
         setUploadedFiles(fileList);
     };
 
+    return [uploadedFiles, handleFiles] as const;
+}
+
+export function UploadBox({
+    accept,
+    maxFileCount,
+    maxFileSize,
+    previewImage,
+}: {
+    accept: FileAcceptType;
+    maxFileCount: number;
+    maxFileSize: number;
+    previewImage: boolean;
+}) {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const isMultiple = maxFileCount > 1;
+    const [uploadedFiles, handleFiles] = useUploadedFiles(maxFileSize, maxFileCount);
+
     // TODO: css layout fix
     return (
         <div className="z-10 min-h-[250px] min-w-[250px] flex-shrink-0 snap-center snap-always overflow-hidden">
@@ -74,35 +83,8 @@ export function UploadBox({
                     }
                 />
                 <DragDropArea handleFiles={handleFiles} />
-                <ImageViewr uploadedFiles={uploadedFiles} />
+                {previewImage && <ImageViewer uploadedFiles={uploadedFiles} />}
             </label>
         </div>
     );
-}
-
-function ImageViewr({ uploadedFiles }: { uploadedFiles: File[] }) {
-    const previewRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const previewElem = previewRef.current;
-        if (previewElem === null) return;
-
-        while (previewElem.firstChild !== null) {
-            previewElem.removeChild(previewElem.firstChild);
-        }
-
-        //TODO: is this validation neccessary?
-        for (const file of uploadedFiles) {
-            if (!file.type.startsWith("image/")) {
-                continue;
-            }
-
-            const img = document.createElement("img");
-            img.classList.add("obj");
-            img.src = URL.createObjectURL(file);
-            previewElem.appendChild(img);
-        }
-    }, [uploadedFiles]);
-
-    return <div ref={previewRef} className="absolute h-full w-full"></div>;
 }

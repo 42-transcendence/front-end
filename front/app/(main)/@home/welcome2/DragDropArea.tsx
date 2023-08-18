@@ -3,7 +3,7 @@ export function DragDropArea({
 }: {
     handleFiles: (files: FileList | null) => void
 }) {
-
+    // TODO: drag, dragover 필수인가?
     const handleDrag: React.DragEventHandler<HTMLDivElement> = (e) => {
         e.preventDefault();
     }
