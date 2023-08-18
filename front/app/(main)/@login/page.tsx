@@ -25,7 +25,7 @@ const loginList = [
 
 export default function LoginPage() {
     return (
-        <main>
+        <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
             <div className="relative flex h-screen w-screen flex-col items-center justify-center ">
                 <div className="relative flex h-full items-end justify-center">
                     <DoubleSharp
