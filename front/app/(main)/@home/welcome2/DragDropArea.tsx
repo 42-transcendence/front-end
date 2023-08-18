@@ -1,5 +1,5 @@
-function DragDropArea({
-    handleFiles
+export function DragDropArea({
+    handleFiles,
 }: {
     handleFiles: (files: FileList | null) => void
 }) {
@@ -18,14 +18,15 @@ function DragDropArea({
     }
 
     return (
-        <div className="bg-green-500"
+        <div
+            className="absolute flex h-full w-full flex-col justify-center text-center"
             onDrag={handleDrag}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
         >
             drag and drop file
+            <br />
+            or click to upload
         </div>
     );
 }
-
-export { DragDropArea };

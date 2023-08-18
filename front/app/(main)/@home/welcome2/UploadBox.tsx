@@ -15,21 +15,13 @@ export function UploadBox({
     maxFileCount: number;
     maxFileSize: number,
 }) {
-    const [filenames, setFilenames] = useState(""); // TODO: for debugging purpose
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
-    const previewRef = useRef<HTMLDivElement>(null);
     const isMultiple = maxFileCount > 1;
 
     const clearInput = () => {
-        setFilenames("");
         setUploadedFiles([]);
-        if (previewRef.current !== null) {
-            while (previewRef.current.firstChild !== null) {
-                previewRef.current.removeChild(previewRef.current.firstChild);
-            }
-        }
-    }
+    };
 
     const handleFiles = (files: FileList | null) => {
         if (files === null || files.length === 0) return;
@@ -60,28 +52,14 @@ export function UploadBox({
         }
 
         setUploadedFiles(fileList);
-        setFilenames(fileList.map((x) => x.name).join(" ")); // TODO: for debugging purpose
-
-        if (previewRef.current === null) return;
-
-        for (const file of fileList) {
-            if (!file.type.startsWith("image/")) { //TODO: is this validation neccessary?
-                continue;
-            }
-
-            const img = document.createElement("img");
-            img.classList.add("obj");
-            img.src = URL.createObjectURL(file);
-            previewRef.current.appendChild(img);
-        }
-    }
+    };
 
     // TODO: css layout fix
     return (
-        <div className="flex flex-col">
+        <div className="z-10 min-h-[250px] min-w-[250px] flex-shrink-0 snap-center snap-always overflow-hidden">
             <label
                 htmlFor="avatar-uploader"
-                className="z-10 h-full w-full flex-shrink-0 snap-center snap-always overflow-hidden bg-yellow-500"
+                className="relative z-10 flex h-full w-full flex-col"
             >
                 <input
                     ref={inputRef}
@@ -90,13 +68,41 @@ export function UploadBox({
                     id="avatar-uploader"
                     accept={accept}
                     multiple={isMultiple}
-                    style={{ opacity: 0 }}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFiles(e.target.files)}
+                    className="hidden"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFiles(e.target.files)
+                    }
                 />
                 <DragDropArea handleFiles={handleFiles} />
-                <div ref={previewRef} className="bg-blue-500"></div>
+                <ImageViewr uploadedFiles={uploadedFiles} />
             </label>
-            <div>{filenames}</div>
         </div>
     );
+}
+
+function ImageViewr({ uploadedFiles }: { uploadedFiles: File[] }) {
+    const previewRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const previewElem = previewRef.current;
+        if (previewElem === null) return;
+
+        while (previewElem.firstChild !== null) {
+            previewElem.removeChild(previewElem.firstChild);
+        }
+
+        //TODO: is this validation neccessary?
+        for (const file of uploadedFiles) {
+            if (!file.type.startsWith("image/")) {
+                continue;
+            }
+
+            const img = document.createElement("img");
+            img.classList.add("obj");
+            img.src = URL.createObjectURL(file);
+            previewElem.appendChild(img);
+        }
+    }, [uploadedFiles]);
+
+    return <div ref={previewRef} className="absolute h-full w-full"></div>;
 }

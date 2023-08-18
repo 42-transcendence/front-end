@@ -102,8 +102,13 @@ export default function Welcome2() {
                                 />
                             </div>
                         ))}
-                        { /* TODO: appropriate file size limit? */}
-                        <UploadBox accept="image/*" maxFileCount={3} maxFileSize={1048576} />
+                        {/* TODO: appropriate file size limit? */}
+                        <UploadBox
+                            accept="image/*"
+                            maxFileCount={3}
+                            maxFileSize={1048576}
+                        />
+                        <div className="flex-shrink-0 snap-center snap-always"></div>
                         <div className="shrink-0 snap-center">
                             <div className="w-4 shrink-0"></div>
                         </div>
