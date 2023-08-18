@@ -9,6 +9,7 @@ import {
     IconPerson,
 } from "@/components/ImageLibrary";
 import { InviteList } from "@/components/Service/InviteList";
+import { ButtonOnRight } from "../Button/ButtonOnRight";
 
 const titlePattern = ".{4,32}";
 const maxMemberLimit = 1500;
@@ -241,20 +242,6 @@ function InviteFriendToggle({
                 </p>
             </label>
             {checked && <InviteList />}
-        </div>
-    );
-}
-
-function ButtonOnRight({
-    buttonText,
-    className,
-}: {
-    buttonText: string;
-    className: string;
-}) {
-    return (
-        <div className="relative flex min-h-fit w-full flex-shrink-0 flex-row justify-end">
-            <button className={`${className}`}>{buttonText}</button>
         </div>
     );
 }
