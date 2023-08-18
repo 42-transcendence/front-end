@@ -11,9 +11,11 @@ import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
+import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
 
 type User = {
     id: number;
+    uuid: string;
     name: string;
 };
 
@@ -30,12 +32,12 @@ function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
     );
 }
 
-const users = [
-    { name: "chanhpar", id: 1 },
-    { name: "jisookim", id: 2 },
-    { name: "jkong", id: 3 },
-    { name: "iyun", id: 4 },
-    { name: "hdoo", id: 5 },
+const users: User[] = [
+    { name: "chanhpar", id: 1, uuid: "1234" },
+    { name: "jisookim", id: 2, uuid: "1234" },
+    { name: "jkong", id: 3, uuid: "1234" },
+    { name: "iyun", id: 4, uuid: "1234" },
+    { name: "hdoo", id: 5, uuid: "1234" },
 ];
 
 export type ChatRoomInfo = {
@@ -132,7 +134,7 @@ export default function ChatRoomList() {
                 />
 
                 {/* IconsearchBar */}
-                <div className="peer-checked:hidden">
+                <div className="flex w-full flex-col gap-2 overflow-auto peer-checked:hidden">
                     <TextField
                         type="search"
                         icon={
@@ -148,25 +150,24 @@ export default function ChatRoomList() {
                         onChange={(event) => setQuery(event.target.value)}
                     />
 
-                    <div className="peer-checked:hidden">
-                        <div className="flex w-full shrink-0 scroll-m-2 flex-col gap-2 overflow-auto">
-                            {results.map((item, index) => (
-                                <ChatRoomBlock key={item.id} chatRoom={item}>
-                                    <FzfHighlight
-                                        {...getFzfHighlightProps({
-                                            index,
-                                            item,
-                                            className: "text-yellow-500",
-                                        })}
-                                    />
-                                </ChatRoomBlock>
-                            ))}
-                        </div>
+                    <div className="h-fit w-full overflow-auto">
+                        {results.map((item, index) => (
+                            <ChatRoomBlock key={item.id} chatRoom={item}>
+                                <FzfHighlight
+                                    {...getFzfHighlightProps({
+                                        index,
+                                        item,
+                                        className: "text-yellow-500",
+                                    })}
+                                />
+                            </ChatRoomBlock>
+                        ))}
                     </div>
                 </div>
 
-                {/*  TODO: extract to other file */}
-                <CreateNewRoom />
+                <UUIDSetContainer>
+                    <CreateNewRoom />
+                </UUIDSetContainer>
             </div>
         </div>
     );
