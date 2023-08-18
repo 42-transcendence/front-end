@@ -16,6 +16,7 @@ import _Game_You from "/public/game/you.svg"; export const Game_You = _Game_You;
 import _IconArrow1 from "/public/icon/arrow-1.svg"; export const IconArrow1 = _IconArrow1;
 import _IconArrow2 from "/public/icon/arrow-2.svg"; export const IconArrow2 = _IconArrow2;
 import _IconArrow3 from "/public/icon/arrow-3.svg"; export const IconArrow3 = _IconArrow3;
+import _IconInvite from "/public/icon/invite.svg"; export const IconInvite = _IconInvite;
 import _IconChatAlternative from "/public/icon/chat-alternative.svg"; export const IconChatAlternative = _IconChatAlternative;
 import _IconChatFilled from "/public/icon/chat-filled.svg"; export const IconChatFilled = _IconChatFilled;
 import _IconChatOutlined from "/public/icon/chat-outlined.svg"; export const IconChatOutlined = _IconChatOutlined;
