@@ -3,6 +3,43 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect, useCallback, useRef } from "react";
 
+function useOutsideClick(
+    divRef: React.RefObject<HTMLElement>,
+    callback: () => void,
+    preventDefault: boolean,
+) {
+    const onClick = useCallback(
+        (e: MouseEvent) => {
+            const elem = divRef.current;
+
+            if (elem === null) {
+                return;
+            }
+
+            const target = e.target;
+
+            if (!(target instanceof Element)) {
+                return;
+            }
+
+            if (elem.contains(target)) {
+                return;
+            }
+
+            callback();
+            preventDefault && e.preventDefault();
+        },
+        [callback],
+    );
+
+    useEffect(() => {
+        document.addEventListener("click", onClick);
+        return () => {
+            document.removeEventListener("click", onClick);
+        };
+    }, [onClick]);
+}
+
 //TODO outside click
 export default function ModalLayout({
     children,
@@ -25,38 +62,14 @@ export default function ModalLayout({
         [onDismiss],
     );
 
-    const onClick = useCallback(
-        (e: MouseEvent) => {
-            const elem = divRef.current;
-
-            if (elem === null) {
-                return;
-            }
-
-            const target = e.target;
-
-            if (!(target instanceof Element)) {
-                return;
-            }
-
-            if (elem.contains(target)) {
-                return;
-            }
-
-            onDismiss();
-            e.preventDefault();
-        },
-        [onDismiss],
-    );
+    useOutsideClick(divRef, onDismiss, true);
 
     useEffect(() => {
         document.addEventListener("keydown", onKeyDown);
-        document.addEventListener("click", onClick);
         return () => {
             document.removeEventListener("keydown", onKeyDown);
-            document.removeEventListener("click", onClick);
         };
-    }, [onKeyDown, onClick]);
+    }, [onKeyDown]);
 
     return (
         <div
