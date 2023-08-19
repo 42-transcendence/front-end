@@ -133,7 +133,6 @@ export default function ChatRoomList() {
                     className="peer hidden"
                 />
 
-                {/* IconsearchBar */}
                 <div className="flex w-full flex-col gap-2 overflow-auto peer-checked:hidden">
                     <TextField
                         type="search"

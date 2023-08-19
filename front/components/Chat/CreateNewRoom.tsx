@@ -85,7 +85,7 @@ export function CreateNewRoom() {
                     <div className="relative flex h-fit w-full flex-col gap-2 py-2">
                         <TextField
                             type="text"
-                            className="relative bg-black/30 px-4 py-1 text-xl"
+                            className="relative min-h-[3rem] bg-black/30 px-4 py-1 text-xl"
                             placeholder="Title..."
                             pattern={titlePattern}
                             required
