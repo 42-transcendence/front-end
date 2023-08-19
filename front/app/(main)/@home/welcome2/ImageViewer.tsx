@@ -20,7 +20,7 @@ export function ImageViewer({ uploadedFiles }: { uploadedFiles: File[] }) {
             const img = document.createElement("img");
             img.src = URL.createObjectURL(file);
             // TODO: appropriate attributes
-            // img.alt = file.name;
+            img.alt = file.name;
             // img.width = 250;
             // img.height = 250;
             // img.crossOrigin = "use-credentials";

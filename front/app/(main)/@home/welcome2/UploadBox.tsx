@@ -8,6 +8,7 @@ import { ImageViewer } from "./ImageViewer";
 type FileAcceptType = "image/*" | "video/*" | "audio/*";
 
 // TODO: change to named arguments?
+// TODO: hooks 디렉토리로 분리?
 function useUploadedFiles(
     maxFileCount: number,
     maxFileSize: number,

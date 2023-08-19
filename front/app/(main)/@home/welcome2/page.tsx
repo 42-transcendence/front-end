@@ -105,7 +105,7 @@ export default function Welcome2() {
                         {/* TODO: appropriate file size limit? */}
                         <UploadBox
                             accept="image/*"
-                            maxFileCount={3}
+                            maxFileCount={1}
                             maxFileSize={1048576}
                             previewImage={true}
                         />
