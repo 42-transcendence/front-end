@@ -1,44 +1,8 @@
 "use client";
 
+//TODO: 인터셉트 된 페이지랑 직접 접속한 페이지 구분
 import { useRouter } from "next/navigation";
 import React, { useEffect, useCallback, useRef } from "react";
-
-function useOutsideClick(
-    divRef: React.RefObject<HTMLElement>,
-    callback: () => void,
-    preventDefault: boolean,
-) {
-    const onClick = useCallback(
-        (e: MouseEvent) => {
-            const elem = divRef.current;
-
-            if (elem === null) {
-                return;
-            }
-
-            const target = e.target;
-
-            if (!(target instanceof Element)) {
-                return;
-            }
-
-            if (elem.contains(target)) {
-                return;
-            }
-
-            callback();
-            preventDefault && e.preventDefault();
-        },
-        [callback],
-    );
-
-    useEffect(() => {
-        document.addEventListener("click", onClick);
-        return () => {
-            document.removeEventListener("click", onClick);
-        };
-    }, [onClick]);
-}
 
 //TODO outside click
 export default function ModalLayout({
@@ -62,7 +26,7 @@ export default function ModalLayout({
         [onDismiss],
     );
 
-    useOutsideClick(divRef, onDismiss, true);
+    // useOutsideClick(divRef, onDismiss, true);
 
     useEffect(() => {
         document.addEventListener("keydown", onKeyDown);
