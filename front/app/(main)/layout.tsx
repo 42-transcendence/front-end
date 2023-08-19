@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { NavigationBar } from "@/components/NavigationBar";
 
 function setCookie(
     name: string,
@@ -21,9 +20,9 @@ function setCookie(
     let updatedCookie =
         encodeURIComponent(name) + "=" + encodeURIComponent(value);
 
-    for (let optionKey in options) {
+    for (const optionKey in options) {
         updatedCookie += "; " + optionKey;
-        let optionValue = options[optionKey];
+        const optionValue = options[optionKey];
         if (optionValue !== true) {
             updatedCookie += "=" + optionValue;
         }
@@ -68,18 +67,7 @@ export default function MainLayout({
 
     return (
         <div className="flex h-[100dvh] flex-shrink-0 flex-col">
-            {loggedin ?
-                <>
-                    <NavigationBar />
-                    <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
-                        {home}
-                    </main>
-                </>
-                :
-                <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
-                    {login}
-                </main>
-            }
+            {loggedin ? home : login}
         </div>
     );
 }
