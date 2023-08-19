@@ -77,7 +77,7 @@ function FrontPage(props: InputHTMLAttributes<HTMLDivElement>) {
             className="absolute z-10 flex h-full w-full flex-col items-center justify-center bg-main bg-cover"
             {...rest}
         >
-            <div className=" flex h-full flex-col justify-center">
+            <div className="flex h-full flex-col justify-center">
                 <DoubleSharp
                     width={200}
                     height={200}
@@ -86,7 +86,7 @@ function FrontPage(props: InputHTMLAttributes<HTMLDivElement>) {
             </div>
 
             <div className="h-1/5">
-                <div className="flex  h-12 w-56 items-center justify-center rounded-[28px_28px_0_0] bg-white font-sans text-3xl font-extrabold text-black">
+                <div className="flex h-12 w-56 items-center justify-center rounded-[28px_28px_0_0] bg-white font-sans text-3xl font-extrabold text-black">
                     Game Start
                 </div>
             </div>
