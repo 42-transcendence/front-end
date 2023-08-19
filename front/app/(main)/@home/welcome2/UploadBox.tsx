@@ -7,6 +7,7 @@ import { ImageViewer } from "./ImageViewer";
 
 type FileAcceptType = "image/*" | "video/*" | "audio/*";
 
+// TODO: change to named arguments?
 function useUploadedFiles(
     maxFileCount: number,
     maxFileSize: number,
@@ -65,8 +66,8 @@ export function UploadBox({
     const inputRef = useRef<HTMLInputElement>(null);
     const isMultiple = maxFileCount > 1;
     const [uploadedFiles, handleFiles] = useUploadedFiles(
-        maxFileSize,
         maxFileCount,
+        maxFileSize,
     );
 
     // TODO: css layout fix
