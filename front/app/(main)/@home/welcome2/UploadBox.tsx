@@ -7,7 +7,10 @@ import { ImageViewer } from "./ImageViewer";
 
 type FileAcceptType = "image/*" | "video/*" | "audio/*";
 
-function useUploadedFiles(maxFileCount: number, maxFileSize: number) {
+function useUploadedFiles(
+    maxFileCount: number,
+    maxFileSize: number,
+): [uploadedFiles: File[], handleFiles: (files: FileList | null) => void] {
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
     const clearInput = () => {
@@ -37,7 +40,7 @@ function useUploadedFiles(maxFileCount: number, maxFileSize: number) {
 
         clearInput();
 
-        const fileList: File[] = []
+        const fileList: File[] = [];
         for (const file of files) {
             fileList.push(file);
         }
@@ -45,7 +48,7 @@ function useUploadedFiles(maxFileCount: number, maxFileSize: number) {
         setUploadedFiles(fileList);
     };
 
-    return [uploadedFiles, handleFiles] as const;
+    return [uploadedFiles, handleFiles];
 }
 
 export function UploadBox({
@@ -61,7 +64,10 @@ export function UploadBox({
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const isMultiple = maxFileCount > 1;
-    const [uploadedFiles, handleFiles] = useUploadedFiles(maxFileSize, maxFileCount);
+    const [uploadedFiles, handleFiles] = useUploadedFiles(
+        maxFileSize,
+        maxFileCount,
+    );
 
     // TODO: css layout fix
     return (

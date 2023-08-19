@@ -29,7 +29,6 @@ export function ImageViewer({ uploadedFiles }: { uploadedFiles: File[] }) {
             // img.sizes = "";
             previewElem.appendChild(img);
         }
-
     }, [uploadedFiles]);
 
     return <div ref={previewRef} className="absolute h-full w-full"></div>;

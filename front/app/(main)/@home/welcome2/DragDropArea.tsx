@@ -1,21 +1,21 @@
 export function DragDropArea({
     handleFiles,
 }: {
-    handleFiles: (files: FileList | null) => void
+    handleFiles: (files: FileList | null) => void;
 }) {
     // TODO: drag, dragover 필수인가?
     const handleDrag: React.DragEventHandler<HTMLDivElement> = (e) => {
         e.preventDefault();
-    }
+    };
 
     const handleDragOver: React.DragEventHandler<HTMLDivElement> = (e) => {
         e.preventDefault();
-    }
+    };
 
     const handleDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
         e.preventDefault();
         handleFiles(e.dataTransfer.files);
-    }
+    };
 
     return (
         <div
