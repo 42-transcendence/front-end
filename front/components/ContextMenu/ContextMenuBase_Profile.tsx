@@ -5,6 +5,7 @@ export { ContextMenuItem } from "./ContextMenuBase";
 
 export type ProfileItemConfig = {
     id: number;
+    uuid: string;
     tag: string;
     name: string;
     statusMessage: string;

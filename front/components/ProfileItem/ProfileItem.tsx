@@ -14,7 +14,7 @@ import {
 
 type ProfileItemViewConfig = {
     showStatusMessage: boolean;
-    className?: any;
+    className?: string;
 };
 
 export type ProfileItemConfig = ProfileItemInternlConfig &
@@ -57,7 +57,8 @@ export function ProfileItem({
                     <div className="relative flex items-center justify-center">
                         <Avatar
                             className=""
-                            accountId={config.id}
+                            //TODO: add uuid here
+                            accountUUID={config.id}
                             size="w-[45px]"
                         />
                     </div>

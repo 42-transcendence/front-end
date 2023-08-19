@@ -6,7 +6,6 @@ import {
     ReactElement,
     ReactNode,
     SetStateAction,
-    useState,
 } from "react";
 
 type ToggleButtonProp = LabelHTMLAttributes<HTMLLabelElement> & {
@@ -27,6 +26,7 @@ export function ToggleButton(props: ToggleButtonProp) {
             htmlFor={id}
             data-checked={checked}
             className={`group relative flex w-full flex-row items-center ${bgClassName}`}
+            {...rest}
         >
             {icon}
             <input

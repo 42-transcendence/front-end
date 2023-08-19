@@ -28,10 +28,11 @@ export default function ChatRoomBlock({
             <div className="flex h-fit shrink-0 items-center gap-4 self-stretch overflow-hidden">
                 <div className="flex items-center justify-center gap-2.5">
                     <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-slate-600">
+                        {/* TODO: change to member preview (limit 4)*/}
                         <Avatar
                             className={"relative"}
                             size={"w-10 h-10"}
-                            accountId={chatRoom.members[0].id}
+                            accountUUID={chatRoom.members[0].uuid}
                         />
                     </div>
                 </div>
