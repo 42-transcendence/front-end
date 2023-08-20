@@ -22,27 +22,27 @@ export type ProfileItemConfig = ProfileItemInternlConfig &
 
 export function ProfileItem({
     className,
-    config,
+    info,
     selected,
     children,
     type,
     onClick,
 }: {
     className?: string | undefined;
-    config: ProfileItemConfig;
+    info: ProfileItemConfig;
     selected: boolean;
     children?: React.ReactNode | undefined;
     onClick: MouseEventHandler;
     type: "social" | "friend" | "myprofile";
 }) {
-    const contextMenuType = (): React.ReactNode => {
+    const contextMenuType = () => {
         switch (type) {
             case "social":
-                return <ContextMenu_Social profile={config} />;
+                return <ContextMenu_Social info={info} />;
             case "friend":
-                return <ContextMenu_Friend profile={config} />;
+                return <ContextMenu_Friend info={info} />;
             case "myprofile":
-                return <ContextMenu_MyProfile profile={config} />;
+                return <ContextMenu_MyProfile info={info} />;
         }
     };
     return (
@@ -58,17 +58,17 @@ export function ProfileItem({
                         <Avatar
                             className=""
                             //TODO: add uuid here
-                            accountUUID={config.id}
+                            accountUUID={info.id}
                             size="w-[45px]"
                         />
                     </div>
                     <div className="relative flex w-fit flex-col items-start gap-1">
                         <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                            {children ? children : config.name}
+                            {children ? children : info.name}
                         </div>
-                        {config.showStatusMessage && (
+                        {info.showStatusMessage && (
                             <div className="text-normal text-xs text-gray-300">
-                                {config.statusMessage}
+                                {info.statusMessage}
                             </div>
                         )}
                     </div>
