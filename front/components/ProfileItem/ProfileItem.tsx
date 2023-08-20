@@ -12,13 +12,7 @@ import {
     ContextMenu_MyProfile,
 } from "../ContextMenu";
 
-type ProfileItemViewConfig = {
-    showStatusMessage: boolean;
-    className?: string;
-};
-
-export type ProfileItemConfig = ProfileItemInternlConfig &
-    ProfileItemViewConfig;
+export type ProfileItemConfig = ProfileItemInternlConfig;
 
 export function ProfileItem({
     className,
@@ -32,8 +26,8 @@ export function ProfileItem({
     info: ProfileItemConfig;
     selected: boolean;
     children?: React.ReactNode | undefined;
-    onClick: MouseEventHandler;
-    type: "social" | "friend" | "myprofile";
+    onClick?: MouseEventHandler | undefined;
+    type?: "social" | "friend" | "myprofile" | undefined;
 }) {
     const contextMenuType = () => {
         switch (type) {
@@ -43,6 +37,8 @@ export function ProfileItem({
                 return <ContextMenu_Friend info={info} />;
             case "myprofile":
                 return <ContextMenu_MyProfile info={info} />;
+            default:
+                return <></>;
         }
     };
     return (
@@ -58,15 +54,15 @@ export function ProfileItem({
                         <Avatar
                             className=""
                             //TODO: add uuid here
-                            accountUUID={info.id}
+                            accountUUID={info.uuid}
                             size="w-[45px]"
                         />
                     </div>
                     <div className="relative flex w-fit flex-col items-start gap-1">
                         <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                            {children ? children : info.name}
+                            {children !== undefined ? children : info.name}
                         </div>
-                        {info.showStatusMessage && (
+                        {info.statusMessage !== undefined && (
                             <div className="text-normal text-xs text-gray-300">
                                 {info.statusMessage}
                             </div>
