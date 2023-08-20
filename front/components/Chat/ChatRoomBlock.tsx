@@ -1,7 +1,7 @@
 "use client";
 import React, { ReactNode } from "react";
 import { IconLock, IconPerson } from "@/components/ImageLibrary";
-import { ChatRoomInfo } from "./ChatRoomList";
+import { ChatRoomInfo } from "./ChatLeftSideBar";
 import { Avatar } from "../Avatar";
 
 export default function ChatRoomBlock({
@@ -30,8 +30,7 @@ export default function ChatRoomBlock({
                     <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-slate-600">
                         {/* TODO: change to member preview (limit 4)*/}
                         <Avatar
-                            className={"relative"}
-                            size={"w-10 h-10"}
+                            className={"relative h-10 w-10"}
                             accountUUID={chatRoom.members[0].uuid}
                         />
                     </div>

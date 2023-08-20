@@ -85,7 +85,7 @@ export const chatRoomsDummy: ChatRoomInfo[] = [
     },
 ];
 
-export default function ChatRoomList() {
+export default function ChatLeftSideBar() {
     const [query, setQuery] = useState("");
     const [checked, setChecked] = useState(false);
     const { results, getFzfHighlightProps } = useFzf({
