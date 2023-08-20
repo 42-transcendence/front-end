@@ -15,19 +15,18 @@ export default function Welcome() {
                     <DoubleSharp width="24" height="24" />
                     <p>사용할 닉네임을 입력해주세요.</p>
                 </div>
-                <div>
+                <div className="flex flex-row gap-2">
                     <TextField
-                        icon={
-                            <button className="relative w-8 rounded bg-white/20 p-0.5 text-xs">
-                                확인
-                                {/* TODO : 이거 왜이래요..?? ㅋㅋ 자꾸 어디로 가려고함 ㅋㅋ */}
-                            </button>
-                        }
-                        className="p-3"
+                        className="peer p-3"
                         value={query}
+                        pattern="[a-zA-Z0-9가-힣]{2,8}"
                         placeholder="닉네임을 입력해주세요!"
+                        required
                         onChange={(event) => setQuery(event.target.value)}
                     />
+                    <button className="relative w-8 rounded bg-white/20 p-0.5 text-xs peer-valid:bg-secondary/70">
+                        확인
+                    </button>
                 </div>
                 {/* TODO : 서버에서 닉네임이 중복되었는지, 가능한 닉네임인지 확인 */}
                 <IconArrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
