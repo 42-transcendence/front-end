@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import { StrictMode } from "react";
 
 const roboto = Roboto({ weight: "700", style: "normal", subsets: ["latin"] });
 
@@ -19,7 +20,7 @@ export default function RootLayout({
             <body
                 className={`relative overscroll-none text-white ${roboto.className}`}
             >
-                {children}
+                <StrictMode>{children}</StrictMode>
             </body>
         </html>
     );
