@@ -45,7 +45,7 @@ export function ChatHeader() {
             </label>
             <div className="overflow-hidden">
                 <label
-                    htmlFor="ContextMenu"
+                    htmlFor="headerDropDown"
                     className="flex h-fit w-fit shrink-0 list-none flex-col justify-center rounded-md p-2 hover:bg-primary/30 active:bg-secondary/80"
                 >
                     <div className="relative items-center justify-center gap-2.5 text-base">
@@ -60,7 +60,7 @@ export function ChatHeader() {
                     </div>
                 </label>
                 <input
-                    id="ContextMenu"
+                    id="headerDropDown"
                     className="peer hidden"
                     type="checkbox"
                 />

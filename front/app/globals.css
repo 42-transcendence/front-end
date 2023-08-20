@@ -70,7 +70,7 @@
 
     --color-primary: var(--color-purple-500);
     --color-secondary: var(--color-aqua-500);
-    --color-primary-variant: var(--color-purple-700); 
+    --color-primary-variant: var(--color-purple-700);
     --color-secondary-variant: var(--color-aqua-700);
     --color-primary-lighter: var(--color-purple-300);
     --color-secondary-lighter: var(--color-aqua-300);

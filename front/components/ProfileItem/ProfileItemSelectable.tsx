@@ -1,6 +1,6 @@
 import React, { MouseEventHandler } from "react";
-import { Avatar } from "../Avatar";
-import { IconCheck } from "../ImageLibrary";
+import { Avatar } from "@/components/Avatar";
+import { IconCheck } from "@/components/ImageLibrary";
 
 export function ProfileItemSelectable({
     className,
@@ -20,7 +20,7 @@ export function ProfileItemSelectable({
 
     return (
         <li
-            className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className} `}
+            className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className}`}
         >
             <div
                 className="relative flex flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
