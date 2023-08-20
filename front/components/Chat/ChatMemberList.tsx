@@ -9,6 +9,8 @@ import { InviteList } from "@/components/Service/InviteList";
 import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
 import { ChatMemberMenu } from "./ChatMemberMenu";
+import { ChatBlockList } from "./ChatBlockList";
+import { MenuItem } from "./MenuItem";
 
 const profiles: ProfileItemConfig[] = [
     {
@@ -53,6 +55,8 @@ const profiles: ProfileItemConfig[] = [
     },
 ];
 
+type SpecialList = "채팅금지 유저 관리" | "차단 유저 관리" | undefined;
+
 // TODO: displaytitle을 front-end에서 직접 정하는게 아니라, 백엔드에서 없으면
 // 동일 로직으로 타이틀을 만들어서 프론트에 넘겨주고, 프론트에선 타이틀을 항상
 // 존재하는 프로퍼티로 추후 변경할 수도
@@ -68,9 +72,22 @@ export default function ChatMemberList() {
         limit: 5,
         query,
     });
-    const [checked, setChecked] = useState(false);
+    const [inviteToggle, setInviteToggle] = useState(false);
     // TODO: setAdmin logic
-    const [admin, setAdmin] = useState(false);
+    const [admin, setAdmin] = useState(true);
+    const [currentList, setCurrentList] = useState<SpecialList>();
+    const [otherList, setOtherList] = useState(false);
+    const [memberListDropDown, setMemberListDropDown] = useState(false);
+
+    const handleList = () => {
+        setMemberListDropDown(!memberListDropDown);
+        if (otherList) {
+            setOtherList(false);
+            setInviteToggle(false);
+            setCurrentList(undefined);
+            setMemberListDropDown(false);
+        }
+    };
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
@@ -80,7 +97,7 @@ export default function ChatMemberList() {
     return (
         <div className="absolute right-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px_0px_0px_28px]">
             <div className="flex h-full w-full shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 backdrop-blur-[20px] 2xl:py-4">
-                <div className="flex h-fit shrink-0 flex-row items-start justify-between gap-4 self-stretch 2xl:py-2">
+                <div className="flex h-fit shrink-0 flex-row items-start justify-between gap-2 self-stretch 2xl:py-2">
                     <label htmlFor="rightSideBarIcon">
                         <IconMembers
                             className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
@@ -88,39 +105,65 @@ export default function ChatMemberList() {
                             height={48}
                         />
                     </label>
-                    <div className="w-full overflow-hidden">
+                    <div
+                        data-checked={memberListDropDown}
+                        className="group w-full overflow-hidden"
+                    >
                         <label
+                            onClick={handleList}
                             htmlFor="memberListDropDown"
-                            className={`flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 ${
+                            data-other-list={otherList}
+                            className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[other-list=true]:bg-secondary/80 ${
                                 admin &&
                                 "hover:bg-primary/30 hover:text-white active:bg-secondary/80"
                             }`}
                         >
                             <p className="w-fit font-sans text-base leading-4 ">
-                                멤버 목록
+                                {currentList ?? "멤버 목록"}
                             </p>
                         </label>
-                        <input
-                            id="memberListDropDown"
-                            className="peer hidden"
-                            type="checkbox"
-                        />
-                        <ChatMemberMenu
-                            isAdmin={admin}
-                            className="hidden peer-checked:flex"
-                        />
+                        {admin && (
+                            <div className="hidden flex-col items-center text-base font-bold text-gray-100/80 group-data-[checked=true]:flex">
+                                {admin && (
+                                    <MenuItem
+                                        onClick={() => {
+                                            setCurrentList(
+                                                "채팅금지 유저 관리",
+                                            );
+                                            setOtherList(true);
+                                            setMemberListDropDown(false);
+                                        }}
+                                        className="active:bg-secondary/80"
+                                    >
+                                        채팅금지 유저 관리
+                                    </MenuItem>
+                                )}
+                                {admin && (
+                                    <MenuItem
+                                        onClick={() => {
+                                            setCurrentList("차단 유저 관리");
+                                            setOtherList(true);
+                                            setMemberListDropDown(false);
+                                        }}
+                                        className="active:bg-secondary/80"
+                                    >
+                                        차단 유저 관리
+                                    </MenuItem>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     <input
-                        onClick={() => setChecked(!checked)}
-                        checked={checked}
+                        onClick={() => setInviteToggle(!inviteToggle)}
+                        checked={inviteToggle}
                         id="invite"
                         type="checkbox"
                         className="hidden"
                     />
                     <label
                         htmlFor="invite"
-                        data-checked={checked}
+                        data-checked={inviteToggle}
                         title="invite"
                         className="group"
                     >
@@ -131,7 +174,7 @@ export default function ChatMemberList() {
                         />
                     </label>
                 </div>
-                {checked ? (
+                {inviteToggle ? (
                     <UUIDSetContainer>
                         {/* TODO: complete form!! & add invite button */}
                         <form
@@ -190,6 +233,8 @@ export default function ChatMemberList() {
                         </div>
                     </>
                 )}
+
+                <ChatBlockList />
             </div>
         </div>
     );
