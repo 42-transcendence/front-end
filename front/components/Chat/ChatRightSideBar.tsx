@@ -81,7 +81,8 @@ export default function ChatRightSideBar() {
     const [inviteToggle, setInviteToggle] = useState(false);
     // TODO: setAdmin logic
     const [admin, setAdmin] = useState(true);
-    const [currentPage, setCurrentPage] = useState<rightSideBarContents>();
+    const [currentPage, setCurrentPage] =
+        useState<rightSideBarContents>("newAccessBan");
     const [memberListDropDown, setMemberListDropDown] = useState(false);
 
     const handleList = () => {
@@ -104,6 +105,10 @@ export default function ChatRightSideBar() {
                 return "차단 유저 목록";
             case "commitBanMemberList":
                 return "채팅금지 유저 목록";
+            case "newCommitBan":
+                return "채팅 금지";
+            case "newAccessBan":
+                return "내보내기";
             default:
                 return "멤버 목록";
         }
