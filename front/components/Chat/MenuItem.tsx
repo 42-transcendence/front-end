@@ -1,9 +1,16 @@
+import { MouseEventHandler } from "react";
+
 export function MenuItem({
     children,
+    onClick,
     className,
-}: React.PropsWithChildren<{ className?: string }>) {
+}: React.PropsWithChildren<{
+    className?: string;
+    onClick: MouseEventHandler<HTMLSpanElement> | undefined;
+}>) {
     return (
         <span
+            onClick={onClick}
             className={`${className} w-full max-w-[240px] rounded p-3 text-center hover:bg-primary/50 `}
         >
             {children}

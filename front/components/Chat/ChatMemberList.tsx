@@ -8,8 +8,7 @@ import { ProfileItem, ProfileItemConfig } from "@/components/ProfileItem";
 import { InviteList } from "@/components/Service/InviteList";
 import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
-import { ChatMemberMenu } from "./ChatMemberMenu";
-import { ChatBlockList } from "./ChatBlockList";
+import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
 
 const profiles: ProfileItemConfig[] = [
@@ -55,7 +54,7 @@ const profiles: ProfileItemConfig[] = [
     },
 ];
 
-type SpecialList = "채팅금지 유저 관리" | "차단 유저 관리" | undefined;
+type SpecialList = "commit" | "ban" | undefined;
 
 // TODO: displaytitle을 front-end에서 직접 정하는게 아니라, 백엔드에서 없으면
 // 동일 로직으로 타이틀을 만들어서 프론트에 넘겨주고, 프론트에선 타이틀을 항상
@@ -76,13 +75,11 @@ export default function ChatMemberList() {
     // TODO: setAdmin logic
     const [admin, setAdmin] = useState(true);
     const [currentList, setCurrentList] = useState<SpecialList>();
-    const [otherList, setOtherList] = useState(false);
     const [memberListDropDown, setMemberListDropDown] = useState(false);
 
     const handleList = () => {
         setMemberListDropDown(!memberListDropDown);
-        if (otherList) {
-            setOtherList(false);
+        if (currentList !== undefined) {
             setInviteToggle(false);
             setCurrentList(undefined);
             setMemberListDropDown(false);
@@ -92,6 +89,86 @@ export default function ChatMemberList() {
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
         //TODO: invite selected ids;
+    };
+
+    const listTitle = (currentList: SpecialList) => {
+        switch (currentList) {
+            case "ban":
+                return "차단 유저 목록";
+            case "commit":
+                return "채팅금지 유저 목록";
+            default:
+                return "멤버 목록";
+        }
+    };
+
+    const memberList = inviteToggle ? (
+        <UUIDSetContainer>
+            {/* TODO: complete form!! & add invite button */}
+            <form
+                className="h-full w-full overflow-auto"
+                onSubmit={handleSubmit}
+            >
+                <div className="flex h-full w-full flex-col justify-between gap-4">
+                    <InviteList className="overflow-auto" />
+                    <ButtonOnRight
+                        buttonText="초대하기"
+                        className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
+                    />
+                </div>
+            </form>
+        </UUIDSetContainer>
+    ) : (
+        <>
+            <TextField
+                type="search"
+                icon={
+                    <IconSearch
+                        className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                        width={24}
+                        height={24}
+                    />
+                }
+                className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9"
+                value={query}
+                placeholder="Search..."
+                onChange={(event) => setQuery(event.target.value)}
+            />
+            <div className="h-fit w-full overflow-auto">
+                {results.map((item, index) => (
+                    <ProfileItem
+                        type="social"
+                        key={item.id}
+                        config={item}
+                        selected={item.id === selectedId}
+                        onClick={() => {
+                            setSelectedId(
+                                item.id !== selectedId ? item.id : undefined,
+                            );
+                        }}
+                    >
+                        <FzfHighlight
+                            {...getFzfHighlightProps({
+                                index,
+                                item,
+                                className: "text-yellow-500",
+                            })}
+                        />
+                    </ProfileItem>
+                ))}
+            </div>
+        </>
+    );
+
+    const listContent = (currentList: SpecialList) => {
+        switch (currentList) {
+            case "ban":
+                return <ChatAccessBanList />;
+            case "commit":
+                return <ChatCommitBanList />;
+            default:
+                return memberList;
+        }
     };
 
     return (
@@ -112,14 +189,14 @@ export default function ChatMemberList() {
                         <label
                             onClick={handleList}
                             htmlFor="memberListDropDown"
-                            data-other-list={otherList}
-                            className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[other-list=true]:bg-secondary/80 ${
+                            data-current-list={currentList}
+                            className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[current-list]:bg-primary/80 data-[current-list]:text-white ${
                                 admin &&
                                 "hover:bg-primary/30 hover:text-white active:bg-secondary/80"
                             }`}
                         >
                             <p className="w-fit font-sans text-base leading-4 ">
-                                {currentList ?? "멤버 목록"}
+                                {listTitle(currentList)}
                             </p>
                         </label>
                         {admin && (
@@ -127,10 +204,7 @@ export default function ChatMemberList() {
                                 {admin && (
                                     <MenuItem
                                         onClick={() => {
-                                            setCurrentList(
-                                                "채팅금지 유저 관리",
-                                            );
-                                            setOtherList(true);
+                                            setCurrentList("commit");
                                             setMemberListDropDown(false);
                                         }}
                                         className="active:bg-secondary/80"
@@ -141,8 +215,7 @@ export default function ChatMemberList() {
                                 {admin && (
                                     <MenuItem
                                         onClick={() => {
-                                            setCurrentList("차단 유저 관리");
-                                            setOtherList(true);
+                                            setCurrentList("ban");
                                             setMemberListDropDown(false);
                                         }}
                                         className="active:bg-secondary/80"
@@ -154,87 +227,34 @@ export default function ChatMemberList() {
                         )}
                     </div>
 
-                    <input
-                        onClick={() => setInviteToggle(!inviteToggle)}
-                        checked={inviteToggle}
-                        id="invite"
-                        type="checkbox"
-                        className="hidden"
-                    />
-                    <label
-                        htmlFor="invite"
-                        data-checked={inviteToggle}
-                        title="invite"
-                        className="group"
+                    <div
+                        className={`${
+                            currentList !== undefined && "invisible"
+                        }`}
                     >
-                        <IconInvite
-                            className="shrink-0 rounded-md p-1 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80 group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50"
-                            width={48}
-                            height={48}
+                        <input
+                            onClick={() => setInviteToggle(!inviteToggle)}
+                            checked={inviteToggle}
+                            id="invite"
+                            type="checkbox"
+                            className="hidden"
                         />
-                    </label>
-                </div>
-                {inviteToggle ? (
-                    <UUIDSetContainer>
-                        {/* TODO: complete form!! & add invite button */}
-                        <form
-                            className="h-full w-full overflow-auto"
-                            onSubmit={handleSubmit}
+                        <label
+                            htmlFor="invite"
+                            data-checked={inviteToggle}
+                            title="invite"
+                            className="group"
                         >
-                            <div className="flex h-full w-full flex-col justify-between gap-4">
-                                <InviteList className="overflow-auto" />
-                                <ButtonOnRight
-                                    buttonText="초대하기"
-                                    className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
-                                />
-                            </div>
-                        </form>
-                    </UUIDSetContainer>
-                ) : (
-                    <>
-                        <TextField
-                            type="search"
-                            icon={
-                                <IconSearch
-                                    className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                                    width={24}
-                                    height={24}
-                                />
-                            }
-                            className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9"
-                            value={query}
-                            placeholder="Search..."
-                            onChange={(event) => setQuery(event.target.value)}
-                        />
-                        <div className="h-fit w-full overflow-auto">
-                            {results.map((item, index) => (
-                                <ProfileItem
-                                    type="social"
-                                    key={item.id}
-                                    config={item}
-                                    selected={item.id === selectedId}
-                                    onClick={() => {
-                                        setSelectedId(
-                                            item.id !== selectedId
-                                                ? item.id
-                                                : undefined,
-                                        );
-                                    }}
-                                >
-                                    <FzfHighlight
-                                        {...getFzfHighlightProps({
-                                            index,
-                                            item,
-                                            className: "text-yellow-500",
-                                        })}
-                                    />
-                                </ProfileItem>
-                            ))}
-                        </div>
-                    </>
-                )}
+                            <IconInvite
+                                className="shrink-0 rounded-md p-1 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80 group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50"
+                                width={48}
+                                height={48}
+                            />
+                        </label>
+                    </div>
+                </div>
 
-                <ChatBlockList />
+                {listContent(currentList)}
             </div>
         </div>
     );
