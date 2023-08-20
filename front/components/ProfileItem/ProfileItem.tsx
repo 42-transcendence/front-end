@@ -51,12 +51,7 @@ export function ProfileItem({
             >
                 <div className="disable-select relative flex items-center gap-2 space-x-4 rounded">
                     <div className="relative flex items-center justify-center">
-                        <Avatar
-                            className=""
-                            //TODO: add uuid here
-                            accountUUID={info.uuid}
-                            size="w-[45px]"
-                        />
+                        <Avatar accountUUID={info.uuid} className="w-[45px]" />
                     </div>
                     <div className="relative flex w-fit flex-col items-start gap-1">
                         <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
