@@ -1,6 +1,6 @@
 import ChatRoomList from "./ChatRoomList";
 import ChatMainPage from "./ChatMainPage";
-import ChatMemberList from "./ChatMemberList";
+import ChatRightSideBar from "./ChatRightSideBar";
 
 export default function ChatLayout() {
     return (
@@ -21,7 +21,7 @@ export default function ChatLayout() {
                 id="rightSideBarIcon"
                 defaultChecked
             />
-            <ChatMemberList />
+            <ChatRightSideBar />
         </div>
     );
 }

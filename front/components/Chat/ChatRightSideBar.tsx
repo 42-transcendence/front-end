@@ -10,6 +10,7 @@ import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
 import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
+import { AccessBan } from "./NewBan";
 
 const profiles: ProfileItemConfig[] = [
     {
@@ -54,13 +55,19 @@ const profiles: ProfileItemConfig[] = [
     },
 ];
 
-type SpecialList = "commit" | "ban" | undefined;
+export type rightSideBarContents =
+    | "report"
+    | "newCommitBan"
+    | "newAccessBan"
+    | "commitBanMemberList"
+    | "accessBanMemberList"
+    | undefined;
 
 // TODO: displaytitle을 front-end에서 직접 정하는게 아니라, 백엔드에서 없으면
 // 동일 로직으로 타이틀을 만들어서 프론트에 넘겨주고, 프론트에선 타이틀을 항상
 // 존재하는 프로퍼티로 추후 변경할 수도
 
-export default function ChatMemberList() {
+export default function ChatRightSideBar() {
     const [selectedId, setSelectedId] = useState<number>();
     const [query, setQuery] = useState("");
     const { results, getFzfHighlightProps } = useFzf({
@@ -74,14 +81,14 @@ export default function ChatMemberList() {
     const [inviteToggle, setInviteToggle] = useState(false);
     // TODO: setAdmin logic
     const [admin, setAdmin] = useState(true);
-    const [currentList, setCurrentList] = useState<SpecialList>();
+    const [currentPage, setCurrentPage] = useState<rightSideBarContents>();
     const [memberListDropDown, setMemberListDropDown] = useState(false);
 
     const handleList = () => {
         setMemberListDropDown(!memberListDropDown);
-        if (currentList !== undefined) {
+        if (currentPage !== undefined) {
             setInviteToggle(false);
-            setCurrentList(undefined);
+            setCurrentPage(undefined);
             setMemberListDropDown(false);
         }
     };
@@ -91,11 +98,11 @@ export default function ChatMemberList() {
         //TODO: invite selected ids;
     };
 
-    const listTitle = (currentList: SpecialList) => {
-        switch (currentList) {
-            case "ban":
+    const pageTitle = (currentContent: rightSideBarContents) => {
+        switch (currentContent) {
+            case "accessBanMemberList":
                 return "차단 유저 목록";
-            case "commit":
+            case "commitBanMemberList":
                 return "채팅금지 유저 목록";
             default:
                 return "멤버 목록";
@@ -139,7 +146,7 @@ export default function ChatMemberList() {
                     <ProfileItem
                         type="social"
                         key={item.id}
-                        config={item}
+                        info={item}
                         selected={item.id === selectedId}
                         onClick={() => {
                             setSelectedId(
@@ -160,12 +167,18 @@ export default function ChatMemberList() {
         </>
     );
 
-    const listContent = (currentList: SpecialList) => {
+    const listContent = (currentList: rightSideBarContents) => {
+        const uuid = selectedId !== undefined ? results[selectedId].uuid : "";
+
         switch (currentList) {
-            case "ban":
+            case "accessBanMemberList":
                 return <ChatAccessBanList />;
-            case "commit":
+            case "commitBanMemberList":
                 return <ChatCommitBanList />;
+            case "newAccessBan":
+                return <AccessBan uuid={uuid} />;
+            // case "newCommitBan":
+            //     return <CommitBan uuid={uuid} />;
             default:
                 return memberList;
         }
@@ -189,14 +202,14 @@ export default function ChatMemberList() {
                         <label
                             onClick={handleList}
                             htmlFor="memberListDropDown"
-                            data-current-list={currentList}
+                            data-current-list={currentPage}
                             className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[current-list]:bg-primary/80 data-[current-list]:text-white ${
                                 admin &&
                                 "hover:bg-primary/30 hover:text-white active:bg-secondary/80"
                             }`}
                         >
                             <p className="w-fit font-sans text-base leading-4 ">
-                                {listTitle(currentList)}
+                                {pageTitle(currentPage)}
                             </p>
                         </label>
                         {admin && (
@@ -204,7 +217,9 @@ export default function ChatMemberList() {
                                 {admin && (
                                     <MenuItem
                                         onClick={() => {
-                                            setCurrentList("commit");
+                                            setCurrentPage(
+                                                "commitBanMemberList",
+                                            );
                                             setMemberListDropDown(false);
                                         }}
                                         className="active:bg-secondary/80"
@@ -215,7 +230,9 @@ export default function ChatMemberList() {
                                 {admin && (
                                     <MenuItem
                                         onClick={() => {
-                                            setCurrentList("ban");
+                                            setCurrentPage(
+                                                "accessBanMemberList",
+                                            );
                                             setMemberListDropDown(false);
                                         }}
                                         className="active:bg-secondary/80"
@@ -229,7 +246,7 @@ export default function ChatMemberList() {
 
                     <div
                         className={`${
-                            currentList !== undefined && "invisible"
+                            currentPage !== undefined && "invisible"
                         }`}
                     >
                         <input
@@ -254,7 +271,7 @@ export default function ChatMemberList() {
                     </div>
                 </div>
 
-                {listContent(currentList)}
+                {listContent(currentPage)}
             </div>
         </div>
     );
