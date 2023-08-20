@@ -7,9 +7,9 @@ import {
 import { ContextMenuBase } from "./ContextMenuBase";
 
 export function ContextMenu_Friend({
-    profile,
+    info: profile,
 }: {
-    profile: ProfileItemConfig;
+    info: ProfileItemConfig;
 }): React.ReactElement {
     //TODO: fetch score
     const score = 1321;

@@ -6,9 +6,9 @@ import {
 } from "./ContextMenuBase_Profile";
 
 export function ContextMenu_MyProfile({
-    profile,
+    info: profile,
 }: {
-    profile: ProfileItemConfig;
+    info: ProfileItemConfig;
 }): React.ReactElement {
     return (
         <ContextMenuBase_Profile profile={profile}>

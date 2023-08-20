@@ -4,7 +4,7 @@ import "./style.css";
 export type ContextMenuItemProp = {
     name: string;
     className: string;
-    description?: string;
+    description?: string | undefined;
     disabled?: boolean;
 };
 
@@ -12,7 +12,6 @@ export function ContextMenuItem({
     name,
     description,
     className,
-    disabled,
 }: ContextMenuItemProp): React.ReactElement {
     return (
         <div
@@ -20,7 +19,7 @@ export function ContextMenuItem({
         >
             <div className="relative flex w-full flex-col justify-center px-4 py-1">
                 <div className={` select-none`}>{name}</div>
-                {description && (
+                {description !== undefined && (
                     <div className="select-none text-base text-purple-900">
                         {description}
                     </div>
