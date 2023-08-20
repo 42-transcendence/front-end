@@ -20,12 +20,12 @@ export function ImageViewer({ uploadedFiles }: { uploadedFiles: File[] }) {
             const img = document.createElement("img");
             img.src = URL.createObjectURL(file);
             // TODO: appropriate attributes
-            img.alt = file.name;
+            img.alt = `업로드한 파일: ${file.name}`;
             // img.width = 250;
             // img.height = 250;
             // img.crossOrigin = "use-credentials";
-            // img.decoding = "async";
-            // img.loading = "lazy";
+            img.decoding = "async";
+            img.loading = "lazy";
             // img.sizes = "";
             previewElem.appendChild(img);
         }

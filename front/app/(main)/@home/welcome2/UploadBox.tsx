@@ -7,50 +7,53 @@ import { ImageViewer } from "./ImageViewer";
 
 type FileAcceptType = "image/*" | "video/*" | "audio/*";
 
-// TODO: change to named arguments?
 // TODO: hooks 디렉토리로 분리?
-function useUploadedFiles(
-    maxFileCount: number,
-    maxFileSize: number,
-): [uploadedFiles: File[], handleFiles: (files: FileList | null) => void] {
-    const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+function useFiles({
+    options: { maxFileCount, maxFileSize },
+}: {
+    options: {
+        maxFileCount?: number | undefined;
+        maxFileSize?: number | undefined;
+    };
+}): [files: File[], handleFiles: (files: FileList | null) => void] {
+    const [files, setFiles] = useState<File[]>([]);
 
     const clearInput = () => {
-        setUploadedFiles([]);
+        setFiles([]);
     };
 
     const handleFiles = (files: FileList | null) => {
         if (files === null || files.length === 0) return;
 
         // check number of files
-        if (files.length > maxFileCount) {
+        if (maxFileCount !== undefined && files.length > maxFileCount) {
             alert(`최대 파일 개수: ${maxFileCount}`);
             clearInput();
             return;
         }
 
         // check file size
-        let fileSize = 0;
-        for (const file of files) {
-            fileSize += file.size;
-            if (fileSize > maxFileSize) {
-                alert(`최대 파일 용량: ${byteToReadable(maxFileSize)}`);
-                clearInput();
-                return;
+        if (maxFileSize !== undefined) {
+            let fileSize = 0;
+            for (const file of files) {
+                fileSize += file.size;
+                if (fileSize > maxFileSize) {
+                    alert(`최대 파일 용량: ${byteToReadable(maxFileSize)}`);
+                    clearInput();
+                    return;
+                }
             }
         }
-
         clearInput();
 
         const fileList: File[] = [];
         for (const file of files) {
             fileList.push(file);
         }
-
-        setUploadedFiles(fileList);
+        setFiles(fileList);
     };
 
-    return [uploadedFiles, handleFiles];
+    return [files, handleFiles];
 }
 
 export function UploadBox({
@@ -66,10 +69,12 @@ export function UploadBox({
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const isMultiple = maxFileCount > 1;
-    const [uploadedFiles, handleFiles] = useUploadedFiles(
-        maxFileCount,
-        maxFileSize,
-    );
+    const [files, handleFiles] = useFiles({
+        options: {
+            maxFileCount: maxFileCount,
+            maxFileSize: maxFileSize,
+        },
+    });
 
     // TODO: css layout fix
     return (
@@ -91,7 +96,7 @@ export function UploadBox({
                     }
                 />
                 <DragDropArea handleFiles={handleFiles} />
-                {previewImage && <ImageViewer uploadedFiles={uploadedFiles} />}
+                {previewImage && <ImageViewer uploadedFiles={files} />}
             </label>
         </div>
     );

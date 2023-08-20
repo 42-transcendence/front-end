@@ -24,9 +24,7 @@ export function DragDropArea({
             onDragOver={handleDragOver}
             onDrop={handleDrop}
         >
-            drag and drop file
-            <br />
-            or click to upload
+            파일 선택
         </div>
     );
 }
