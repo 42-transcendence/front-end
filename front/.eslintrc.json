@@ -13,6 +13,14 @@
         "next/core-web-vitals",
         "prettier"
     ],
+    "rules": {
+        "no-warning-comments": [
+            "warn"
+        ],
+        "no-console": [
+            "warn"
+        ]
+    },
     "overrides": [
         {
             "files": ["*.ts", "*.tsx"],
