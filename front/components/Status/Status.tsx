@@ -1,28 +1,27 @@
-/*
-We're constantly improving the code you see.
-Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
-*/
+import {
+    StatusOnline,
+    StatusInvisible,
+    StatusOffline,
+    StatusIdle,
+    StatusMatching,
+    StatusDoNotDisturb,
+    StatusInGame,
+} from "@/components/ImageLibrary";
 
-import React from "react";
-import Image from "next/image";
+const StatusPair = {
+    "online": <StatusOnline height="100%" width="100%" />,
+    "invisible": <StatusInvisible height="100%" width="100%" />,
+    "offline": <StatusOffline height="100%" width="100%" />,
+    "idle": <StatusIdle height="100%" width="100%" />,
+    "matching": <StatusMatching height="100%" width="100%" />,
+    "do-not-disturb": <StatusDoNotDisturb height="100%" width="100%" />,
+    "in-game": <StatusInGame height="100%" width="100%" />,
+} as const;
 
-export type StatusType =
-    | "online"
-    | "invisible"
-    | "offline"
-    | "idle"
-    | "matching"
-    | "do-not-disturb"
-    | "in-game";
+export type StatusType = keyof typeof StatusPair;
 
-export function Status({ type }: { type: StatusType }): React.ReactElement {
+export function Status({ type }: { type: StatusType }) {
     return (
-        <>
-            <Image
-                src={`/status/${type}.svg`}
-                alt={`status is ${type}`}
-                fill={true}
-            />
-        </>
+        StatusPair[type]
     );
 }
