@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 
 function DigitBlock({
     prev,
@@ -8,14 +8,12 @@ function DigitBlock({
     next,
     value,
     setValue,
-    // onSubmit,
 }: {
     prev: React.RefObject<HTMLInputElement> | null,
     curr: React.RefObject<HTMLInputElement>,
     next: React.RefObject<HTMLInputElement> | null,
     value: string,
     setValue: (value: string) => void,
-    // onSubmit?: () => void,
 }) {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,9 +27,6 @@ function DigitBlock({
                 nextNode.disabled = false;
                 nextNode.focus();
             }
-            // if (onSubmit) {
-            //     onSubmit();
-            // }
         }
     };
 
@@ -59,8 +54,6 @@ function DigitBlock({
             value={value}
             onChange={handleChange}
             onKeyDown={handleBackspace}
-            // onFocus={handleFocus}
-            // onBlur={handleBlur}
             maxLength={1}
             disabled={prev !== null}
         />
@@ -68,14 +61,20 @@ function DigitBlock({
 }
 
 const sleep = async (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-const validateOTP = (otpValue: string) => {
+const validateOTP = async (otpValue: string) => {
+    await sleep(1);
     const resultValue = Number(otpValue);
-    return (Number.isInteger(resultValue) && resultValue > 0 && resultValue % 5 === 0)
+    if (Number.isInteger(resultValue) && resultValue > 0 && resultValue % 5 === 0) {
+        return otpValue;
+    } else {
+        throw new Error("invalid otp");
+    }
 }
 
+// TODO: refactor, change mock functions to real function
 export default function LoginPage() {
-    const [values, setValues] = useState(["", "", "", "", "", ""]);
+    const initialValue = useMemo(() => ["", "", "", "", "", ""], []);
+    const [values, setValues] = useState(initialValue);
 
     const ref1 = useRef<HTMLInputElement>(null);
     const ref2 = useRef<HTMLInputElement>(null);
@@ -89,24 +88,24 @@ export default function LoginPage() {
     }
 
     const initialize = useCallback(() => {
-        setValues(["", "", "", "", "", ""]);
+        setValues(initialValue);
         const first = ref1.current;
         if (first) {
             first.disabled = false;
             first.focus();
         }
-    }, []);
+    }, [initialValue]);
 
-    const resolve = useCallback(() => {
-        alert(`correct ${values.join("")}`)
-    }, [values]);
+    const resolve = useCallback((value: string) => {
+        alert(`correct ${value}`)
+    }, []);
 
     useEffect(() => {
         if (values[5] !== "") {
-            if (validateOTP(values.join(""))) {
-                resolve();
-            }
-            initialize();
+            validateOTP(values.join(""))
+                .then((r) => resolve(r))
+                .catch((e) => console.log(e)) // TODO: add animation for wrong OTP
+                .finally(() => initialize())
         }
     }, [initialize, resolve, values]);
 
@@ -131,7 +130,7 @@ export default function LoginPage() {
                         <DigitBlock prev={ref4} curr={ref5} next={ref6} value={values[4]} setValue={setValuesAt(4)} />
                         <DigitBlock prev={ref5} curr={ref6} next={null} value={values[5]} setValue={setValuesAt(5)} />
                     </div>
-                    <p>{`result: ${values.join("")}`}</p>
+                    <p>{`result: ${values.join("")}` /* TODO: delete this */}</p>
                 </div>
             </div>
         </main>
