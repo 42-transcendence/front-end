@@ -268,7 +268,7 @@ export default function ChatRightSideBar() {
                             className="group"
                         >
                             <IconInvite
-                                className="shrink-0 rounded-md p-1 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80 group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50"
+                                className="shrink-0 rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80 group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50"
                                 width={48}
                                 height={48}
                             />
