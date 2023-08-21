@@ -62,6 +62,7 @@ function DigitBlock({
 
 const sleep = async (ms: number) => new Promise((res) => setTimeout(res, ms));
 const validateOTP = async (otpValue: string) => {
+    //TODO: 백에 갔다올동안 기다리기~ 
     await sleep(1);
     const resultValue = Number(otpValue);
     if (Number.isInteger(resultValue) && resultValue > 0 && resultValue % 5 === 0) {
