@@ -1,4 +1,3 @@
-import React, { MouseEventHandler } from "react";
 import { Avatar } from "@/components/Avatar";
 
 export function ProfileItemBlocked({
@@ -7,13 +6,12 @@ export function ProfileItemBlocked({
     accountUUID,
     children,
     onClick,
-}: {
+}: React.PropsWithChildren<{
     className?: string | undefined;
     accountUUID: string;
     selected: boolean;
-    children?: React.ReactNode | undefined;
-    onClick: MouseEventHandler;
-}) {
+    onClick: React.MouseEventHandler;
+}>) {
     //TODO: get nick from accountUUID by fetch
     const nickName = "fallback";
     const memo = "memomemo";
@@ -56,7 +54,7 @@ export function ProfileItemBlocked({
                         </button>
                     </div>
                 ) : (
-                    <></>
+                    null
                 )}
             </div>
         </li>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProfileItemBlocked } from "../ProfileItem/ProfileItemBlocked";
+import { ProfileItemBlocked } from "@/components/ProfileItem/ProfileItemBlocked";
 
 type BlockedUser = {
     accountUUID: string;

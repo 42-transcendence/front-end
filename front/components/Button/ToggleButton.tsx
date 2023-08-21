@@ -1,25 +1,16 @@
 "use client";
 
-import {
-    Dispatch,
-    LabelHTMLAttributes,
-    ReactElement,
-    ReactNode,
-    SetStateAction,
-} from "react";
-
-type ToggleButtonProp = LabelHTMLAttributes<HTMLLabelElement> & {
+type ToggleButtonProp = React.LabelHTMLAttributes<HTMLLabelElement> & {
     id: string;
     formID: string;
     name: string;
     bgClassName?: string;
     checked: boolean;
-    setChecked: Dispatch<SetStateAction<boolean>>;
-    icon: ReactElement;
-    children: ReactNode;
+    setChecked: React.Dispatch<React.SetStateAction<boolean>>;
+    icon: React.ReactElement;
 };
 
-export function ToggleButton(props: ToggleButtonProp) {
+export function ToggleButton(props: React.PropsWithChildren<ToggleButtonProp>) {
     const {
         id,
         formID,
