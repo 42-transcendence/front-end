@@ -115,6 +115,7 @@ export default function Welcome2() {
                         </div>
                     </div>
                 </div>
+                {/* TODO: if file select, change message to file select.*/}
                 <p>selected profile: {profileName}</p>
 
                 {/* TODO : 서버에서 닉네임이 중복되었는지, 가능한 닉네임인지 확인 */}
