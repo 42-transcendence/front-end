@@ -22,9 +22,10 @@ export function ProfileItemSelectable({
         <li
             className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className}`}
         >
-            <div
+            <label
                 className="relative flex flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
                 onClick={onClick}
+                htmlFor={accountUUID}
             >
                 <div className="relative flex w-full select-none items-center gap-4 rounded">
                     <div className="relative flex items-center justify-center">
@@ -38,15 +39,20 @@ export function ProfileItemSelectable({
                             {children ?? nickName}
                         </div>
                     </div>
-                    {selected ? (
-                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/80 outline-gray-300/60">
-                            <IconCheck className="p-0.5 text-white" />
-                        </div>
-                    ) : (
-                        <div className="h-6 w-6 shrink-0 rounded-full outline outline-1 outline-gray-300/60"></div>
-                    )}
+                    <input
+                        id={accountUUID}
+                        className="peer hidden"
+                        //TODO: change accountUUID to real nickName
+                        name={accountUUID}
+                        type="checkbox"
+                        value="nick"
+                    />
+                    <div className="hidden h-6 w-6 shrink-0 rounded-full bg-secondary/80 outline outline-1 outline-secondary peer-checked:flex">
+                        <IconCheck className="h-6 w-6 p-1" />
+                    </div>
+                    <div className="h-6 w-6 shrink-0 rounded-full outline outline-1 outline-gray-300/60 peer-checked:hidden" />
                 </div>
-            </div>
+            </label>
         </li>
     );
 }

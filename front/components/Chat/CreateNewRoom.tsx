@@ -67,15 +67,23 @@ export function CreateNewRoom() {
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
     const [accountUUIDSet] = useUUIDSet();
+    const formRef = useRef<HTMLFormElement>(null!);
+    const formID = "newChatRoom";
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
         void accountUUIDSet;
-        //TODO:
+
+        const data = new FormData(formRef.current);
+        const value = Object.fromEntries(data.entries());
+
+        console.log(value);
     };
 
     return (
         <form
+            id={formID}
+            ref={formRef}
             autoComplete="off"
             onSubmit={handleSubmit}
             className="group hidden h-full w-full overflow-auto peer-checked:flex"
@@ -88,6 +96,8 @@ export function CreateNewRoom() {
                             className="relative min-h-[3rem] bg-black/30 px-4 py-1 text-xl"
                             placeholder="Title..."
                             pattern={titlePattern}
+                            name="chatRoomTitle"
+                            form={formID}
                             required
                             value={title}
                             onChange={(event) => setTitle(event.target.value)}
@@ -96,6 +106,8 @@ export function CreateNewRoom() {
                         <div className="flex flex-col">
                             <ToggleButton
                                 id="private"
+                                formID={formID}
+                                name="isPrivate"
                                 checked={privateChecked}
                                 setChecked={setPrivateChecked}
                                 bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
@@ -119,6 +131,8 @@ export function CreateNewRoom() {
 
                             <ToggleButton
                                 id="secret"
+                                formID={formID}
+                                name="isSecret"
                                 checked={secretChecked}
                                 setChecked={setSecretChecked}
                                 bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
@@ -137,6 +151,8 @@ export function CreateNewRoom() {
                                     <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
                                         <TextField
                                             type="new-password"
+                                            form={formID}
+                                            name="password"
                                             placeholder="비밀번호 입력"
                                             className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
                                             value={password}
@@ -150,6 +166,8 @@ export function CreateNewRoom() {
 
                             <ToggleButton
                                 id="limit"
+                                formID={formID}
+                                name="isLimit"
                                 checked={limitChecked}
                                 setChecked={setLimitChecked}
                                 bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
@@ -168,6 +186,8 @@ export function CreateNewRoom() {
                                     <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
                                         <TextField
                                             type="number"
+                                            form={formID}
+                                            name="limit"
                                             disabled={!limitChecked}
                                             min={1}
                                             max={maxMemberLimit}
@@ -185,6 +205,7 @@ export function CreateNewRoom() {
                             </ToggleButton>
 
                             <InviteFriendToggle
+                                formID={formID}
                                 checked={inviteChecked}
                                 setChecked={setInviteChecked}
                             />
@@ -203,9 +224,11 @@ export function CreateNewRoom() {
 
 function InviteFriendToggle({
     checked,
+    formID,
     setChecked,
 }: {
     checked: boolean;
+    formID: string;
     setChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [isSticky, ref] = useDetectSticky();
@@ -227,6 +250,7 @@ function InviteFriendToggle({
                 <input
                     onChange={(e) => setChecked(e.target.checked)}
                     checked={checked}
+                    form={formID}
                     type="checkbox"
                     id="sectionHeader"
                     className="hidden"

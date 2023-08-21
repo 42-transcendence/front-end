@@ -10,6 +10,8 @@ import {
 
 type ToggleButtonProp = LabelHTMLAttributes<HTMLLabelElement> & {
     id: string;
+    formID: string;
+    name: string;
     bgClassName?: string;
     checked: boolean;
     setChecked: Dispatch<SetStateAction<boolean>>;
@@ -18,8 +20,17 @@ type ToggleButtonProp = LabelHTMLAttributes<HTMLLabelElement> & {
 };
 
 export function ToggleButton(props: ToggleButtonProp) {
-    const { id, icon, bgClassName, checked, setChecked, children, ...rest } =
-        props;
+    const {
+        id,
+        formID,
+        name,
+        icon,
+        bgClassName,
+        checked,
+        setChecked,
+        children,
+        ...rest
+    } = props;
 
     return (
         <label
@@ -34,6 +45,8 @@ export function ToggleButton(props: ToggleButtonProp) {
                     setChecked(!checked);
                 }}
                 checked={checked}
+                form={formID}
+                name={name}
                 type="checkbox"
                 id={id}
                 className="hidden"
