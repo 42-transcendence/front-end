@@ -83,7 +83,7 @@ export default function Welcome2() {
                         className="z-20 flex snap-x snap-mandatory flex-row gap-5 overflow-auto pb-10"
                     >
                         <div className="shrink-0 snap-center">
-                            <div className="w-12 shrink-0"></div>
+                            <div className="w-7 shrink-0"></div>
                         </div>
                         <div className="flex-shrink-0 snap-center snap-always"></div>
                         {defaultProfilesKey.map((name) => (
@@ -111,7 +111,7 @@ export default function Welcome2() {
                         />
                         <div className="flex-shrink-0 snap-center snap-always"></div>
                         <div className="shrink-0 snap-center">
-                            <div className="w-12 shrink-0"></div>
+                            <div className="w-7 shrink-0"></div>
                         </div>
                     </div>
                 </div>
