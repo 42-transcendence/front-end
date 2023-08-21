@@ -29,9 +29,8 @@ export function ProfileItemSelectable({
                 <div className="relative flex w-full select-none items-center gap-4 rounded">
                     <div className="relative flex items-center justify-center">
                         <Avatar
-                            className=""
                             accountUUID={accountUUID}
-                            size="w-[32px]"
+                            className="w-[32px]"
                         />
                     </div>
                     <div className="w-full overflow-hidden">

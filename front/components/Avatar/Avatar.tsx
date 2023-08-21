@@ -47,11 +47,9 @@ const dummy: AvatarInfo[] = [
 
 export function Avatar({
     className,
-    size,
     accountUUID,
 }: {
     className: string;
-    size: string;
     accountUUID?: string;
 }): React.ReactElement {
     //TODO: fetch Avatar datas
@@ -62,7 +60,7 @@ export function Avatar({
 
     return (
         <div
-            className={`${className} flex aspect-square ${size} items-start gap-2.5 rounded-full`}
+            className={`${className} flex aspect-square items-start gap-2.5 rounded-full`}
         >
             <Image
                 className="relative rounded-full"

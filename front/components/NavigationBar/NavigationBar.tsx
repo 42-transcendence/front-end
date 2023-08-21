@@ -28,10 +28,9 @@ export function NavigationBar() {
                 <SocialButton />
                 {/* TODO: on click Avatar in navbar, show context menu myinfo */}
                 <Avatar
-                    size={"w-9 h-9 "}
                     // avatarKey={account?.avatarKey}
-                    avatarKey={"jkong"}
-                    className="relative bg-white/30"
+                    accountUUID={"jkong"}
+                    className="relative h-9 w-9 bg-white/30"
                 />
             </div>
         </div>
