@@ -2,11 +2,7 @@
 
 import React, { useState } from "react";
 import { ProfileItemConfig } from "../ContextMenu";
-import {
-    IconSidebar,
-    IconMembers,
-    IconHamburger,
-} from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 
 const config: ProfileItemConfig = {
@@ -32,12 +28,12 @@ export function ChatHeader() {
                 htmlFor="leftHeaderIcon"
                 className="absolute left-2 top-2 z-[5] w-12 overflow-clip transition-all duration-500 peer-checked/headerleft:w-0"
             >
-                <IconSidebar
+                <Icon.Sidebar
                     className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 active:bg-secondary/80 2xl:block"
                     width={48}
                     height={48}
                 />
-                <IconHamburger
+                <Icon.Hamburger
                     className="rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:hidden"
                     width={48}
                     height={48}
@@ -80,7 +76,7 @@ export function ChatHeader() {
                     htmlFor="rightHeaderIcon"
                     className="absolute right-2 top-2 z-[5] w-12 overflow-clip transition-all duration-500 peer-checked/headerright:w-0"
                 >
-                    <IconMembers
+                    <Icon.Members
                         className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
                         width={48}
                         height={48}

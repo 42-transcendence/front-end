@@ -2,12 +2,7 @@ import { UUIDSetContainer, useUUIDSet } from "@/hooks/UUIDSetContext";
 import { useEffect, useRef, useState } from "react";
 import { TextField } from "@/components/TextField";
 import { ToggleButton } from "@/components/Button/ToggleButton";
-import {
-    IconKey,
-    IconLock,
-    IconMembers,
-    IconPerson,
-} from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 import { InviteList } from "@/components/Service/InviteList";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
 
@@ -100,7 +95,7 @@ export function CreateNewRoom() {
                                 setChecked={setPrivateChecked}
                                 bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
                                 icon={
-                                    <IconLock
+                                    <Icon.Lock
                                         width={56}
                                         height={56}
                                         className="rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
@@ -123,7 +118,7 @@ export function CreateNewRoom() {
                                 setChecked={setSecretChecked}
                                 bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
                                 icon={
-                                    <IconKey
+                                    <Icon.Key
                                         width={56}
                                         height={56}
                                         className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
@@ -154,7 +149,7 @@ export function CreateNewRoom() {
                                 setChecked={setLimitChecked}
                                 bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
                                 icon={
-                                    <IconMembers
+                                    <Icon.Members
                                         width={56}
                                         height={56}
                                         className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
@@ -219,7 +214,7 @@ function InviteFriendToggle({
                 data-sticky={isSticky}
                 className="group sticky -top-1 z-10 flex h-fit w-full flex-row items-center gap-3 rounded p-3 transition-colors hover:bg-gray-500/30 hover:text-white data-[sticky=true]:bg-secondary data-[sticky=true]:duration-0"
             >
-                <IconPerson
+                <Icon.Person
                     width={56}
                     height={56}
                     className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"

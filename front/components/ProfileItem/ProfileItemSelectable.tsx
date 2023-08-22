@@ -1,6 +1,6 @@
 import React, { MouseEventHandler } from "react";
 import { Avatar } from "@/components/Avatar";
-import { IconCheck } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 
 export function ProfileItemSelectable({
     className,
@@ -41,7 +41,7 @@ export function ProfileItemSelectable({
                     </div>
                     {selected ? (
                         <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/80 outline-gray-300/60">
-                            <IconCheck className="p-0.5 text-white" />
+                            <Icon.Check className="p-0.5 text-white" />
                         </div>
                     ) : (
                         <div className="h-6 w-6 shrink-0 rounded-full outline outline-1 outline-gray-300/60"></div>
