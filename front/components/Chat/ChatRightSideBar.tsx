@@ -19,7 +19,6 @@ const profiles: ProfileItemConfig[] = [
         name: "hdoo",
         tag: "#00001",
         statusMessage: "Hello world!",
-        showStatusMessage: true,
     },
     {
         id: 2,
@@ -27,7 +26,6 @@ const profiles: ProfileItemConfig[] = [
         name: "chanhpar",
         tag: "#00002",
         statusMessage: "I'm chanhpar",
-        showStatusMessage: true,
     },
     {
         id: 3,
@@ -35,7 +33,6 @@ const profiles: ProfileItemConfig[] = [
         name: "iyun",
         tag: "#00003",
         statusMessage: "I'm IU",
-        showStatusMessage: true,
     },
     {
         id: 4,
@@ -43,7 +40,6 @@ const profiles: ProfileItemConfig[] = [
         name: "jkong",
         tag: "#00004",
         statusMessage: "I'm Jkong!",
-        showStatusMessage: true,
     },
     {
         id: 5,
@@ -51,7 +47,6 @@ const profiles: ProfileItemConfig[] = [
         name: "jisookim",
         tag: "#00005",
         statusMessage: "Hi I'm jisoo",
-        showStatusMessage: true,
     },
 ];
 
@@ -255,7 +250,7 @@ export default function ChatRightSideBar() {
                         }`}
                     >
                         <input
-                            onClick={() => setInviteToggle(!inviteToggle)}
+                            onChange={() => setInviteToggle(!inviteToggle)}
                             checked={inviteToggle}
                             id="invite"
                             type="checkbox"

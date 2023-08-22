@@ -10,11 +10,9 @@ async function getUserStatus(
     //       delete later
     await new Promise((r) => setTimeout(r, 1));
 
-    // const avatarKey = "jisookim"; //FIXME: temporary
-    // const status = "online"; //FIXME: temporary
     return {
-        avatarKey: "jisookim",
-        status: "online",
+        avatarKey: "jisookim", //FIXME: temporary
+        status: "online", //FIXME: temporary
     };
 }
 

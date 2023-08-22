@@ -1,16 +1,12 @@
-/*
-We're constantly improving the code you see.
-Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
-*/
-
-import React, { MouseEventHandler } from "react";
-import { Avatar } from "../Avatar";
+import { Avatar } from "@/components/Avatar";
 import {
-    ProfileItemConfig as ProfileItemInternlConfig,
     ContextMenu_Friend,
     ContextMenu_Social,
     ContextMenu_MyProfile,
-} from "../ContextMenu";
+} from "@/components/ContextMenu";
+import type { ProfileItemConfig as ProfileItemInternlConfig } from "@/components/ContextMenu";
+
+// TODO: 이거 꼭 이렇게 ProfileItemInternlConfig 거쳐서 두번 해야 하나요?
 
 export type ProfileItemConfig = ProfileItemInternlConfig;
 
@@ -21,14 +17,13 @@ export function ProfileItem({
     children,
     type,
     onClick,
-}: {
+}: React.PropsWithChildren<{
     className?: string | undefined;
     info: ProfileItemConfig;
     selected: boolean;
-    children?: React.ReactNode | undefined;
-    onClick?: MouseEventHandler | undefined;
+    onClick?: React.MouseEventHandler | undefined;
     type?: "social" | "friend" | "myprofile" | undefined;
-}) {
+}>) {
     const contextMenuType = () => {
         switch (type) {
             case "social":
@@ -38,7 +33,7 @@ export function ProfileItem({
             case "myprofile":
                 return <ContextMenu_MyProfile info={info} />;
             default:
-                return <></>;
+                return null;
         }
     };
     return (

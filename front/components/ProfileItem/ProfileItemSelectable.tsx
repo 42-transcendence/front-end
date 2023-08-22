@@ -1,4 +1,3 @@
-import React, { MouseEventHandler } from "react";
 import { Avatar } from "@/components/Avatar";
 import { IconCheck } from "@/components/ImageLibrary";
 
@@ -13,7 +12,7 @@ export function ProfileItemSelectable({
     accountUUID: string;
     selected: boolean;
     children?: React.ReactNode | undefined;
-    onClick: MouseEventHandler;
+    onClick: React.MouseEventHandler;
 }) {
     //TODO: get nick from accountUUID by fetch
     const nickName = "fallback";

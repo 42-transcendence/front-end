@@ -1,16 +1,13 @@
-"use client";
-import React, { ReactNode } from "react";
 import { IconLock, IconPerson } from "@/components/ImageLibrary";
 import { ChatRoomInfo } from "./ChatLeftSideBar";
-import { Avatar } from "../Avatar";
+import { Avatar } from "@/components/Avatar";
 
 export default function ChatRoomBlock({
     children,
     chatRoom,
-}: {
-    children: ReactNode;
+}: React.PropsWithChildren<{
     chatRoom: ChatRoomInfo;
-}) {
+}>) {
     const numberOfUnreadMessages =
         chatRoom.numberOfUnreadMessages > 0 ? (
             <div className="flex min-w-[22px] flex-col items-center justify-center rounded-md bg-red-500 p-1">

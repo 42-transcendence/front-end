@@ -1,5 +1,5 @@
-import React from "react";
-import { ContextMenuItem, ProfileItemConfig } from "./ContextMenuBase_Profile";
+import type { ProfileItemConfig } from "./ContextMenuBase_Profile";
+import { ContextMenuItem } from "./ContextMenuItem";
 
 export function ContextMenu_Social({ info }: { info: ProfileItemConfig }) {
     void info;

@@ -58,10 +58,10 @@ export function AccessBan({ uuid }: { uuid: string }) {
             className="relative flex h-full w-full flex-col gap-4 overflow-hidden"
         >
             <div className="flex h-full w-full flex-col justify-start gap-4 overflow-auto">
-                <p className="w-full text-sm font-bold text-gray-100">
+                <div className="w-full text-sm font-bold text-gray-100">
                     {summary}
                     <ProfileItemBase />
-                </p>
+                </div>
                 <div className="w-full text-sm font-bold text-gray-100">
                     {expireDateTitle}
                     <div className="flex h-fit w-full flex-col justify-start">
