@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Panel } from "./Panel";
 import { useState } from "react";
+import { IconMagicCirclesingleBorder } from "../ImageLibrary";
 
 type Achievement = {
     id: number;
@@ -152,9 +153,13 @@ function AchievementItem({
         }
     };
 
+    const state = accomplished ? "달성" : "1 / 3";
+    //TODO: get date from backend
+    const date = new Date();
+
     return (
         <div
-            className={`relative flex w-full overflow-clip rounded-xl bg-black/30`}
+            className={`relative flex w-full overflow-clip rounded-xl bg-black/30 hover:bg-black/20  active:bg-black/10`}
         >
             <input
                 id="AchievementItem"
@@ -166,7 +171,7 @@ function AchievementItem({
                 htmlFor="AchievementItem"
                 data-opened={opened}
                 onClick={() => setOpened(!opened)}
-                className="group flex w-full flex-row items-center justify-between gap-4 overflow-clip"
+                className="group flex w-full flex-row items-center justify-between gap-4 "
             >
                 <div className={`w-full p-4`}>
                     <div
@@ -187,7 +192,11 @@ function AchievementItem({
                         </div>
                         <div className="flex w-full flex-col items-start justify-start gap-1">
                             <span
-                                className={`${titleColor()} line-clamp-1 text-sm group-data-[opened=true]:line-clamp-none md:text-base 2xl:text-xl`}
+                                className={`${
+                                    accomplished
+                                        ? titleColor()
+                                        : "text-gray-300/70"
+                                }  line-clamp-1 text-sm group-data-[opened=true]:line-clamp-none md:text-base 2xl:text-xl`}
                             >
                                 {achievement.title}
                             </span>
@@ -197,7 +206,21 @@ function AchievementItem({
                         </div>
                     </div>
                 </div>
-                <div className="min-h-full w-20 shrink-0 bg-black/30"></div>
+                <div className="relative flex min-h-full w-20 shrink-0 flex-col items-center justify-center gap-1 overflow-clip bg-black/30">
+                    <span className="">{state}</span>
+                    {accomplished && (
+                        <>
+                            <IconMagicCirclesingleBorder
+                                className="absolute -left-3 top-0 text-white/10"
+                                width="144%"
+                                height="144%"
+                            />
+                            <span className="rounded-lg bg-black/80 px-1 text-xs text-gray-100/70">
+                                {date.toLocaleDateString()}
+                            </span>
+                        </>
+                    )}
+                </div>
             </label>
         </div>
     );
@@ -237,14 +260,21 @@ export function AchievementPenal({ accountUUID }: { accountUUID: string }) {
     const achievementList = achievementMockup;
 
     return (
-        <Panel className={"md:col-span-2 md:row-span-1"}>
-            {achievementList.map((ach, index) => (
-                <AchievementItem
-                    key={index}
-                    achievementID={ach.id}
-                    accomplished={ach.accomplished}
-                />
-            ))}
+        <Panel
+            className={
+                "flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1"
+            }
+        >
+            <span className="p-4 text-xl font-extrabold text-white">업적</span>
+            <div className="flex w-full flex-col gap-2 overflow-auto">
+                {achievementList.map((ach, index) => (
+                    <AchievementItem
+                        key={index}
+                        achievementID={ach.id}
+                        accomplished={ach.accomplished}
+                    />
+                ))}
+            </div>
         </Panel>
     );
 }
