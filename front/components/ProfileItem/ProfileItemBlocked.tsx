@@ -53,9 +53,7 @@ export function ProfileItemBlocked({
                             차단 해제하기
                         </button>
                     </div>
-                ) : (
-                    null
-                )}
+                ) : null}
             </div>
         </li>
     );

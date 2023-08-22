@@ -3,57 +3,19 @@ import { Status } from "@/components/Status";
 import type { StatusType } from "@/components/Status";
 import Image from "next/image";
 
-// export type UserStatus =
-//     | "online"
-//     | "invisible"
-//     | "offline"
-//     | "idle"
-//     | "matching"
-//     | "do-not-disturb"
-//     | "in-game";
-
-// type AvatarInfo = {
-//     profileImage: string;
-//     userStatus: UserStatus;
-// };
-
-// const dummy: AvatarInfo[] = [
-//     {
-//         profileImage: "/hdoo.png",
-//         userStatus: "online",
-//     },
-//     {
-//         profileImage: "/chanhpar.png",
-//         userStatus: "online",
-//     },
-//     {
-//         profileImage: "/iyun.png",
-//         userStatus: "online",
-//     },
-//     {
-//         profileImage: "/jkong.png",
-//         userStatus: "online",
-//     },
-//     {
-//         profileImage: "/jisookim.png",
-//         userStatus: "online",
-//     },
-// ];
-
-async function getUserStatus(accountUUID: string): Promise<{ avatarKey: string; status: StatusType; }> {
-
+async function getUserStatus(
+    accountUUID: string,
+): Promise<{ avatarKey: string; status: StatusType }> {
     // TODO: dummy async function to make getUserStatus as a async function.
     //       delete later
     await new Promise((r) => setTimeout(r, 1));
 
     // const avatarKey = "jisookim"; //FIXME: temporary
     // const status = "online"; //FIXME: temporary
-    return (
-        {
-            avatarKey: "jisookim",
-            status: "online",
-        }
-    );
+    return {
+        avatarKey: "jisookim",
+        status: "online",
+    };
 }
 
 function LoadingAvatar() {
