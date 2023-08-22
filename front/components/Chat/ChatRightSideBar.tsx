@@ -77,7 +77,7 @@ export default function ChatRightSideBar() {
     // TODO: setAdmin logic
     const [admin, setAdmin] = useState(true);
     const [currentPage, setCurrentPage] =
-        useState<RightSideBarContents>("newAccessBan");
+        useState<RightSideBarContents>();
     const [memberListDropDown, setMemberListDropDown] = useState(false);
 
     const handleList = () => {

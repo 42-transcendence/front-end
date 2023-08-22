@@ -1,20 +1,12 @@
 import { Suspense } from "react";
 import { Status } from "@/components/Status";
-import type { StatusType } from "@/components/Status";
 import Image from "next/image";
-
-async function getUserStatus(
-    accountUUID: string,
-): Promise<{ avatarKey: string; status: StatusType }> {
-    // TODO: dummy async function to make getUserStatus as a async function.
-    //       delete later
-    await new Promise((r) => setTimeout(r, 1));
-
-    return {
-        avatarKey: "jisookim", //FIXME: temporary
-        status: "online", //FIXME: temporary
-    };
-}
+import { cookies } from "next/headers";
+import {
+    AccountProfileProtectedPayload,
+    AccountProfilePublicPayload,
+} from "@/library/payload/profile-payloads";
+import { ActiveStatusNumber } from "@/library/generated/types";
 
 // TODO: LoadingAvatar, UserAvatar showStatus 부분 로직이 겹치는데 어떻게 할것인가
 function LoadingAvatar({ showStatus }: { showStatus: boolean }) {
@@ -30,7 +22,7 @@ function LoadingAvatar({ showStatus }: { showStatus: boolean }) {
                 <div
                     className={`absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full`}
                 >
-                    <Status type="offline" />
+                    <Status type={ActiveStatusNumber.OFFLINE} />
                 </div>
             )}
         </>
@@ -47,7 +39,21 @@ async function UserAvatar({
     //TODO: fetch Avatar datas
     // \-  get user profile and status from accountid
 
-    const { avatarKey, status } = await getUserStatus(accountUUID);
+    const url = new URL("https://back.stri.dev/profile/public");
+    url.searchParams.set("uuid", accountUUID);
+    const { avatarKey } = (await fetch(url, {
+        headers: {
+            Authorization: ["Bearer", cookies().get("at")].join(" "),
+        },
+    }).then((e) => e.json())) as AccountProfilePublicPayload; //FIXME: 살려줘!! 도와줘!!
+
+    const urlProtected = new URL("https://back.stri.dev/profile/protected");
+    urlProtected.searchParams.set("uuid", accountUUID);
+    const { activeStatus } = (await fetch(urlProtected, {
+        headers: {
+            Authorization: ["Bearer", cookies().get("at")].join(" "),
+        },
+    }).then((e) => e.json())) as AccountProfileProtectedPayload; //FIXME: 살려줘!! 도와줘!!
 
     return (
         <>
@@ -58,10 +64,8 @@ async function UserAvatar({
                 fill={true} // TODO: fill / size options?
             />
             {showStatus && (
-                <div
-                    className={`absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full`}
-                >
-                    <Status type={status} />
+                <div className="absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full">
+                    <Status type={activeStatus} />
                 </div>
             )}
         </>

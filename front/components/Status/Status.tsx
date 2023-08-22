@@ -7,19 +7,24 @@ import {
     StatusDoNotDisturb,
     StatusInGame,
 } from "@/components/ImageLibrary";
+import { ActiveStatusNumber } from "@/library/generated/types";
 
 const StatusPair = {
-    online: <StatusOnline height="100%" width="100%" />,
-    invisible: <StatusInvisible height="100%" width="100%" />,
-    offline: <StatusOffline height="100%" width="100%" />,
-    idle: <StatusIdle height="100%" width="100%" />,
-    matching: <StatusMatching height="100%" width="100%" />,
-    "do-not-disturb": <StatusDoNotDisturb height="100%" width="100%" />,
-    "in-game": <StatusInGame height="100%" width="100%" />,
+    [ActiveStatusNumber.ONLINE]: <StatusOnline height="100%" width="100%" />,
+    [ActiveStatusNumber.INVISIBLE]: (
+        <StatusInvisible height="100%" width="100%" />
+    ),
+    [ActiveStatusNumber.OFFLINE]: <StatusOffline height="100%" width="100%" />,
+    [ActiveStatusNumber.IDLE]: <StatusIdle height="100%" width="100%" />,
+    [ActiveStatusNumber.MATCHING]: (
+        <StatusMatching height="100%" width="100%" />
+    ),
+    [ActiveStatusNumber.DO_NOT_DISTURB]: (
+        <StatusDoNotDisturb height="100%" width="100%" />
+    ),
+    [ActiveStatusNumber.GAME]: <StatusInGame height="100%" width="100%" />,
 } as const;
 
-export type StatusType = keyof typeof StatusPair;
-
-export function Status({ type }: { type: StatusType }) {
+export function Status({ type }: { type: ActiveStatusNumber }) {
     return StatusPair[type];
 }

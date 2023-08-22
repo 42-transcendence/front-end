@@ -65,6 +65,8 @@ export default function MainLayout({
         };
     }, [loggedin]);
 
+    console.log(Object.keys(home ?? {}), Object.keys(login?? {}))
+
     return (
         <div className="flex h-[100dvh] flex-shrink-0 flex-col">
             {loggedin ? home : login}
