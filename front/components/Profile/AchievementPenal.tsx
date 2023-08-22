@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Panel } from "./Panel";
+import { useState } from "react";
 
 type Achievement = {
     id: number;
@@ -120,11 +121,12 @@ function AchievementItem({
     achievementID: number;
     accomplished: boolean;
 }) {
+    const [opened, setOpened] = useState(false);
     //TODO: get state from server
     const achievement = achievementList[achievementID];
     const grade = achievement.grade;
 
-    const trophy = (grade: Grade) => {
+    const trophy = () => {
         switch (grade) {
             case "bronze":
                 return "/game/skin-bronze.png";
@@ -137,9 +139,7 @@ function AchievementItem({
         }
     };
 
-    const bgColor = accomplished ? "bg-black/30 " : "bg-windowGlass/10";
-
-    const titleColor = (grade: Grade) => {
+    const titleColor = () => {
         switch (grade) {
             case "bronze":
                 return "text-amber-500/70";
@@ -148,44 +148,60 @@ function AchievementItem({
             case "gold":
                 return "text-tertiary/90";
             case "platinum":
-                return "text-transparent bg-clip-text bg-gradient-to-br to-pink-500 via-purple-500 from-secondaryLighter";
+                return "text-transparent bg-clip-text bg-gradient-to-br from-secondary via-purple-500 to-pink-500 ";
         }
     };
+
     return (
         <div
-            className={`flex h-fit w-full items-start gap-4 rounded ${bgColor} p-4`}
+            className={`relative flex h-fit w-full overflow-clip rounded-xl bg-black/30`}
         >
-            <div
-                className={`${
-                    accomplished ? "" : "opacity-50 grayscale"
-                } relative flex flex-row items-center justify-center gap-4`}
+            <input
+                id="AchievementItem"
+                type="checkbox"
+                checked={opened}
+                className="hidden"
+            />
+            <label
+                htmlFor="AchievementItem"
+                data-opened={opened}
+                onClick={() => setOpened(!opened)}
+                className="group flex w-full flex-row items-center justify-between gap-4 overflow-clip"
             >
-                <div className="h-8 w-5 items-center justify-center">
-                    <Image
-                        src={trophy(grade)}
-                        width={18}
-                        height={32}
-                        alt={grade}
-                        title={grade}
-                    />
-                </div>
-                <div className="flex w-full flex-col items-start justify-start gap-1">
-                    <span
-                        className={` w-fit text-sm md:text-base 2xl:text-xl ${titleColor(
-                            grade,
-                        )}`}
+                <div className={`w-full p-4`}>
+                    <div
+                        className={`${
+                            accomplished ? "" : "opacity-50 grayscale"
+                        } relative flex flex-row items-center justify-center gap-4`}
                     >
-                        {achievement.title}
-                    </span>
-                    <span className="break-words text-xs font-normal text-gray-50/90 md:text-sm 2xl:text-base">
-                        {achievement.content}
-                    </span>
+                        <div className="h-8 w-5 items-center justify-center">
+                            <Image
+                                src={trophy()}
+                                width={18}
+                                height={32}
+                                alt={grade}
+                                title={grade}
+                            />
+                        </div>
+                        <div className="flex w-full flex-col items-start justify-start gap-1">
+                            <span
+                                className={`${titleColor()} line-clamp-1 text-sm group-data-[opened=true]:line-clamp-none md:text-base 2xl:text-xl`}
+                            >
+                                {achievement.title}
+                            </span>
+                            <span className="line-clamp-1 break-words text-xs font-normal text-gray-100/80 group-data-[opened=true]:line-clamp-none md:text-sm 2xl:text-base">
+                                {achievement.content}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <div className="min-h-full w-20 shrink-0 bg-black/30"></div>
+            </label>
         </div>
     );
 }
 
+//TODO: remove later
 const achievementMockup = [
     {
         id: 1,
@@ -219,16 +235,14 @@ export function AchievementPenal({ accountUUID }: { accountUUID: string }) {
     const achievementList = achievementMockup;
 
     return (
-        <Panel className="row-span-3 2xl:row-span-2">
-            {achievementList.map((ach, index) => {
-                return (
-                    <AchievementItem
-                        key={index}
-                        achievementID={ach.id}
-                        accomplished={ach.accomplished}
-                    />
-                );
-            })}
+        <Panel className={"md:col-span-2"}>
+            {achievementList.map((ach, index) => (
+                <AchievementItem
+                    key={index}
+                    achievementID={ach.id}
+                    accomplished={ach.accomplished}
+                />
+            ))}
         </Panel>
     );
 }
