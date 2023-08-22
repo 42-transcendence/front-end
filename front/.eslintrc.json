@@ -14,6 +14,12 @@
         "prettier"
     ],
     "rules": {
+        "sort-keys": [
+            "warn"
+        ],
+        "sort-imports": [
+            "warn"
+        ],
         "no-warning-comments": [
             "warn"
         ],
@@ -49,8 +55,29 @@
                         "argsIgnorePattern": "^_"
                     }
                 ],
+                "@typescript-eslint/require-array-sort-compare": [
+                    "error"
+                ],
+                "@typescript-eslint/consistent-type-imports": [
+                    "error"
+                ],
+                "@typescript-eslint/consistent-type-exports": [
+                    "error"
+                ],
+                "@typescript-eslint/no-import-type-side-effects": [
+                    "error"
+                ],
+                "@typescript-eslint/no-require-imports": [
+                    "error"
+                ],
                 "@typescript-eslint/strict-boolean-expressions": [
                     "error"
+                ],
+                "@typescript-eslint/sort-type-constituents": [
+                    "warn"
+                ],
+                "@typescript-eslint/member-ordering": [
+                    "warn"
                 ]
             },
             "parserOptions": {
