@@ -1,5 +1,4 @@
-import { IconStarFilled } from "@/components/ImageLibrary";
-import { IconCheck } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 
 import Image from "next/image";
 
@@ -27,7 +26,7 @@ export function PlayAgainCard() {
                 </div>
             </div>
             <button className="flex h-[125px] w-[80px] shrink-0 flex-col items-center justify-center overflow-hidden rounded-br-[30px] rounded-tr-[30px] bg-[#FFD600]/70 px-0 ">
-                <IconCheck width="24" height="24" />
+                <Icon.Check width="24" height="24" />
             </button>
         </div>
     );
@@ -55,7 +54,7 @@ export function TrophyCard() {
             {/* star icon */}
             <div className="flex items-center gap-[30px] px-20 py-4">
                 <div className="h-px w-[75px] bg-white"></div>
-                <IconStarFilled width="24" height="24" />
+                <Icon.StarFilled width="24" height="24" />
                 <div className="h-px w-[75px] bg-white"></div>
             </div>
             {/* trophy image */}

@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
-import { IconChatOutlined, IconChatFilled } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 
 export function SocialButton() {
     const pathname = usePathname();
     const [prevPathname, setPrevPathname] = useState(pathname);
     const isOnChatPage = pathname === "/chat";
 
-    const ChatIcon = isOnChatPage ? IconChatFilled : IconChatOutlined;
+    const ChatIcon = isOnChatPage ? Icon.ChatFilled : Icon.ChatOutlined;
 
     const handleClick = () => {
         setPrevPathname(pathname);
