@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { IconMembers, IconSearch, IconInvite } from "@/components/ImageLibrary";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
@@ -50,7 +50,7 @@ const profiles: ProfileItemConfig[] = [
     },
 ];
 
-export type rightSideBarContents =
+export type RightSideBarContents =
     | "report"
     | "newCommitBan"
     | "newAccessBan"
@@ -77,7 +77,7 @@ export default function ChatRightSideBar() {
     // TODO: setAdmin logic
     const [admin, setAdmin] = useState(true);
     const [currentPage, setCurrentPage] =
-        useState<rightSideBarContents>("newAccessBan");
+        useState<RightSideBarContents>("newAccessBan");
     const [memberListDropDown, setMemberListDropDown] = useState(false);
 
     const handleList = () => {
@@ -94,7 +94,7 @@ export default function ChatRightSideBar() {
         //TODO: invite selected ids;
     };
 
-    const pageTitle = (currentContent: rightSideBarContents) => {
+    const pageTitle = (currentContent: RightSideBarContents) => {
         switch (currentContent) {
             case "accessBanMemberList":
                 return "차단 유저 목록";
@@ -167,8 +167,8 @@ export default function ChatRightSideBar() {
         </>
     );
 
-    const listContent = (currentList: rightSideBarContents) => {
-        const uuid = selectedId !== undefined ? results[selectedId].uuid : "";
+    const listContent = (currentList: RightSideBarContents) => {
+        const uuid = results.find((x) => x.id === selectedId)?.uuid ?? "";
 
         switch (currentList) {
             case "accessBanMemberList":
@@ -203,10 +203,9 @@ export default function ChatRightSideBar() {
                             onClick={handleList}
                             htmlFor="memberListDropDown"
                             data-current-list={currentPage}
-                            className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[current-list]:bg-primary/80 data-[current-list]:text-white ${
-                                admin &&
+                            className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[current-list]:bg-primary/80 data-[current-list]:text-white ${admin &&
                                 "hover:bg-primary/30 hover:text-white active:bg-secondary/80"
-                            }`}
+                                }`}
                         >
                             <p className="w-fit font-sans text-base leading-4 ">
                                 {pageTitle(currentPage)}
@@ -245,9 +244,8 @@ export default function ChatRightSideBar() {
                     </div>
 
                     <div
-                        className={`${
-                            currentPage !== undefined && "invisible"
-                        }`}
+                        className={`${currentPage !== undefined && "invisible"
+                            }`}
                     >
                         <input
                             onChange={() => setInviteToggle(!inviteToggle)}

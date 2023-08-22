@@ -1,21 +1,15 @@
-import {
-    FormEventHandler,
-    TextareaHTMLAttributes,
-    useLayoutEffect,
-    useRef,
-    useState,
-} from "react";
-import { ProfileItemBase } from "../ProfileItem/ProfileItembase";
-import { TextField } from "../TextField";
-import { IconCheck } from "../ImageLibrary";
+import { useLayoutEffect, useRef, useState, } from "react";
+import { ProfileItemBase } from "@/components/ProfileItem/ProfileItembase";
+// import { TextField } from "@/components/TextField";
+import { IconCheck } from "@/components/ImageLibrary";
 
-const configMockup = {
-    id: 123,
-    uuid: "123",
-    tag: "#123",
-    name: "hdoo",
-    statusMessage: "nothion",
-};
+// const configMockup = {
+//     id: 123,
+//     uuid: "123",
+//     tag: "#123",
+//     name: "hdoo",
+//     statusMessage: "nothion",
+// };
 
 const expireDate = [
     "0분",
@@ -41,7 +35,7 @@ export function AccessBan({ uuid }: { uuid: string }) {
     const ref = useRef<HTMLFormElement>(null!);
     const type = "access";
 
-    const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
 
         const data = new FormData(ref.current);
@@ -94,7 +88,7 @@ export function AccessBan({ uuid }: { uuid: string }) {
 
 const MIN_TEXTAREA_HEIGHT = 128;
 
-function MessageInputArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+function MessageInputArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
 

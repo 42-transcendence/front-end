@@ -11,7 +11,7 @@ class UUIDSet extends Set<string> {
 const UUIDSetContext = createContext({ set: new UUIDSet(() => {}) });
 
 export function UUIDSetContainer({ children }: React.PropsWithChildren) {
-    const [version, forceUpdate] = useReducer((x) => x + 1, 0);
+    const [version, forceUpdate] = useReducer((x: number) => x + 1, 0);
     const uuidSetRef = useRef(new UUIDSet(forceUpdate));
     const uuidSet = useMemo(
         () => ({ set: uuidSetRef.current, version }),
@@ -24,7 +24,10 @@ export function UUIDSetContainer({ children }: React.PropsWithChildren) {
     );
 }
 
-export function useUUIDSet(): [UUIDSet, (value: string) => void] {
+export function useUUIDSet(): [
+    uuidSet: UUIDSet,
+    toggleUUID: (value: string) => void,
+] {
     const context = useContext(UUIDSetContext);
     const uuidSet = context.set;
 
