@@ -154,7 +154,7 @@ function AchievementItem({
 
     return (
         <div
-            className={`relative flex h-fit w-full overflow-clip rounded-xl bg-black/30`}
+            className={`relative flex w-full overflow-clip rounded-xl bg-black/30`}
         >
             <input
                 id="AchievementItem"
@@ -170,11 +170,13 @@ function AchievementItem({
             >
                 <div className={`w-full p-4`}>
                     <div
-                        className={`${
-                            accomplished ? "" : "opacity-50 grayscale"
-                        } relative flex flex-row items-center justify-center gap-4`}
+                        className={`relative flex flex-row items-center justify-center gap-4`}
                     >
-                        <div className="h-8 w-5 items-center justify-center">
+                        <div
+                            className={`h-8 w-5 items-center justify-center ${
+                                accomplished ? "" : "peer opacity-50 grayscale"
+                            }`}
+                        >
                             <Image
                                 src={trophy()}
                                 width={18}
@@ -235,7 +237,7 @@ export function AchievementPenal({ accountUUID }: { accountUUID: string }) {
     const achievementList = achievementMockup;
 
     return (
-        <Panel className={"md:col-span-2"}>
+        <Panel className={"md:col-span-2 md:row-span-1"}>
             {achievementList.map((ach, index) => (
                 <AchievementItem
                     key={index}
