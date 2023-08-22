@@ -31,6 +31,7 @@ export function NavigationBar() {
                     // avatarKey={account?.avatarKey}
                     accountUUID={"jkong"}
                     className="relative h-9 w-9 bg-white/30"
+                    showStatus={true}
                 />
             </div>
         </div>
