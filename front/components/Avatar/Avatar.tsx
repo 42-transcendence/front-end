@@ -68,6 +68,7 @@ export function Avatar({
                 className="relative rounded-full"
                 src={`/${avatarKey}.png`}
                 alt="Avatar"
+                sizes="100%"
                 fill={true}
             />
             <div
