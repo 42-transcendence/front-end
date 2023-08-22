@@ -7,7 +7,7 @@ export function Panel({
 }) {
     return (
         <div
-            className={` ${className} flex flex-col items-center justify-start gap-2 rounded-xl bg-windowGlass/30 p-4`}
+            className={`${className} gradient-border back-full relative flex flex-col items-center justify-start gap-2 overflow-auto rounded-[28px] bg-windowGlass/30 p-4 before:rounded-[28px] before:p-px`}
         >
             {children}
         </div>
