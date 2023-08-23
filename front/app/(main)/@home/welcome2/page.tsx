@@ -4,6 +4,7 @@ import { DoubleSharp, IconArrow3 } from "@/components/ImageLibrary";
 import { Card } from "@/components/Card/Card";
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { UploadBox } from "./UploadBox";
 
 const defaultProfilesKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
@@ -66,7 +67,7 @@ export default function Welcome2() {
     }, [observer]);
 
     return (
-        <>
+        <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
             <Card className="w-[30rem]">
                 <div className="flex flex-col items-center gap-[30px]">
                     <DoubleSharp width="24" height="24" />
@@ -82,7 +83,7 @@ export default function Welcome2() {
                         className="z-20 flex snap-x snap-mandatory flex-row gap-5 overflow-auto pb-10"
                     >
                         <div className="shrink-0 snap-center">
-                            <div className="w-4 shrink-0"></div>
+                            <div className="w-7 shrink-0"></div>
                         </div>
                         <div className="flex-shrink-0 snap-center snap-always"></div>
                         {defaultProfilesKey.map((name) => (
@@ -101,16 +102,25 @@ export default function Welcome2() {
                                 />
                             </div>
                         ))}
+                        {/* TODO: appropriate file size limit? */}
+                        <UploadBox
+                            accept="image/*"
+                            maxFileCount={1}
+                            maxFileSize={4096576}
+                            previewImage={true}
+                        />
+                        <div className="flex-shrink-0 snap-center snap-always"></div>
                         <div className="shrink-0 snap-center">
-                            <div className="w-4 shrink-0"></div>
+                            <div className="w-7 shrink-0"></div>
                         </div>
                     </div>
                 </div>
+                {/* TODO: if file select, change message to file select.*/}
                 <p>selected profile: {profileName}</p>
 
                 {/* TODO : 서버에서 닉네임이 중복되었는지, 가능한 닉네임인지 확인 */}
                 <IconArrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
             </Card>
-        </>
+        </main>
     );
 }
