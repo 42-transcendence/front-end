@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "@/components/ImageLibrary";
-import { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
+import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
 import { fetcher, useSWR } from "@/hooks/fetcher";
 
 export function NavigationBar() {

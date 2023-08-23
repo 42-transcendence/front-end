@@ -1,23 +1,30 @@
 import { IconLock, IconPerson } from "@/components/ImageLibrary";
-import { ChatRoomInfo } from "./ChatLeftSideBar";
 import { Avatar } from "@/components/Avatar";
+import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
+
+function UnreadMessageBadge({ count }: { count: number }) {
+    if (count === 0) {
+        return null;
+    }
+
+    return (
+        <div className="flex min-w-[22px] flex-col items-center justify-center rounded-md bg-red-500 p-1">
+            <span className="flex text-center font-sans font-medium not-italic text-white ">
+                {count > 999 ? "999+" : count.toString()}
+            </span>
+        </div>
+    );
+}
 
 export default function ChatRoomBlock({
     children,
     chatRoom,
 }: React.PropsWithChildren<{
-    chatRoom: ChatRoomInfo;
+    chatRoom: ChatRoomEntry;
 }>) {
-    const numberOfUnreadMessages =
-        chatRoom.numberOfUnreadMessages > 0 ? (
-            <div className="flex min-w-[22px] flex-col items-center justify-center rounded-md bg-red-500 p-1">
-                <span className="flex text-center font-sans font-medium not-italic text-white ">
-                    {chatRoom.numberOfUnreadMessages > 999
-                        ? "999+"
-                        : chatRoom.numberOfUnreadMessages.toString()}
-                </span>
-            </div>
-        ) : null;
+    //TODO: chatRoom.uuid 기준으로 idb에서 계산해오기. 변수 이름도 바꾸고, state로 바꿔야겠지?
+    const numberOfUnreadMessages = 42;
+    const latestMessage = "마지막 메시지를 알아서 잘 구해오세요.";
 
     return (
         <div className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80">
@@ -51,7 +58,7 @@ export default function ChatRoomBlock({
                         </div>
 
                         <div className="line-clamp-2 h-fit  text-ellipsis font-sans text-xs font-normal text-gray-200">
-                            {chatRoom.latestMessage ?? ""}
+                            {latestMessage}
                         </div>
                     </div>
 
@@ -66,7 +73,7 @@ export default function ChatRoomBlock({
                                 {chatRoom.members.length}
                             </span>
                         </div>
-                        {numberOfUnreadMessages}
+                        <UnreadMessageBadge count={numberOfUnreadMessages} />
                     </div>
                 </div>
             </div>

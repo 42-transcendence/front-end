@@ -12,87 +12,22 @@ import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
 import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
-
-type User = {
-    id: number;
-    uuid: string;
-    name: string;
-};
-
-// TODO: displaytitle을 front-end에서 직접 정하는게 아니라, 백엔드에서 없으면
-// 동일 로직으로 타이틀을 만들어서 프론트에 넘겨주고, 프론트에선 타이틀을 항상
-// 존재하는 프로퍼티로 추후 변경할 수도
-
-function getRoomDisplayTitle(chatRoom: ChatRoomInfo) {
-    return (
-        chatRoom.title ??
-        chatRoom.members
-            .reduce((acc, member) => [...acc, member.name], [] as string[])
-            .join(", ")
-    );
-}
-
-const users: User[] = [
-    { name: "chanhpar", id: 1, uuid: "1234" },
-    { name: "jisookim", id: 2, uuid: "1234" },
-    { name: "jkong", id: 3, uuid: "1234" },
-    { name: "iyun", id: 4, uuid: "1234" },
-    { name: "hdoo", id: 5, uuid: "1234" },
-];
-
-export type ChatRoomInfo = {
-    id: number;
-    members: User[];
-    title?: string | undefined;
-    latestMessage?: string;
-    numberOfUnreadMessages: number;
-};
-
-export const chatRoomsDummy: ChatRoomInfo[] = [
-    {
-        id: 1,
-        members: users,
-        latestMessage: "맛있는 돈까스가 먹고싶어요 난 등심이 좋더라..",
-        numberOfUnreadMessages: 0,
-    },
-    {
-        id: 2,
-        members: [users[1], users[1]],
-        title: "glglgkgk",
-        latestMessage: "옹옹엉양ㄹ오라ㅣㅁㄴ오맂다넝로미어ㅏ로미단로이머니",
-        numberOfUnreadMessages: 10,
-    },
-    {
-        id: 3,
-        members: [users[2], users[1]],
-        title: "러브포엠",
-        latestMessage: "I'm IU ,,>ㅅ<,,",
-        numberOfUnreadMessages: 120,
-    },
-    {
-        id: 4,
-        members: [users[3], users[1]],
-        title: "Not donkikong",
-        latestMessage: "I'm Jkong!",
-        numberOfUnreadMessages: 3,
-    },
-    {
-        id: 5,
-        members: [users[4], users[1]],
-        title: "not Minsu",
-        latestMessage: "Hi I'm jisoo",
-        numberOfUnreadMessages: 1029,
-    },
-];
+import { useWebSocket } from "@/library/react/websocket-hook";
+import { ChatClientOpcode } from "@/library/payload/chat-opcodes";
+import { readChatRoom } from "@/library/payload/chat-payloads";
+import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
 
 export default function ChatLeftSideBar() {
+    const [chatRooms, setChatRooms] = useState<ChatRoomEntry[]>([]);
+    useWebSocket("chat", ChatClientOpcode.OWN_ROOM_LIST, (_, buffer) => {
+        const chatRoomList = buffer.readArray(readChatRoom);
+        setChatRooms(chatRoomList);
+    });
     const [query, setQuery] = useState("");
     const [checked, setChecked] = useState(false);
     const { results, getFzfHighlightProps } = useFzf({
-        items: chatRoomsDummy,
-        itemToString(item) {
-            return getRoomDisplayTitle(item);
-        },
+        items: chatRooms,
+        itemToString: (item) => item.title,
         query,
     });
 
@@ -151,7 +86,7 @@ export default function ChatLeftSideBar() {
 
                     <div className="h-fit w-full overflow-auto">
                         {results.map((item, index) => (
-                            <ChatRoomBlock key={item.id} chatRoom={item}>
+                            <ChatRoomBlock key={item.uuid} chatRoom={item}>
                                 <FzfHighlight
                                     {...getFzfHighlightProps({
                                         index,

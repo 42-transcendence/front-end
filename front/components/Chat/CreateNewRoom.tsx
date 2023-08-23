@@ -1,15 +1,15 @@
-import { useUUIDSet } from "@/hooks/UUIDSetContext";
-import { useEffect, useRef, useState } from "react";
-import { TextField } from "@/components/TextField";
-import { ToggleButton } from "@/components/Button/ToggleButton";
 import {
     IconInvite,
     IconKey,
     IconLock,
     IconMembers,
 } from "@/components/ImageLibrary";
+import { useEffect, useRef, useState } from "react";
+import { ButtonOnRight } from "@/components/Button/ButtonOnRight";
 import { InviteList } from "@/components/Service/InviteList";
-import { ButtonOnRight } from "../Button/ButtonOnRight";
+import { TextField } from "@/components/TextField";
+import { ToggleButton } from "@/components/Button/ToggleButton";
+import { useUUIDSet } from "@/hooks/UUIDSetContext";
 
 const titlePattern = ".{4,32}";
 const maxMemberLimit = 1500;
@@ -28,15 +28,15 @@ const maxMemberLimit = 1500;
 //TODO: 조금 더 잘 정리해서 hooks 폴더로 빼버리기
 function useDetectSticky(): [
     boolean,
-    React.LegacyRef<HTMLLabelElement>,
+    React.RefObject<HTMLLabelElement>,
     React.Dispatch<React.SetStateAction<boolean>>,
 ] {
     const [isSticky, setIsSticky] = useState(false);
-    const ref = useRef<HTMLLabelElement>(undefined!);
+    const ref = useRef<HTMLLabelElement>(null);
 
     // mount
     useEffect(() => {
-        if (ref.current === undefined) {
+        if (ref.current === null) {
             throw new Error();
         }
         const cachedRef = ref.current;
@@ -67,10 +67,14 @@ export function CreateNewRoom() {
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
     const [accountUUIDSet] = useUUIDSet();
-    const formRef = useRef<HTMLFormElement>(null!);
+    const formRef = useRef<HTMLFormElement>(null);
     const formID = "newChatRoom";
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+        if (formRef.current === null) {
+            throw new Error();
+        }
+
         event.preventDefault();
         void accountUUIDSet;
 
