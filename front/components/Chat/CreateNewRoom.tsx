@@ -1,4 +1,4 @@
-import { UUIDSetContainer, useUUIDSet } from "@/hooks/UUIDSetContext";
+import { useUUIDSet } from "@/hooks/UUIDSetContext";
 import { useEffect, useRef, useState } from "react";
 import { TextField } from "@/components/TextField";
 import { ToggleButton } from "@/components/Button/ToggleButton";
@@ -248,7 +248,7 @@ function InviteFriendToggle({
                     className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
                 />
                 <input
-                    onChange={(e) => setChecked(e.target.checked)}
+                    onChange={(event) => setChecked(event.target.checked)}
                     checked={checked}
                     form={formID}
                     type="checkbox"

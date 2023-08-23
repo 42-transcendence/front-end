@@ -37,7 +37,7 @@ export function ChatBubbleWithProfile({
             <Avatar
                 className={`${hidden} absolute left-0 top-0 h-12 w-12`}
                 accountUUID={chatMessage.sender}
-                showStatus={false}
+                privileged={false}
             />
             <div
                 className={`${hidden} absolute -top-1 left-16 font-sans text-lg font-normal text-white `}

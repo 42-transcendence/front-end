@@ -49,7 +49,7 @@ export function ProfileItem({
                         <Avatar
                             accountUUID={info.uuid}
                             className="w-[45px]"
-                            showStatus={true}
+                            privileged={true}
                         />
                     </div>
                     <div className="relative flex w-fit flex-col items-start gap-1">

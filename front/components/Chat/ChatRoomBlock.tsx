@@ -29,7 +29,7 @@ export default function ChatRoomBlock({
                         <Avatar
                             className="relative h-10 w-10"
                             accountUUID={chatRoom.members[0].uuid}
-                            showStatus={false}
+                            privileged={false}
                         />
                     </div>
                 </div>
