@@ -25,6 +25,12 @@
         ],
         "no-console": [
             "warn"
+        ],
+        "no-restricted-syntax": [
+            "warn", {
+                "selector": "TemplateLiteral[expressions.length=0]",
+                "message": "Template literal without expressions."
+            }
         ]
     },
     "overrides": [
