@@ -1,16 +1,13 @@
-"use client";
-import React, { ReactNode } from "react";
 import { IconLock, IconPerson } from "@/components/ImageLibrary";
-import { ChatRoomInfo } from "./ChatRoomList";
-import { Avatar } from "../Avatar";
+import { ChatRoomInfo } from "./ChatLeftSideBar";
+import { Avatar } from "@/components/Avatar";
 
 export default function ChatRoomBlock({
     children,
     chatRoom,
-}: {
-    children: ReactNode;
+}: React.PropsWithChildren<{
     chatRoom: ChatRoomInfo;
-}) {
+}>) {
     const numberOfUnreadMessages =
         chatRoom.numberOfUnreadMessages > 0 ? (
             <div className="flex min-w-[22px] flex-col items-center justify-center rounded-md bg-red-500 p-1">
@@ -30,8 +27,9 @@ export default function ChatRoomBlock({
                     <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-slate-600">
                         {/* TODO: change to member preview (limit 4)*/}
                         <Avatar
-                            className={"relative h-10 w-10"}
+                            className="relative h-10 w-10"
                             accountUUID={chatRoom.members[0].uuid}
+                            showStatus={false}
                         />
                     </div>
                 </div>

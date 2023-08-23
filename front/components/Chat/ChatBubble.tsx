@@ -36,7 +36,8 @@ export function ChatBubbleWithProfile({
             {/* TODO: get avatar from sender info */}
             <Avatar
                 className={`${hidden} absolute left-0 top-0 h-12 w-12`}
-                accountUUID="1"
+                accountUUID={chatMessage.sender}
+                showStatus={false}
             />
             <div
                 className={`${hidden} absolute -top-1 left-16 font-sans text-lg font-normal text-white `}

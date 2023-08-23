@@ -17,8 +17,6 @@ function MessageInputArea() {
     };
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
-    const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) =>
-        setValue(event.target.value);
 
     useLayoutEffect(() => {
         const element = textareaRef.current;
@@ -37,7 +35,7 @@ function MessageInputArea() {
     return (
         <>
             <textarea
-                onChange={onChange}
+                onChange={(event) => setValue(event.target.value)}
                 rows={1}
                 // autoFocus={true}
                 ref={textareaRef}
@@ -59,6 +57,7 @@ function MessageInputArea() {
         </>
     );
 }
+
 const dummyChatMessages = [
     {
         msgId: BigInt(3),

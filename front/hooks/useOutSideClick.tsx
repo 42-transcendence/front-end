@@ -8,17 +8,14 @@ export function useOutsideClick(
     const onClick = useCallback(
         (e: MouseEvent) => {
             const elem = divRef.current;
-
             if (elem === null) {
                 return;
             }
 
             const target = e.target;
-
             if (!(target instanceof Element)) {
                 return;
             }
-
             if (elem.contains(target)) {
                 return;
             }

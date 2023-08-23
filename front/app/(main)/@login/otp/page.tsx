@@ -1,20 +1,115 @@
 "use client";
-import { userAgent } from "next/server";
-import { useEffect, useRef } from "react";
 
-// function VerificationCdeBlock() {
-//     const inputRef = useRef(null);
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 
-//     useEffect(() => {
+function DigitBlock({
+    prev,
+    curr,
+    next,
+    value,
+    setValue,
+}: {
+    prev: React.RefObject<HTMLInputElement> | null,
+    curr: React.RefObject<HTMLInputElement>,
+    next: React.RefObject<HTMLInputElement> | null,
+    value: string,
+    setValue: (value: string) => void,
+}) {
 
-//     })
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const replacedValue = e.target.value.replace(/[^0-9]*/g, "")
+        setValue(replacedValue);
 
-//     return (
-//         <input ref={inputRef} className="VerificationCdeBlock"></input>
-//     )
-// }
+        if (replacedValue !== "") {
+            e.target.disabled = true;
+            const nextNode = next?.current;
+            if (nextNode) {
+                nextNode.disabled = false;
+                nextNode.focus();
+            }
+        }
+    };
 
+    const handleBackspace = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key !== "Backspace")
+            return;
+        const target = e.target as HTMLInputElement;
+        if (target.value === "" && prev !== null) {
+            target.disabled = true;
+            const prevNode = prev?.current;
+            if (prevNode) {
+                prevNode.disabled = false;
+                prevNode.focus();
+            }
+        }
+    }
+
+    return (
+        <input
+            className="ultra-dark flex h-12 w-12 rounded text-center opacity-80"
+            autoComplete="one-time-code"
+            inputMode="numeric"
+            type="text"
+            ref={curr}
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleBackspace}
+            maxLength={1}
+            disabled={prev !== null}
+        />
+    )
+}
+
+const sleep = async (ms: number) => new Promise((res) => setTimeout(res, ms));
+const validateOTP = async (otpValue: string) => {
+    //TODO: 백에 갔다올동안 기다리기~ 
+    await sleep(1);
+    const resultValue = Number(otpValue);
+    if (Number.isInteger(resultValue) && resultValue > 0 && resultValue % 5 === 0) {
+        return otpValue;
+    } else {
+        throw new Error("invalid otp");
+    }
+}
+
+// TODO: refactor, change mock functions to real function
 export default function LoginPage() {
+    const initialValue = useMemo(() => ["", "", "", "", "", ""], []);
+    const [values, setValues] = useState(initialValue);
+
+    const ref1 = useRef<HTMLInputElement>(null);
+    const ref2 = useRef<HTMLInputElement>(null);
+    const ref3 = useRef<HTMLInputElement>(null);
+    const ref4 = useRef<HTMLInputElement>(null);
+    const ref5 = useRef<HTMLInputElement>(null);
+    const ref6 = useRef<HTMLInputElement>(null);
+
+    const setValuesAt = (index: number) => (newValue: string) => {
+        setValues(values.map((x, i) => i === index ? newValue : x));
+    }
+
+    const initialize = useCallback(() => {
+        setValues(initialValue);
+        const first = ref1.current;
+        if (first) {
+            first.disabled = false;
+            first.focus();
+        }
+    }, [initialValue]);
+
+    const resolve = useCallback((value: string) => {
+        alert(`correct ${value}`)
+    }, []);
+
+    useEffect(() => {
+        if (values[5] !== "") {
+            validateOTP(values.join(""))
+                .then((r) => resolve(r))
+                .catch((e) => console.log(e)) // TODO: add animation for wrong OTP
+                .finally(() => initialize())
+        }
+    }, [initialize, resolve, values]);
+
     return (
         <main>
             <div className="flex items-center justify-center">
@@ -29,31 +124,14 @@ export default function LoginPage() {
                     {/* verify code block*/}
                     {/* TODO: 나중에 컴포넌트로 빼야 함! 근데 생각해보니.. 굳이..? 6개밖에 안쓸텐데... 흠..*/}
                     <div className="flex items-start gap-2 pt-14">
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
-                        <input
-                            maxLength={1}
-                            className="ultra-dark flex h-12 w-12 items-center rounded opacity-80"
-                        ></input>
+                        <DigitBlock prev={null} curr={ref1} next={ref2} value={values[0]} setValue={setValuesAt(0)} />
+                        <DigitBlock prev={ref1} curr={ref2} next={ref3} value={values[1]} setValue={setValuesAt(1)} />
+                        <DigitBlock prev={ref2} curr={ref3} next={ref4} value={values[2]} setValue={setValuesAt(2)} />
+                        <DigitBlock prev={ref3} curr={ref4} next={ref5} value={values[3]} setValue={setValuesAt(3)} />
+                        <DigitBlock prev={ref4} curr={ref5} next={ref6} value={values[4]} setValue={setValuesAt(4)} />
+                        <DigitBlock prev={ref5} curr={ref6} next={null} value={values[5]} setValue={setValuesAt(5)} />
                     </div>
+                    <p>{`result: ${values.join("")}` /* TODO: delete this */}</p>
                 </div>
             </div>
         </main>

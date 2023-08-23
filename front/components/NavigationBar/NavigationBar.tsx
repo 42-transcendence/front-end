@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Avatar } from "../Avatar";
+import { Avatar } from "@/components/Avatar";
 import { SocialButton } from "./SocialButton";
-import { DoubleSharp } from "../ImageLibrary";
+import { DoubleSharp } from "@/components/ImageLibrary";
 
 export function NavigationBar() {
     // TODO: fetch account data.
@@ -31,6 +31,7 @@ export function NavigationBar() {
                     // avatarKey={account?.avatarKey}
                     accountUUID={"jkong"}
                     className="relative h-9 w-9 bg-white/30"
+                    showStatus={true}
                 />
             </div>
         </div>
