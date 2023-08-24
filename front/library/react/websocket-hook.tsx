@@ -11,12 +11,11 @@ import {
     useState,
 } from "react";
 import { flushSync } from "react-dom";
-import {
+import { WebSocketRegistry, SocketStateNumber } from "./websocket-registry";
+import type {
     SocketState,
-    SocketStateNumber,
     WebSocketListenProps,
     WebSocketRegisterProps,
-    WebSocketRegistry,
 } from "./websocket-registry";
 
 const RegistryContext = createContext(WebSocketRegistry.DEFAULT);
