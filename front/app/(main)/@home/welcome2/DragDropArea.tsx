@@ -17,6 +17,8 @@ export function DragDropArea({
         handleFiles(e.dataTransfer.files);
     };
 
+    // TODO: 현재 DragDropArea의 z index가 밀려서 드래그드롭 안되는듯
+    //      ImageViewer 가리지 않으면서 drop event는 되게 하는 방법 있는지
     return (
         <div
             className="absolute flex h-full w-full flex-col justify-center text-center"

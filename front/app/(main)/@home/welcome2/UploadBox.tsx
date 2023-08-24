@@ -22,11 +22,11 @@ function useFiles({
         setFiles([]);
     };
 
-    const handleFiles = (files: FileList | null) => {
-        if (files === null || files.length === 0) return;
+    const handleFiles = (fileList: FileList | null) => {
+        if (fileList === null || fileList.length === 0) return;
 
-        // check number of files
-        if (maxFileCount !== undefined && files.length > maxFileCount) {
+        // check number of fileList
+        if (maxFileCount !== undefined && fileList.length > maxFileCount) {
             alert(`최대 파일 개수: ${maxFileCount}`);
             clearInput();
             return;
@@ -35,7 +35,7 @@ function useFiles({
         // check file size
         if (maxFileSize !== undefined) {
             let fileSize = 0;
-            for (const file of files) {
+            for (const file of fileList) {
                 fileSize += file.size;
                 if (fileSize > maxFileSize) {
                     alert(`최대 파일 용량: ${byteToReadable(maxFileSize)}`);
@@ -46,11 +46,7 @@ function useFiles({
         }
         clearInput();
 
-        const fileList: File[] = [];
-        for (const file of files) {
-            fileList.push(file);
-        }
-        setFiles(fileList);
+        setFiles([...fileList]);
     };
 
     return [files, handleFiles];
