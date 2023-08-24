@@ -1,62 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-function DigitBlock({
-    prev,
-    curr,
-    next,
-    value,
-    setValue,
-}: {
-    prev: React.RefObject<HTMLInputElement> | null;
-    curr: React.RefObject<HTMLInputElement>;
-    next: React.RefObject<HTMLInputElement> | null;
-    value: string;
-    setValue: (value: string) => void;
-}) {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const replacedValue = e.target.value.replace(/[^0-9]*/g, "");
-        setValue(replacedValue);
-
-        if (replacedValue !== "") {
-            e.target.disabled = true;
-            const nextNode = next?.current;
-            if (nextNode) {
-                nextNode.disabled = false;
-                nextNode.focus();
-            }
-        }
-    };
-
-    const handleBackspace = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key !== "Backspace") return;
-        const target = e.target as HTMLInputElement;
-        if (target.value === "" && prev !== null) {
-            target.disabled = true;
-            const prevNode = prev.current;
-            if (prevNode) {
-                prevNode.disabled = false;
-                prevNode.focus();
-            }
-        }
-    };
-
-    return (
-        <input
-            className="ultra-dark flex h-12 w-12 rounded text-center opacity-80"
-            autoComplete="one-time-code"
-            inputMode="numeric"
-            type="text"
-            ref={curr}
-            value={value}
-            onChange={handleChange}
-            onKeyDown={handleBackspace}
-            maxLength={1}
-            disabled={prev !== null}
-        />
-    );
-}
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { DigitBlock } from "./DigitBlock";
+import { useRefArray } from "@/hooks/useRefArray";
 
 const sleep = async (ms: number) => new Promise((res) => setTimeout(res, ms));
 const validateOTP = async (otpValue: string) => {
@@ -75,43 +21,61 @@ const validateOTP = async (otpValue: string) => {
 };
 
 // TODO: refactor, change mock functions to real function
-export default function LoginPage() {
-    const initialValue = useMemo(() => ["", "", "", "", "", ""], []);
+function OTPInputBlocks({ length }: { length: number }) {
+    const initialValue = useMemo(
+        () => Array<string>(length).fill(""),
+        [length],
+    );
     const [values, setValues] = useState(initialValue);
-
-    const ref1 = useRef<HTMLInputElement>(null);
-    const ref2 = useRef<HTMLInputElement>(null);
-    const ref3 = useRef<HTMLInputElement>(null);
-    const ref4 = useRef<HTMLInputElement>(null);
-    const ref5 = useRef<HTMLInputElement>(null);
-    const ref6 = useRef<HTMLInputElement>(null);
+    const [getRefArray, refCallbackAt] = useRefArray<HTMLInputElement | null>(length, null);
 
     const setValuesAt = (index: number) => (newValue: string) => {
         setValues(values.map((x, i) => (i === index ? newValue : x)));
-    };
+    }; // TODO: rename
 
     const initialize = useCallback(() => {
         setValues(initialValue);
-        const first = ref1.current;
+        const first = getRefArray()[0];
         if (first) {
             first.disabled = false;
             first.focus();
         }
-    }, [initialValue]);
+    }, [getRefArray, initialValue]);
 
     const resolve = useCallback((value: string) => {
         alert(`correct ${value}`);
     }, []);
 
     useEffect(() => {
-        if (values[5] !== "") {
+        if (length < 1) {
+            return;
+        }
+
+        if (values[length - 1] !== "") {
             validateOTP(values.join(""))
                 .then((r) => resolve(r))
                 .catch((e) => console.log(e)) // TODO: add animation for wrong OTP
                 .finally(() => initialize());
         }
-    }, [initialize, resolve, values]);
+    }, [initialize, length, resolve, values]);
 
+    return (
+        getRefArray().map((_node, index) => {
+            return (
+                <DigitBlock
+                    key={index}
+                    index={index}
+                    getRefArray={getRefArray}
+                    ref={refCallbackAt(index)}
+                    value={values[index]}
+                    setValue={setValuesAt(index)}
+                />
+            );
+        })
+    );
+}
+
+export default function LoginPage() {
     return (
         <main>
             <div className="flex items-center justify-center">
@@ -123,55 +87,9 @@ export default function LoginPage() {
                     <div className="flex h-[25px] shrink-0 flex-col justify-center self-stretch text-center text-xs font-bold not-italic leading-3 text-[color:var(--colors-gray,#98989D)]">
                         We sent a verfication code. Enter it below!
                     </div>
-                    {/* verify code block*/}
-                    {/* TODO: 나중에 컴포넌트로 빼야 함! 근데 생각해보니.. 굳이..? 6개밖에 안쓸텐데... 흠..*/}
                     <div className="flex items-start gap-2 pt-14">
-                        <DigitBlock
-                            prev={null}
-                            curr={ref1}
-                            next={ref2}
-                            value={values[0]}
-                            setValue={setValuesAt(0)}
-                        />
-                        <DigitBlock
-                            prev={ref1}
-                            curr={ref2}
-                            next={ref3}
-                            value={values[1]}
-                            setValue={setValuesAt(1)}
-                        />
-                        <DigitBlock
-                            prev={ref2}
-                            curr={ref3}
-                            next={ref4}
-                            value={values[2]}
-                            setValue={setValuesAt(2)}
-                        />
-                        <DigitBlock
-                            prev={ref3}
-                            curr={ref4}
-                            next={ref5}
-                            value={values[3]}
-                            setValue={setValuesAt(3)}
-                        />
-                        <DigitBlock
-                            prev={ref4}
-                            curr={ref5}
-                            next={ref6}
-                            value={values[4]}
-                            setValue={setValuesAt(4)}
-                        />
-                        <DigitBlock
-                            prev={ref5}
-                            curr={ref6}
-                            next={null}
-                            value={values[5]}
-                            setValue={setValuesAt(5)}
-                        />
+                        <OTPInputBlocks length={6} />
                     </div>
-                    <p>{
-                        `result: ${values.join("")}` /* TODO: delete this */
-                    }</p>
                 </div>
             </div>
         </main>
