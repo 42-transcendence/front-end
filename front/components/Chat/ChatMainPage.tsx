@@ -1,5 +1,5 @@
-import { ChatHeader as ChatHeader } from "./ChatHeader";
-import { ChatDialog as ChatDialog } from "./ChatDialog";
+import { ChatHeader } from "./ChatHeader";
+import { ChatDialog } from "./ChatDialog";
 
 export default function ChatMainPage() {
     const isAdmin = true; // TODO: get chat room dialog info from props

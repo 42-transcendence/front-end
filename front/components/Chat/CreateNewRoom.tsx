@@ -27,9 +27,9 @@ const maxMemberLimit = 1500;
 
 //TODO: 조금 더 잘 정리해서 hooks 폴더로 빼버리기
 function useDetectSticky(): [
-    boolean,
-    React.RefObject<HTMLLabelElement>,
-    React.Dispatch<React.SetStateAction<boolean>>,
+    isSticky: boolean,
+    observeTarget: React.RefObject<HTMLLabelElement>,
+    setIsSticky: React.Dispatch<React.SetStateAction<boolean>>,
 ] {
     const [isSticky, setIsSticky] = useState(false);
     const ref = useRef<HTMLLabelElement>(null);

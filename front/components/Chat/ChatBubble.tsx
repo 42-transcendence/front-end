@@ -1,25 +1,17 @@
 // import { useState } from "react";
+import { ChatMessageEntry } from "@/library/payload/chat-payloads";
 import { Avatar } from "../Avatar";
 import {
     Chat_ChatBubbleTailLeft,
     Chat_ChatBubbleTailRight,
 } from "@/components/ImageLibrary";
 
-type UUID = string;
-
-export type ChatMessageType = {
-    msgId: bigint;
-    content: string;
-    timestamp: Date;
-    sender: UUID; // TODO
-};
-
 export function ChatBubbleWithProfile({
     chatMessage,
     isContinued = false,
     dir = "left",
 }: {
-    chatMessage: ChatMessageType;
+    chatMessage: ChatMessageEntry;
     isContinued: boolean;
     dir: "left" | "right";
 }) {
@@ -36,7 +28,7 @@ export function ChatBubbleWithProfile({
             {/* TODO: get avatar from sender info */}
             <Avatar
                 className={`${hidden} absolute left-0 top-0 h-12 w-12`}
-                accountUUID={chatMessage.sender}
+                accountUUID={chatMessage.memberUUID}
                 privileged={false}
             />
             <div
@@ -44,7 +36,7 @@ export function ChatBubbleWithProfile({
             >
                 {
                     // account.username
-                    chatMessage.sender
+                    chatMessage.memberUUID
                 }
             </div>
             <ChatBubble isContinued={isContinued} dir={dir}>
