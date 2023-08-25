@@ -1,25 +1,27 @@
 import { forwardRef } from "react";
 
-export const DigitBlock = forwardRef(function DigitBlock({
-    index,
-    getRefArray,
-    value,
-    setValue,
-}: {
-    index: number;
-    getRefArray: () => (HTMLInputElement | null)[];
-    value: string;
-    setValue: (value: string) => void;
-}, ref: React.ForwardedRef<HTMLInputElement>) {
-
+export const DigitBlock = forwardRef(function DigitBlock(
+    {
+        index,
+        refArray,
+        value,
+        setValue,
+    }: {
+        index: number;
+        refArray: (HTMLInputElement | null)[];
+        value: string;
+        setValue: (value: string) => void;
+    },
+    ref: React.ForwardedRef<HTMLInputElement>,
+) {
     const handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
         const replacedValue = ev.target.value.replace(/[^0-9]*/g, "");
         setValue(replacedValue);
 
         if (replacedValue !== "") {
             ev.target.disabled = true;
-            if (index < getRefArray().length - 1) {
-                const nextElem = getRefArray()[index + 1];
+            if (index < refArray.length - 1) {
+                const nextElem = refArray[index + 1];
                 if (nextElem) {
                     nextElem.disabled = false;
                     nextElem.focus();
@@ -34,7 +36,7 @@ export const DigitBlock = forwardRef(function DigitBlock({
         if (target.value === "") {
             if (index > 0) {
                 target.disabled = true;
-                const prevElem = getRefArray()[index - 1];
+                const prevElem = refArray[index - 1];
                 if (prevElem) {
                     prevElem.disabled = false;
                     prevElem.focus();
