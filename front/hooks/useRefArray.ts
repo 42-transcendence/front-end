@@ -1,15 +1,12 @@
-import { useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 export function useRefArray<T>(
     length: number,
-    initialValue?: T | undefined
-): [
-        getRefArray: () => T[],
-        refCallbackAt: (index: number) => (node: T) => void,
-    ] {
+    initialValue?: T | undefined,
+): [refArray: T[], refCallbackAt: (index: number) => (node: T) => void] {
     const refs = useRef<T[] | null>(null);
 
-    const getRefArray = () => {
+    const getRefArray = useCallback(() => {
         if (refs.current === null) {
             if (initialValue === undefined) {
                 refs.current = new Array(length);
@@ -18,12 +15,17 @@ export function useRefArray<T>(
             }
         }
         return refs.current;
-    };
+    }, [initialValue, length]);
 
-    const refCallbackAt = (index: number) => (node: T) => {
-        const refArray = getRefArray();
-        refArray[index] = node;
-    };
+    const refCallbackAt = useCallback(
+        (index: number) => (node: T) => {
+            const refArray = getRefArray();
+            refArray[index] = node;
+        },
+        [getRefArray],
+    );
 
-    return [getRefArray, refCallbackAt];
+    const refArray = useMemo(() => getRefArray(), [getRefArray]);
+
+    return [refArray, refCallbackAt];
 }
