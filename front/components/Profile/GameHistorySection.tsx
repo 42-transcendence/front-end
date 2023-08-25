@@ -281,7 +281,7 @@ const GameHIstoryMockup: GameHistory[] = [
 export function GameHistoryPanel() {
     return (
         <Panel
-            className={`flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1`}
+            className={`flex h-fit flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1`}
         >
             <span className="p-4 text-xl font-extrabold text-white">전적</span>
             <div className="flex overflow-auto flex-col gap-2 w-full">
@@ -298,7 +298,7 @@ function GameHistoryItem({ history }: { history: GameHistory }) {
     //TODO: get state from server
 
     return (
-        <div className="@container group relative flex w-full flex-col items-center overflow-clip rounded-xl bg-black/30 ">
+        <div className="@container group relative flex w-full shrink-0 flex-col items-center overflow-clip rounded-xl bg-black/30">
             <GameHistorySummary history={history} />
             <input
                 onChange={() => {
@@ -309,7 +309,9 @@ function GameHistoryItem({ history }: { history: GameHistory }) {
                 id={history.gameUUID}
                 className="hidden peer"
             />
-            <div className="hidden peer-checked:flex">detail</div>
+            <div className="hidden w-full peer-checked:flex">
+                <GameHistoryDetail history={history} />
+            </div>
         </div>
     );
 }
@@ -323,23 +325,25 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
 
     return (
         <div className="flex flex-row justify-start self-stretch">
-            <label
-                htmlFor={history.gameUUID}
-                className="flex relative justify-center items-center p-4 w-20 h-full shrink-0 overflow-clip bg-black/30 hover:bg-black/20 active:bg-black/10"
-            >
-                <IconMagicCircleComplex
-                    className={`absolute -left-3 -top-1 text-white/10 ${
-                        gameResult === "WIN" ? "" : "hidden"
-                    }`}
-                    width="144%"
-                    height="144%"
-                />
-                <span className="text-base italic font-extrabold w-fit">
-                    {gameResult}
-                </span>
-            </label>
+            <div>
+                <label
+                    htmlFor={history.gameUUID}
+                    className="flex relative justify-center items-center p-4 w-20 h-full shrink-0 overflow-clip bg-black/30 hover:bg-black/20 active:bg-black/10"
+                >
+                    <IconMagicCircleComplex
+                        className={`absolute -left-3 -top-1 text-white/10 ${
+                            gameResult === "WIN" ? "" : "hidden"
+                        }`}
+                        width="144%"
+                        height="144%"
+                    />
+                    <span className="text-base italic font-extrabold w-fit">
+                        {gameResult}
+                    </span>
+                </label>
+            </div>
 
-            <div className="flex flex-row justify-around self-stretch w-full">
+            <div className="flex flex-row justify-between self-stretch w-full">
                 <div className="flex flex-col justify-center items-start p-4">
                     <span
                         className={`w-fit rounded px-1 py-0.5 text-base font-extrabold italic ${
@@ -415,6 +419,27 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                     </div>
                 </div>
             </div>
+        </div>
+    );
+}
+
+function GameHistoryDetail({ history }: { history: GameHistory }) {
+    return (
+        <div className="flex flex-col justify-center items-start w-full">
+            {history.set.map((oneSet, index) => (
+                <SetScore setData={oneSet} key={index} />
+            ))}
+        </div>
+    );
+}
+
+function SetScore({ setData }: { setData: SetScore }) {
+    const result = setData.ally > setData.enemy;
+    return (
+        <div className="flex flex-row bg-black/30">
+            <span className="flex justify-center items-center p-4 w-20 text-sm italic font-black">
+                SET {setData.set}
+            </span>
         </div>
     );
 }
