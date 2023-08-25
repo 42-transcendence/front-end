@@ -5,7 +5,13 @@ import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { WebSocketContainer } from "@/library/react/websocket-hook";
 import { useState, useEffect } from "react";
 import * as jose from "jose";
-import { AuthLevel, isAuthPayload } from "@/library/payload/auth-payload";
+import {
+    AuthLevel,
+    AuthPayload,
+    isAuthPayload,
+} from "@/library/payload/auth-payload";
+import { fetcher, useSWR } from "@/hooks/fetcher";
+import { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -29,9 +35,9 @@ export default function MainLayout({
     const [accessToken, setAccessToken] = useState<string | null>(null);
 
     useEffect(() => {
-        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-        if (accessToken !== null) {
-            setAccessToken(accessToken);
+        const oldAccessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+        if (oldAccessToken !== accessToken) {
+            setAccessToken(oldAccessToken);
         }
     }, []);
 
@@ -53,6 +59,8 @@ export default function MainLayout({
         };
     }, []);
 
+    const [auth, setAuth] = useState<AuthPayload>();
+
     useEffect(() => {
         if (accessToken !== null) {
             // 이거 가지고 검증할 수 있지 않을까?
@@ -63,6 +71,7 @@ export default function MainLayout({
                     // 당신 토큰은 만료되었다 수고해라
                     // 아니지 리프레시는 한번 시도해봐야지!
                     console.log(Date.now(), Date.now() / 1000);
+                    throw new Error();
                 } else {
                     // 타이머를 돌립시다. exp가 끝나는 시점까지
                     // 근데 서버를 위한 톨러런스가 어느정도 있는게 좋지 않을까? 시간 차이가 좀 날 수도 있으니까
@@ -73,16 +82,10 @@ export default function MainLayout({
                     setTimeout(() => {}, remainingSecs * 1000 - tolerance);
                     //TODO: 이 타임아웃을 없애주는 애를 리턴해야함.
                 }
-                if (isAuthPayload(payload)) {
-                    if (payload.auth_level === AuthLevel.TEMPORARY) {
-                        // OTP로 가시오
-                    } else if (payload.auth_level === AuthLevel.BLOCKED) {
-                        // 당신은 정지당했습니다.
-                    } else if (payload.auth_level === AuthLevel.COMPLETED) {
-                        // 넌 최고야!
-                    }
+                if (!isAuthPayload(payload)) {
+                    throw new Error();
                 }
-                console.log(payload);
+                setAuth(payload);
             } catch {
                 window.localStorage.removeItem(ACCESS_TOKEN_KEY);
                 setAccessToken(null);
@@ -90,30 +93,46 @@ export default function MainLayout({
         }
     }, [accessToken]);
 
-    if (accessToken === null) {
+    const { data } = useSWR(
+        accessToken !== null ? "/profile/private" : null,
+        fetcher<AccountProfilePrivatePayload>,
+    );
+
+    if (accessToken === null || data === undefined) {
         return <DefaultLayout>{login}</DefaultLayout>;
     }
 
-    //TODO: AccessToken이 왔는데 OTP가 필요한 JWT일 때
-    if (false) {
+    // OTP로 가시오
+    if (auth?.auth_level === AuthLevel.TEMPORARY) {
         return <DefaultLayout>{otp}</DefaultLayout>;
     }
 
-    //TODO: 정지당했을 경우
-    // if (false) {
-    //     return <DefaultLayout>{???}</DefaultLayout>
-    // }
+    // 당신은 정지당했습니다.
+    if (auth?.auth_level === AuthLevel.BLOCKED) {
+        return (
+            <DefaultLayout>
+                <p>정지당했습니다... 심장이 뛰질 않아요.</p>
+                {auth.bans.map((e) => (
+                    <>
+                        <p>{e.reason}</p>
+                        <p>{e.expireTimestamp?.toString() ?? "영구"}</p>
+                    </>
+                ))}
+            </DefaultLayout>
+        );
+    }
 
     //TODO: 탈퇴 유예기간인 경우
-    // if (false) {
+    // if (auth?.auth_level === AuthLevel.UNREGISTERING) {
     //     return <DefaultLayout>{???}</DefaultLayout>
     // }
 
     //TODO: AccessToken으로 private을 조회했더니 nickName이 null일 때
-    if (false) {
+    if (data.nickName === null) {
         return <DefaultLayout>{welcome}</DefaultLayout>;
     }
 
+    // 넌 최고야!
     return (
         <DefaultLayout>
             <WebSocketContainer

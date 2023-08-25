@@ -4,6 +4,7 @@ import { DoubleSharp, IconArrow3, IconSearch } from "@/components/ImageLibrary";
 import { TextField } from "@/components/TextField";
 import { Card } from "@/components/Card/Card";
 import { useState } from "react";
+import { fetcher } from "@/hooks/fetcher";
 
 export default function Welcome() {
     const [query, setQuery] = useState("");
@@ -24,7 +25,10 @@ export default function Welcome() {
                         required
                         onChange={(event) => setQuery(event.target.value)}
                     />
-                    <button className="relative w-8 rounded bg-white/20 p-0.5 text-xs peer-valid:bg-secondary/70">
+                    <button className="relative w-8 rounded bg-white/20 p-0.5 text-xs peer-valid:bg-secondary/70" onClick={() => {
+						//TODO: 으악
+						fetcher(`/profile/register?name=${query}`);
+					}}>
                         확인
                     </button>
                 </div>

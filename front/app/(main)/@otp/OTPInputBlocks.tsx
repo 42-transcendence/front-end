@@ -3,22 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DigitBlock } from "./DigitBlock";
 import { useRefArray } from "@/hooks/useRefArray";
-
-const sleep = async (ms: number) => new Promise((res) => setTimeout(res, ms));
-const validateOTP = async (otpValue: string) => {
-    //TODO: 백에 갔다올동안 기다리기~
-    await sleep(1);
-    const resultValue = Number(otpValue);
-    if (
-        Number.isInteger(resultValue) &&
-        resultValue > 0 &&
-        resultValue % 5 === 0
-    ) {
-        return otpValue;
-    } else {
-        throw new Error("invalid otp");
-    }
-};
+import { fetcher } from "@/hooks/fetcher";
 
 // TODO: refactor, change mock functions to real function
 export function OTPInputBlocks({ length }: { length: number }) {
@@ -45,19 +30,23 @@ export function OTPInputBlocks({ length }: { length: number }) {
         }
     }, [refArray, initialValue]);
 
-    const resolve = useCallback((value: string) => {
-        alert(`correct ${value}`);
+    const resolve = useCallback((json: any) => {
+        window.localStorage.setItem("access_token", json.access_token);
+        window.localStorage.setItem("refresh_token", json.refresh_token);
+        //TODO: 같은 문서 안에서 바뀐건 스토리지 이벤트가 안날아감 홀리... Zustand가 필요할 때이다
+    }, []);
+
+    const failed = useCallback((error: any) => {
+        // TODO: add animation for wrong OTP
+        alert(`ERROR!! ${error}`);
     }, []);
 
     useEffect(() => {
-        if (length < 1) {
-            return;
-        }
-
-        if (values[length - 1] !== "") {
-            validateOTP(values.join(""))
-                .then((r) => resolve(r))
-                .catch((e) => console.log(e)) // TODO: add animation for wrong OTP
+        if (values.every((e) => e !== "")) {
+            //TODO: 와... 이거 searchParams 어떻게 넘겨야 예쁘지?
+            fetcher(`/auth/promotion?otp=${values.join("")}`)
+                .then((response) => resolve(response))
+                .catch((error) => failed(error))
                 .finally(() => initialize());
         }
     }, [initialize, length, resolve, values]);

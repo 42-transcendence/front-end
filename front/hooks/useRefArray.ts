@@ -8,14 +8,21 @@ export function useRefArray<T>(
 
     const getRefArray = useCallback(() => {
         if (refs.current === null) {
-            if (initialValue === undefined) {
-                refs.current = new Array(length);
-            } else {
-                refs.current = Array(length).fill(initialValue);
+            refs.current = Array(length);
+            if (initialValue !== undefined) {
+                refs.current.fill(initialValue);
+            }
+        } else if (refs.current.length !== length) {
+            const oldLength = refs.current.length;
+            refs.current.length = length;
+            if (initialValue !== undefined) {
+                refs.current.fill(initialValue, oldLength);
             }
         }
         return refs.current;
     }, [initialValue, length]);
+
+    const refArray = useMemo(() => getRefArray(), [getRefArray]);
 
     const refCallbackAt = useCallback(
         (index: number) => (node: T) => {
@@ -24,8 +31,6 @@ export function useRefArray<T>(
         },
         [getRefArray],
     );
-
-    const refArray = useMemo(() => getRefArray(), [getRefArray]);
 
     return [refArray, refCallbackAt];
 }
