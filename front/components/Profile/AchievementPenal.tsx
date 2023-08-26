@@ -159,7 +159,7 @@ function AchievementItem({
 
     return (
         <div
-            className={`relative flex w-full overflow-clip rounded-xl bg-black/30 hover:bg-black/20  active:bg-black/10`}
+            className={`relative flex w-full shrink-0 overflow-clip rounded-xl bg-black/30  hover:bg-black/20 active:bg-black/10`}
         >
             <input
                 id="AchievementItem"

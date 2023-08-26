@@ -3,6 +3,8 @@ import { Avatar } from "../Avatar";
 import { Panel } from "./Panel";
 import {
     IconCheck,
+    IconExternalWindow,
+    IconExternalWindowAlternative,
     IconMagicCircleComplex,
     IconMagicCircleDoubleBorder,
 } from "../ImageLibrary";
@@ -22,7 +24,7 @@ type SetScore = {
 
 type GameConfig = {
     TeamSizes: "1:1" | "2:2";
-    queueType: "CUSTOM" | "RANK";
+    queueType: "CUSTOM" | "QUICK";
     mode: "기본" | "중력";
     field: "동글동글" | "네모네모";
 };
@@ -91,7 +93,7 @@ const GameHIstoryMockup: GameHistory[] = [
         ],
         config: {
             TeamSizes: "2:2",
-            queueType: "RANK",
+            queueType: "QUICK",
             mode: "중력",
             field: "네모네모",
         },
@@ -165,7 +167,7 @@ const GameHIstoryMockup: GameHistory[] = [
         ],
         config: {
             TeamSizes: "1:1",
-            queueType: "RANK",
+            queueType: "QUICK",
             mode: "기본",
             field: "동글동글",
         },
@@ -216,7 +218,7 @@ const GameHIstoryMockup: GameHistory[] = [
         ],
         config: {
             TeamSizes: "1:1",
-            queueType: "RANK",
+            queueType: "QUICK",
             mode: "기본",
             field: "네모네모",
         },
@@ -268,7 +270,7 @@ const GameHIstoryMockup: GameHistory[] = [
         ],
         config: {
             TeamSizes: "1:1",
-            queueType: "RANK",
+            queueType: "QUICK",
             mode: "기본",
             field: "네모네모",
         },
@@ -340,128 +342,131 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
 
     return (
         <div className="flex flex-row justify-start self-stretch">
-            <div>
-                <label
-                    htmlFor={history.gameUUID}
-                    className="flex relative justify-center items-center p-4 w-20 h-full shrink-0 overflow-clip bg-black/30 hover:bg-black/20 active:bg-black/10"
+            <label
+                htmlFor={history.gameUUID}
+                className="flex overflow-hidden relative flex-col justify-center items-start p-4 w-28 shrink-0 bg-black/30 hover:bg-black/20 active:bg-black/10"
+            >
+                <span
+                    className={`w-fit rounded px-1 py-0.5 text-base font-extrabold italic ${
+                        history.config.queueType === "QUICK"
+                            ? "text-tertiary/80"
+                            : ""
+                    }`}
                 >
-                    <IconMagicCircleComplex
-                        className={`absolute -left-5 -top-4 text-white/10 ${
-                            gameResult === "WIN" ? "" : "hidden"
-                        }`}
-                        width="200%"
-                        height="200%"
-                    />
-                    <span
-                        className={`w-fit text-base font-extrabold italic ${
-                            gameResult === "WIN"
-                                ? "text-blue-500"
-                                : "text-red-500"
-                        }`}
-                    >
-                        {gameResult}
-                    </span>
-                </label>
-            </div>
+                    {history.config.queueType}
+                </span>
 
-            <div className="flex flex-row justify-between self-stretch w-full">
-                <div className="flex flex-col justify-center items-start p-4">
-                    <span
-                        className={`w-fit rounded px-1 py-0.5 text-base font-extrabold italic ${
-                            history.config.queueType === "RANK"
-                                ? "text-tertiary"
-                                : ""
-                        }`}
-                    >
-                        {history.config.queueType}
+                <div className="flex rounded w-fit shrink-0">
+                    <span className="py-0.5 px-1 text-xs font-bold w-fit shrink-0 bg-black/30">
+                        {history.config.field}
                     </span>
+                    <span
+                        className={`w-fit shrink-0 ${
+                            history.config.mode === "기본"
+                                ? "bg-secondary/70"
+                                : "bg-primary/70"
+                        } px-1 py-0.5 text-xs font-bold `}
+                    >
+                        {history.config.mode}
+                    </span>
+                </div>
+                <IconMagicCircleComplex
+                    className={`absolute -left-5 -top-4 text-white/10 ${
+                        gameResult === "WIN" ? "" : "hidden"
+                    }`}
+                    width="144%"
+                    height="144%"
+                />
+            </label>
 
-                    <div className="flex rounded w-fit shrink-0">
-                        <span className="py-0.5 px-1 text-xs font-bold w-fit shrink-0 bg-black/30">
-                            {history.config.field}
-                        </span>
+            <div className="flex flex-row justify-around self-stretch w-full">
+                <div className="flex flex-row gap-4 justify-center items-center">
+                    <div className="flex relative justify-center items-center px-4 w-20 h-full shrink-0">
                         <span
-                            className={`w-fit shrink-0 ${
-                                history.config.mode === "기본"
-                                    ? "bg-secondary/70"
-                                    : "bg-primary/70"
-                            } px-1 py-0.5 text-xs font-bold `}
+                            className={`w-fit text-base font-extrabold italic ${
+                                gameResult === "WIN"
+                                    ? "text-blue-500/80"
+                                    : "text-red-500/80"
+                            }`}
                         >
-                            {history.config.mode}
+                            {gameResult}
+                        </span>
+                    </div>
+                    <Seperator />
+                    <div className="flex flex-row gap-2">
+                        <span className="p-2 text-2xl rounded bg-black/30">
+                            {winCount}
+                        </span>
+                        <span className="p-2 text-2xl rounded bg-black/30">
+                            {loseCount}
                         </span>
                     </div>
                 </div>
 
-                <Seperator />
-
-                <div className="flex gap-2 justify-center items-center p-4">
-                    <span className="p-2 text-2xl rounded bg-black/30">
-                        {winCount}
+                <ItemWrapper className="hidden @md:flex">
+                    <span className="flex relative text-sm italic font-semibold">
+                        {history.statistics.playTime}
                     </span>
-                    <span className="p-2 text-2xl rounded bg-black/30">
-                        {loseCount}
+                </ItemWrapper>
+
+                <ItemWrapper className="hidden @lg:flex">
+                    <span className="flex relative text-sm italic font-semibold">
+                        {history.statistics.startTimeStamp}
                     </span>
-                </div>
+                </ItemWrapper>
 
-                <Seperator className="hidden @md:flex" />
-
-                <div className="hidden flex-col items-center p-4 @md:flex">
-                    <span className="py-0.5 px-1 text-sm italic font-extrabold rounded w-fit">
-                        RATING
+                <ItemWrapper className="hidden @2xl:flex">
+                    <span className="flex relative text-sm italic font-semibold shrink-0">
+                        Rating
                     </span>
                     <span
-                        className={`w-fit rounded px-1 py-0.5 text-sm font-extrabold italic ${
-                            history.config.queueType === "RANK"
+                        className={` ${
+                            history.config.queueType === "QUICK"
                                 ? "text-tertiary"
                                 : ""
                         }`}
                     >
-                        {history.config.queueType === "RANK"
+                        {history.config.queueType === "QUICK"
                             ? history.rating
                             : "-"}
                     </span>
-                </div>
-
-                <div className="flex flex-row justify-between">
-                    <Seperator className="hidden @2xl:flex" />
-
-                    <div className="hidden flex-col items-center justify-center p-4 pr-0 @3xl:flex">
-                        <span className="py-0.5 px-1 text-sm italic font-extrabold rounded w-fit">
-                            Player
-                        </span>
-                    </div>
-
-                    <div className="hidden min-w-[9rem] flex-col items-start justify-center p-2 @2xl:flex">
-                        <ProfileBlockInGame
-                            teamSize={history.config.TeamSizes}
-                            team={history.ally}
-                        />
-                    </div>
-
-                    <div className="hidden min-w-[9rem] flex-col items-start justify-center p-2 @2xl:flex">
-                        <ProfileBlockInGame
-                            teamSize={history.config.TeamSizes}
-                            team={history.enemy}
-                        />
-                    </div>
-                </div>
+                </ItemWrapper>
             </div>
         </div>
+    );
+}
+
+function ItemWrapper({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className: string;
+}) {
+    return (
+        <>
+            <Seperator className={`${className}`} />
+            <div
+                className={`${className} h-full w-24 shrink-0 flex-col items-center justify-center py-4`}
+            >
+                {children}
+            </div>
+        </>
     );
 }
 
 function GameHistoryDetail({ history }: { history: GameHistory }) {
     return (
         <div className="flex flex-col justify-center items-start w-full">
-            <div className="flex w-full flex-row items-center justify-start @2xl:hidden">
-                <div className="flex flex-col justify-center items-center w-20 h-full shrink-0 bg-black/30">
+            <div className="flex flex-row justify-start items-center w-full">
+                <div className="flex flex-col justify-center items-center w-28 h-full shrink-0 bg-black/30">
                     <span className="py-0.5 px-1 text-sm italic font-extrabold rounded">
                         Player
                     </span>
                 </div>
 
                 <div className="flex flex-row justify-around w-full">
-                    <div className="flex flex-col items-start justify-center py-2 @2xl:hidden">
+                    <div className="flex flex-col justify-center items-start py-2">
                         <ProfileBlockInGame
                             teamSize={history.config.TeamSizes}
                             team={history.ally}
@@ -470,11 +475,21 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
 
                     <Seperator className="flex @2xl:hidden" />
 
-                    <div className="flex flex-col items-start justify-center py-2 @2xl:hidden">
+                    <div className="flex flex-col justify-center items-start py-2">
                         <ProfileBlockInGame
                             teamSize={history.config.TeamSizes}
                             team={history.enemy}
                         />
+                    </div>
+
+                    <div className="flex flex-col justify-center items-center w-24 h-full">
+                        <Avatar className="relative w-12 h-12" size={""} />
+                        <div className="flex flex-row gap-2">
+                            <span className="flex relative text-base font-semibold shrink-0 text-tertiary/80">
+                                MVP
+                            </span>
+                            <span>hdoo </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -486,21 +501,50 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
             </div>
 
             <div className="flex flex-row w-full bg-secondary/30">
-                <div className="flex flex-col justify-center items-center">
-                    <div className="flex flex-col justify-center items-center py-2 w-20 h-full shrink-0 bg-black/30">
-                        <span className="flex relative text-sm italic font-semibold shrink-0">
-                            Rating
-                        </span>
-                        <span
-                            className={` ${
-                                history.config.queueType === "RANK"
-                                    ? "text-tertiary"
-                                    : ""
-                            }`}
-                        >
-                            {history.config.queueType === "RANK"
-                                ? history.rating
-                                : "-"}
+                <div className="flex flex-col justify-center items-center py-4 w-28 h-full shrink-0 bg-black/30">
+                    <span className="flex relative text-sm italic font-semibold shrink-0">
+                        Detail
+                    </span>
+                </div>
+
+                <div className="flex h-full w-24 shrink-0 flex-col items-center justify-center py-4 @md:hidden">
+                    <span className="flex relative text-sm italic font-semibold">
+                        {history.statistics.playTime}
+                    </span>
+                </div>
+
+                <ItemWrapper className={"flex @lg:hidden"}>
+                    <span className="flex relative text-sm italic font-semibold">
+                        {history.statistics.startTimeStamp}
+                    </span>
+                </ItemWrapper>
+
+                <ItemWrapper className="hidden @md:flex @2xl:hidden">
+                    <span className="flex relative text-sm italic font-semibold shrink-0">
+                        Rating
+                    </span>
+                    <span
+                        className={` ${
+                            history.config.queueType === "QUICK"
+                                ? "text-tertiary"
+                                : ""
+                        }`}
+                    >
+                        {history.config.queueType === "QUICK"
+                            ? history.rating
+                            : "-"}
+                    </span>
+                </ItemWrapper>
+
+                <div className="flex justify-center items-center py-4 w-full">
+                    <div className="flex flex-row rounded-md w-fit text-gray-50/80 hover:bg-primary/30 active:bg-secondary/70">
+                        <IconExternalWindow
+                            width={48}
+                            height={48}
+                            className="p-3"
+                        />
+                        <span className="hidden p-3 @2xl:flex">
+                            상세 페이지로 이동
                         </span>
                     </div>
                 </div>
@@ -514,7 +558,7 @@ function SetScore({ setData }: { setData: SetScore }) {
 
     return (
         <div className={`flex w-full ${winned && "bg-black/20"}`}>
-            <span className="flex overflow-hidden relative justify-center items-center p-4 w-20 text-sm italic font-black shrink-0 bg-black/30">
+            <span className="flex overflow-hidden relative justify-center items-center p-4 w-28 text-sm italic font-black shrink-0 bg-black/30">
                 SET {setData.set}
                 <IconMagicCircleDoubleBorder
                     className={`absolute -right-10 -top-1 text-white/10 ${
@@ -526,13 +570,13 @@ function SetScore({ setData }: { setData: SetScore }) {
             </span>
             <div className="flex flex-row justify-around w-full">
                 <div className="flex justify-center items-center py-2 px-4">
-                    <span className="p-1 pr-1.5 italic font-extrabold rounded bg-black/30">
+                    <span className="p-1 pr-1.5 italic font-extrabold rounded">
                         {setData.ally}
                     </span>
                 </div>
                 <Seperator />
                 <div className="flex justify-center items-center py-2 px-4">
-                    <span className="p-1 pr-1.5 italic font-extrabold rounded bg-black/30">
+                    <span className="p-1 pr-1.5 italic font-extrabold rounded">
                         {setData.enemy}
                     </span>
                 </div>
