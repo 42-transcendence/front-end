@@ -47,11 +47,11 @@ const GameHIstoryMockup: GameHistory[] = [
         gameUUID: "1",
         rating: 1231,
         ally: {
-            player1: "123",
+            player1: "123hasdj",
             player2: "456",
         },
         enemy: {
-            player1: "123",
+            player1: "1231123a",
             player2: "456",
         },
         set: [
@@ -352,7 +352,13 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                         width="200%"
                         height="200%"
                     />
-                    <span className="text-base italic font-extrabold w-fit">
+                    <span
+                        className={`w-fit text-base font-extrabold italic ${
+                            gameResult === "WIN"
+                                ? "text-blue-500"
+                                : "text-red-500"
+                        }`}
+                    >
                         {gameResult}
                     </span>
                 </label>
@@ -374,7 +380,13 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                         <span className="py-0.5 px-1 text-xs font-bold w-fit shrink-0 bg-black/30">
                             {history.config.field}
                         </span>
-                        <span className="py-0.5 px-1 text-xs font-bold w-fit shrink-0 bg-primary/70">
+                        <span
+                            className={`w-fit shrink-0 ${
+                                history.config.mode === "기본"
+                                    ? "bg-secondary/70"
+                                    : "bg-primary/70"
+                            } px-1 py-0.5 text-xs font-bold `}
+                        >
                             {history.config.mode}
                         </span>
                     </div>
@@ -414,19 +426,19 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                     <Seperator className="hidden @2xl:flex" />
 
                     <div className="hidden flex-col items-center justify-center p-4 pr-0 @3xl:flex">
-                        <span className="py-0.5 px-1 text-lg italic font-extrabold rounded w-fit">
+                        <span className="py-0.5 px-1 text-sm italic font-extrabold rounded w-fit">
                             Player
                         </span>
                     </div>
 
-                    <div className="hidden flex-col items-center justify-center p-4 @2xl:flex">
+                    <div className="hidden min-w-[9rem] flex-col items-start justify-center p-2 @2xl:flex">
                         <ProfileBlockInGame
                             teamSize={history.config.TeamSizes}
                             team={history.ally}
                         />
                     </div>
 
-                    <div className="hidden flex-col items-center justify-center p-4 @2xl:flex">
+                    <div className="hidden min-w-[9rem] flex-col items-start justify-center p-2 @2xl:flex">
                         <ProfileBlockInGame
                             teamSize={history.config.TeamSizes}
                             team={history.enemy}
@@ -441,9 +453,58 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
 function GameHistoryDetail({ history }: { history: GameHistory }) {
     return (
         <div className="flex flex-col justify-center items-start w-full">
-            {history.set.map((oneSet, index) => (
-                <SetScore setData={oneSet} key={index} />
-            ))}
+            <div className="flex w-full flex-row items-center justify-start @2xl:hidden">
+                <div className="flex flex-col justify-center items-center w-20 h-full shrink-0 bg-black/30">
+                    <span className="py-0.5 px-1 text-sm italic font-extrabold rounded">
+                        Player
+                    </span>
+                </div>
+
+                <div className="flex flex-row justify-around w-full">
+                    <div className="flex flex-col items-start justify-center py-2 @2xl:hidden">
+                        <ProfileBlockInGame
+                            teamSize={history.config.TeamSizes}
+                            team={history.ally}
+                        />
+                    </div>
+
+                    <Seperator className="flex @2xl:hidden" />
+
+                    <div className="flex flex-col items-start justify-center py-2 @2xl:hidden">
+                        <ProfileBlockInGame
+                            teamSize={history.config.TeamSizes}
+                            team={history.enemy}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col w-full">
+                {history.set.map((oneSet, index) => (
+                    <SetScore setData={oneSet} key={index} />
+                ))}
+            </div>
+
+            <div className="flex flex-row w-full bg-secondary/30">
+                <div className="flex flex-col justify-center items-center">
+                    <div className="flex flex-col justify-center items-center py-2 w-20 h-full shrink-0 bg-black/30">
+                        <span className="flex relative text-sm italic font-semibold shrink-0">
+                            Rating
+                        </span>
+                        <span
+                            className={` ${
+                                history.config.queueType === "RANK"
+                                    ? "text-tertiary"
+                                    : ""
+                            }`}
+                        >
+                            {history.config.queueType === "RANK"
+                                ? history.rating
+                                : "-"}
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
@@ -452,7 +513,7 @@ function SetScore({ setData }: { setData: SetScore }) {
     const winned = setData.ally > setData.enemy;
 
     return (
-        <div className={`flex w-full ${winned && "bg-secondary/20"}`}>
+        <div className={`flex w-full ${winned && "bg-black/20"}`}>
             <span className="flex overflow-hidden relative justify-center items-center p-4 w-20 text-sm italic font-black shrink-0 bg-black/30">
                 SET {setData.set}
                 <IconMagicCircleDoubleBorder
@@ -508,7 +569,7 @@ function ProfileBlockInGame({
                     size={""}
                     accountUUID={team.player1}
                 />
-                <p>{nickName}</p>
+                <p className="overflow-ellipsis">{nickName}</p>
             </div>
             {nickName2 !== null && (
                 <div className="flex flex-row gap-4 p-1 px-2 rounded-full hover:bg-black/20 active:bg-black/10">
