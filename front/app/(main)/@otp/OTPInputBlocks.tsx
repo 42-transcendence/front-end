@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { DigitBlock } from "./DigitBlock";
 import { useRefArray } from "@/hooks/useRefArray";
 import { fetcher } from "@/hooks/fetcher";
+import { hasProperty } from "@/library/akasha-lib";
 
 // TODO: refactor, change mock functions to real function
 export function OTPInputBlocks({ length }: { length: number }) {
@@ -30,15 +31,41 @@ export function OTPInputBlocks({ length }: { length: number }) {
         }
     }, [refArray, initialValue]);
 
-    const resolve = useCallback((json: any) => {
+    const resolve = useCallback((json: unknown) => {
+        if (typeof json !== "object" || json === null) {
+            throw new Error();
+        }
+
+        if (!hasProperty("string", json, "access_token")) {
+            throw new Error();
+        }
+
         window.localStorage.setItem("access_token", json.access_token);
-        window.localStorage.setItem("refresh_token", json.refresh_token);
+
+        if (hasProperty("string", json, "refresh_token")) {
+            window.localStorage.setItem("refresh_token", json.refresh_token);
+        } else {
+            window.localStorage.removeItem("refresh_token");
+        }
+
+        // const eventInitDict: StorageEventInit = {
+        //     key: "access_token",
+        //     newValue: json.access_token,
+        //     storageArea: window.localStorage,
+        // }
+        // const eventThatNewlyMade = new StorageEvent("storage", eventInitDict);
+        // window.dispatchEvent(eventThatNewlyMade);
+
         //TODO: 같은 문서 안에서 바뀐건 스토리지 이벤트가 안날아감 홀리... Zustand가 필요할 때이다
     }, []);
 
-    const failed = useCallback((error: any) => {
+    const failed = useCallback((error: unknown) => {
+        // TODO: error ㅊㅓ리 어떻게?
+        if (!(error instanceof Error)) {
+            throw error;
+        }
         // TODO: add animation for wrong OTP
-        alert(`ERROR!! ${error}`);
+        alert(`ERROR!! ${error.message}`);
     }, []);
 
     useEffect(() => {

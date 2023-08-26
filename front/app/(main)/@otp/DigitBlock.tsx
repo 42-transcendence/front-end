@@ -32,7 +32,9 @@ export const DigitBlock = forwardRef(function DigitBlock(
 
     const handleBackspace = (ev: React.KeyboardEvent<HTMLInputElement>) => {
         if (ev.key !== "Backspace") return;
-        const target = ev.target as HTMLInputElement;
+        if (!(ev.target instanceof HTMLInputElement)) return;
+
+        const target = ev.target;
         if (target.value === "") {
             if (index > 0) {
                 target.disabled = true;
