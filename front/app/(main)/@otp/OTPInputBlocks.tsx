@@ -76,7 +76,7 @@ export function OTPInputBlocks({ length }: { length: number }) {
                 .catch((error) => failed(error))
                 .finally(() => initialize());
         }
-    }, [initialize, length, resolve, values]);
+    }, [failed, initialize, length, resolve, values]);
 
     return refArray.map((_node, index) => {
         return (

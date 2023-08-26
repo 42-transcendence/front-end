@@ -33,11 +33,12 @@ export default function MainLayout({
     home: React.ReactNode;
 }) {
     const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [auth, setAuth] = useState<AuthPayload>();
 
     useEffect(() => {
-        const oldAccessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-        if (oldAccessToken !== accessToken) {
-            setAccessToken(oldAccessToken);
+        const storedAccessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+        if (storedAccessToken !== null) {
+            setAccessToken(storedAccessToken);
         }
     }, []);
 
@@ -46,22 +47,20 @@ export default function MainLayout({
             if (event.storageArea !== window.localStorage) {
                 return;
             }
-
             if (event.key === ACCESS_TOKEN_KEY) {
                 setAccessToken(event.newValue);
             }
         };
 
         window.addEventListener("storage", receiveMessage);
-
         return () => {
             window.removeEventListener("storage", receiveMessage);
         };
     }, []);
 
-    const [auth, setAuth] = useState<AuthPayload>();
-
     useEffect(() => {
+        let timeid: NodeJS.Timeout | null = null;
+
         if (accessToken !== null) {
             // 이거 가지고 검증할 수 있지 않을까?
             try {
@@ -79,8 +78,8 @@ export default function MainLayout({
 
                     const remainingSecs = exp - Date.now() / 1000;
                     const tolerance = 30000;
-                    setTimeout(() => {}, remainingSecs * 1000 - tolerance);
                     //TODO: 이 타임아웃을 없애주는 애를 리턴해야함.
+                    timeid = setTimeout(() => { }, remainingSecs * 1000 - tolerance);
                 }
                 if (!isAuthPayload(payload)) {
                     throw new Error();
@@ -89,6 +88,12 @@ export default function MainLayout({
             } catch {
                 window.localStorage.removeItem(ACCESS_TOKEN_KEY);
                 setAccessToken(null);
+            }
+        }
+
+        return () => {
+            if (timeid !== null) {
+                clearTimeout(timeid);
             }
         }
     }, [accessToken]);
