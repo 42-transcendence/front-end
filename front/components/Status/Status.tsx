@@ -2,11 +2,15 @@ import { Status as StatusIcon } from "@/components/ImageLibrary";
 import { ActiveStatusNumber } from "@/library/generated/types";
 
 const StatusPair = {
-    [ActiveStatusNumber.ONLINE]: <StatusIcon.Online height="100%" width="100%" />,
+    [ActiveStatusNumber.ONLINE]: (
+        <StatusIcon.Online height="100%" width="100%" />
+    ),
     [ActiveStatusNumber.INVISIBLE]: (
         <StatusIcon.Invisible height="100%" width="100%" />
     ),
-    [ActiveStatusNumber.OFFLINE]: <StatusIcon.Offline height="100%" width="100%" />,
+    [ActiveStatusNumber.OFFLINE]: (
+        <StatusIcon.Offline height="100%" width="100%" />
+    ),
     [ActiveStatusNumber.IDLE]: <StatusIcon.Idle height="100%" width="100%" />,
     [ActiveStatusNumber.MATCHING]: (
         <StatusIcon.Matching height="100%" width="100%" />

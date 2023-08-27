@@ -15,11 +15,11 @@ import { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
-        <div className="flex flex-col flex-shrink-0 h-[100dvh]">{children}</div>
+        <div className="flex h-[100dvh] flex-shrink-0 flex-col">{children}</div>
     );
 }
 
-//TODO : Subtracting to a constant file later 
+//TODO : Subtracting to a constant file later
 const ACCESS_TOKEN_KEY = "access_token";
 
 export default function MainLayout({

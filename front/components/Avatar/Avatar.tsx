@@ -16,7 +16,7 @@ function PrivilegedSection({ accountUUID }: { accountUUID: string }) {
     );
 
     return (
-        <div className="absolute right-0 bottom-0 w-1/3 h-1/3 rounded-full aspect-square">
+        <div className="absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full">
             <Status type={data?.activeStatus ?? ActiveStatusNumber.INVISIBLE} />
         </div>
     );

@@ -10,7 +10,10 @@ import {
 import { useWebSocket } from "@/library/react/websocket-hook";
 import { ChatClientOpcode } from "@/library/payload/chat-opcodes";
 import { readChatMessage } from "@/library/payload/chat-payloads";
-import type { ChatMessageEntry, ChatRoomEntry } from "@/library/payload/chat-payloads";
+import type {
+    ChatMessageEntry,
+    ChatRoomEntry,
+} from "@/library/payload/chat-payloads";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -122,7 +125,9 @@ function MessageInputArea() {
 // }}}
 
 const isSameMinute = (date1: Date, date2: Date) => {
-    return new Date(date1).setSeconds(0, 0) === new Date(date2).setSeconds(0, 0);
+    return (
+        new Date(date1).setSeconds(0, 0) === new Date(date2).setSeconds(0, 0)
+    );
 };
 
 const isContinuedMessage = (arr: ChatMessageEntry[], idx: number) => {
@@ -141,14 +146,13 @@ export function ChatDialog({
     innerFrame: string;
 }) {
     const [chatMessages, setChatMessages] = useState<ChatMessageEntry[]>([]);
-    let chatRoomInfo : ChatRoomEntry ; // TODO: 인자로 받아오기
+    let chatRoomInfo: ChatRoomEntry; // TODO: 인자로 받아오기
     const myUUID = "chanhpar"; // TODO: get my actual uuid
 
     useWebSocket("chat", ChatClientOpcode.CHAT_MESSAGE, (_, buffer) => {
         const chatMessageList = buffer.readArray(readChatMessage);
         setChatMessages(chatMessageList);
     });
-
 
     return (
         <div
@@ -159,18 +163,20 @@ export function ChatDialog({
             >
                 <div className="flex flex-col gap-1 self-stretch overflow-auto">
                     {chatMessages.map((msg, idx, arr) => {
-                        // TODO: key for ChatBubbleWithProfile
+                        // TODO: key for ChatBubbleWithProfile with chat message UUID
                         return (
                             <ChatBubbleWithProfile
                                 key={idx}
                                 chatMessage={msg}
                                 isContinued={isContinuedMessage(arr, idx)}
-                                dir={msg.memberUUID === myUUID ? "right" : "left"}
+                                dir={
+                                    msg.memberUUID === myUUID ? "right" : "left"
+                                }
                             />
                         );
                     })}
                 </div>
-                {/* TODO: add 말풍선 */}
+
                 <div className="relative flex justify-center self-stretch">
                     <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
                         <MessageInputArea />

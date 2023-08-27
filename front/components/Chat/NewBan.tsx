@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { ProfileItemBase } from "@/components/ProfileItem/ProfileItembase";
 // import { TextField } from "@/components/TextField";
 import { Icon } from "@/components/ImageLibrary";
@@ -88,7 +88,9 @@ export function AccessBan({ uuid }: { uuid: string }) {
 
 const MIN_TEXTAREA_HEIGHT = 128;
 
-function MessageInputArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+function MessageInputArea(
+    props: React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
 

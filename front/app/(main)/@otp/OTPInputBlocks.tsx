@@ -56,8 +56,6 @@ export function OTPInputBlocks({ length }: { length: number }) {
         // }
         // const eventThatNewlyMade = new StorageEvent("storage", eventInitDict);
         // window.dispatchEvent(eventThatNewlyMade);
-
-       
     }, []);
 
     const failed = useCallback((error: unknown) => {

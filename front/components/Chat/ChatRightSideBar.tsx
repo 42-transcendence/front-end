@@ -76,8 +76,7 @@ export default function ChatRightSideBar() {
     const [inviteToggle, setInviteToggle] = useState(false);
     // TODO: setAdmin logic
     const [admin, setAdmin] = useState(true);
-    const [currentPage, setCurrentPage] =
-        useState<RightSideBarContents>();
+    const [currentPage, setCurrentPage] = useState<RightSideBarContents>();
     const [memberListDropDown, setMemberListDropDown] = useState(false);
 
     const handleList = () => {
@@ -203,9 +202,10 @@ export default function ChatRightSideBar() {
                             onClick={handleList}
                             htmlFor="memberListDropDown"
                             data-current-list={currentPage}
-                            className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[current-list]:bg-primary/80 data-[current-list]:text-white ${admin &&
+                            className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[current-list]:bg-primary/80 data-[current-list]:text-white ${
+                                admin &&
                                 "hover:bg-primary/30 hover:text-white active:bg-secondary/80"
-                                }`}
+                            }`}
                         >
                             <p className="w-fit font-sans text-base leading-4 ">
                                 {pageTitle(currentPage)}
@@ -244,8 +244,9 @@ export default function ChatRightSideBar() {
                     </div>
 
                     <div
-                        className={`${currentPage !== undefined && "invisible"
-                            }`}
+                        className={`${
+                            currentPage !== undefined && "invisible"
+                        }`}
                     >
                         <input
                             onChange={() => setInviteToggle(!inviteToggle)}
