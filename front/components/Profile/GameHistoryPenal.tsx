@@ -2,9 +2,7 @@ import { useState } from "react";
 import { Avatar } from "../Avatar";
 import { Panel } from "./Panel";
 import {
-    IconCheck,
     IconExternalWindow,
-    IconExternalWindowAlternative,
     IconMagicCircleComplex,
     IconMagicCircleDoubleBorder,
 } from "../ImageLibrary";
@@ -49,7 +47,7 @@ const GameHIstoryMockup: GameHistory[] = [
         gameUUID: "1",
         rating: 1231,
         ally: {
-            player1: "123hasdj",
+            player1: "한글로여덟자히히",
             player2: "456",
         },
         enemy: {
@@ -439,18 +437,25 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
 function ItemWrapper({
     children,
     className,
+    seperatorDir = "left",
 }: {
     children: React.ReactNode;
     className: string;
+    seperatorDir?: "left" | "right" | "none";
 }) {
     return (
         <>
-            <Seperator className={`${className}`} />
+            {seperatorDir === "left" && (
+                <Seperator className={`${className}`} />
+            )}
             <div
                 className={`${className} h-full w-24 shrink-0 flex-col items-center justify-center py-4`}
             >
                 {children}
             </div>
+            {seperatorDir === "right" && (
+                <Seperator className={`${className}`} />
+            )}
         </>
     );
 }
@@ -473,23 +478,13 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                         />
                     </div>
 
-                    <Seperator className="flex @2xl:hidden" />
+                    <Seperator className="flex" />
 
                     <div className="flex flex-col justify-center items-start py-2">
                         <ProfileBlockInGame
                             teamSize={history.config.TeamSizes}
                             team={history.enemy}
                         />
-                    </div>
-
-                    <div className="flex flex-col justify-center items-center w-24 h-full">
-                        <Avatar className="relative w-12 h-12" size={""} />
-                        <div className="flex flex-row gap-2">
-                            <span className="flex relative text-base font-semibold shrink-0 text-tertiary/80">
-                                MVP
-                            </span>
-                            <span>hdoo </span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -507,19 +502,22 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                     </span>
                 </div>
 
-                <div className="flex h-full w-24 shrink-0 flex-col items-center justify-center py-4 @md:hidden">
+                <ItemWrapper seperatorDir="right" className="flex @md:hidden">
                     <span className="flex relative text-sm italic font-semibold">
                         {history.statistics.playTime}
                     </span>
-                </div>
+                </ItemWrapper>
 
-                <ItemWrapper className={"flex @lg:hidden"}>
+                <ItemWrapper seperatorDir="right" className={"flex @lg:hidden"}>
                     <span className="flex relative text-sm italic font-semibold">
                         {history.statistics.startTimeStamp}
                     </span>
                 </ItemWrapper>
 
-                <ItemWrapper className="hidden @md:flex @2xl:hidden">
+                <ItemWrapper
+                    seperatorDir="right"
+                    className="hidden @md:flex @2xl:hidden"
+                >
                     <span className="flex relative text-sm italic font-semibold shrink-0">
                         Rating
                     </span>
