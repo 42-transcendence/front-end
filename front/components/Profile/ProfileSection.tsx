@@ -4,12 +4,12 @@ import { IconCheck, IconPlus } from "@/components/ImageLibrary";
 type Relationship = "myself" | "friend" | "stranger";
 
 export function ProfileSection() {
-    //TODO: get nick from accountUUID const nick = "hdoo";
-    const nick = "hdoo";
-    //TODO: get tag from accountUUID
-    const tag = "#1234";
-    //TODO: get relationship from accountUUID const relationship: Relationship = "stranger";
-    const relationship = "myself";
+    //TODO: get info from accountUUID
+    const profileInfo = {
+        nick: "hdoo",
+        tag: "#1234",
+        relationship: "myself",
+    } as const
 
     return (
         <div className="h-20 w-full bg-windowGlass/30 p-4 lg:h-full lg:w-48">
@@ -20,13 +20,13 @@ export function ProfileSection() {
                         size={""}
                     />
                     <div className="flex w-full flex-col items-start justify-center text-base md:text-lg lg:text-xl">
-                        <h1>{nick}</h1>
+                        <h1>{profileInfo.nick}</h1>
                         <h2 className="text-xs text-gray-300/70 md:text-sm lg:text-base">
-                            {tag}
+                            {profileInfo.tag}
                         </h2>
                     </div>
                 </div>
-                <ProfileButton relationship={relationship} />
+                <ProfileButton relationship={profileInfo.relationship} />
             </div>
         </div>
     );
