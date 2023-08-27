@@ -270,7 +270,7 @@ const GameHistoryMockup: GameHistory[] = [
     },
 ];
 
-export function GameHistoryPanel() {
+export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
     return (
         <>
             <input
