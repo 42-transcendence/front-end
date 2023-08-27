@@ -5,7 +5,7 @@ export function ImageViewer({ uploadedFiles }: { uploadedFiles: File[] }) {
 
     useEffect(() => {
         const previewElem = previewRef.current;
-        if (previewElem === null) return;
+        if (previewElem === null) throw new Error();
 
         while (previewElem.firstChild !== null) {
             previewElem.removeChild(previewElem.firstChild);
