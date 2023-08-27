@@ -371,7 +371,7 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
 
             <div className="flex w-full flex-row justify-around self-stretch">
                 <div className="flex flex-row items-center justify-center">
-                    <div className="flex flex-row gap-2 px-4">
+                    <div className="flex w-16 flex-row justify-between">
                         <span className="rounded bg-black/30 p-2 text-2xl">
                             {winCount}
                         </span>
@@ -379,7 +379,6 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                             {loseCount}
                         </span>
                     </div>
-                    <Seperator />
                     <div className="relative flex h-full shrink-0 items-center justify-center px-4">
                         <span
                             className={`flex w-16 justify-center rounded p-3 pl-2.5 text-base font-extrabold italic ${
@@ -394,19 +393,19 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                 </div>
 
                 <ItemWrapper className="hidden @md:flex">
-                    <span className="relative flex text-sm font-semibold italic">
+                    <span className="relative flex text-base font-semibold italic">
                         {history.statistics.playTime}
                     </span>
                 </ItemWrapper>
 
                 <ItemWrapper className="hidden @lg:flex">
-                    <span className="relative flex text-sm font-semibold italic">
+                    <span className="relative flex text-base font-semibold italic">
                         {history.statistics.startTimeStamp}
                     </span>
                 </ItemWrapper>
 
                 <ItemWrapper className="hidden @2xl:flex">
-                    <span className="relative flex shrink-0 text-sm font-semibold italic">
+                    <span className="relative flex shrink-0 text-base font-semibold italic">
                         Rating
                     </span>
                     <span
@@ -436,17 +435,13 @@ function ItemWrapper({
 }>) {
     return (
         <>
-            {seperatorDir === "left" && (
-                <Seperator className={className} />
-            )}
+            {seperatorDir === "left" && <Seperator className={className} />}
             <div
                 className={`${className} mx-1 h-full w-20 shrink-0 flex-col items-center justify-center py-4`}
             >
                 {children}
             </div>
-            {seperatorDir === "right" && (
-                <Seperator className={className} />
-            )}
+            {seperatorDir === "right" && <Seperator className={className} />}
         </>
     );
 }
@@ -456,7 +451,7 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
         <div className="flex w-full flex-col items-start justify-center">
             <div className="flex h-20 w-full flex-row items-center justify-start bg-secondary/10">
                 <div className="flex h-full w-28 shrink-0 flex-col items-center justify-center bg-black/30">
-                    <span className="rounded px-1 py-0.5 text-sm font-extrabold italic">
+                    <span className="rounded px-1 py-0.5 text-base font-extrabold italic">
                         Player
                     </span>
                 </div>
