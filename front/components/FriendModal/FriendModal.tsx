@@ -1,6 +1,5 @@
 "use client";
 
-import "./style.css";
 import { useState } from "react";
 import { ProfileItem } from "@/components/ProfileItem";
 import type { ProfileItemConfig } from "@/components/ProfileItem";
