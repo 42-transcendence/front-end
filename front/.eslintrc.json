@@ -17,12 +17,6 @@
         "eqeqeq": [
             "error"
         ],
-        "sort-keys": [
-            "warn"
-        ],
-        "sort-imports": [
-            "warn"
-        ],
         "no-warning-comments": [
             "warn"
         ],
@@ -80,13 +74,12 @@
                     "error"
                 ],
                 "@typescript-eslint/strict-boolean-expressions": [
-                    "error"
-                ],
-                "@typescript-eslint/sort-type-constituents": [
-                    "warn"
-                ],
-                "@typescript-eslint/member-ordering": [
-                    "warn"
+                    "error",
+                    {
+                        "allowString": false,
+                        "allowNumber": false,
+                        "allowNullableObject": false
+                    }
                 ]
             },
             "parserOptions": {
