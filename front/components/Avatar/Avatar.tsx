@@ -9,14 +9,14 @@ import {
 import { ActiveStatusNumber } from "@/library/generated/types";
 import { fetcher, useSWR } from "@/hooks/fetcher";
 
-function PrivilegedAvatar({ accountUUID }: { accountUUID: string }) {
+function PrivilegedSection({ accountUUID }: { accountUUID: string }) {
     const { data } = useSWR(
         `/profile/protected/${accountUUID}`,
         fetcher<AccountProfileProtectedPayload>,
     );
 
     return (
-        <div className="absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full">
+        <div className="absolute right-0 bottom-0 w-1/3 h-1/3 rounded-full aspect-square">
             <Status type={data?.activeStatus ?? ActiveStatusNumber.INVISIBLE} />
         </div>
     );
@@ -42,11 +42,11 @@ export function Avatar({
         >
             <Image
                 className="relative rounded-full"
-                src={data?.avatarKey ?? "/jkong.png"}
+                src={data?.avatarKey ?? "/jkong.png"} // TODO: fallback avatar image
                 alt="Avatar"
                 fill={true} // TODO: fill / size options?
             />
-            {privileged && <PrivilegedAvatar accountUUID={accountUUID} />}
+            {privileged && <PrivilegedSection accountUUID={accountUUID} />}
         </div>
     );
 }
