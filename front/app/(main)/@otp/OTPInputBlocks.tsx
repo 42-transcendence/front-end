@@ -25,7 +25,7 @@ export function OTPInputBlocks({ length }: { length: number }) {
     const initialize = useCallback(() => {
         setValues(initialValue);
         const first = refArray[0];
-        if (first) {
+        if (first !== null) {
             first.disabled = false;
             first.focus();
         }
