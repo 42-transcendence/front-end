@@ -3,17 +3,20 @@ import { OTPInputBlocks } from "./OTPInputBlocks";
 export default function LoginPage() {
     return (
         <main>
-            <div className="flex items-center justify-center">
-                <div className="flex h-[124px] min-h-[100dvh] flex-col items-center justify-center self-stretch px-0 py-[9px]">
-                    {/* text */}
-                    <div className="flex h-10 w-[340px] shrink-0 flex-col justify-center text-center text-[32px] font-bold not-italic leading-8 text-black">
-                        Verify your Number
-                    </div>
-                    <div className="flex h-[25px] shrink-0 flex-col justify-center self-stretch text-center text-xs font-bold not-italic leading-3 text-[color:var(--colors-gray,#98989D)]">
-                        We sent a verfication code. Enter it below!
-                    </div>
-                    <div className="flex items-start gap-2 pt-14">
-                        <OTPInputBlocks length={6} />
+            <div className="flex justify-center w-full h-[100dvh]">
+                <div className="flex relative flex-col justify-center h-full">
+                    <div className="flex flex-col gap-8 justify-center items-center p-16 py-32 backblur gradient-border h-fit w-fit rounded-[28px] bg-windowGlass/30 backdrop-blur-[50px] before:rounded-[28px] before:p-px">
+                        <div>
+                            <span className="flex flex-col justify-center w-96 h-10 text-3xl font-bold text-center text-white">
+                                Verify your Number
+                            </span>
+                            <span className="flex flex-col justify-center self-stretch text-base not-italic font-bold text-center shrink-0 text-gray-50/70">
+                                Open the authenticator and enter the number
+                            </span>
+                        </div>
+                        <div className="flex gap-2 items-start">
+                            <OTPInputBlocks length={6} />
+                        </div>
                     </div>
                 </div>
             </div>
