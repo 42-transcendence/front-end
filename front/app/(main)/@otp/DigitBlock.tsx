@@ -22,7 +22,7 @@ export const DigitBlock = forwardRef(function DigitBlock(
             ev.target.disabled = true;
             if (index < refArray.length - 1) {
                 const nextElem = refArray[index + 1];
-                if (nextElem) {
+                if (nextElem !== null) {
                     nextElem.disabled = false;
                     nextElem.focus();
                 }
@@ -39,7 +39,7 @@ export const DigitBlock = forwardRef(function DigitBlock(
             if (index > 0) {
                 target.disabled = true;
                 const prevElem = refArray[index - 1];
-                if (prevElem) {
+                if (prevElem !== null) {
                     prevElem.disabled = false;
                     prevElem.focus();
                 }
