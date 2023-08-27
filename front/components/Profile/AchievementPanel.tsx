@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Panel } from "./Panel";
 import { useState } from "react";
-import { IconMagicCirclesingleBorder } from "../ImageLibrary";
+import { IconMagicCirclesingleBorder } from "@/components/ImageLibrary";
 
 type Achievement = {
     id: number;

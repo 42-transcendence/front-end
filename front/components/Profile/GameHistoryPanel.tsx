@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Avatar } from "../Avatar";
+import { Avatar } from "@/components/Avatar";
 import { Panel } from "./Panel";
 import {
     IconExternalWindow,
@@ -429,11 +429,10 @@ function ItemWrapper({
     children,
     className,
     seperatorDir = "left",
-}: {
-    children: React.ReactNode;
+}: React.PropsWithChildren<{
     className: string;
     seperatorDir?: "left" | "right" | "none";
-}) {
+}>) {
     return (
         <>
             {seperatorDir === "left" && (
