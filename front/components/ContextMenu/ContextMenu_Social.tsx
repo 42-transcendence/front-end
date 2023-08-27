@@ -1,15 +1,8 @@
-import React from "react";
-import {
-    ContextMenuBase_Profile,
-    ContextMenuItem,
-    ProfileItemConfig,
-} from "./ContextMenuBase_Profile";
+import type { ProfileItemConfig } from "./ContextMenuBase_Profile";
+import { ContextMenuItem } from "./ContextMenuItem";
 
-export function ContextMenu_Social({
-    profile,
-}: {
-    profile: ProfileItemConfig;
-}) {
+export function ContextMenu_Social({ info }: { info: ProfileItemConfig }) {
+    void info;
     //TODO : friend add logic : check whether user is already friend or not.
 
     return (

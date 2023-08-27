@@ -1,28 +1,22 @@
-/*
-We're constantly improving the code you see.
-Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
-*/
+import { Status as StatusIcon } from "@/components/ImageLibrary";
+import { ActiveStatusNumber } from "@/library/generated/types";
 
-import React from "react";
-import Image from "next/image";
+const StatusPair = {
+    [ActiveStatusNumber.ONLINE]: <StatusIcon.Online height="100%" width="100%" />,
+    [ActiveStatusNumber.INVISIBLE]: (
+        <StatusIcon.Invisible height="100%" width="100%" />
+    ),
+    [ActiveStatusNumber.OFFLINE]: <StatusIcon.Offline height="100%" width="100%" />,
+    [ActiveStatusNumber.IDLE]: <StatusIcon.Idle height="100%" width="100%" />,
+    [ActiveStatusNumber.MATCHING]: (
+        <StatusIcon.Matching height="100%" width="100%" />
+    ),
+    [ActiveStatusNumber.DO_NOT_DISTURB]: (
+        <StatusIcon.DoNotDisturb height="100%" width="100%" />
+    ),
+    [ActiveStatusNumber.GAME]: <StatusIcon.InGame height="100%" width="100%" />,
+} as const;
 
-export type StatusType =
-    | "online"
-    | "invisible"
-    | "offline"
-    | "idle"
-    | "matching"
-    | "do-not-disturb"
-    | "in-game";
-
-export function Status({ type }: { type: StatusType }): React.ReactElement {
-    return (
-        <>
-            <Image
-                src={`/status/${type}.svg`}
-                alt={`status is ${type}`}
-                fill={true}
-            />
-        </>
-    );
+export function Status({ type }: { type: ActiveStatusNumber }) {
+    return StatusPair[type];
 }

@@ -1,15 +1,12 @@
-import React from "react";
-import {
-    ContextMenuBase_Profile,
-    ContextMenuItem,
-    ProfileItemConfig,
-} from "./ContextMenuBase_Profile";
+import { ContextMenuBase_Profile } from "./ContextMenuBase_Profile";
+import type { ProfileItemConfig } from "./ContextMenuBase_Profile";
+import { ContextMenuItem } from "./ContextMenuItem";
 
 export function ContextMenu_MyProfile({
-    profile,
+    info: profile,
 }: {
-    profile: ProfileItemConfig;
-}): React.ReactElement {
+    info: ProfileItemConfig;
+}) {
     return (
         <ContextMenuBase_Profile profile={profile}>
             <ContextMenuItem name="내 상태 변경하기" className="basic" />
