@@ -19,6 +19,7 @@ function DefaultLayout({ children }: React.PropsWithChildren) {
     );
 }
 
+//TODO : Subtracting to a constant file later 
 const ACCESS_TOKEN_KEY = "access_token";
 
 export default function MainLayout({
