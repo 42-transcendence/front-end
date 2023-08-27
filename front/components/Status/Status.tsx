@@ -1,28 +1,20 @@
-import {
-    StatusOnline,
-    StatusInvisible,
-    StatusOffline,
-    StatusIdle,
-    StatusMatching,
-    StatusDoNotDisturb,
-    StatusInGame,
-} from "@/components/ImageLibrary";
+import { Status as StatusIcon } from "@/components/ImageLibrary";
 import { ActiveStatusNumber } from "@/library/generated/types";
 
 const StatusPair = {
-    [ActiveStatusNumber.ONLINE]: <StatusOnline height="100%" width="100%" />,
+    [ActiveStatusNumber.ONLINE]: <StatusIcon.Online height="100%" width="100%" />,
     [ActiveStatusNumber.INVISIBLE]: (
-        <StatusInvisible height="100%" width="100%" />
+        <StatusIcon.Invisible height="100%" width="100%" />
     ),
-    [ActiveStatusNumber.OFFLINE]: <StatusOffline height="100%" width="100%" />,
-    [ActiveStatusNumber.IDLE]: <StatusIdle height="100%" width="100%" />,
+    [ActiveStatusNumber.OFFLINE]: <StatusIcon.Offline height="100%" width="100%" />,
+    [ActiveStatusNumber.IDLE]: <StatusIcon.Idle height="100%" width="100%" />,
     [ActiveStatusNumber.MATCHING]: (
-        <StatusMatching height="100%" width="100%" />
+        <StatusIcon.Matching height="100%" width="100%" />
     ),
     [ActiveStatusNumber.DO_NOT_DISTURB]: (
-        <StatusDoNotDisturb height="100%" width="100%" />
+        <StatusIcon.DoNotDisturb height="100%" width="100%" />
     ),
-    [ActiveStatusNumber.GAME]: <StatusInGame height="100%" width="100%" />,
+    [ActiveStatusNumber.GAME]: <StatusIcon.InGame height="100%" width="100%" />,
 } as const;
 
 export function Status({ type }: { type: ActiveStatusNumber }) {

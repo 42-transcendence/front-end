@@ -1,4 +1,4 @@
-import { IconLock, IconPerson } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 import { Avatar } from "@/components/Avatar";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
 
@@ -49,7 +49,7 @@ export default function ChatRoomBlock({
                                 {children}
                             </span>
                             <span className="flex h-fit w-fit shrink-0 flex-row gap-1">
-                                <IconLock
+                                <Icon.Lock
                                     width={12}
                                     height={12}
                                     className="text-yellow-200/70"
@@ -64,7 +64,7 @@ export default function ChatRoomBlock({
 
                     <div className="relative flex flex-col items-end gap-4 text-xs leading-3">
                         <div className="flex shrink-0 flex-row gap-1">
-                            <IconPerson
+                            <Icon.Person
                                 width={12}
                                 height={12}
                                 className="text-gray-200/70"

@@ -1,19 +1,12 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { IconSend } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 import {
     // ChatBubble,
     // ChatBubbleRight,
     ChatBubbleWithProfile,
 } from "./ChatBubble";
-import {
-    IconSidebar,
-    IconHamburger,
-    IconEdit,
-    IconSearch,
-} from "@/components/ImageLibrary";
-import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
 import { useWebSocket } from "@/library/react/websocket-hook";
 import { ChatClientOpcode } from "@/library/payload/chat-opcodes";
 import { readChatMessage } from "@/library/payload/chat-payloads";
@@ -59,7 +52,7 @@ function MessageInputArea() {
                 className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
             />
             <button type="button" onClick={handleClick}>
-                <IconSend
+                <Icon.Send
                     className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
                     width={32}
                     height={32}

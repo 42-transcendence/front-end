@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-    IconSidebar,
-    IconHamburger,
-    IconEdit,
-    IconSearch,
-} from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
@@ -40,19 +35,19 @@ export default function ChatLeftSideBar() {
                         htmlFor="CreateNewRoom"
                         className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white data-[checked=true]:bg-secondary/80"
                     >
-                        <IconEdit className="" width={17} height={17} />
+                        <Icon.Edit className="" width={17} height={17} />
                         <p className="font-sans text-base leading-4 ">
                             방 만들기
                         </p>
                     </label>
 
                     <label htmlFor="leftSideBarIcon">
-                        <IconSidebar
+                        <Icon.Sidebar
                             className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:block"
                             width={48}
                             height={48}
                         />
-                        <IconHamburger
+                        <Icon.Hamburger
                             className="block rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:hidden"
                             width={48}
                             height={48}
@@ -72,7 +67,7 @@ export default function ChatLeftSideBar() {
                     <TextField
                         type="search"
                         icon={
-                            <IconSearch
+                            <Icon.Search
                                 className="absolute left-1 right-1 top-1 select-none rounded-md p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
                                 width={24}
                                 height={24}

@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, } from "react";
 import { ProfileItemBase } from "@/components/ProfileItem/ProfileItembase";
 // import { TextField } from "@/components/TextField";
-import { IconCheck } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 
 // const configMockup = {
 //     id: 123,
@@ -133,7 +133,7 @@ function ExpireDateItem({ id, content }: { id: string; content: string }) {
                 value={content}
             />
             <div className="hidden h-5 w-5 rounded-full bg-secondary/80 outline outline-1 outline-secondary peer-checked:flex">
-                <IconCheck className="h-5 w-5 p-1" />
+                <Icon.Check className="h-5 w-5 p-1" />
             </div>
             <div className="h-5 w-5 rounded-full outline outline-1 outline-gray-300/50 peer-checked:hidden" />
             <span>{content}</span>

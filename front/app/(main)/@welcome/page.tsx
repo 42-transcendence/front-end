@@ -1,6 +1,6 @@
 "use client";
 
-import { DoubleSharp, IconArrow3, IconSearch } from "@/components/ImageLibrary";
+import { DoubleSharp, Icon } from "@/components/ImageLibrary";
 import { TextField } from "@/components/TextField";
 import { Card } from "@/components/Card/Card";
 import { useState } from "react";
@@ -33,7 +33,7 @@ export default function Welcome() {
                     </button>
                 </div>
                 {/* TODO : 서버에서 닉네임이 중복되었는지, 가능한 닉네임인지 확인 */}
-                <IconArrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
+                <Icon.Arrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
             </Card>
         </main>
     );

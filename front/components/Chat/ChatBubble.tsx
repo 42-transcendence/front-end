@@ -1,10 +1,7 @@
 // import { useState } from "react";
 import { ChatMessageEntry } from "@/library/payload/chat-payloads";
 import { Avatar } from "../Avatar";
-import {
-    Chat_ChatBubbleTailLeft,
-    Chat_ChatBubbleTailRight,
-} from "@/components/ImageLibrary";
+import { Chat } from "@/components/ImageLibrary";
 
 export function ChatBubbleWithProfile({
     chatMessage,
@@ -61,7 +58,7 @@ function ChatBubble({
                   padding: "pl-[11px] pt-[5px]",
                   bgColor: "bg-primary",
                   tail: (
-                      <Chat_ChatBubbleTailLeft
+                      <Chat.BubbleTailLeft
                           width="24"
                           height="13"
                           className="absolute left-0 top-0 text-primary"
@@ -73,7 +70,7 @@ function ChatBubble({
                   padding: "pr-[11px] pt-[5px]",
                   bgColor: "bg-secondary",
                   tail: (
-                      <Chat_ChatBubbleTailRight
+                      <Chat.BubbleTailRight
                           width="24"
                           height="13"
                           className="absolute right-0 top-0 text-secondary"

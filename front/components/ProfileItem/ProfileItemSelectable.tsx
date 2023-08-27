@@ -1,5 +1,5 @@
 import { Avatar } from "@/components/Avatar";
-import { IconCheck } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 
 export function ProfileItemSelectable({
     className,
@@ -47,7 +47,7 @@ export function ProfileItemSelectable({
                         value="nick"
                     />
                     <div className="hidden h-6 w-6 shrink-0 rounded-full bg-secondary/80 outline outline-1 outline-secondary peer-checked:flex">
-                        <IconCheck className="h-6 w-6 p-1" />
+                        <Icon.Check className="h-6 w-6 p-1" />
                     </div>
                     <div className="h-6 w-6 shrink-0 rounded-full outline outline-1 outline-gray-300/60 peer-checked:hidden" />
                 </div>
