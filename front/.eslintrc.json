@@ -72,6 +72,9 @@
                 "@typescript-eslint/no-require-imports": [
                     "error"
                 ],
+                "@typescript-eslint/switch-exhaustiveness-check": [
+                    "error"
+                ],
                 "@typescript-eslint/strict-boolean-expressions": [
                     "error",
                     {
