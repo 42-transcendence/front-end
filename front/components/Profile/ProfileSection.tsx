@@ -9,7 +9,7 @@ export function ProfileSection() {
         nick: "hdoo",
         tag: "#1234",
         relationship: "myself",
-    } as const
+    } as const;
 
     return (
         <div className="h-20 w-full bg-windowGlass/30 p-4 lg:h-full lg:w-48">
