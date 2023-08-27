@@ -254,7 +254,7 @@ const achievementMockup = [
     },
 ];
 
-export function AchievementPenal({ accountUUID }: { accountUUID: string }) {
+export function AchievementPanel({ accountUUID }: { accountUUID: string }) {
     // TODO: get from accountUUID
     void accountUUID;
     const achievementList = achievementMockup;
