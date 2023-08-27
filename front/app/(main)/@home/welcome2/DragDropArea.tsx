@@ -3,7 +3,7 @@ export function DragDropArea({
 }: {
     handleFiles: (files: FileList | null) => void;
 }) {
-    // TODO: drag, dragover 필수인가?
+    // TODO: drag, dragover에서 영역 비쥬얼 표시
     const handleDrag: React.DragEventHandler<HTMLDivElement> = (e) => {
         e.preventDefault();
     };
