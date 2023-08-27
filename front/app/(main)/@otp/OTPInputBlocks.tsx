@@ -48,6 +48,7 @@ export function OTPInputBlocks({ length }: { length: number }) {
             window.localStorage.removeItem("refresh_token");
         }
 
+        //TODO: 같은 문서 안에서 바뀐건 스토리지 이벤트가 안날아감 홀리... Zustand가 필요할 때이다
         // const eventInitDict: StorageEventInit = {
         //     key: "access_token",
         //     newValue: json.access_token,
@@ -56,7 +57,7 @@ export function OTPInputBlocks({ length }: { length: number }) {
         // const eventThatNewlyMade = new StorageEvent("storage", eventInitDict);
         // window.dispatchEvent(eventThatNewlyMade);
 
-        //TODO: 같은 문서 안에서 바뀐건 스토리지 이벤트가 안날아감 홀리... Zustand가 필요할 때이다
+       
     }, []);
 
     const failed = useCallback((error: unknown) => {
