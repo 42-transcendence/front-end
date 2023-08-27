@@ -171,7 +171,7 @@ function AchievementItem({
                 htmlFor="AchievementItem"
                 data-opened={opened}
                 onClick={() => setOpened(!opened)}
-                className="flex flex-row gap-4 justify-between items-center w-full group"
+                className="group flex w-full flex-row items-center justify-between gap-4"
             >
                 <div className={`w-full p-4`}>
                     <div
@@ -190,7 +190,7 @@ function AchievementItem({
                                 title={grade}
                             />
                         </div>
-                        <div className="flex flex-col gap-1 justify-start items-start w-full">
+                        <div className="flex w-full flex-col items-start justify-start gap-1">
                             <span
                                 className={`${
                                     accomplished
@@ -206,16 +206,16 @@ function AchievementItem({
                         </div>
                     </div>
                 </div>
-                <div className="flex relative flex-col gap-1 justify-center items-center w-20 min-h-full shrink-0 overflow-clip bg-black/30">
+                <div className="relative flex min-h-full w-20 shrink-0 flex-col items-center justify-center gap-1 overflow-clip bg-black/30">
                     <span className="">{state}</span>
                     {accomplished && (
                         <>
                             <IconMagicCirclesingleBorder
-                                className="absolute top-0 -left-3 text-white/10"
+                                className="absolute -left-3 top-0 text-white/10"
                                 width="144%"
                                 height="144%"
                             />
-                            <span className="px-1 text-xs rounded-lg bg-black/80 text-gray-100/70">
+                            <span className="rounded-lg bg-black/80 px-1 text-xs text-gray-100/70">
                                 {date.toLocaleDateString()}
                             </span>
                         </>
@@ -260,13 +260,9 @@ export function AchievementPanel({ accountUUID }: { accountUUID: string }) {
     const achievementList = achievementMockup;
 
     return (
-        <Panel
-            className={
-                "flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1"
-            }
-        >
+        <Panel className="flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1">
             <span className="p-4 text-xl font-extrabold text-white">업적</span>
-            <div className="flex overflow-auto flex-col gap-2 w-full">
+            <div className="flex w-full flex-col gap-2 overflow-auto">
                 {achievementList.map((ach, index) => (
                     <AchievementItem
                         key={index}

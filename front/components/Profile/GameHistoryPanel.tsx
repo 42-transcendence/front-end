@@ -42,7 +42,7 @@ type GameHistory = {
     rating: number;
 };
 
-const GameHIstoryMockup: GameHistory[] = [
+const GameHistoryMockup: GameHistory[] = [
     {
         gameUUID: "1",
         rating: 1231,
@@ -275,7 +275,7 @@ export function GameHistoryPanel() {
         <>
             <input
                 type="checkbox"
-                className="hidden peer"
+                className="peer hidden"
                 id="GameHistoryPanel"
             />
             <Panel
@@ -283,15 +283,15 @@ export function GameHistoryPanel() {
             >
                 <label
                     htmlFor="GameHistoryPanel"
-                    className="flex z-10 flex-row justify-between items-center p-4 w-full"
+                    className="z-10 flex w-full flex-row items-center justify-between p-4"
                 >
                     <span className="text-xl font-extrabold text-white">
                         전적
                     </span>
                 </label>
-                <div className="flex overflow-auto flex-col gap-2 w-full">
-                    {GameHIstoryMockup.map((gameHIstory, index) => (
-                        <GameHistoryItem key={index} history={gameHIstory} />
+                <div className="flex w-full flex-col gap-2 overflow-auto">
+                    {GameHistoryMockup.map((gameHistory, index) => (
+                        <GameHistoryItem key={index} history={gameHistory} />
                     ))}
                 </div>
             </Panel>
@@ -313,7 +313,7 @@ function GameHistoryItem({ history }: { history: GameHistory }) {
                 checked={opened}
                 type="checkbox"
                 id={history.gameUUID}
-                className="hidden peer"
+                className="peer hidden"
             />
             <div className="hidden w-full peer-checked:flex">
                 <GameHistoryDetail history={history} />
@@ -333,7 +333,7 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
         <div className="flex flex-row justify-start self-stretch">
             <label
                 htmlFor={history.gameUUID}
-                className="flex overflow-hidden relative flex-col justify-center items-start p-4 w-28 shrink-0 bg-black/30 hover:bg-black/20 active:bg-black/10"
+                className="relative flex w-28 shrink-0 flex-col items-start justify-center overflow-hidden bg-black/30 p-4 hover:bg-black/20 active:bg-black/10"
             >
                 <span
                     className={`w-fit rounded px-1 py-0.5 text-base font-extrabold italic ${
@@ -345,8 +345,8 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                     {history.config.queueType}
                 </span>
 
-                <div className="flex rounded w-fit shrink-0">
-                    <span className="py-0.5 px-1 text-xs font-bold w-fit shrink-0 bg-black/30">
+                <div className="flex w-fit shrink-0 rounded">
+                    <span className="w-fit shrink-0 bg-black/30 px-1 py-0.5 text-xs font-bold">
                         {history.config.field}
                     </span>
                     <span
@@ -368,18 +368,18 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                 />
             </label>
 
-            <div className="flex flex-row justify-around self-stretch w-full">
-                <div className="flex flex-row justify-center items-center">
+            <div className="flex w-full flex-row justify-around self-stretch">
+                <div className="flex flex-row items-center justify-center">
                     <div className="flex flex-row gap-2 px-4">
-                        <span className="p-2 text-2xl rounded bg-black/30">
+                        <span className="rounded bg-black/30 p-2 text-2xl">
                             {winCount}
                         </span>
-                        <span className="p-2 text-2xl rounded bg-black/30">
+                        <span className="rounded bg-black/30 p-2 text-2xl">
                             {loseCount}
                         </span>
                     </div>
                     <Seperator />
-                    <div className="flex relative justify-center items-center px-4 h-full shrink-0">
+                    <div className="relative flex h-full shrink-0 items-center justify-center px-4">
                         <span
                             className={`flex w-16 justify-center rounded p-3 pl-2.5 text-base font-extrabold italic ${
                                 gameResult === "WIN"
@@ -393,19 +393,19 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
                 </div>
 
                 <ItemWrapper className="hidden @md:flex">
-                    <span className="flex relative text-sm italic font-semibold">
+                    <span className="relative flex text-sm font-semibold italic">
                         {history.statistics.playTime}
                     </span>
                 </ItemWrapper>
 
                 <ItemWrapper className="hidden @lg:flex">
-                    <span className="flex relative text-sm italic font-semibold">
+                    <span className="relative flex text-sm font-semibold italic">
                         {history.statistics.startTimeStamp}
                     </span>
                 </ItemWrapper>
 
                 <ItemWrapper className="hidden @2xl:flex">
-                    <span className="flex relative text-sm italic font-semibold shrink-0">
+                    <span className="relative flex shrink-0 text-sm font-semibold italic">
                         Rating
                     </span>
                     <span
@@ -452,15 +452,15 @@ function ItemWrapper({
 
 function GameHistoryDetail({ history }: { history: GameHistory }) {
     return (
-        <div className="flex flex-col justify-center items-start w-full">
-            <div className="flex flex-row justify-start items-center w-full h-20 bg-secondary/10">
-                <div className="flex flex-col justify-center items-center w-28 h-full shrink-0 bg-black/30">
-                    <span className="py-0.5 px-1 text-sm italic font-extrabold rounded">
+        <div className="flex w-full flex-col items-start justify-center">
+            <div className="flex h-20 w-full flex-row items-center justify-start bg-secondary/10">
+                <div className="flex h-full w-28 shrink-0 flex-col items-center justify-center bg-black/30">
+                    <span className="rounded px-1 py-0.5 text-sm font-extrabold italic">
                         Player
                     </span>
                 </div>
 
-                <div className="flex flex-row justify-around w-full h-full">
+                <div className="flex h-full w-full flex-row justify-around">
                     <ProfileBlockInGame team={history.ally} />
 
                     <Seperator className="flex" />
@@ -469,27 +469,27 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                 </div>
             </div>
 
-            <div className="flex flex-col w-full">
+            <div className="flex w-full flex-col">
                 {history.set.map((oneSet, index) => (
                     <SetScore setData={oneSet} key={index} />
                 ))}
             </div>
 
-            <div className="flex flex-row w-full bg-primary/10">
-                <div className="flex flex-col justify-center items-center py-4 w-28 h-full shrink-0 bg-black/30">
-                    <span className="flex relative text-sm italic font-semibold shrink-0">
+            <div className="flex w-full flex-row bg-primary/10">
+                <div className="flex h-full w-28 shrink-0 flex-col items-center justify-center bg-black/30 py-4">
+                    <span className="relative flex shrink-0 text-sm font-semibold italic">
                         Statistics
                     </span>
                 </div>
 
                 <ItemWrapper seperatorDir="right" className="flex @md:hidden">
-                    <span className="flex relative text-sm italic font-semibold">
+                    <span className="relative flex text-sm font-semibold italic">
                         {history.statistics.playTime}
                     </span>
                 </ItemWrapper>
 
                 <ItemWrapper seperatorDir="right" className={"flex @lg:hidden"}>
-                    <span className="flex relative text-sm italic font-semibold">
+                    <span className="relative flex text-sm font-semibold italic">
                         {history.statistics.startTimeStamp}
                     </span>
                 </ItemWrapper>
@@ -498,7 +498,7 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                     seperatorDir="right"
                     className="hidden @md:flex @2xl:hidden"
                 >
-                    <span className="flex relative text-sm italic font-semibold shrink-0">
+                    <span className="relative flex shrink-0 text-sm font-semibold italic">
                         Rating
                     </span>
                     <span
@@ -514,8 +514,8 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                     </span>
                 </ItemWrapper>
 
-                <div className="flex justify-center items-center py-4 w-full">
-                    <div className="flex flex-row rounded-md w-fit text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50">
+                <div className="flex w-full items-center justify-center py-4">
+                    <div className="flex w-fit flex-row rounded-md text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50">
                         <IconExternalWindow
                             width={48}
                             height={48}
@@ -536,7 +536,7 @@ function SetScore({ setData }: { setData: SetData }) {
 
     return (
         <div className={`flex w-full ${winned && "bg-black/10"}`}>
-            <span className="flex overflow-hidden relative justify-center items-center p-4 w-28 text-sm italic font-black shrink-0 bg-black/30">
+            <span className="relative flex w-28 shrink-0 items-center justify-center overflow-hidden bg-black/30 p-4 text-sm font-black italic">
                 SET {setData.set}
                 <IconMagicCircleDoubleBorder
                     className={`absolute -right-10 -top-1 text-white/10 ${
@@ -546,21 +546,21 @@ function SetScore({ setData }: { setData: SetData }) {
                     height="144%"
                 />
             </span>
-            <div className="flex flex-row justify-around w-full">
-                <div className="flex justify-center items-center py-2 px-4">
-                    <span className="p-1 pr-1.5 text-xl italic font-extrabold rounded">
+            <div className="flex w-full flex-row justify-around">
+                <div className="flex items-center justify-center px-4 py-2">
+                    <span className="rounded p-1 pr-1.5 text-xl font-extrabold italic">
                         {setData.ally}
                     </span>
                 </div>
                 <Seperator />
-                <div className="flex justify-center items-center py-2 px-4">
-                    <span className="p-1 pr-1.5 text-xl italic font-extrabold rounded">
+                <div className="flex items-center justify-center px-4 py-2">
+                    <span className="rounded p-1 pr-1.5 text-xl font-extrabold italic">
                         {setData.enemy}
                     </span>
                 </div>
                 <Seperator />
-                <div className="flex flex-col justify-center items-center p-3">
-                    <span className="p-1 pr-1.5 italic font-extrabold rounded text-tertiary/80">
+                <div className="flex flex-col items-center justify-center p-3">
+                    <span className="rounded p-1 pr-1.5 font-extrabold italic text-tertiary/80">
                         MVP
                     </span>
                     <ProfileItemMinimal accountUUID={setData.mvp} />
@@ -577,10 +577,10 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
     return (
         <div
             title={nickName}
-            className="flex flex-row gap-4 p-1 px-2 rounded-full hover:bg-black/20 active:bg-black/10"
+            className="flex flex-row gap-4 rounded-full p-1 px-2 hover:bg-black/20 active:bg-black/10"
         >
             <Avatar
-                className="relative w-6 h-6 bg-white/30"
+                className="relative h-6 w-6 bg-white/30"
                 size={""}
                 accountUUID={accountUUID}
             />

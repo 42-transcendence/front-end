@@ -12,16 +12,16 @@ export function ProfileSection() {
     const relationship = "myself";
 
     return (
-        <div className="p-4 w-full h-20 lg:w-48 lg:h-full bg-windowGlass/30">
-            <div className="flex flex-row gap-4 justify-between items-center w-full lg:flex-col">
-                <div className="flex flex-row gap-4 justify-start w-full h-full lg:flex-col">
+        <div className="h-20 w-full bg-windowGlass/30 p-4 lg:h-full lg:w-48">
+            <div className="flex w-full flex-row items-center justify-between gap-4 lg:flex-col">
+                <div className="flex h-full w-full flex-row justify-start gap-4 lg:flex-col">
                     <Avatar
-                        className="relative w-12 h-12 lg:w-32 lg:h-32 bg-white/30"
+                        className="relative h-12 w-12 bg-white/30 lg:h-32 lg:w-32"
                         size={""}
                     />
-                    <div className="flex flex-col justify-center items-start w-full text-base md:text-lg lg:text-xl">
+                    <div className="flex w-full flex-col items-start justify-center text-base md:text-lg lg:text-xl">
                         <h1>{nick}</h1>
-                        <h2 className="text-xs md:text-sm lg:text-base text-gray-300/70">
+                        <h2 className="text-xs text-gray-300/70 md:text-sm lg:text-base">
                             {tag}
                         </h2>
                     </div>
@@ -36,19 +36,19 @@ function ProfileButton({ relationship }: { relationship: Relationship }) {
     switch (relationship) {
         case "myself":
             return (
-                <button className="flex relative justify-center items-center p-2 h-8 rounded-xl lg:w-full bg-secondary">
+                <button className="relative flex h-8 items-center justify-center rounded-xl bg-secondary p-2 lg:w-full">
                     <span className="text-sm">Edit</span>
                 </button>
             );
         case "friend":
             return (
-                <button className="flex relative justify-center items-center p-2 h-8 bg-green-500 rounded-xl lg:w-full">
+                <button className="relative flex h-8 items-center justify-center rounded-xl bg-green-500 p-2 lg:w-full">
                     <IconCheck width={16} height={16} />
                 </button>
             );
         case "stranger":
             return (
-                <button className="flex relative justify-center items-center p-2 h-8 bg-gray-500 rounded-xl lg:w-full">
+                <button className="relative flex h-8 items-center justify-center rounded-xl bg-gray-500 p-2 lg:w-full">
                     <IconPlus width={16} height={16} />
                 </button>
             );

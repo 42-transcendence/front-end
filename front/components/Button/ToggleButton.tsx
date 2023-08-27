@@ -36,7 +36,7 @@ export function ToggleButton(props: ToggleButtonProp) {
                 checked={checked}
                 type="checkbox"
                 id={id}
-                className="hidden peer"
+                className="peer hidden"
             />
             {children}
         </label>
