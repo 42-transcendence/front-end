@@ -369,25 +369,25 @@ function GameHistorySummary({ history }: { history: GameHistory }) {
             </label>
 
             <div className="flex flex-row justify-around self-stretch w-full">
-                <div className="flex flex-row gap-4 justify-center items-center">
-                    <div className="flex relative justify-center items-center px-4 w-20 h-full shrink-0">
-                        <span
-                            className={`w-fit text-base font-extrabold italic ${
-                                gameResult === "WIN"
-                                    ? "text-blue-500/80"
-                                    : "text-red-500/80"
-                            }`}
-                        >
-                            {gameResult}
-                        </span>
-                    </div>
-                    <Seperator />
-                    <div className="flex flex-row gap-2">
+                <div className="flex flex-row justify-center items-center">
+                    <div className="flex flex-row gap-2 px-4">
                         <span className="p-2 text-2xl rounded bg-black/30">
                             {winCount}
                         </span>
                         <span className="p-2 text-2xl rounded bg-black/30">
                             {loseCount}
+                        </span>
+                    </div>
+                    <Seperator />
+                    <div className="flex relative justify-center items-center px-4 h-full shrink-0">
+                        <span
+                            className={`flex w-16 justify-center rounded p-3 pl-2.5 text-base font-extrabold italic ${
+                                gameResult === "WIN"
+                                    ? "bg-blue-500/30"
+                                    : "bg-red-500/30"
+                            }`}
+                        >
+                            {gameResult}
                         </span>
                     </div>
                 </div>
@@ -454,7 +454,7 @@ function ItemWrapper({
 function GameHistoryDetail({ history }: { history: GameHistory }) {
     return (
         <div className="flex flex-col justify-center items-start w-full">
-            <div className="flex flex-row justify-start items-center w-full h-20 bg-secondary/30">
+            <div className="flex flex-row justify-start items-center w-full h-20 bg-secondary/10">
                 <div className="flex flex-col justify-center items-center w-28 h-full shrink-0 bg-black/30">
                     <span className="py-0.5 px-1 text-sm italic font-extrabold rounded">
                         Player
@@ -476,7 +476,7 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                 ))}
             </div>
 
-            <div className="flex flex-row w-full bg-primary/30">
+            <div className="flex flex-row w-full bg-primary/10">
                 <div className="flex flex-col justify-center items-center py-4 w-28 h-full shrink-0 bg-black/30">
                     <span className="flex relative text-sm italic font-semibold shrink-0">
                         Statistics
@@ -516,7 +516,7 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                 </ItemWrapper>
 
                 <div className="flex justify-center items-center py-4 w-full">
-                    <div className="flex flex-row rounded-md w-fit text-gray-50/80 hover:bg-primary/30 active:bg-secondary/70">
+                    <div className="flex flex-row rounded-md w-fit text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50">
                         <IconExternalWindow
                             width={48}
                             height={48}
@@ -585,7 +585,9 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
                 size={""}
                 accountUUID={accountUUID}
             />
-            <span className="line-clamp-1 @lg:block">{nickName}</span>
+            <span className="line-clamp-1 font-sans font-medium text-gray-50 @lg:block">
+                {nickName}
+            </span>
         </div>
     );
 }
