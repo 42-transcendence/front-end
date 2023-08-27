@@ -32,7 +32,7 @@ export function ChatBubbleWithProfile({
                 className={`${hidden} absolute -top-1 left-16 font-sans text-lg font-normal text-white `}
             >
                 {
-                    // account.username
+                    // TODO: fetch name from uuid
                     chatMessage.memberUUID
                 }
             </div>
