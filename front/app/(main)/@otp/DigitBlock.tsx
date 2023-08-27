@@ -49,7 +49,7 @@ export const DigitBlock = forwardRef(function DigitBlock(
 
     return (
         <input
-            className="ultra-dark flex h-12 w-12 rounded text-center opacity-80"
+            className="flex w-12 h-12 text-xl text-center text-black rounded outline-none caret-black"
             autoComplete="one-time-code"
             inputMode="numeric"
             type="text"
