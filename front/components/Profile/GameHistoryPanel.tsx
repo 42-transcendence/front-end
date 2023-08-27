@@ -5,7 +5,7 @@ import {
     IconExternalWindow,
     IconMagicCircleComplex,
     IconMagicCircleDoubleBorder,
-} from "../ImageLibrary";
+} from "@/components/ImageLibrary";
 
 type AccountUUID = string;
 
@@ -290,6 +290,7 @@ export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
                     </span>
                 </label>
                 <div className="flex w-full flex-col gap-2 overflow-auto">
+                    {/* TODO: key 를 gameUUID 로? */}
                     {GameHistoryMockup.map((gameHistory, index) => (
                         <GameHistoryItem key={index} history={gameHistory} />
                     ))}
@@ -436,7 +437,7 @@ function ItemWrapper({
     return (
         <>
             {seperatorDir === "left" && (
-                <Seperator className={`${className}`} />
+                <Seperator className={className} />
             )}
             <div
                 className={`${className} mx-1 h-full w-20 shrink-0 flex-col items-center justify-center py-4`}
@@ -444,7 +445,7 @@ function ItemWrapper({
                 {children}
             </div>
             {seperatorDir === "right" && (
-                <Seperator className={`${className}`} />
+                <Seperator className={className} />
             )}
         </>
     );
