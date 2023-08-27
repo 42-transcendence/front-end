@@ -4,7 +4,7 @@ import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { WebSocketContainer } from "@/library/react/websocket-hook";
 import { useState, useEffect } from "react";
-import * as jose from "jose";
+import { decodeJwt } from "jose";
 import {
     AuthLevel,
     AuthPayload,
@@ -15,7 +15,7 @@ import { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
-        <div className="flex h-[100dvh] flex-shrink-0 flex-col">{children}</div>
+        <div className="flex flex-col flex-shrink-0 h-[100dvh]">{children}</div>
     );
 }
 
@@ -64,7 +64,7 @@ export default function MainLayout({
         if (accessToken !== null) {
             // 이거 가지고 검증할 수 있지 않을까?
             try {
-                const payload = jose.decodeJwt(accessToken);
+                const payload = decodeJwt(accessToken);
                 const exp = payload.exp;
                 if (exp === undefined || exp < Date.now() / 1000) {
                     // 당신 토큰은 만료되었다 수고해라
@@ -79,7 +79,10 @@ export default function MainLayout({
                     const remainingSecs = exp - Date.now() / 1000;
                     const tolerance = 30000;
                     //TODO: 이 타임아웃을 없애주는 애를 리턴해야함.
-                    timeid = setTimeout(() => { }, remainingSecs * 1000 - tolerance);
+                    timeid = setTimeout(
+                        () => {},
+                        remainingSecs * 1000 - tolerance,
+                    );
                 }
                 if (!isAuthPayload(payload)) {
                     throw new Error();
@@ -95,7 +98,7 @@ export default function MainLayout({
             if (timeid !== null) {
                 clearTimeout(timeid);
             }
-        }
+        };
     }, [accessToken]);
 
     const { data } = useSWR(
