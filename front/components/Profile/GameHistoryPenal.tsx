@@ -14,14 +14,14 @@ type Team = {
     player2?: AccountUUID;
 };
 
-type SetScore = {
+type SetData = {
     set: number;
     ally: number;
     enemy: number;
+    mvp: AccountUUID;
 };
 
 type GameConfig = {
-    TeamSizes: "1:1" | "2:2";
     queueType: "CUSTOM" | "QUICK";
     mode: "기본" | "중력";
     field: "동글동글" | "네모네모";
@@ -35,7 +35,7 @@ type GameStatistics = {
 type GameHistory = {
     ally: Team;
     enemy: Team;
-    set: SetScore[];
+    set: SetData[];
     config: GameConfig;
     statistics: GameStatistics;
     gameUUID: string;
@@ -55,14 +55,13 @@ const GameHIstoryMockup: GameHistory[] = [
             player2: "456",
         },
         set: [
-            { set: 1, ally: 3, enemy: 2 },
-            { set: 2, ally: 2, enemy: 3 },
-            { set: 3, ally: 3, enemy: 2 },
-            { set: 4, ally: 2, enemy: 3 },
-            { set: 5, ally: 3, enemy: 2 },
+            { set: 1, ally: 3, enemy: 2, mvp: "jisookim" },
+            { set: 2, ally: 2, enemy: 3, mvp: "jisookim" },
+            { set: 3, ally: 3, enemy: 2, mvp: "jisookim" },
+            { set: 4, ally: 2, enemy: 3, mvp: "jisookim" },
+            { set: 5, ally: 3, enemy: 2, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "2:2",
             queueType: "CUSTOM",
             mode: "기본",
             field: "동글동글",
@@ -84,13 +83,12 @@ const GameHIstoryMockup: GameHistory[] = [
             player2: "131",
         },
         set: [
-            { set: 1, ally: 2, enemy: 3 },
-            { set: 2, ally: 1, enemy: 3 },
-            { set: 3, ally: 3, enemy: 1 },
-            { set: 4, ally: 2, enemy: 2 },
+            { set: 1, ally: 2, enemy: 3, mvp: "jisookim" },
+            { set: 2, ally: 1, enemy: 3, mvp: "jisookim" },
+            { set: 3, ally: 3, enemy: 1, mvp: "jisookim" },
+            { set: 4, ally: 2, enemy: 2, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "2:2",
             queueType: "QUICK",
             mode: "중력",
             field: "네모네모",
@@ -110,11 +108,10 @@ const GameHIstoryMockup: GameHistory[] = [
             player1: "161",
         },
         set: [
-            { set: 1, ally: 3, enemy: 2 },
-            { set: 2, ally: 3, enemy: 1 },
+            { set: 1, ally: 3, enemy: 2, mvp: "jisookim" },
+            { set: 2, ally: 3, enemy: 1, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "1:1",
             queueType: "CUSTOM",
             mode: "기본",
             field: "동글동글",
@@ -136,11 +133,10 @@ const GameHIstoryMockup: GameHistory[] = [
             player2: "195",
         },
         set: [
-            { set: 1, ally: 2, enemy: 3 },
-            { set: 2, ally: 1, enemy: 3 },
+            { set: 1, ally: 2, enemy: 3, mvp: "jisookim" },
+            { set: 2, ally: 1, enemy: 3, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "2:2",
             queueType: "CUSTOM",
             mode: "중력",
             field: "네모네모",
@@ -160,11 +156,10 @@ const GameHIstoryMockup: GameHistory[] = [
             player1: "217",
         },
         set: [
-            { set: 1, ally: 3, enemy: 0 },
-            { set: 2, ally: 2, enemy: 1 },
+            { set: 1, ally: 3, enemy: 0, mvp: "jisookim" },
+            { set: 2, ally: 2, enemy: 1, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "1:1",
             queueType: "QUICK",
             mode: "기본",
             field: "동글동글",
@@ -186,11 +181,10 @@ const GameHIstoryMockup: GameHistory[] = [
             player2: "251",
         },
         set: [
-            { set: 1, ally: 1, enemy: 3 },
-            { set: 2, ally: 2, enemy: 2 },
+            { set: 1, ally: 1, enemy: 3, mvp: "jisookim" },
+            { set: 2, ally: 2, enemy: 2, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "2:2",
             queueType: "CUSTOM",
             mode: "중력",
             field: "동글동글",
@@ -210,12 +204,11 @@ const GameHIstoryMockup: GameHistory[] = [
             player1: "273",
         },
         set: [
-            { set: 1, ally: 3, enemy: 2 },
-            { set: 2, ally: 1, enemy: 3 },
-            { set: 3, ally: 2, enemy: 3 },
+            { set: 1, ally: 3, enemy: 2, mvp: "jisookim" },
+            { set: 2, ally: 1, enemy: 3, mvp: "jisookim" },
+            { set: 3, ally: 2, enemy: 3, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "1:1",
             queueType: "QUICK",
             mode: "기본",
             field: "네모네모",
@@ -237,12 +230,11 @@ const GameHIstoryMockup: GameHistory[] = [
             player2: "317",
         },
         set: [
-            { set: 1, ally: 2, enemy: 1 },
-            { set: 2, ally: 2, enemy: 3 },
-            { set: 3, ally: 3, enemy: 0 },
+            { set: 1, ally: 2, enemy: 1, mvp: "jisookim" },
+            { set: 2, ally: 2, enemy: 3, mvp: "jisookim" },
+            { set: 3, ally: 3, enemy: 0, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "2:2",
             queueType: "CUSTOM",
             mode: "중력",
             field: "동글동글",
@@ -262,12 +254,11 @@ const GameHIstoryMockup: GameHistory[] = [
             player1: "339",
         },
         set: [
-            { set: 1, ally: 1, enemy: 3 },
-            { set: 2, ally: 3, enemy: 1 },
-            { set: 3, ally: 1, enemy: 3 },
+            { set: 1, ally: 1, enemy: 3, mvp: "jisookim" },
+            { set: 2, ally: 3, enemy: 1, mvp: "jisookim" },
+            { set: 3, ally: 1, enemy: 3, mvp: "jisookim" },
         ],
         config: {
-            TeamSizes: "1:1",
             queueType: "QUICK",
             mode: "기본",
             field: "네모네모",
@@ -449,7 +440,7 @@ function ItemWrapper({
                 <Seperator className={`${className}`} />
             )}
             <div
-                className={`${className} h-full w-24 shrink-0 flex-col items-center justify-center py-4`}
+                className={`${className} mx-1 h-full w-20 shrink-0 flex-col items-center justify-center py-4`}
             >
                 {children}
             </div>
@@ -463,29 +454,19 @@ function ItemWrapper({
 function GameHistoryDetail({ history }: { history: GameHistory }) {
     return (
         <div className="flex flex-col justify-center items-start w-full">
-            <div className="flex flex-row justify-start items-center w-full">
+            <div className="flex flex-row justify-start items-center w-full h-20 bg-secondary/30">
                 <div className="flex flex-col justify-center items-center w-28 h-full shrink-0 bg-black/30">
                     <span className="py-0.5 px-1 text-sm italic font-extrabold rounded">
                         Player
                     </span>
                 </div>
 
-                <div className="flex flex-row justify-around w-full">
-                    <div className="flex flex-col justify-center items-start py-2">
-                        <ProfileBlockInGame
-                            teamSize={history.config.TeamSizes}
-                            team={history.ally}
-                        />
-                    </div>
+                <div className="flex flex-row justify-around w-full h-full">
+                    <ProfileBlockInGame team={history.ally} />
 
                     <Seperator className="flex" />
 
-                    <div className="flex flex-col justify-center items-start py-2">
-                        <ProfileBlockInGame
-                            teamSize={history.config.TeamSizes}
-                            team={history.enemy}
-                        />
-                    </div>
+                    <ProfileBlockInGame team={history.enemy} />
                 </div>
             </div>
 
@@ -495,10 +476,10 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                 ))}
             </div>
 
-            <div className="flex flex-row w-full bg-secondary/30">
+            <div className="flex flex-row w-full bg-primary/30">
                 <div className="flex flex-col justify-center items-center py-4 w-28 h-full shrink-0 bg-black/30">
                     <span className="flex relative text-sm italic font-semibold shrink-0">
-                        Detail
+                        Statistics
                     </span>
                 </div>
 
@@ -551,11 +532,11 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
     );
 }
 
-function SetScore({ setData }: { setData: SetScore }) {
+function SetScore({ setData }: { setData: SetData }) {
     const winned = setData.ally > setData.enemy;
 
     return (
-        <div className={`flex w-full ${winned && "bg-black/20"}`}>
+        <div className={`flex w-full ${winned && "bg-black/10"}`}>
             <span className="flex overflow-hidden relative justify-center items-center p-4 w-28 text-sm italic font-black shrink-0 bg-black/30">
                 SET {setData.set}
                 <IconMagicCircleDoubleBorder
@@ -568,17 +549,43 @@ function SetScore({ setData }: { setData: SetScore }) {
             </span>
             <div className="flex flex-row justify-around w-full">
                 <div className="flex justify-center items-center py-2 px-4">
-                    <span className="p-1 pr-1.5 italic font-extrabold rounded">
+                    <span className="p-1 pr-1.5 text-xl italic font-extrabold rounded">
                         {setData.ally}
                     </span>
                 </div>
                 <Seperator />
                 <div className="flex justify-center items-center py-2 px-4">
-                    <span className="p-1 pr-1.5 italic font-extrabold rounded">
+                    <span className="p-1 pr-1.5 text-xl italic font-extrabold rounded">
                         {setData.enemy}
                     </span>
                 </div>
+                <Seperator />
+                <div className="flex flex-col justify-center items-center p-3">
+                    <span className="p-1 pr-1.5 italic font-extrabold rounded text-tertiary/80">
+                        MVP
+                    </span>
+                    <ProfileItemMinimal accountUUID={setData.mvp} />
+                </div>
             </div>
+        </div>
+    );
+}
+
+function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
+    // TODO: fetch from accountUUID
+    const nickName = accountUUID;
+
+    return (
+        <div
+            title={nickName}
+            className="flex flex-row gap-4 p-1 px-2 rounded-full hover:bg-black/20 active:bg-black/10"
+        >
+            <Avatar
+                className="relative w-6 h-6 bg-white/30"
+                size={""}
+                accountUUID={accountUUID}
+            />
+            <span className="line-clamp-1 @lg:block">{nickName}</span>
         </div>
     );
 }
@@ -591,38 +598,16 @@ function Seperator({ className }: { className?: string }) {
     );
 }
 
-function ProfileBlockInGame({
-    team,
-    teamSize,
-}: {
-    team: Team;
-    teamSize: "1:1" | "2:2";
-}) {
+function ProfileBlockInGame({ team }: { team: Team }) {
     // TODO: get from accountUUID
-    const nickName = team.player1;
-    const nickName2 = teamSize === "2:2" ? team.player2 : null;
 
     // TODO: add link to user profile page.
     return (
-        <>
-            <div className="flex flex-row gap-4 p-1 px-2 rounded-full hover:bg-black/20 active:bg-black/10">
-                <Avatar
-                    className="relative w-6 h-6 bg-white/30"
-                    size={""}
-                    accountUUID={team.player1}
-                />
-                <p className="overflow-ellipsis">{nickName}</p>
-            </div>
-            {nickName2 !== null && (
-                <div className="flex flex-row gap-4 p-1 px-2 rounded-full hover:bg-black/20 active:bg-black/10">
-                    <Avatar
-                        className="relative w-6 h-6 bg-white/30"
-                        size={""}
-                        accountUUID={team.player2}
-                    />
-                    <p>{nickName2}</p>
-                </div>
+        <div className="flex flex-col items-start justify-center py-2 @2xl:flex-row @2xl:items-center @2xl:gap-4">
+            <ProfileItemMinimal accountUUID={team.player1} />
+            {team.player2 !== undefined && (
+                <ProfileItemMinimal accountUUID={team.player2} />
             )}
-        </>
+        </div>
     );
 }
