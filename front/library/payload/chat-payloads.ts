@@ -1,10 +1,11 @@
-import {
+import type {
     ChatEntity,
     ChatMemberEntity,
     ChatMessageEntity,
 } from "../generated/types";
-import { AccountUUID } from "./profile-payloads";
-import { ByteBuffer, NULL_UUID } from "@akasha-lib";
+import type { AccountUUID } from "./profile-payloads";
+import type { ByteBuffer } from "@akasha-lib";
+import { NULL_UUID } from "@akasha-lib";
 
 /// ChatRoomModeFlags
 export const enum ChatRoomModeFlags {
@@ -36,7 +37,7 @@ export function readChatRoom(buf: ByteBuffer): ChatRoomEntry {
     const modeFlags = buf.read1();
     const limit = buf.read2();
     const members = buf.readArray(readChatRoomMember);
-    const lastMessageId = buf.readNullable(buf.readUUID, NULL_UUID);
+    const lastMessageId = buf.readNullable((buf) => buf.readUUID(), NULL_UUID);
     return { uuid, title, modeFlags, limit, members, lastMessageId };
 }
 
@@ -46,7 +47,11 @@ export function writeChatRoom(obj: ChatRoomEntry, buf: ByteBuffer) {
     buf.write1(obj.modeFlags);
     buf.write2(obj.limit);
     buf.writeArray(obj.members, writeChatRoomMember);
-    buf.writeNullable(obj.lastMessageId, buf.writeUUID, NULL_UUID);
+    buf.writeNullable(
+        obj.lastMessageId,
+        (x, buf) => buf.writeUUID(x),
+        NULL_UUID,
+    );
 }
 
 /// ChatRoomMemberEntry
