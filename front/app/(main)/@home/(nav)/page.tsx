@@ -22,7 +22,7 @@ function HelloWorldPaper() {
                     <p>빠른 대전 - Quick Match</p>
                 </div>
                 <div className="pt-[20px] text-center text-base font-normal italic leading-5 text-white text-white/30">
-                    @42-transendence
+                    @42-transcendence
                 </div>
             </div>
         </div>

@@ -1,6 +1,4 @@
-import React, { InputHTMLAttributes } from "react";
-
-type TextFieldProps = InputHTMLAttributes<HTMLInputElement> & {
+type TextFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
     icon?: React.ReactNode | undefined;
     className?: string | undefined;
 };

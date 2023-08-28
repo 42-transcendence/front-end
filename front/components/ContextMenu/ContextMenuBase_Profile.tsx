@@ -1,7 +1,5 @@
-import React, { PropsWithChildren } from "react";
-import { ContextMenuBase, ContextMenuItem } from "./ContextMenuBase";
-
-export { ContextMenuItem } from "./ContextMenuBase";
+import { ContextMenuBase } from "./ContextMenuBase";
+import { ContextMenuItem } from "./ContextMenuItem";
 
 export type ProfileItemConfig = {
     id: number;
@@ -14,7 +12,7 @@ export type ProfileItemConfig = {
 export function ContextMenuBase_Profile({
     profile,
     children,
-}: PropsWithChildren<{ profile: ProfileItemConfig }>): React.ReactElement {
+}: React.PropsWithChildren<{ profile: ProfileItemConfig }>) {
     //TODO: if profile.id is undefined, throw error
 
     return (

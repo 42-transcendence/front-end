@@ -12,12 +12,7 @@ export function Icon({
     size,
 }: {
     className: string;
-    type:
-        | "check"
-        | "double-sharp"
-        | "edit"
-        | "star-filled"
-        | "sidebar";
+    type: "check" | "double-sharp" | "edit" | "star-filled" | "sidebar";
     size: number;
 }): React.ReactElement {
     return (

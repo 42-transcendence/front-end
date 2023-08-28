@@ -1,9 +1,8 @@
 "use client";
-import PropTypes from "prop-types";
-import React from "react";
-import "./style.css";
+
 import { useState } from "react";
-import { ProfileItem, ProfileItemConfig } from "../ProfileItem";
+import { ProfileItem } from "@/components/ProfileItem";
+import type { ProfileItemConfig } from "@/components/ProfileItem";
 
 //TODO change contents with query data.
 const profiles: ProfileItemConfig[] = [
@@ -12,39 +11,39 @@ const profiles: ProfileItemConfig[] = [
         name: "hdoo",
         tag: "#00001",
         statusMessage: "Hello world!",
-        showStatusMessage: true,
+        uuid: "asdf",
     },
     {
         id: 2,
         name: "chanhpar",
         tag: "#00002",
         statusMessage: "I'm chanhpar",
-        showStatusMessage: true,
+        uuid: "asdf",
     },
     {
         id: 3,
         name: "iyun",
         tag: "#00003",
         statusMessage: "I'm IU",
-        showStatusMessage: true,
+        uuid: "asdf",
     },
     {
         id: 4,
         name: "jkong",
         tag: "#00004",
         statusMessage: "I'm Jkong!",
-        showStatusMessage: true,
+        uuid: "asdf",
     },
     {
         id: 5,
         name: "jisookim",
         tag: "#00005",
         statusMessage: "Hi I'm jisoo",
-        showStatusMessage: true,
+        uuid: "asdf",
     },
 ];
 
-export function FriendModal(): React.ReactElement {
+export function FriendModal() {
     const [selectedId, setSelectedId] = useState<number>();
     //TODO: fetch profile datas
 
@@ -55,7 +54,7 @@ export function FriendModal(): React.ReactElement {
                     <ProfileItem
                         type="friend"
                         key={profile.id}
-                        config={profile}
+                        info={profile}
                         selected={profile.id === selectedId}
                         onClick={() => {
                             setSelectedId(
@@ -70,7 +69,3 @@ export function FriendModal(): React.ReactElement {
         </div>
     );
 }
-
-FriendModal.propTypes = {
-    isToggled: PropTypes.bool,
-};
