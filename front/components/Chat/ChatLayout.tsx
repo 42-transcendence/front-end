@@ -1,6 +1,6 @@
-import ChatRoomList from "./ChatRoomList";
+import ChatLeftSideBar from "./ChatLeftSideBar";
 import ChatMainPage from "./ChatMainPage";
-import ChatMemberList from "./ChatMemberList";
+import ChatRightSideBar from "./ChatRightSideBar";
 
 export default function ChatLayout() {
     return (
@@ -12,7 +12,7 @@ export default function ChatLayout() {
                 id="leftSideBarIcon"
                 defaultChecked
             />
-            <ChatRoomList />
+            <ChatLeftSideBar />
             <ChatMainPage />
             <input
                 className="peer/right hidden"
@@ -21,7 +21,7 @@ export default function ChatLayout() {
                 id="rightSideBarIcon"
                 defaultChecked
             />
-            <ChatMemberList />
+            <ChatRightSideBar />
         </div>
     );
 }

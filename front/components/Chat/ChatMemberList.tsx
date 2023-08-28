@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { IconMembers, IconSearch, IconInvite } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
-import { ProfileItem, ProfileItemConfig } from "@/components/ProfileItem";
+import type { ProfileItemConfig } from "@/components/ProfileItem";
+import { ProfileItem } from "@/components/ProfileItem";
 import { InviteList } from "@/components/Service/InviteList";
 import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
@@ -82,7 +83,7 @@ export default function ChatMemberList() {
             <div className="flex h-full w-full shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 backdrop-blur-[20px] 2xl:py-4">
                 <div className="flex h-fit shrink-0 flex-row items-start justify-between gap-4 self-stretch 2xl:py-2">
                     <label htmlFor="rightSideBarIcon">
-                        <IconMembers
+                        <Icon.Members
                             className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
                             width={48}
                             height={48}
@@ -124,7 +125,7 @@ export default function ChatMemberList() {
                         title="invite"
                         className="group"
                     >
-                        <IconInvite
+                        <Icon.Invite
                             className="shrink-0 rounded-md p-1 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80 group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50"
                             width={48}
                             height={48}
@@ -152,7 +153,7 @@ export default function ChatMemberList() {
                         <TextField
                             type="search"
                             icon={
-                                <IconSearch
+                                <Icon.Search
                                     className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
                                     width={24}
                                     height={24}

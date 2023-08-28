@@ -1,16 +1,16 @@
-import React from "react";
-import {
-    ContextMenuBase_Profile,
-    ContextMenuItem,
-    ProfileItemConfig,
-} from "./ContextMenuBase_Profile";
+// import {
+//     ContextMenuBase_Profile,
+// } from "./ContextMenuBase_Profile";
+
+import type { ProfileItemConfig } from "./ContextMenuBase_Profile";
 import { ContextMenuBase } from "./ContextMenuBase";
+import { ContextMenuItem } from "./ContextMenuItem";
 
 export function ContextMenu_Friend({
-    profile,
+    info: profile,
 }: {
-    profile: ProfileItemConfig;
-}): React.ReactElement {
+    info: ProfileItemConfig;
+}) {
     //TODO: fetch score
     const score = 1321;
     return (

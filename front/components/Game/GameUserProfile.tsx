@@ -43,9 +43,8 @@ export default function GameUserProfile() {
     return (
         <div className="flex w-[239px] items-center justify-center gap-[22px] py-7">
             <Avatar
-                size={"w-9 h-9 2xl:w-12 2xl:h-12"}
-                avatarKey={"jkong"}
-                className="relative bg-white/30"
+                accountUUID="jkong"
+                className="relative h-9 w-9 bg-white/30 2xl:h-12 2xl:w-12"
             />
             <div className="flex h-[67px] shrink-0 flex-col justify-center text-center text-2xl font-bold not-italic leading-[normal] text-white">
                 jkong

@@ -1,12 +1,12 @@
 import { CreateGameButton, QuickMatchButton } from "./GameButton";
-import { Game_Ghost3 } from "@/components/ImageLibrary";
+import { Ghost3 } from "./Ghost3";
 import { LogoutButton } from "./LogoutButton";
 
 function HelloWorldPaper() {
     return (
         <div className="min-w-max">
             <div className="flex flex-row gap-[25px] pt-[10px]">
-                <Game_Ghost3 width="80" height="80" color="#00FFD1" />
+                <Ghost3 />
                 <div className="flex flex-col pb-[59px] text-center text-[32px] font-bold italic leading-[45px] text-[#00FFD1]">
                     <div>HELLO, IT&lsquo;S</div>
                     <div>DOUBLE SHARP!</div>
@@ -22,7 +22,7 @@ function HelloWorldPaper() {
                     <p>빠른 대전 - Quick Match</p>
                 </div>
                 <div className="pt-[20px] text-center text-base font-normal italic leading-5 text-white text-white/30">
-                    @42-transendence
+                    @42-transcendence
                 </div>
             </div>
         </div>

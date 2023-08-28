@@ -1,81 +1,53 @@
-/* eslint-disable jsx-a11y/alt-text */
-/*
-We're constantly improving the code you see.
-Please share your feedback here: https://form.asana.com/?k=uvp-HPgd3_hyoXRBw1IcNg&d=1152665201300829
-*/
+"use client";
 
-import React from "react";
-import { Status } from "../Status";
+import { Status } from "@/components/Status";
 import Image from "next/image";
+import type {
+    AccountProfileProtectedPayload,
+    AccountProfilePublicPayload,
+} from "@/library/payload/profile-payloads";
+import { ActiveStatusNumber } from "@/library/generated/types";
+import { fetcher, useSWR } from "@/hooks/fetcher";
 
-export type UserStatus =
-    | "online"
-    | "invisible"
-    | "offline"
-    | "idle"
-    | "matching"
-    | "do-not-disturb"
-    | "in-game";
+function PrivilegedSection({ accountUUID }: { accountUUID: string }) {
+    const { data } = useSWR(
+        `/profile/protected/${accountUUID}`,
+        fetcher<AccountProfileProtectedPayload>,
+    );
 
-type AvatarInfo = {
-    profileImage: string;
-    userStatus: UserStatus;
-};
-
-const dummy: AvatarInfo[] = [
-    {
-        profileImage: "/hdoo.png",
-        userStatus: "online",
-    },
-    {
-        profileImage: "/chanhpar.png",
-        userStatus: "online",
-    },
-    {
-        profileImage: "/iyun.png",
-        userStatus: "online",
-    },
-    {
-        profileImage: "/jkong.png",
-        userStatus: "online",
-    },
-    {
-        profileImage: "/jisookim.png",
-        userStatus: "online",
-    },
-];
+    return (
+        <div className="absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full">
+            <Status type={data?.activeStatus ?? ActiveStatusNumber.INVISIBLE} />
+        </div>
+    );
+}
 
 export function Avatar({
     className,
-    size,
     accountUUID,
+    privileged,
 }: {
     className: string;
-    size: string;
-    accountUUID?: string;
-}): React.ReactElement {
-    //TODO: fetch Avatar datas
-    // \-  get user profile and status from accountid
-
-    const avatarKey = "jisookim"; //FIXME: temporary
-    const status = "online"; //FIXME: temporary
+    accountUUID: string;
+    privileged: boolean;
+}) {
+    const { data } = useSWR(
+        `/profile/public/${accountUUID}`,
+        fetcher<AccountProfilePublicPayload>,
+    );
 
     return (
         <div
-            className={`${className} flex aspect-square ${size} items-start gap-2.5 rounded-full`}
+            className={`${className} flex aspect-square items-start gap-2.5 rounded-full`}
         >
             <Image
                 className="relative rounded-full"
-                src={`/${avatarKey}.png`}
+                src={data?.avatarKey ?? "/jkong.png"} // TODO: fallback avatar image
                 alt="Avatar"
                 sizes="100%"
                 fill={true}
             />
-            <div
-                className={`absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full`}
-            >
-                <Status type={status} />
-            </div>
+            {privileged && <PrivilegedSection accountUUID={accountUUID} />}
         </div>
     );
 }

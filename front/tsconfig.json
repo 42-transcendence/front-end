@@ -20,7 +20,9 @@
             }
         ],
         "paths": {
-            "@/*": ["./*"]
+            "@/*": ["./*"],
+            "@akasha-common/*": ["./library/*"],
+            "@akasha-lib": ["./library/akasha-lib/index"]
         }
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
