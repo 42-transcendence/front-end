@@ -1,5 +1,3 @@
-"use client";
-
 /* eslint-disable   */
 /* prettier-ignore  */
 import _DoubleSharp from "/public/double-sharp.svg"; export const DoubleSharp = _DoubleSharp;
