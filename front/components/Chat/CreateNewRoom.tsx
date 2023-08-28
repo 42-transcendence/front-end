@@ -53,6 +53,7 @@ function useDetectSticky(): [
     return [isSticky, ref, setIsSticky];
 }
 
+// TODO: refactoring 하고 어떻게 잘 함수 분리해보기
 export function CreateNewRoom() {
     const [title, setTitle] = useState("");
     const [password, setPassword] = useState("");
