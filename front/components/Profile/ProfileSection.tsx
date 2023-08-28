@@ -1,5 +1,5 @@
 import { Avatar } from "@/components/Avatar";
-import { IconCheck, IconPlus } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 
 type Relationship = "myself" | "friend" | "stranger";
 
@@ -43,13 +43,13 @@ function ProfileButton({ relationship }: { relationship: Relationship }) {
         case "friend":
             return (
                 <button className="relative flex h-8 items-center justify-center rounded-xl bg-green-500 p-2 lg:w-full">
-                    <IconCheck width={16} height={16} />
+                    <Icon.Check width={16} height={16} />
                 </button>
             );
         case "stranger":
             return (
                 <button className="relative flex h-8 items-center justify-center rounded-xl bg-gray-500 p-2 lg:w-full">
-                    <IconPlus width={16} height={16} />
+                    <Icon.Plus width={16} height={16} />
                 </button>
             );
     }
