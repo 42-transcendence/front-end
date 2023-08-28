@@ -35,7 +35,7 @@ import _IconKey from "/public/icon/key.svg";
 import _IconLock from "/public/icon/lock.svg";
 import _IconLockOpen from "/public/icon/lock-open.svg";
 import _IconMagicCircleDoubleBorder from "/public/icon/magic-circle-double-border.svg";
-import _IconMagicCirclesingleBorder from "/public/icon/magic-circle-single-border.svg";
+import _IconMagicCircleSingleBorder from "/public/icon/magic-circle-single-border.svg";
 import _IconMagicCircleComplex from "/public/icon/magic-circle-complex.svg";
 import _IconMembers from "/public/icon/members.svg";
 import _IconPerson from "/public/icon/person.svg";
@@ -93,7 +93,7 @@ export const Icon = {
     Lock: _IconLock,
     LockOpen: _IconLockOpen,
     MagicCircleDoubleBorder: _IconMagicCircleDoubleBorder,
-    MagicCirclesingleBorder: _IconMagicCirclesingleBorder,
+    MagicCircleSingleBorder: _IconMagicCircleSingleBorder,
     MagicCircleComplex: _IconMagicCircleComplex,
     Members: _IconMembers,
     Person: _IconPerson,
