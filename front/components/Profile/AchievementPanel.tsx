@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Panel } from "./Panel";
 import { useState } from "react";
-import { IconMagicCirclesingleBorder } from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 
 type Achievement = {
     id: number;
@@ -211,7 +211,7 @@ function AchievementItem({
                     <span className="">{state}</span>
                     {accomplished && (
                         <>
-                            <IconMagicCirclesingleBorder
+                            <Icon.MagicCircleSingleBorder
                                 className="absolute -left-3 top-0 text-white/10"
                                 width="144%"
                                 height="144%"
