@@ -176,10 +176,10 @@ function AchievementItem({
     //      넣어도 된다면 이렇게 유지해도 될까요? 이렇게 하면 가장 밖의 div label도 하나로 합칠 수 있지 않을까 싶어
     //      제안해봅니다
     return (
-        <div className="flex relative w-full rounded-xl shrink-0 overflow-clip bg-black/30 hover:bg-black/20 active:bg-black/10">
+        <div className="relative flex w-full shrink-0 overflow-clip rounded-xl bg-black/30 hover:bg-black/20 active:bg-black/10">
             <label
                 data-opened={opened}
-                className="flex flex-row gap-4 justify-between items-center w-full group"
+                className="group flex w-full flex-row items-center justify-between gap-4"
             >
                 <input
                     type="checkbox"
@@ -187,10 +187,10 @@ function AchievementItem({
                     onChange={() => setOpened(!opened)}
                     className="hidden"
                 />
-                <div className="p-4 w-full">
-                    <div className="flex relative flex-row gap-4 justify-center items-center">
+                <div className="w-full p-4">
+                    <div className="relative flex flex-row items-center justify-center gap-4">
                         <Trophy grade={grade} accomplished={accomplished} />
-                        <div className="flex flex-col gap-1 justify-start items-start w-full">
+                        <div className="flex w-full flex-col items-start justify-start gap-1">
                             <span
                                 className={`${
                                     accomplished
@@ -207,16 +207,16 @@ function AchievementItem({
                     </div>
                 </div>
                 {/* TODO: 이 부분도 나중에 component로 분리하기? 달성 + 날짜 or 미달성 + 달성률 같은 식으로 */}
-                <div className="flex relative flex-col gap-1 justify-center items-center w-20 min-h-full shrink-0 overflow-clip bg-black/30">
+                <div className="relative flex min-h-full w-20 shrink-0 flex-col items-center justify-center gap-1 overflow-clip bg-black/30">
                     <span className="">{state}</span>
                     {accomplished && (
                         <>
                             <IconMagicCirclesingleBorder
-                                className="absolute top-0 -left-3 text-white/10"
+                                className="absolute -left-3 top-0 text-white/10"
                                 width="144%"
                                 height="144%"
                             />
-                            <span className="px-1 text-xs rounded-lg bg-black/80 text-gray-100/70">
+                            <span className="rounded-lg bg-black/80 px-1 text-xs text-gray-100/70">
                                 {date.toLocaleDateString()}
                             </span>
                         </>
@@ -261,9 +261,9 @@ export function AchievementPanel({ accountUUID }: { accountUUID: string }) {
     const achievementList = achievementMockup;
 
     return (
-        <Panel className="flex flex-col justify-start items-start md:col-span-2 md:row-span-1 overflow-clip">
+        <Panel className="flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1">
             <span className="p-4 text-xl font-extrabold text-white">업적</span>
-            <div className="flex overflow-auto flex-col gap-2 w-full">
+            <div className="flex w-full flex-col gap-2 overflow-auto">
                 {achievementList.map((ach, index) => (
                     <AchievementItem
                         key={index}
