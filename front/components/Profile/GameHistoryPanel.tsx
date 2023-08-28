@@ -306,122 +306,166 @@ function GameHistoryItem({ history }: { history: GameHistory }) {
 
     return (
         <div className="group relative flex w-full shrink-0 flex-col items-center overflow-clip rounded-xl bg-black/30 @container">
-            <GameHistorySummary history={history} />
-            <input
-                onChange={() => {
-                    setOpened(!opened);
-                }}
-                checked={opened}
-                type="checkbox"
-                id={history.gameUUID}
-                className="peer hidden"
+            <GameHistorySummary
+                history={history}
+                toggleOpen={() => setOpened(!opened)}
             />
-            <div className="hidden w-full peer-checked:flex">
+            <div className={`w-full ${opened ? "flex" : "hidden"}`}>
                 <GameHistoryDetail history={history} />
             </div>
         </div>
     );
 }
 
-function GameHistorySummary({ history }: { history: GameHistory }) {
+function GameHistorySummary({
+    history,
+    toggleOpen,
+}: {
+    history: GameHistory;
+    toggleOpen: React.ChangeEventHandler<HTMLInputElement>;
+}) {
     const winCount = history.set.filter(
         (setScore) => setScore.ally > setScore.enemy,
     ).length;
     const loseCount = history.set.length - winCount;
-    const gameResult = winCount > loseCount ? "WIN" : "LOSE";
+    const isWin = winCount > loseCount;
 
     return (
         <div className="flex flex-row justify-start self-stretch">
-            <label
-                htmlFor={history.gameUUID}
-                className="relative flex w-28 shrink-0 flex-col items-start justify-center overflow-hidden bg-black/30 p-4 hover:bg-black/20 active:bg-black/10"
-            >
-                <span
-                    className={`w-fit rounded px-1 py-0.5 text-base font-extrabold italic ${
-                        history.config.queueType === "QUICK"
-                            ? "text-tertiary/80"
-                            : ""
-                    }`}
-                >
-                    {history.config.queueType}
-                </span>
+            <input
+                onChange={toggleOpen}
+                id={`history-${history.gameUUID}`}
+                type="checkbox"
+                className="hidden"
+            />
+            <GameModeInfo history={history} isWin={isWin} />
+            <div className="flex w-full flex-row justify-around self-stretch">
+                <StatScoreResult
+                    winCount={winCount}
+                    loseCount={loseCount}
+                    isWin={isWin}
+                />
+                <StatPlayTime playTime={history.statistics.playTime} />
+                <StatTimeStamp timestamp={history.statistics.startTimeStamp} />
+                <StatRating history={history} />
+            </div>
+        </div>
+    );
+}
 
-                <div className="flex w-fit shrink-0 rounded">
-                    <span className="w-fit shrink-0 bg-black/30 px-1 py-0.5 text-xs font-bold">
-                        {history.config.field}
-                    </span>
-                    <span
-                        className={`w-fit shrink-0 ${
-                            history.config.mode === "기본"
-                                ? "bg-secondary/70"
-                                : "bg-primary/70"
-                        } px-1 py-0.5 text-xs font-bold `}
-                    >
-                        {history.config.mode}
-                    </span>
-                </div>
+function GameModeInfo({
+    history,
+    isWin,
+}: {
+    history: GameHistory;
+    isWin: boolean;
+}) {
+    return (
+        <label
+            htmlFor={`history-${history.gameUUID}`}
+            className="relative flex w-28 shrink-0 flex-col items-start justify-center overflow-hidden bg-black/30 p-4 hover:bg-black/20 active:bg-black/10"
+        >
+            <span
+                className={`w-fit rounded px-1 py-0.5 text-base font-extrabold italic ${
+                    history.config.queueType === "QUICK"
+                        ? "text-tertiary/80"
+                        : ""
+                }`}
+            >
+                {history.config.queueType}
+            </span>
+
+            <div className="flex w-fit shrink-0 rounded">
+                <span className="w-fit shrink-0 bg-black/30 px-1 py-0.5 text-xs font-bold">
+                    {history.config.field}
+                </span>
+                <span
+                    className={`w-fit shrink-0 ${
+                        history.config.mode === "기본"
+                            ? "bg-secondary/70"
+                            : "bg-primary/70"
+                    } px-1 py-0.5 text-xs font-bold `}
+                >
+                    {history.config.mode}
+                </span>
+            </div>
+            {isWin && (
                 <IconMagicCircleComplex
-                    className={`absolute -left-5 -top-4 text-white/10 ${
-                        gameResult === "WIN" ? "" : "hidden"
-                    }`}
+                    className="absolute -left-5 -top-4 text-white/10"
                     width="144%"
                     height="144%"
                 />
-            </label>
+            )}
+        </label>
+    );
+}
 
-            <div className="flex w-full flex-row justify-around self-stretch">
-                <div className="flex flex-row items-center justify-center">
-                    <div className="flex w-16 flex-row justify-between">
-                        <span className="rounded bg-black/30 p-2 text-2xl">
-                            {winCount}
-                        </span>
-                        <span className="rounded bg-black/30 p-2 text-2xl">
-                            {loseCount}
-                        </span>
-                    </div>
-                    <div className="relative flex h-full shrink-0 items-center justify-center px-4">
-                        <span
-                            className={`flex w-16 justify-center rounded p-3 pl-2.5 text-base font-extrabold italic ${
-                                gameResult === "WIN"
-                                    ? "bg-blue-500/30"
-                                    : "bg-red-500/30"
-                            }`}
-                        >
-                            {gameResult}
-                        </span>
-                    </div>
-                </div>
-
-                <ItemWrapper className="hidden @md:flex">
-                    <span className="relative flex text-base font-semibold italic">
-                        {history.statistics.playTime}
-                    </span>
-                </ItemWrapper>
-
-                <ItemWrapper className="hidden @lg:flex">
-                    <span className="relative flex text-base font-semibold italic">
-                        {history.statistics.startTimeStamp}
-                    </span>
-                </ItemWrapper>
-
-                <ItemWrapper className="hidden @2xl:flex">
-                    <span className="relative flex shrink-0 text-base font-semibold italic">
-                        Rating
-                    </span>
-                    <span
-                        className={` ${
-                            history.config.queueType === "QUICK"
-                                ? "text-tertiary"
-                                : ""
-                        }`}
-                    >
-                        {history.config.queueType === "QUICK"
-                            ? history.rating
-                            : "-"}
-                    </span>
-                </ItemWrapper>
+function StatScoreResult({
+    winCount,
+    loseCount,
+    isWin,
+}: {
+    winCount: number;
+    loseCount: number;
+    isWin: boolean;
+}) {
+    return (
+        <div className="flex flex-row items-center justify-center">
+            <div className="flex w-16 flex-row justify-between">
+                <span className="rounded bg-black/30 p-2 text-2xl">
+                    {winCount}
+                </span>
+                <span className="rounded bg-black/30 p-2 text-2xl">
+                    {loseCount}
+                </span>
+            </div>
+            <div className="relative flex h-full shrink-0 items-center justify-center px-4">
+                <span
+                    className={`flex w-16 justify-center rounded p-3 pl-2.5 text-base font-extrabold italic ${
+                        isWin ? "bg-blue-500/30" : "bg-red-500/30"
+                    }`}
+                >
+                    {isWin ? "WIN" : "LOSE"}
+                </span>
             </div>
         </div>
+    );
+}
+
+function StatPlayTime({ playTime }: { playTime: string }) {
+    return (
+        <ItemWrapper className="hidden @md:flex">
+            <span className="relative flex text-base font-semibold italic">
+                {playTime}
+            </span>
+        </ItemWrapper>
+    );
+}
+
+function StatTimeStamp({ timestamp }: { timestamp: string }) {
+    return (
+        <ItemWrapper className="hidden @lg:flex">
+            <span className="relative flex text-base font-semibold italic">
+                {timestamp}
+            </span>
+        </ItemWrapper>
+    );
+}
+
+function StatRating({ history }: { history: GameHistory }) {
+    return (
+        <ItemWrapper className="hidden @2xl:flex">
+            <span className="relative flex shrink-0 text-base font-semibold italic">
+                Rating
+            </span>
+            <span
+                className={` ${
+                    history.config.queueType === "QUICK" ? "text-tertiary" : ""
+                }`}
+            >
+                {history.config.queueType === "QUICK" ? history.rating : "-"}
+            </span>
+        </ItemWrapper>
     );
 }
 
@@ -587,7 +631,7 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
     );
 }
 
-function Seperator({ className }: { className?: string }) {
+function Seperator({ className }: { className?: string | undefined }) {
     return (
         <div className={`${className} min-w-min py-4`}>
             <div className="h-full w-[1px] bg-black/30"> </div>
