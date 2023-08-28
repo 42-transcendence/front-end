@@ -1,5 +1,5 @@
 import { Avatar } from "@/components/Avatar";
-import { IconCheck, IconPlus } from "@/components/ImageLibrary";
+import { DoubleSharp, IconCheck, IconPlus } from "@/components/ImageLibrary";
 
 type Relationship = "myself" | "friend" | "stranger";
 
@@ -12,11 +12,14 @@ export function ProfileSection() {
     } as const;
 
     return (
-        <div className="h-20 w-full bg-windowGlass/30 p-4 lg:h-full lg:w-48">
+        <div className="h-20 w-full bg-windowGlass/30 p-4 lg:h-full lg:w-32 xl:w-36">
             <div className="flex w-full flex-row items-center justify-between gap-4 lg:flex-col">
-                <div className="flex h-full w-full flex-row justify-start gap-4 lg:flex-col">
+                <div className="lg:p-2 xl:p-4">
+                    <DoubleSharp className="p-2" width={48} height={48} />
+                </div>
+                <div className="flex h-full w-full flex-row items-center justify-start gap-4 lg:flex-col">
                     <Avatar
-                        className="relative h-12 w-12 bg-white/30 lg:h-32 lg:w-32"
+                        className="relative h-12 w-12 bg-white/30 lg:h-16 lg:w-16 xl:h-20 xl:w-20"
                         size={""}
                     />
                     <div className="flex w-full flex-col items-start justify-center text-base md:text-lg lg:text-xl">

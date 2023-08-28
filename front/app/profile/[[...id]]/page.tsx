@@ -6,16 +6,12 @@ import { Panel } from "@/components/Profile/Panel";
 import { useParams } from "next/navigation";
 
 function ErrorPage() {
-    return (
-        <div>
-            invalid profile id
-        </div>
-    );
+    return <div>invalid profile id</div>;
 }
 
 function isValidProfileId(id: string | string[]) {
     if (!Array.isArray(id)) return false;
-    return id.length === 1 && Number.isInteger(Number(id));
+    return id.length === 1;
 }
 
 export default function ProfilePage() {
@@ -34,11 +30,13 @@ export default function ProfilePage() {
     // TODO: change to real uuid
     const accountUUID = params.id as string;
     return (
-        <div className="grid h-full w-full grid-cols-1 gap-8 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-4 lg:p-8">
-            <Panel className="md:col-span-2 lg:col-span-4 lg:row-span-2"></Panel>
-            {/*TODO: put accountUUID of selected user */}
-            <AchievementPanel accountUUID={accountUUID} />
-            <GameHistoryPanel accountUUID={accountUUID} />
+        <div className="flex h-full w-full flex-row justify-center">
+            <div className="grid grid-cols-1 gap-8 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-4 lg:p-8">
+                <Panel className="md:col-span-2 lg:col-span-4 lg:row-span-2"></Panel>
+                {/*TODO: put accountUUID of selected user */}
+                <AchievementPanel accountUUID={accountUUID} />
+                <GameHistoryPanel accountUUID={accountUUID} />
+            </div>
         </div>
     );
 }
