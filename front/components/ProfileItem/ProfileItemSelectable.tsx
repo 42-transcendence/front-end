@@ -31,6 +31,7 @@ export function ProfileItemSelectable({
                         <Avatar
                             accountUUID={accountUUID}
                             className="w-[32px]"
+                            privileged={true}
                         />
                     </div>
                     <div className="w-full overflow-hidden">

@@ -56,11 +56,9 @@ export function ProfileItem({
                         <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
                             {children !== undefined ? children : info.name}
                         </div>
-                        {info.statusMessage !== undefined && (
-                            <div className="text-normal text-xs text-gray-300">
-                                {info.statusMessage}
-                            </div>
-                        )}
+                        <div className="text-normal text-xs text-gray-300">
+                            {info.statusMessage}
+                        </div>
                     </div>
                 </div>
             </div>

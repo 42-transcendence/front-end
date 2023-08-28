@@ -27,7 +27,11 @@ export function ProfileItemBlocked({
                     className="group/profile relative flex w-full select-none items-center gap-4 rounded p-2 hover:bg-primary/30"
                 >
                     <div className="relative flex items-center justify-center">
-                        <Avatar accountUUID={accountUUID} className="w-6" />
+                        <Avatar
+                            accountUUID={accountUUID}
+                            className="w-6"
+                            privileged={true}
+                        />
                     </div>
                     <div className="w-full overflow-hidden">
                         <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-[150%] group-hover/profile:overflow-visible group-hover/profile:delay-300 group-hover/profile:duration-[5000ms]">

@@ -45,6 +45,7 @@ export default function GameUserProfile() {
             <Avatar
                 accountUUID="jkong"
                 className="relative h-9 w-9 bg-white/30 2xl:h-12 2xl:w-12"
+                privileged={false}
             />
             <div className="flex h-[67px] shrink-0 flex-col justify-center text-center text-2xl font-bold not-italic leading-[normal] text-white">
                 jkong

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { ProfileItemBase } from "@/components/ProfileItem/ProfileItembase";
+import { ProfileItemBase } from "@/components/ProfileItem/ProfileItemBase";
 // import { TextField } from "@/components/TextField";
 import { Icon } from "@/components/ImageLibrary";
 
@@ -24,9 +24,8 @@ const expireDate = [
     "1세기",
 ];
 
-export function AccessBan({ uuid }: { uuid: string }) {
-    //TODO; fetch from uuid
-    void uuid;
+export function AccessBan({ accountUUID }: { accountUUID: string }) {
+    //TODO; fetch from accountUUID
     const summary = "다음 유저를 현재 채팅방에서 내보냅니다.";
     const expireDateTitle = "기간";
     const reasonTitle = "차단 사유";
@@ -54,7 +53,7 @@ export function AccessBan({ uuid }: { uuid: string }) {
             <div className="flex h-full w-full flex-col justify-start gap-4 overflow-auto">
                 <div className="w-full text-sm font-bold text-gray-100">
                     {summary}
-                    <ProfileItemBase />
+                    <ProfileItemBase accountUUID={accountUUID} />
                 </div>
                 <div className="w-full text-sm font-bold text-gray-100">
                     {expireDateTitle}
@@ -97,16 +96,17 @@ function MessageInputArea(
 
     useLayoutEffect(() => {
         const element = textareaRef.current;
-
-        if (element) {
-            // Reset height - important to shrink on delete
-            element.style.height = "inherit";
-            // Set height
-            element.style.height = `${Math.max(
-                element.scrollHeight,
-                MIN_TEXTAREA_HEIGHT,
-            )}px`;
+        if (element === null) {
+            throw new Error();
         }
+
+        // Reset height - important to shrink on delete
+        element.style.height = "inherit";
+        // Set height
+        element.style.height = `${Math.max(
+            element.scrollHeight,
+            MIN_TEXTAREA_HEIGHT,
+        )}px`;
     }, [value]);
 
     return (

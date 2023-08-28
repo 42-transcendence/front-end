@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { Avatar } from "@/components/Avatar";
 import { Panel } from "./Panel";
-import {
-    IconExternalWindow,
-    IconMagicCircleComplex,
-    IconMagicCircleDoubleBorder,
-} from "@/components/ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 
 type AccountUUID = string;
 
@@ -355,7 +351,7 @@ function GameHistorySummary({
                 </ItemWrapper>
 
                 <ItemWrapper className="flex">
-                    <IconExternalWindow
+                    <Icon.ExternalWindow
                         width={48}
                         height={48}
                         className="flex rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50"
@@ -403,7 +399,7 @@ function GameModeInfo({
                 </span>
             </div>
             {isWin && (
-                <IconMagicCircleComplex
+                <Icon.MagicCircleComplex
                     className="absolute -left-5 -top-4 text-white/10"
                     width="144%"
                     height="144%"
@@ -569,7 +565,7 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
 
                 <div className="flex w-full items-center justify-center py-4">
                     <div className="flex w-fit flex-row rounded-md text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50">
-                        <IconExternalWindow
+                        <Icon.ExternalWindow
                             width={48}
                             height={48}
                             className="p-3"
@@ -591,7 +587,7 @@ function SetScore({ setData }: { setData: SetData }) {
         <div className={`flex w-full ${winned && "bg-black/10"}`}>
             <span className="relative flex w-28 shrink-0 items-center justify-center overflow-hidden bg-black/30 p-4 text-sm font-black italic">
                 SET {setData.set}
-                <IconMagicCircleDoubleBorder
+                <Icon.MagicCircleDoubleBorder
                     className={`absolute -right-10 -top-1 text-white/10 ${
                         winned ? "" : "hidden"
                     }`}
@@ -634,10 +630,10 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
         >
             <Avatar
                 className="relative h-6 w-6 bg-white/30"
-                size={""}
                 accountUUID={accountUUID}
+                privileged={false}
             />
-            <span className="line-clamp-1 font-sans font-medium text-gray-50 @lg:hidden @2xl:line-clamp-1">
+            <span className="line-clamp-1 w-20 font-sans font-medium text-gray-50 @lg:hidden @2xl:line-clamp-1">
                 {nickName}
             </span>
         </div>

@@ -3,7 +3,7 @@ import { Icon } from "@/components/ImageLibrary";
 
 type Relationship = "myself" | "friend" | "stranger";
 
-export function ProfileSection() {
+export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     //TODO: get info from accountUUID
     const profileInfo = {
         nick: "hdoo",
@@ -16,8 +16,9 @@ export function ProfileSection() {
             <div className="flex w-full flex-row items-center justify-between gap-4 lg:flex-col">
                 <div className="flex h-full w-full flex-row justify-start gap-4 lg:flex-col">
                     <Avatar
+                        accountUUID={accountUUID}
                         className="relative h-12 w-12 bg-white/30 lg:h-32 lg:w-32"
-                        size={""}
+                        privileged={true}
                     />
                     <div className="flex w-full flex-col items-start justify-center text-base md:text-lg lg:text-xl">
                         <h1>{profileInfo.nick}</h1>

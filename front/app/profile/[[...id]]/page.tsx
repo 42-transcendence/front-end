@@ -3,14 +3,11 @@
 import { AchievementPanel } from "@/components/Profile/AchievementPanel";
 import { GameHistoryPanel } from "@/components/Profile/GameHistoryPanel";
 import { Panel } from "@/components/Profile/Panel";
+import { ProfileSection } from "@/components/Profile/ProfileSection";
 import { useParams } from "next/navigation";
 
 function ErrorPage() {
-    return (
-        <div>
-            invalid profile id
-        </div>
-    );
+    return <div>invalid profile id</div>;
 }
 
 function isValidProfileId(id: string | string[]) {
@@ -34,11 +31,14 @@ export default function ProfilePage() {
     // TODO: change to real uuid
     const accountUUID = params.id as string;
     return (
-        <div className="grid h-full w-full grid-cols-1 gap-8 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-4 lg:p-8">
-            <Panel className="md:col-span-2 lg:col-span-4 lg:row-span-2"></Panel>
-            {/*TODO: put accountUUID of selected user */}
-            <AchievementPanel accountUUID={accountUUID} />
-            <GameHistoryPanel accountUUID={accountUUID} />
-        </div>
+        <>
+            <ProfileSection accountUUID={accountUUID} />
+            <div className="grid h-full w-full grid-cols-1 gap-8 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-4 lg:p-8">
+                <Panel className="md:col-span-2 lg:col-span-4 lg:row-span-2"></Panel>
+                {/*TODO: put accountUUID of selected user */}
+                <AchievementPanel accountUUID={accountUUID} />
+                <GameHistoryPanel accountUUID={accountUUID} />
+            </div>
+        </>
     );
 }
