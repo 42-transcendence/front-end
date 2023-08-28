@@ -14,6 +14,8 @@ import type {
     ChatMessageEntry,
     ChatRoomEntry,
 } from "@/library/payload/chat-payloads";
+import { useAtomValue } from "jotai";
+import { chatRoomUUIDAtom } from "./Atom";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -148,11 +150,7 @@ export function ChatDialog({
     const [chatMessages, setChatMessages] = useState<ChatMessageEntry[]>([]);
     let chatRoomInfo: ChatRoomEntry; // TODO: 인자로 받아오기
     const myUUID = "chanhpar"; // TODO: get my actual uuid
-
-    useWebSocket("chat", ChatClientOpcode.CHAT_MESSAGE, (_, buffer) => {
-        const chatMessageList = buffer.readArray(readChatMessage);
-        setChatMessages(chatMessageList);
-    });
+    const chatRoomUUID = useAtomValue(chatRoomUUIDAtom);
 
     return (
         <div
