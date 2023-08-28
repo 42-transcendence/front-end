@@ -5,13 +5,10 @@ import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { WebSocketContainer } from "@/library/react/websocket-hook";
 import { useState, useEffect } from "react";
 import { decodeJwt } from "jose";
-import {
-    AuthLevel,
-    AuthPayload,
-    isAuthPayload,
-} from "@/library/payload/auth-payload";
+import type { AuthPayload } from "@/library/payload/auth-payload";
+import { AuthLevel, isAuthPayload } from "@/library/payload/auth-payload";
 import { fetcher, useSWR } from "@/hooks/fetcher";
-import { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
+import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (

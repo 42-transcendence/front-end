@@ -1,5 +1,5 @@
 // import { useState } from "react";
-import { ChatMessageEntry } from "@/library/payload/chat-payloads";
+import type { ChatMessageEntry } from "@/library/payload/chat-payloads";
 import { Avatar } from "../Avatar";
 import { Chat } from "@/components/ImageLibrary";
 

@@ -2,7 +2,7 @@
 
 import { Status } from "@/components/Status";
 import Image from "next/image";
-import {
+import type {
     AccountProfileProtectedPayload,
     AccountProfilePublicPayload,
 } from "@/library/payload/profile-payloads";
