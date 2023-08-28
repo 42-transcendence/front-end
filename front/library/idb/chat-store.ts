@@ -17,7 +17,7 @@ function getMetadataDB(): Promise<IDBDatabase> {
     });
 }
 
-type RoomSchema = {
+export type RoomSchema = {
     uuid: string;
     accounts: string[];
     title: string;
@@ -45,12 +45,12 @@ function removeDB(uuid: string): Promise<boolean> {
     return IDBCP.delete(`${DB_NAME_PREFIX}chat-${uuid}`);
 }
 
-type MemberSchema = {
+export type MemberSchema = {
     uuid: string;
     modeFlags: number;
 };
 
-type MessageSchema = {
+export type MessageSchema = {
     uuid: string;
     memberUUID: string;
     content: string;

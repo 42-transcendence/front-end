@@ -3,12 +3,14 @@
 import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { WebSocketContainer } from "@/library/react/websocket-hook";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { decodeJwt } from "jose";
-import type { AuthPayload } from "@/library/payload/auth-payload";
 import { AuthLevel, isAuthPayload } from "@/library/payload/auth-payload";
 import { fetcher, useSWR } from "@/hooks/fetcher";
 import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
+import { AccessTokenAtom, AuthAtom, CurrentAccountUUID } from "./Atom";
+import { useAtom } from "jotai/react/useAtom";
+import { useSetAtom } from "jotai";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -30,8 +32,9 @@ export default function MainLayout({
     welcome: React.ReactNode;
     home: React.ReactNode;
 }) {
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [auth, setAuth] = useState<AuthPayload>();
+    const [accessToken, setAccessToken] = useAtom(AccessTokenAtom);
+    const [auth, setAuth] = useAtom(AuthAtom);
+    const setCurrentAccountUUID = useSetAtom(CurrentAccountUUID);
 
     useEffect(() => {
         const storedAccessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -64,6 +67,13 @@ export default function MainLayout({
             try {
                 const payload = decodeJwt(accessToken);
                 const exp = payload.exp;
+                setCurrentAccountUUID(
+                    isAuthPayload(payload)
+                        ? payload.auth_level === AuthLevel.COMPLETED
+                            ? payload.user_id
+                            : ""
+                        : "",
+                );
                 if (exp === undefined || exp < Date.now() / 1000) {
                     // 당신 토큰은 만료되었다 수고해라
                     // 아니지 리프레시는 한번 시도해봐야지!

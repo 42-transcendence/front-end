@@ -1,21 +1,15 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
-import {
-    // ChatBubble,
-    // ChatBubbleRight,
-    ChatBubbleWithProfile,
-} from "./ChatBubble";
-import { useWebSocket } from "@/library/react/websocket-hook";
-import { ChatClientOpcode } from "@/library/payload/chat-opcodes";
-import { readChatMessage } from "@/library/payload/chat-payloads";
-import type {
-    ChatMessageEntry,
-    ChatRoomEntry,
-} from "@/library/payload/chat-payloads";
+import { ChatBubbleWithProfile } from "./ChatBubble";
+import type { ChatMessageEntry } from "@/library/payload/chat-payloads";
 import { useAtomValue } from "jotai";
 import { chatRoomUUIDAtom } from "./Atom";
+import { ChatStore } from "@/library/idb/chat-store";
+import type { MessageSchema } from "@/library/idb/chat-store";
+import { AccessTokenAtom, AuthAtom } from "@/app/(main)/Atom";
+import { decodeJwt } from "jose";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -29,16 +23,17 @@ function MessageInputArea() {
 
     useLayoutEffect(() => {
         const element = textareaRef.current;
-
-        if (element) {
-            // Reset height - important to shrink on delete
-            element.style.height = "inherit";
-            // Set height
-            element.style.height = `${Math.max(
-                element.scrollHeight,
-                MIN_TEXTAREA_HEIGHT,
-            )}px`;
+        if (element === null) {
+            throw new Error();
         }
+
+        // Reset height - important to shrink on delete
+        element.style.height = "inherit";
+        // Set height
+        element.style.height = `${Math.max(
+            element.scrollHeight,
+            MIN_TEXTAREA_HEIGHT,
+        )}px`;
     }, [value]);
 
     return (
@@ -67,72 +62,13 @@ function MessageInputArea() {
     );
 }
 
-// {{{
-// const dummyChatMessages = [
-//     {
-//         msgId: BigInt(3),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(4),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "iyun",
-//     },
-//     {
-//         msgId: BigInt(5),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(6),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(7),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(8),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(9),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "hdoo",
-//     },
-//     {
-//         msgId: BigInt(10),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "chanhpar",
-//     },
-//     {
-//         msgId: BigInt(11),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "chanhpar",
-//     },
-// ];
-// }}}
-
 const isSameMinute = (date1: Date, date2: Date) => {
     return (
         new Date(date1).setSeconds(0, 0) === new Date(date2).setSeconds(0, 0)
     );
 };
 
-const isContinuedMessage = (arr: ChatMessageEntry[], idx: number) => {
+const isContinuedMessage = (arr: MessageSchema[], idx: number) => {
     return (
         idx > 0 &&
         arr[idx].memberUUID === arr[idx - 1].memberUUID &&
@@ -147,10 +83,21 @@ export function ChatDialog({
     outerFrame: string;
     innerFrame: string;
 }) {
-    const [chatMessages, setChatMessages] = useState<ChatMessageEntry[]>([]);
-    let chatRoomInfo: ChatRoomEntry; // TODO: 인자로 받아오기
-    const myUUID = "chanhpar"; // TODO: get my actual uuid
+    const [chatMessages, setChatMessages] = useState<MessageSchema[]>([]);
+
     const chatRoomUUID = useAtomValue(chatRoomUUIDAtom);
+    useEffect(() => {
+        ChatStore.getLastMessage(chatRoomUUID)
+            .then((msg) =>
+                msg === null
+                    ? Promise.resolve(new Array<MessageSchema>())
+                    : ChatStore.getBeforeMessages(chatRoomUUID, msg.uuid),
+            )
+            .then((arr) => setChatMessages(arr))
+            .catch((error) => console.log(error));
+    }, [chatRoomUUID]);
+
+    const accessToken = useAtomValue(AccessTokenAtom); // TODO: get my actual uuid
 
     return (
         <div
