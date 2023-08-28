@@ -44,7 +44,8 @@ export function Avatar({
                 className="relative rounded-full"
                 src={data?.avatarKey ?? "/jkong.png"} // TODO: fallback avatar image
                 alt="Avatar"
-                fill={true} // TODO: fill / size options?
+                sizes="100%"
+                fill={true}
             />
             {privileged && <PrivilegedSection accountUUID={accountUUID} />}
         </div>

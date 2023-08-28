@@ -4,7 +4,7 @@ import ChatRightSideBar from "./ChatRightSideBar";
 
 export default function ChatLayout() {
     return (
-        <div className="backblur flex h-full w-full flex-row justify-start bg-windowGlass/30 before:backdrop-blur-[50px]">
+        <div className="back-full flex h-full w-full flex-row justify-start bg-windowGlass/30 before:backdrop-blur-[50px]">
             <input
                 className="peer/left hidden"
                 type="radio"
