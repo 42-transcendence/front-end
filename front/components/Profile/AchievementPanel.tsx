@@ -10,6 +10,7 @@ type Achievement = {
     content: string;
 };
 
+// {{{
 const achievementList: Achievement[] = [
     {
         id: 1,
@@ -112,8 +113,33 @@ const achievementList: Achievement[] = [
             "연속 10번의 렐리에서 10번 이상 공교환을 성공하면 얻을 수 있는 업적입니다.",
     },
 ];
+// }}}
 
 type Grade = "bronze" | "silver" | "gold" | "platinum";
+
+function Trophy({
+    grade,
+    accomplished,
+}: {
+    grade: Grade;
+    accomplished: boolean;
+}) {
+    return (
+        <div
+            className={`h-8 w-5 items-center justify-center ${
+                accomplished ? "" : "peer opacity-50 grayscale"
+            }`}
+        >
+            <Image
+                src={`/game/skin-${grade}.png`}
+                width={18}
+                height={32}
+                alt={grade}
+                title={grade}
+            />
+        </div>
+    );
+}
 
 function AchievementItem({
     achievementID,
@@ -126,19 +152,6 @@ function AchievementItem({
     //TODO: get state from server
     const achievement = achievementList[achievementID];
     const grade = achievement.grade;
-
-    const trophy = () => {
-        switch (grade) {
-            case "bronze":
-                return "/game/skin-bronze.png";
-            case "silver":
-                return "/game/skin-silver.png";
-            case "gold":
-                return "/game/skin-gold.png";
-            case "platinum":
-                return "/game/skin-platinum.png";
-        }
-    };
 
     const titleColor = () => {
         switch (grade) {
@@ -157,39 +170,28 @@ function AchievementItem({
     //TODO: get date from backend
     const date = new Date();
 
+    // TODO: AchievementItem 끼리 id, htmlFor가 겹쳐 안되고 있었는데 일단 각각의 id를 덧붙여 고유하게 만들었습니다
+    //      더불어 아예 input을 label 안으로 넣었는데요, 이러면 htmlFor와 input의 id를 지워도 일단 작동되긴 합니다
+    //      혹시 제가 헤아리지 못한 다른 이유가 있어 input을 label 밖에 해두신 거라면 다시 밖으로 꺼내고, 안에
+    //      넣어도 된다면 이렇게 유지해도 될까요? 이렇게 하면 가장 밖의 div label도 하나로 합칠 수 있지 않을까 싶어
+    //      제안해봅니다
     return (
-        <div
-            className={`relative flex w-full shrink-0 overflow-clip rounded-xl bg-black/30  hover:bg-black/20 active:bg-black/10`}
-        >
-            <input
-                id="AchievementItem"
-                type="checkbox"
-                checked={opened}
-                className="hidden"
-            />
+        <div className="relative flex w-full shrink-0 overflow-clip rounded-xl bg-black/30  hover:bg-black/20 active:bg-black/10">
             <label
-                htmlFor="AchievementItem"
+                htmlFor={`AchievementItem${achievementID}`}
                 data-opened={opened}
-                onClick={() => setOpened(!opened)}
                 className="group flex w-full flex-row items-center justify-between gap-4"
             >
-                <div className={`w-full p-4`}>
-                    <div
-                        className={`relative flex flex-row items-center justify-center gap-4`}
-                    >
-                        <div
-                            className={`h-8 w-5 items-center justify-center ${
-                                accomplished ? "" : "peer opacity-50 grayscale"
-                            }`}
-                        >
-                            <Image
-                                src={trophy()}
-                                width={18}
-                                height={32}
-                                alt={grade}
-                                title={grade}
-                            />
-                        </div>
+                <input
+                    id={`AchievementItem${achievementID}`}
+                    type="checkbox"
+                    checked={opened}
+                    onChange={() => setOpened(!opened)}
+                    className="hidden"
+                />
+                <div className="w-full p-4">
+                    <div className="relative flex flex-row items-center justify-center gap-4">
+                        <Trophy grade={grade} accomplished={accomplished} />
                         <div className="flex w-full flex-col items-start justify-start gap-1">
                             <span
                                 className={`${
@@ -206,6 +208,7 @@ function AchievementItem({
                         </div>
                     </div>
                 </div>
+                {/* TODO: 이 부분도 나중에 component로 분리하기? 달성 + 날짜 or 미달성 + 달성률 같은 식으로 */}
                 <div className="relative flex min-h-full w-20 shrink-0 flex-col items-center justify-center gap-1 overflow-clip bg-black/30">
                     <span className="">{state}</span>
                     {accomplished && (
