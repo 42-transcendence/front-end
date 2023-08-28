@@ -5,7 +5,7 @@ export function ProfileItemBase({
     uuid,
 }: {
     className?: string | undefined;
-    uuid?: string | undefined;
+    uuid: string;
 }) {
     //TODO: get name, status from uuid
     const name = "hdoo";
