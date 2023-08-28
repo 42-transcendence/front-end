@@ -345,9 +345,22 @@ function GameHistorySummary({
                     loseCount={loseCount}
                     isWin={isWin}
                 />
-                <StatPlayTime playTime={history.statistics.playTime} />
-                <StatTimeStamp timestamp={history.statistics.startTimeStamp} />
-                <StatRating history={history} />
+
+                <ItemWrapper className="hidden @lg:flex">
+                    <ProfileBlockInGame team={history.ally} />
+                </ItemWrapper>
+
+                <ItemWrapper className="hidden @lg:flex">
+                    <ProfileBlockInGame team={history.enemy} />
+                </ItemWrapper>
+
+                <ItemWrapper className="flex">
+                    <IconExternalWindow
+                        width={48}
+                        height={48}
+                        className="flex rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50"
+                    />
+                </ItemWrapper>
             </div>
         </div>
     );
@@ -411,7 +424,7 @@ function StatScoreResult({
 }) {
     return (
         <div className="flex flex-row items-center justify-center">
-            <div className="flex w-16 flex-row justify-between">
+            <div className="flex w-20 flex-row justify-between px-2">
                 <span className="rounded bg-black/30 p-2 text-2xl">
                     {winCount}
                 </span>
@@ -419,7 +432,7 @@ function StatScoreResult({
                     {loseCount}
                 </span>
             </div>
-            <div className="relative flex h-full shrink-0 items-center justify-center px-4">
+            <div className="relative flex h-full shrink-0 items-center justify-center px-2">
                 <span
                     className={`flex w-16 justify-center rounded p-3 pl-2.5 text-base font-extrabold italic ${
                         isWin ? "bg-blue-500/30" : "bg-red-500/30"
@@ -493,7 +506,7 @@ function ItemWrapper({
 function GameHistoryDetail({ history }: { history: GameHistory }) {
     return (
         <div className="flex w-full flex-col items-start justify-center">
-            <div className="flex h-20 w-full flex-row items-center justify-start bg-secondary/10">
+            <div className="flex h-20 w-full flex-row items-center justify-start bg-secondary/10 @lg:hidden">
                 <div className="flex h-full w-28 shrink-0 flex-col items-center justify-center bg-black/30">
                     <span className="rounded px-1 py-0.5 text-base font-extrabold italic">
                         Player
@@ -624,7 +637,7 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
                 size={""}
                 accountUUID={accountUUID}
             />
-            <span className="line-clamp-1 font-sans font-medium text-gray-50 @lg:block">
+            <span className="line-clamp-1 font-sans font-medium text-gray-50 @lg:hidden @2xl:line-clamp-1">
                 {nickName}
             </span>
         </div>
@@ -644,7 +657,7 @@ function ProfileBlockInGame({ team }: { team: Team }) {
 
     // TODO: add link to user profile page.
     return (
-        <div className="flex flex-col items-start justify-center py-2 @2xl:flex-row @2xl:items-center @2xl:gap-4">
+        <div className="flex flex-col items-start justify-center @2xl:items-center">
             <ProfileItemMinimal accountUUID={team.player1} />
             {team.player2 !== undefined && (
                 <ProfileItemMinimal accountUUID={team.player2} />
