@@ -11,8 +11,6 @@ import { useWebSocket } from "@/library/react/websocket-hook";
 import { ChatClientOpcode } from "@/library/payload/chat-opcodes";
 import { readChatRoom } from "@/library/payload/chat-payloads";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
-import { useSetAtom } from "jotai";
-import { CurrentChatRoomUUIDAtom } from "./Atom";
 
 export default function ChatLeftSideBar() {
     const [chatRooms, setChatRooms] = useState<ChatRoomEntry[]>([]);
