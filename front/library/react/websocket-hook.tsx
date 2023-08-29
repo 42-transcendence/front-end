@@ -23,9 +23,7 @@ const RegistryContext = createContext(WebSocketRegistry.DEFAULT);
 export function WebSocketRegistryContainer({
     children,
 }: React.PropsWithChildren) {
-    const registry = useMemo(() => {
-        return new WebSocketRegistry();
-    }, []);
+    const registry = useMemo(() => new WebSocketRegistry(), []);
     return (
         <RegistryContext.Provider value={registry}>
             {children}
@@ -33,19 +31,28 @@ export function WebSocketRegistryContainer({
     );
 }
 
-export function useWebSocketConnector(props: WebSocketRegisterProps) {
+export function useWebSocketConnector(
+    name: WebSocketRegisterProps["name"],
+    url: WebSocketRegisterProps["url"],
+    props: Partial<WebSocketRegisterProps> = {},
+) {
     const registry: WebSocketRegistry = useContext(RegistryContext);
-    useEffect(() => registry.register(props), [registry, props]);
+    useEffect(
+        () => registry.register({ name, url, ...props }),
+        [registry, name, url, props],
+    );
 }
+
+type ResponsePayload = ByteBuffer | ByteBuffer[] | undefined | void;
 
 export function useWebSocket(
     name: string,
-    opcode?: number | number[] | undefined,
+    opcode: number | number[] | undefined = [],
     once?:
         | ((
               opcode: number,
               buffer: ByteBuffer,
-          ) => ByteBuffer | ByteBuffer[] | undefined | void)
+          ) => ResponsePayload | Promise<ResponsePayload>)
         | undefined,
 ): {
     dangerouslyGetWebSocketRef: React.MutableRefObject<WebSocket | undefined>;
@@ -109,14 +116,23 @@ export function useWebSocket(
         const payload = ByteBuffer.from(lastMessage);
         const opcode = payload.readOpcode();
         const response = once(opcode, payload);
-        if (response !== undefined) {
-            if (Array.isArray(response)) {
-                for (const buffer of response) {
-                    webSocketRef.current?.send(buffer.toArray());
+        const sendResponse = (response: ResponsePayload) => {
+            if (response !== undefined) {
+                if (Array.isArray(response)) {
+                    for (const buffer of response) {
+                        webSocketRef.current?.send(buffer.toArray());
+                    }
+                } else {
+                    webSocketRef.current?.send(response.toArray());
                 }
-            } else {
-                webSocketRef.current?.send(response.toArray());
             }
+        };
+        if (response instanceof Promise) {
+            response.then(sendResponse).catch(() => {
+                //NOTE: do not handle error
+            });
+        } else {
+            sendResponse(response);
         }
     }, [lastMessage]);
 

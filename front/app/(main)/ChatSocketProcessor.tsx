@@ -12,7 +12,7 @@ import {
     useWebSocketConnector,
 } from "@/library/react/websocket-hook";
 import { useAtom, useAtomValue } from "jotai";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AccessTokenAtom, CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatStore } from "@/library/idb/chat-store";
@@ -21,10 +21,12 @@ import { ChatRoomListAtom } from "@/atom/ChatAtom";
 export function ChatSocketProcessor() {
     const accessToken = useAtomValue(AccessTokenAtom);
     const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
+    const accessTokenRef = useRef(accessToken);
+    useEffect(() => {
+        accessTokenRef.current = accessToken;
+    }, [accessToken]);
     const props = useMemo(
         () => ({
-            name: "chat",
-            url: `wss://back.stri.dev/chat?token=${accessToken}`,
             handshake: async () => {
                 const buf = ByteBuffer.createWithOpcode(
                     ChatServerOpcode.HANDSHAKE,
@@ -47,22 +49,41 @@ export function ChatSocketProcessor() {
         }),
         [accessToken, currentAccountUUID],
     );
-    useWebSocketConnector(props); //FIXME: props 이름?
+    const getURL = useCallback(
+        () => `wss://back.stri.dev/chat?token=${accessTokenRef.current}`,
+        [],
+    );
+    useWebSocketConnector("chat", getURL, props); //FIXME: props 이름?
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
     useWebSocket(
         "chat",
         [ChatClientOpcode.INITIALIZE, ChatClientOpcode.INSERT_ROOM],
-        (opcode, buffer) => {
+        async (opcode, buffer) => {
             switch (opcode) {
                 case ChatClientOpcode.INITIALIZE: {
                     const chatRoomList = buffer.readArray(readChatRoom);
-                    void Promise.allSettled(chatRoomList.map((chatRoom) => ChatStore.addRoom(currentAccountUUID, chatRoom.uuid, chatRoom.title, chatRoom.modeFlags)));
+                    await Promise.allSettled(
+                        chatRoomList.map((chatRoom) =>
+                            ChatStore.addRoom(
+                                currentAccountUUID,
+                                chatRoom.uuid,
+                                chatRoom.title,
+                                chatRoom.modeFlags,
+                            ),
+                        ),
+                    );
                     setChatRoomList(chatRoomList); //TODO: 도와줘 jotai!
                     break;
                 }
 
                 case ChatClientOpcode.INSERT_ROOM: {
                     const chatRoom = readChatRoom(buffer);
+                    await ChatStore.addRoom(
+                        currentAccountUUID,
+                        chatRoom.uuid,
+                        chatRoom.title,
+                        chatRoom.modeFlags,
+                    );
                     setChatRoomList([...chatRoomList, chatRoom]);
                     break;
                 }
