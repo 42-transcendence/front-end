@@ -8,8 +8,10 @@ services:
       - module_volume:/front/node_modules
       - cache_volume:/front/cache
       - next_volume:/front/.next
+      - pnpm_volume:/front/.pnpm-store
 
 volumes:
   module_volume:
   cache_volume:
   next_volume:
+  pnpm_volume:
