@@ -6,9 +6,8 @@ import { ChatBubbleWithProfile } from "./ChatBubble";
 import { useAtomValue } from "jotai";
 import { ChatStore } from "@/library/idb/chat-store";
 import type { MessageSchema } from "@/library/idb/chat-store";
-import { decodeJwt } from "jose";
 import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
-import { CurrentAccountUUID } from "@/atom/AccountAtom";
+import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -96,7 +95,7 @@ export function ChatDialog({
             .catch((error) => console.log(error));
     }, [chatRoomUUID]);
 
-    const currentAccountUUID = useAtomValue(CurrentAccountUUID);
+    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
 
     return (
         <div

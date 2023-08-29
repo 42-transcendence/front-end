@@ -469,6 +469,7 @@ export type ChatMessageModel = {
     content: string;
     modeFlags: number;
     timestamp: Date;
+    reachedMembers: ChatMemberModel[];
 };
 
 export type ChatBanEntity = {

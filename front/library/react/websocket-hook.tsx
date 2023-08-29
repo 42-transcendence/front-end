@@ -33,15 +33,9 @@ export function WebSocketRegistryContainer({
     );
 }
 
-export function WebSocketContainer({
-    children,
-    ...rest
-}: React.PropsWithChildren<WebSocketRegisterProps>) {
+export function useWebSocketConnector(props: WebSocketRegisterProps) {
     const registry: WebSocketRegistry = useContext(RegistryContext);
-    useEffect(() => {
-        return registry.register(rest);
-    }, [registry, rest]);
-    return children;
+    useEffect(() => registry.register(props), [registry, props]);
 }
 
 export function useWebSocket(

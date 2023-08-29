@@ -1,16 +1,16 @@
+type HandshakeLike =
+    | ArrayBufferLike
+    | ArrayBufferView
+    | ArrayBufferLike[]
+    | ArrayBufferView[]
+    | undefined;
+
 export type WebSocketRegisterProps = {
     name: string;
     url: string | URL;
     protocols?: string | string[] | undefined;
     handshake?:
-        | ((
-              evt: Event,
-          ) =>
-              | ArrayBufferLike
-              | ArrayBufferView
-              | ArrayBufferLike[]
-              | ArrayBufferView[]
-              | undefined)
+        | ((evt: Event) => HandshakeLike | Promise<HandshakeLike>)
         | undefined;
     onClose?: ((evt: CloseEvent) => void) | undefined;
     onError?: ((evt: Event) => void) | undefined;
@@ -146,20 +146,22 @@ export class WebSocketRegistry {
 
         webSocket.addEventListener("open", (ev) => {
             if (props.handshake !== undefined) {
-                const data:
-                    | ArrayBufferLike
-                    | ArrayBufferView
-                    | ArrayBufferLike[]
-                    | ArrayBufferView[]
-                    | undefined = props.handshake(ev);
-                if (data !== undefined) {
-                    if (Array.isArray(data)) {
-                        for (const buffer of data) {
-                            webSocket.send(buffer);
+                const data = props.handshake(ev);
+                const sendHandshake = (data: HandshakeLike) => {
+                    if (data !== undefined) {
+                        if (Array.isArray(data)) {
+                            for (const buffer of data) {
+                                webSocket.send(buffer);
+                            }
+                        } else {
+                            webSocket.send(data);
                         }
-                    } else {
-                        webSocket.send(data);
                     }
+                }
+                if (data instanceof Promise) {
+                    data.then(sendHandshake).catch(() => {});
+                } else {
+                    sendHandshake(data);
                 }
             }
 

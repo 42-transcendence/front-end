@@ -10,7 +10,6 @@ function getMetadataDB(): Promise<IDBDatabase> {
             });
             rooms.createIndex("account", "accounts", {
                 multiEntry: true,
-                unique: true,
             });
             // fetchedMessageUUID
         },
@@ -25,8 +24,8 @@ export type RoomSchema = {
     fetchedMessageUUID: string | null;
 };
 
-function getDB(uuid: string): Promise<IDBDatabase> {
-    return IDBCP.getOrOpen(`${DB_NAME_PREFIX}chat-${uuid}`, {
+function getDB(roomUUID: string): Promise<IDBDatabase> {
+    return IDBCP.getOrOpen(`${DB_NAME_PREFIX}chat-${roomUUID}`, {
         onUpgradeNeeded(db: IDBDatabase) {
             db.createObjectStore("members", { keyPath: "uuid" });
 
@@ -41,8 +40,8 @@ function getDB(uuid: string): Promise<IDBDatabase> {
     });
 }
 
-function removeDB(uuid: string): Promise<boolean> {
-    return IDBCP.delete(`${DB_NAME_PREFIX}chat-${uuid}`);
+function removeDB(roomUUID: string): Promise<boolean> {
+    return IDBCP.delete(`${DB_NAME_PREFIX}chat-${roomUUID}`);
 }
 
 export type MemberSchema = {
@@ -64,7 +63,7 @@ export class ChatStore {
 
     static async addRoom(
         accountUUID: string,
-        uuid: string,
+        roomUUID: string,
         title: string,
         modeFlags: number,
         fetchedMessageUUID: string | null = null,
@@ -75,13 +74,13 @@ export class ChatStore {
             tx.onerror = () => resolve(false);
 
             const rooms = tx.objectStore("rooms");
-            const roomGet = rooms.get(uuid);
+            const roomGet = rooms.get(roomUUID);
             roomGet.onsuccess = () => {
                 const room = roomGet.result as RoomSchema | undefined;
                 if (room === undefined) {
                     // Insert
                     const roomAdd = rooms.add({
-                        ["uuid"]: uuid,
+                        ["uuid"]: roomUUID,
                         ["accounts"]: [accountUUID],
                         ["title"]: title,
                         ["modeFlags"]: modeFlags,
@@ -89,12 +88,14 @@ export class ChatStore {
                     } satisfies RoomSchema);
 
                     roomAdd.onsuccess = () =>
-                        getDB(uuid)
+                        getDB(roomUUID)
                             .then(() => resolve(true))
                             .catch(() => resolve(false));
                 } else {
                     // Update
-                    room["accounts"].push(accountUUID);
+                    if (!room["accounts"].includes(accountUUID)) {
+                        room["accounts"].push(accountUUID);
+                    }
                     room["title"] = title;
                     room["modeFlags"] = modeFlags;
                     if (fetchedMessageUUID !== null) {
@@ -110,7 +111,7 @@ export class ChatStore {
 
     static async deleteRoom(
         accountUUID: string,
-        uuid: string,
+        roomUUID: string,
     ): Promise<boolean> {
         const db = await getMetadataDB();
         return new Promise((resolve) => {
@@ -118,7 +119,7 @@ export class ChatStore {
             tx.onerror = () => resolve(false);
 
             const rooms = tx.objectStore("rooms");
-            const roomGet = rooms.get(uuid);
+            const roomGet = rooms.get(roomUUID);
             roomGet.onsuccess = () => {
                 const room = roomGet.result as RoomSchema | undefined;
                 if (room !== undefined) {
@@ -135,10 +136,10 @@ export class ChatStore {
                         roomPut.onsuccess = () => resolve(true);
                     } else {
                         // Delete
-                        const roomDelete = rooms.delete(uuid);
+                        const roomDelete = rooms.delete(roomUUID);
 
                         roomDelete.onsuccess = () =>
-                            removeDB(uuid)
+                            removeDB(roomUUID)
                                 .then(() => resolve(true))
                                 .catch(() => resolve(false));
                     }
@@ -166,14 +167,17 @@ export class ChatStore {
         });
     }
 
-    static async hasRoom(accountUUID: string, uuid: string): Promise<boolean> {
+    static async hasRoom(
+        accountUUID: string,
+        roomUUID: string,
+    ): Promise<boolean> {
         const db = await getMetadataDB();
         return new Promise((resolve) => {
             const tx = db.transaction(["rooms"], "readonly");
             tx.onerror = () => resolve(false);
 
             const rooms = tx.objectStore("rooms");
-            const roomGet = rooms.get(uuid);
+            const roomGet = rooms.get(roomUUID);
             roomGet.onsuccess = () => {
                 const room = roomGet.result as RoomSchema | undefined;
                 if (room !== undefined) {
@@ -189,7 +193,7 @@ export class ChatStore {
     #Room_Options: undefined;
 
     private static async getFromRoom<T extends keyof RoomSchema>(
-        uuid: string,
+        roomUUID: string,
         key: T,
     ): Promise<RoomSchema[T]> {
         const db = await getMetadataDB();
@@ -198,7 +202,7 @@ export class ChatStore {
             tx.onerror = () => reject(new Error());
 
             const rooms = tx.objectStore("rooms");
-            const roomGet = rooms.get(uuid);
+            const roomGet = rooms.get(roomUUID);
             roomGet.onsuccess = () => {
                 const room = roomGet.result as RoomSchema | undefined;
                 if (room !== undefined) {
@@ -211,7 +215,7 @@ export class ChatStore {
     }
 
     private static async putToRoom<T extends keyof RoomSchema>(
-        uuid: string,
+        roomUUID: string,
         key: T,
         value: RoomSchema[T],
     ): Promise<void> {
@@ -221,7 +225,7 @@ export class ChatStore {
             tx.onerror = () => reject(new Error());
 
             const rooms = tx.objectStore("rooms");
-            const roomGet = rooms.get(uuid);
+            const roomGet = rooms.get(roomUUID);
             roomGet.onsuccess = () => {
                 const room = roomGet.result as RoomSchema | undefined;
                 if (room !== undefined) {
@@ -236,41 +240,50 @@ export class ChatStore {
         });
     }
 
-    static async getTitle(uuid: string): Promise<string> {
-        return this.getFromRoom(uuid, "title");
+    static async getTitle(roomUUID: string): Promise<string> {
+        return this.getFromRoom(roomUUID, "title");
     }
 
-    static async setTitle(uuid: string, title: string): Promise<void> {
-        return this.putToRoom(uuid, "title", title);
+    static async setTitle(roomUUID: string, title: string): Promise<void> {
+        return this.putToRoom(roomUUID, "title", title);
     }
 
-    static async getModeFlags(uuid: string): Promise<number> {
-        return this.getFromRoom(uuid, "modeFlags");
+    static async getModeFlags(roomUUID: string): Promise<number> {
+        return this.getFromRoom(roomUUID, "modeFlags");
     }
 
-    static async setModeFlags(uuid: string, modeFlags: number): Promise<void> {
-        return this.putToRoom(uuid, "modeFlags", modeFlags);
+    static async setModeFlags(
+        roomUUID: string,
+        modeFlags: number,
+    ): Promise<void> {
+        return this.putToRoom(roomUUID, "modeFlags", modeFlags);
     }
 
-    static async getFetchedMessageUUID(uuid: string): Promise<string | null> {
-        return this.getFromRoom(uuid, "fetchedMessageUUID");
+    static async getFetchedMessageUUID(
+        roomUUID: string,
+    ): Promise<string | null> {
+        return this.getFromRoom(roomUUID, "fetchedMessageUUID");
     }
 
     static async setFetchedMessageUUID(
-        uuid: string,
+        roomUUID: string,
         fetchedMessageUUID: string,
     ): Promise<void> {
-        return this.putToRoom(uuid, "fetchedMessageUUID", fetchedMessageUUID);
+        return this.putToRoom(
+            roomUUID,
+            "fetchedMessageUUID",
+            fetchedMessageUUID,
+        );
     }
 
     /// Manipulate Member Dictionary
     #MemberDictionary: undefined;
 
     static async putMember(
-        uuid: string,
+        roomUUID: string,
         member: MemberSchema,
     ): Promise<boolean> {
-        const db = await getDB(uuid);
+        const db = await getDB(roomUUID);
         return new Promise((resolve) => {
             const tx = db.transaction(["members"], "readwrite");
             tx.onerror = () => resolve(false);
@@ -283,10 +296,10 @@ export class ChatStore {
     }
 
     static async deleteMember(
-        uuid: string,
+        roomUUID: string,
         memberUUID: string,
     ): Promise<boolean> {
-        const db = await getDB(uuid);
+        const db = await getDB(roomUUID);
         return new Promise((resolve) => {
             const tx = db.transaction(["members"], "readwrite");
             tx.onerror = () => resolve(false);
@@ -299,9 +312,9 @@ export class ChatStore {
     }
 
     static async getMemberDictionary(
-        uuid: string,
+        roomUUID: string,
     ): Promise<Map<string, MemberSchema> | null> {
-        const db = await getDB(uuid);
+        const db = await getDB(roomUUID);
         return new Promise((resolve) => {
             const tx = db.transaction(["rooms"], "readonly");
             tx.onerror = () => resolve(null);
@@ -321,10 +334,10 @@ export class ChatStore {
     }
 
     static async getMember(
-        uuid: string,
+        roomUUID: string,
         memberUUID: string,
     ): Promise<MemberSchema | null> {
-        const db = await getDB(uuid);
+        const db = await getDB(roomUUID);
         return new Promise((resolve) => {
             const tx = db.transaction(["rooms"], "readonly");
             tx.onerror = () => resolve(null);
@@ -339,12 +352,12 @@ export class ChatStore {
     }
 
     static async mergeMember(
-        uuid: string,
+        roomUUID: string,
         memberUUID: string,
         changes: Partial<MemberSchema>,
     ): Promise<MemberSchema | null> {
         const prevMember: MemberSchema | null = await this.getMember(
-            uuid,
+            roomUUID,
             memberUUID,
         );
         if (prevMember === null) {
@@ -356,7 +369,7 @@ export class ChatStore {
             ...changes,
             uuid: memberUUID,
         };
-        const put = await this.putMember(uuid, member);
+        const put = await this.putMember(roomUUID, member);
         if (!put) {
             throw new Error();
         }
@@ -368,10 +381,10 @@ export class ChatStore {
     #MessageList: undefined;
 
     static async addMessage(
-        uuid: string,
+        roomUUID: string,
         message: MessageSchema,
     ): Promise<boolean> {
-        const db = await getDB(uuid);
+        const db = await getDB(roomUUID);
         return new Promise((resolve) => {
             const tx = db.transaction(["messages"], "readwrite");
             tx.onerror = () => resolve(false);
@@ -383,8 +396,10 @@ export class ChatStore {
         });
     }
 
-    static async getLastMessage(uuid: string): Promise<MessageSchema | null> {
-        const db = await getDB(uuid);
+    static async getLastMessage(
+        roomUUID: string,
+    ): Promise<MessageSchema | null> {
+        const db = await getDB(roomUUID);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["messages"], "readonly");
             tx.onerror = () => reject(new Error());
@@ -407,10 +422,10 @@ export class ChatStore {
     }
 
     static async countAfterMessage(
-        uuid: string,
+        roomUUID: string,
         messageUUID: string,
     ): Promise<number> {
-        const db = await getDB(uuid);
+        const db = await getDB(roomUUID);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["messages"], "readonly");
             tx.onerror = () => reject(new Error());
@@ -436,11 +451,11 @@ export class ChatStore {
 
     private static async getContinueMessages(
         reverse: boolean,
-        uuid: string,
+        roomUUID: string,
         messageUUID: string,
         limit?: number | undefined,
     ): Promise<MessageSchema[]> {
-        const db = await getDB(uuid);
+        const db = await getDB(roomUUID);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["messages"], "readonly");
             tx.onerror = () => reject(new Error());
@@ -505,18 +520,18 @@ export class ChatStore {
     }
 
     static async getAfterMessages(
-        uuid: string,
+        roomUUID: string,
         messageUUID: string,
         limit?: number | undefined,
     ): Promise<MessageSchema[]> {
-        return this.getContinueMessages(false, uuid, messageUUID, limit);
+        return this.getContinueMessages(false, roomUUID, messageUUID, limit);
     }
 
     static async getBeforeMessages(
-        uuid: string,
+        roomUUID: string,
         messageUUID: string,
         limit?: number | undefined,
     ): Promise<MessageSchema[]> {
-        return this.getContinueMessages(true, uuid, messageUUID, limit);
+        return this.getContinueMessages(true, roomUUID, messageUUID, limit);
     }
 }

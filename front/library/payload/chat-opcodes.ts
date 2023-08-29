@@ -18,7 +18,7 @@ export const enum ChatServerOpcode {
 }
 
 export const enum ChatClientOpcode {
-  OWN_ROOM_LIST,
+  INITIALIZE,
   ADD_FRIEND_RESULT,
   FRIEND_REQUEST,
   MODIFY_FRIEND_RESULT,
@@ -33,8 +33,11 @@ export const enum ChatClientOpcode {
   ENTER_ROOM_FAILED,
   REMOVE_ROOM,
   LEAVE_ROOM_FAILED,
+  INVITE_USER_FAILED,
   CHAT_MESSAGE,
   SYNC_CURSOR,
+  INSERT_ROOM_MEMBER,
+  REMOVE_ROOM_MEMBER,
   ROOM_MEMBER_MODE,
   ROOM_ADMIN,
   ROOM_ADMIN_MODE,

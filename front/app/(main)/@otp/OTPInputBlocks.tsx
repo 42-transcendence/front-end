@@ -5,6 +5,8 @@ import { DigitBlock } from "./DigitBlock";
 import { useRefArray } from "@/hooks/useRefArray";
 import { fetcher } from "@/hooks/fetcher";
 import { hasProperty } from "@/library/akasha-lib";
+import { useSetAtom } from "jotai";
+import { AccessTokenAtom } from "@/atom/AccountAtom";
 
 // TODO: refactor, change mock functions to real function
 export function OTPInputBlocks({ length }: { length: number }) {
@@ -31,6 +33,7 @@ export function OTPInputBlocks({ length }: { length: number }) {
         }
     }, [refArray, initialValue]);
 
+    const setAccessToken = useSetAtom(AccessTokenAtom);
     const resolve = useCallback((json: unknown) => {
         if (typeof json !== "object" || json === null) {
             throw new Error();
@@ -48,15 +51,8 @@ export function OTPInputBlocks({ length }: { length: number }) {
             window.localStorage.removeItem("refresh_token");
         }
 
-        //TODO: 같은 문서 안에서 바뀐건 스토리지 이벤트가 안날아감 홀리... Zustand가 필요할 때이다
-        // const eventInitDict: StorageEventInit = {
-        //     key: "access_token",
-        //     newValue: json.access_token,
-        //     storageArea: window.localStorage,
-        // }
-        // const eventThatNewlyMade = new StorageEvent("storage", eventInitDict);
-        // window.dispatchEvent(eventThatNewlyMade);
-    }, []);
+        setAccessToken(json.access_token);
+    }, [setAccessToken]);
 
     const failed = useCallback((error: unknown) => {
         // TODO: error ㅊㅓ리 어떻게?

@@ -10,8 +10,9 @@ import {
     ChatClientOpcode,
     ChatServerOpcode,
 } from "@/library/payload/chat-opcodes";
-import { writeChatRoom } from "@/library/payload/chat-payloads";
 import { ByteBuffer } from "@/library/akasha-lib";
+import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
+import { useAtomValue } from "jotai";
 
 const titlePattern = ".{4,32}";
 const maxMemberLimit = 1500;
@@ -64,13 +65,18 @@ function useDetectSticky(): [
 export function CreateNewRoom() {
     const [title, setTitle] = useState("");
     const [password, setPassword] = useState("");
-    const [limit, setLimit] = useState(1);
+    const [limit, setLimit] = useState(42);
     const [privateChecked, setPrivateChecked] = useState(false);
     const [secretChecked, setSecretChecked] = useState(false);
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
     const [accountUUIDSet] = useUUIDSet();
-    const { sendPayload } = useWebSocket("chat", []);
+    const { sendPayload } = useWebSocket("chat", ChatClientOpcode.CREATE_ROOM_FAILED, (_, buf) => {
+        const errno = buf.read1();
+        //TODO: errno 처리
+        void errno;
+    });
+    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
@@ -82,7 +88,7 @@ export function CreateNewRoom() {
             buf.writeString(password);
         }
         buf.write2Unsigned(limit);
-        buf.writeArray(Array.from(accountUUIDSet), (x, buf) =>
+        buf.writeArray([currentAccountUUID, ...accountUUIDSet], (x, buf) =>
             buf.writeUUID(x),
         );
         sendPayload(buf);

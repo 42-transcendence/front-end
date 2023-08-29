@@ -1,20 +1,13 @@
 "use client";
 
-import { ByteBuffer } from "@/library/akasha-lib";
-import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
-import { WebSocketContainer } from "@/library/react/websocket-hook";
 import { useEffect } from "react";
 import { decodeJwt } from "jose";
 import { AuthLevel, isAuthPayload } from "@/library/payload/auth-payload";
 import { fetcher, useSWR } from "@/hooks/fetcher";
 import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
-import { useAtom } from "jotai";
-import { useSetAtom } from "jotai";
-import {
-    AccessTokenAtom,
-    AuthAtom,
-    CurrentAccountUUID,
-} from "@/atom/AccountAtom";
+import { AccessTokenAtom, AuthAtom, CurrentAccountUUIDAtom }  from "@/atom/AccountAtom";
+import { useAtom, useSetAtom } from "jotai";
+import { ChatSocketProcessor } from "./ChatSocketProcessor";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -38,7 +31,7 @@ export default function MainLayout({
 }) {
     const [accessToken, setAccessToken] = useAtom(AccessTokenAtom);
     const [auth, setAuth] = useAtom(AuthAtom);
-    const setCurrentAccountUUID = useSetAtom(CurrentAccountUUID);
+    const setCurrentAccountUUID = useSetAtom(CurrentAccountUUIDAtom);
 
     useEffect(() => {
         const storedAccessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -155,16 +148,7 @@ export default function MainLayout({
     // 넌 최고야!
     return (
         <DefaultLayout>
-            <WebSocketContainer
-                name="chat"
-                url={`wss://back.stri.dev/chat?token=${accessToken}`}
-                handshake={() =>
-                    ByteBuffer.createWithOpcode(
-                        ChatServerOpcode.HANDSHAKE,
-                    ).toArray()
-                }
-            />
-            {/* <ChatSocketProcessor /> */}
+            <ChatSocketProcessor />
             {home}
         </DefaultLayout>
     );

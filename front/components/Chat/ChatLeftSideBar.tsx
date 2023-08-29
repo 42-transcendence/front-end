@@ -7,21 +7,15 @@ import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
 import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
-import { useWebSocket } from "@/library/react/websocket-hook";
-import { ChatClientOpcode } from "@/library/payload/chat-opcodes";
-import { readChatRoom } from "@/library/payload/chat-payloads";
-import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
+import { useAtomValue } from "jotai";
+import { ChatRoomListAtom } from "@/atom/ChatAtom";
 
 export default function ChatLeftSideBar() {
-    const [chatRooms, setChatRooms] = useState<ChatRoomEntry[]>([]);
-    useWebSocket("chat", ChatClientOpcode.OWN_ROOM_LIST, (_, buffer) => {
-        const chatRoomList = buffer.readArray(readChatRoom);
-        setChatRooms(chatRoomList);
-    });
+    const chatRoomList = useAtomValue(ChatRoomListAtom);
     const [query, setQuery] = useState("");
     const [checked, setChecked] = useState(false);
     const { results, getFzfHighlightProps } = useFzf({
-        items: chatRooms,
+        items: chatRoomList,
         itemToString: (item) => item.title,
         query,
     });

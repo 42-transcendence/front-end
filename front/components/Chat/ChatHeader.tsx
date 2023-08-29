@@ -2,6 +2,8 @@
 
 import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
+import { useAtomValue } from "jotai";
+import { CurrentChatRoomTitleAtom } from "@/atom/ChatAtom";
 
 // const config: ProfileItemConfig = {
 //     id: 1,
@@ -63,6 +65,7 @@ function RightSidebarButton() {
 
 // TODO: isAdmin이 아니라, 어느 채팅방이 열려있는지 정보 받아와야
 export function ChatHeader({ isAdmin }: { isAdmin: boolean }) {
+    const currentChatRoomTitle = useAtomValue(CurrentChatRoomTitleAtom);
     return (
         <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch py-2">
             <LeftSidebarButton />
@@ -74,7 +77,7 @@ export function ChatHeader({ isAdmin }: { isAdmin: boolean }) {
                     <div className="relative items-center justify-center gap-2.5 text-base">
                         <div className="flex flex-col items-center justify-center px-4 py-0">
                             <h1 className="line-clamp-1 max-w-[210px] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70">
-                                일이삼사오육칠팔구십일이삼사오육칠팔구십
+                                {currentChatRoomTitle}
                             </h1>
                             <h2 className="line-clamp-1 overflow-hidden text-ellipsis text-center text-xs font-medium not-italic leading-[normal] text-white/50">
                                 채팅을 채팅채팅~
