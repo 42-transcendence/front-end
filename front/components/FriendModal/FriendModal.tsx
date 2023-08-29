@@ -3,16 +3,14 @@
 import { useState } from "react";
 import { ProfileItem } from "@/components/ProfileItem";
 import type { ProfileItemConfig } from "@/components/ProfileItem";
-import { ProfileItemBase } from "../ProfileItem/ProfileItemBase";
 import { Avatar } from "../Avatar";
 import { Icon } from "../ImageLibrary";
 import { Provider, createStore, useAtomValue } from "jotai";
-import { useWebSocket } from "@/library/react/websocket-hook";
 import {
     FriendRequestEntryAtom,
     FriendRequestUUIDAtom,
 } from "@/atom/FriendAtom";
-import { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
+import type { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
 import useSWR from "swr";
 import { fetcher } from "@/hooks/fetcher";
 
@@ -88,14 +86,17 @@ function FriendList() {
 
 function InviteList() {
     const accountUUIDs = useAtomValue(FriendRequestEntryAtom);
+
     return (
-        <div className="flex flex-col gap-2 py-2">
-            <InviteHeader />
-            {accountUUIDs.map((accountUUID) => (
-                <InviteItem key={accountUUID} accountUUID={accountUUID} />
-            ))}
-            <div className="mx-4 h-[1px] bg-white/30" />
-        </div>
+        accountUUIDs.length !== 0 && (
+            <div className="flex flex-col gap-2 py-2">
+                <InviteHeader />
+                {accountUUIDs.map((accountUUID) => (
+                    <InviteItem key={accountUUID} accountUUID={accountUUID} />
+                ))}
+                <div className="mx-4 h-[1px] bg-white/30" />
+            </div>
+        )
     );
 }
 
