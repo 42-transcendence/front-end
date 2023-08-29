@@ -3,13 +3,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
 import { ChatBubbleWithProfile } from "./ChatBubble";
-import type { ChatMessageEntry } from "@/library/payload/chat-payloads";
 import { useAtomValue } from "jotai";
-import { chatRoomUUIDAtom } from "./Atom";
 import { ChatStore } from "@/library/idb/chat-store";
 import type { MessageSchema } from "@/library/idb/chat-store";
-import { AccessTokenAtom, AuthAtom } from "@/app/(main)/Atom";
 import { decodeJwt } from "jose";
+import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
+import { CurrentAccountUUID } from "@/atom/AccountAtom";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -84,8 +83,8 @@ export function ChatDialog({
     innerFrame: string;
 }) {
     const [chatMessages, setChatMessages] = useState<MessageSchema[]>([]);
+    const chatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
 
-    const chatRoomUUID = useAtomValue(chatRoomUUIDAtom);
     useEffect(() => {
         ChatStore.getLastMessage(chatRoomUUID)
             .then((msg) =>
@@ -97,7 +96,7 @@ export function ChatDialog({
             .catch((error) => console.log(error));
     }, [chatRoomUUID]);
 
-    const accessToken = useAtomValue(AccessTokenAtom); // TODO: get my actual uuid
+    const currentAccountUUID = useAtomValue(CurrentAccountUUID);
 
     return (
         <div
@@ -115,7 +114,9 @@ export function ChatDialog({
                                 chatMessage={msg}
                                 isContinued={isContinuedMessage(arr, idx)}
                                 dir={
-                                    msg.memberUUID === myUUID ? "right" : "left"
+                                    msg.memberUUID === currentAccountUUID
+                                        ? "right"
+                                        : "left"
                                 }
                             />
                         );
