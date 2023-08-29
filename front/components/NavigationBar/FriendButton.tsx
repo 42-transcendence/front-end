@@ -2,12 +2,17 @@
 
 import { forwardRef, useRef } from "react";
 import { Icon } from "../ImageLibrary";
+import { FriendModal } from "../FriendModal/FriendModal";
 
 const ModalComponent = forwardRef(function ModalComponent(
-    { children }: React.PropsWithChildren,
+    { children, className }: { children: React.ReactNode; className: string },
     ref: React.ForwardedRef<HTMLDialogElement>,
 ) {
-    return <dialog ref={ref}>{children}</dialog>;
+    return (
+        <dialog className={className} ref={ref}>
+            {children}
+        </dialog>
+    );
 });
 
 export function FriendButton() {
@@ -22,8 +27,8 @@ export function FriendButton() {
 
     return (
         <>
-            <ModalComponent ref={dialogRef}>
-                {/* modal로 띄우고 싶은 걸 넣으세요 */}
+            <ModalComponent className="bg-transparent" ref={dialogRef}>
+                <FriendModal />
             </ModalComponent>
             <Icon.Members
                 onClick={showModal}
