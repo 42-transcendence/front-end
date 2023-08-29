@@ -9,7 +9,7 @@ import { AuthLevel, isAuthPayload } from "@/library/payload/auth-payload";
 import { fetcher, useSWR } from "@/hooks/fetcher";
 import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
 import { AccessTokenAtom, AuthAtom, CurrentAccountUUID } from "./Atom";
-import { useAtom } from "jotai/react/useAtom";
+import { useAtom } from "jotai";
 import { useSetAtom } from "jotai";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
