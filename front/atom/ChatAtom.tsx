@@ -7,5 +7,6 @@ import { atom } from "jotai";
 export const ChatRoomListAtom = atom(Array<ChatRoomEntry>());
 
 export const CurrentChatRoomUUIDAtom = atom("");
+export const CreateNewRoomCheckedAtom = atom(false);
 export const CurrentChatRoomTitleAtom = atom("");
 export const CurrentChatMessagesAtom = atom(Array<MessageSchema>());
