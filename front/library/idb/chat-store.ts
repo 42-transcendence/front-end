@@ -435,7 +435,7 @@ export class ChatStore {
         });
     }
 
-    static async getLastMessage(
+    static async getLatestMessage(
         roomUUID: string,
     ): Promise<MessageSchema | null> {
         const db = await getDB(roomUUID);

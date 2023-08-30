@@ -3,6 +3,8 @@ import { Avatar } from "@/components/Avatar";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
 import { CurrentChatRoomAtom } from "@/atom/ChatAtom";
 import { useSetAtom } from "jotai";
+import { useSWR } from "@/hooks/fetcher";
+import { ChatStore } from "@/library/idb/chat-store";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -25,9 +27,19 @@ export default function ChatRoomBlock({
     chatRoom: ChatRoomEntry;
 }>) {
     //TODO: chatRoom.uuid 기준으로 idb에서 계산해오기. 변수 이름도 바꾸고, state로 바꿔야겠지?
-    const numberOfUnreadMessages = 42;
-    const latestMessage = "마지막 메시지를 알아서 잘 구해오세요.";
+    const { data: numberOfUnreadMessages } = useSWR(
+        chatRoom.lastMessageId !== null
+            ? [chatRoom.uuid, chatRoom.lastMessageId]
+            : null,
+        ([roomUUID, lastReadMessageUUID]) =>
+            ChatStore.countAfterMessage(roomUUID, lastReadMessageUUID),
+    );
+    const { data: latestMessage } = useSWR(chatRoom.uuid, (roomUUID) =>
+        ChatStore.getLatestMessage(roomUUID),
+    );
     const setChatRoom = useSetAtom(CurrentChatRoomAtom);
+
+    const lastMessageContent = latestMessage?.content ?? "FALLBACK";
 
     return (
         <button
@@ -64,7 +76,7 @@ export default function ChatRoomBlock({
                         </div>
 
                         <div className="line-clamp-2 h-fit text-ellipsis text-start font-sans text-xs font-normal text-gray-200">
-                            {latestMessage}
+                            {lastMessageContent}
                         </div>
                     </div>
 
@@ -79,7 +91,9 @@ export default function ChatRoomBlock({
                                 {chatRoom.members.length}
                             </span>
                         </div>
-                        <UnreadMessageBadge count={numberOfUnreadMessages} />
+                        <UnreadMessageBadge
+                            count={numberOfUnreadMessages ?? 0}
+                        />
                     </div>
                 </div>
             </div>
