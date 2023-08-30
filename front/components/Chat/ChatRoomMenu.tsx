@@ -4,39 +4,39 @@ import { ChatMemberModeFlags } from "@/library/payload/chat-payloads";
 type ChatRoomHeaderMenu = {
     name: string;
     onClick: () => void;
-    modeFlags: number;
+    modeFlags: number | undefined;
     isImportant: boolean;
 };
 
 const chatRoomHeaderMenus: ChatRoomHeaderMenu[] = [
     {
         name: "알림 설정",
-        onClick: () => { },
-        modeFlags: 0, // TODO: 권한 플래그 없는 메뉴에 0? null ? undefined?
+        onClick: () => {},
+        modeFlags: undefined,
         isImportant: false,
     },
     {
         name: "소유권 양도",
-        onClick: () => { },
+        onClick: () => {},
         modeFlags: ChatMemberModeFlags.ADMIN,
         isImportant: false,
     },
     {
         name: "매니저 지정",
-        onClick: () => { },
-        modeFlags: ChatMemberModeFlags.ADMIN | ChatMemberModeFlags.MANAGER,
+        onClick: () => {},
+        modeFlags: ChatMemberModeFlags.ADMIN /* | ChatMemberModeFlags.MANAGER*/, //NOTE: 매니저는 매니저를 지정할 수 없어야 함.
         isImportant: false,
     },
     {
         name: "채팅방 삭제",
-        onClick: () => { },
+        onClick: () => {},
         modeFlags: ChatMemberModeFlags.ADMIN,
         isImportant: true,
     },
     {
         name: "방 나가기",
-        onClick: () => { },
-        modeFlags: 0,
+        onClick: () => {},
+        modeFlags: undefined,
         isImportant: true,
     },
 ];
@@ -53,13 +53,18 @@ export function ChatRoomMenu({
             className={`${className} flex-col items-center text-base font-bold text-gray-100/80`}
         >
             {chatRoomHeaderMenus
-                .filter((menu) => menu.modeFlags === 0 || (modeFlags & menu.modeFlags))
+                .filter(
+                    (menu) =>
+                        menu.modeFlags === undefined ||
+                        (modeFlags & menu.modeFlags) !== 0,
+                )
                 .map((menu) => {
                     return (
                         <MenuItem
                             key={menu.name}
-                            className={`active:bg-secondary/80 ${menu.isImportant ? "hover:bg-red-500/80" : ""
-                                }`}
+                            className={`active:bg-secondary/80 ${
+                                menu.isImportant ? "hover:bg-red-500/80" : ""
+                            }`}
                             onClick={menu.onClick}
                         >
                             {menu.name}

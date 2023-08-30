@@ -3,10 +3,13 @@
 import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 import { useAtomValue } from "jotai";
-import { CurrentChatRoomTitleAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
-import { useEffect, useState } from "react";
+import {
+    CurrentChatRoomTitleAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
 import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { ChatStore } from "@/library/idb/chat-store";
+import { useSWR } from "@/hooks/fetcher";
 
 function LeftSidebarButton() {
     return (
@@ -65,19 +68,13 @@ export function ChatHeader() {
     const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
     const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
 
-    const [currentChatRoomModeFlags, setCurrentChatRoomModeFlags] = useState(0);
-
-    // FIXME: 이게 맞나?
-    useEffect(() => {
-        ChatStore.getMember(currentChatRoomUUID, currentAccountUUID)
-            .then((member) => {
-                if (member === null) {
-                    throw new Error("근데 이럴 수 있나? 어떻게 해야 하지?");
-                }
-                setCurrentChatRoomModeFlags(member.modeFlags);
-            })
-            .catch((e) => console.log(e))
-    }, [currentAccountUUID, currentChatRoomUUID]);
+    // FIXME: mutate 안해줬음. 그런데 이런거 전부 Custom hook으로 잘 만들어야할듯...
+    const { data: selfMember } = useSWR(
+        ["ChatStore", currentChatRoomUUID, "Member", currentAccountUUID],
+        ([, roomUUID, , memberUUID]) =>
+            ChatStore.getMember(roomUUID, memberUUID),
+    );
+    const selfMemberModeFlags = selfMember?.modeFlags ?? 0;
 
     return (
         <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch py-2 @container">
@@ -104,7 +101,7 @@ export function ChatHeader() {
                     type="checkbox"
                 />
                 <ChatRoomMenu
-                    modeFlags={currentChatRoomModeFlags}
+                    modeFlags={selfMemberModeFlags}
                     className="hidden peer-checked:flex"
                 />
             </div>
