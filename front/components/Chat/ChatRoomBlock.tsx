@@ -6,11 +6,10 @@ import {
     CurrentChatRoomTitleAtom,
     CurrentChatRoomUUIDAtom,
 } from "@/atom/ChatAtom";
-import { useAtom, useSetAtom } from "jotai";
-import { useAtomCallback } from "jotai/utils";
+import { useSetAtom } from "jotai";
 
 import { ChatStore } from "@/library/idb/chat-store";
-import { useCallback, useEffect } from "react";
+import { useAtomSubscription } from "@/hooks/useAtomSubscription";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -39,25 +38,14 @@ export default function ChatRoomBlock({
     const setChatRoomTitle = useSetAtom(CurrentChatRoomTitleAtom);
     const setChatMessages = useSetAtom(CurrentChatMessagesAtom);
 
-    const useAtomSubscription = (anAtom, callback) => {
-        const nonTrackingCallback = useAtomCallback(
-            useCallback(() => {
-                callback();
-            }, [callback]),
-        );
-
-        const [value] = useAtom(anAtom);
-
-        useEffect(() => {
-            nonTrackingCallback();
-        }, [nonTrackingCallback, value]);
+    const setCurrentRoomInfo = async (
+        _get: never,
+        _set: never,
+        uuid: string,
+    ) => {
+        setChatRoomTitle(await ChatStore.getTitle(uuid));
+        setChatMessages(await ChatStore.getAllMessages(uuid));
     };
-
-    const setCurrentRoomInfo = useCallback(async () => {
-        console.log("inside of callback", chatRoom.uuid);
-        setChatRoomTitle(await ChatStore.getTitle(chatRoom.uuid));
-        setChatMessages(await ChatStore.getAllMessages(chatRoom.uuid));
-    }, [chatRoom.uuid, setChatMessages, setChatRoomTitle]);
 
     useAtomSubscription(CurrentChatRoomUUIDAtom, setCurrentRoomInfo);
 
