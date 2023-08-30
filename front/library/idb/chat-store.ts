@@ -396,6 +396,32 @@ export class ChatStore {
         });
     }
 
+    static async addMessageBulk(
+        roomUUID: string,
+        messageList: MessageSchema[],
+    ): Promise<boolean> {
+        const db = await getDB(roomUUID);
+        return new Promise((resolve) => {
+            const tx = db.transaction(["messages"], "readwrite");
+            tx.onerror = () => resolve(false);
+
+            const messages = tx.objectStore("messages");
+            const promiseList = new Array<Promise<boolean>>();
+            for (const message of messageList) {
+                promiseList.push(
+                    new Promise((resolve) => {
+                        const messageAdd = messages.add(message);
+
+                        messageAdd.onsuccess = () => resolve(true);
+                        messageAdd.onerror = () => resolve(false);
+                    }),
+                );
+            }
+
+            Promise.all(promiseList).then((e) => resolve(!e.includes(false)));
+        });
+    }
+
     static async getLastMessage(
         roomUUID: string,
     ): Promise<MessageSchema | null> {
@@ -535,9 +561,7 @@ export class ChatStore {
         return this.getContinueMessages(true, roomUUID, messageUUID, limit);
     }
 
-    static async getAllMessages(
-        roomUUID: string,
-    ): Promise<MessageSchema[]> {
+    static async getAllMessages(roomUUID: string): Promise<MessageSchema[]> {
         const db = await getDB(roomUUID);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["messages"], "readonly");
@@ -546,12 +570,9 @@ export class ChatStore {
             const messages = tx.objectStore("messages");
 
             const messageByTimestampIndex = messages.index("timestamp");
-            const messageAllByTimestampCursor = messageByTimestampIndex.openCursor(
-                null,
-                "next",
-            );
-            const messageAllByTimestamp =
-                new Array<MessageSchema>();
+            const messageAllByTimestampCursor =
+                messageByTimestampIndex.openCursor(null, "next");
+            const messageAllByTimestamp = new Array<MessageSchema>();
             messageAllByTimestampCursor.onsuccess = () => {
                 const cursor = messageAllByTimestampCursor.result;
                 if (cursor !== null) {

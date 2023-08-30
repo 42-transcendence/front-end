@@ -6,6 +6,7 @@ import type { ChatRoomChatMessagePairEntry } from "@/library/payload/chat-payloa
 import {
     readChatMessage,
     readChatRoom,
+    readSocialPayload,
     writeChatRoomChatMessagePair,
 } from "@/library/payload/chat-payloads";
 import {
@@ -16,12 +17,13 @@ import { useAtom, useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AccessTokenAtom, CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { ByteBuffer } from "@/library/akasha-lib";
-import { ChatStore, MessageSchema } from "@/library/idb/chat-store";
+import { ChatStore } from "@/library/idb/chat-store";
 import {
     ChatRoomListAtom,
     CurrentChatMessagesAtom,
     CurrentChatRoomUUIDAtom,
 } from "@/atom/ChatAtom";
+import { EnemyEntryAtom, FriendEntryAtom, FriendRequestEntryAtom } from "@/atom/FriendAtom";
 
 export function ChatSocketProcessor() {
     const accessToken = useAtomValue(AccessTokenAtom);
@@ -64,6 +66,9 @@ export function ChatSocketProcessor() {
     const [currentChatMessages, setCurrentChatMessages] = useAtom(
         CurrentChatMessagesAtom,
     );
+    const [friendEntry, setFriendEntry] = useAtom(FriendEntryAtom);
+    const [enemyEntry, setEnemyEntry] = useAtom(EnemyEntryAtom);
+    const [friendRequestEntry, setFriendRequestEntry] = useAtom(FriendRequestEntryAtom);
     useWebSocket(
         "chat",
         [
@@ -86,7 +91,22 @@ export function ChatSocketProcessor() {
                             ),
                         ),
                     );
+
+                    const chatMessageMapSize = buffer.readLength();
+                    for (let i = 0; i < chatMessageMapSize; i++) {
+                        const roomUUID = buffer.readUUID();
+                        const messageList = buffer.readArray(readChatMessage);
+
+                        await ChatStore.addMessageBulk(roomUUID, messageList);
+                    }
+
                     setChatRoomList(chatRoomList);
+
+                    const socialPayload = readSocialPayload(buffer);
+                    setFriendEntry(socialPayload.friendList);
+                    setFriendRequestEntry(socialPayload.friendRequestList);
+                    setEnemyEntry(socialPayload.enemyList);
+
                     break;
                 }
 
@@ -109,12 +129,9 @@ export function ChatSocketProcessor() {
 
                 case ChatClientOpcode.CHAT_MESSAGE: {
                     const message = readChatMessage(buffer);
-                    const success = await ChatStore.addMessage(
-                        message.roomUUID,
-                        message,
-                    );
+                    await ChatStore.addMessage(message.roomUUID, message);
 
-                    if (success && message.roomUUID === currentChatRoomUUID) {
+                    if (message.roomUUID === currentChatRoomUUID) {
                         setCurrentChatMessages([
                             ...currentChatMessages,
                             message,
