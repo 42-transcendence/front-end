@@ -13,6 +13,7 @@ function LeftSidebarButton() {
                 type="radio"
                 name="leftRadio"
                 id="leftHeaderIcon"
+                defaultChecked
             />
             <label
                 htmlFor="leftHeaderIcon"

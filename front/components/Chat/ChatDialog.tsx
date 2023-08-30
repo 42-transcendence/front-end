@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { Icon } from "@/components/ImageLibrary";
+import { Game, Icon } from "@/components/ImageLibrary";
 import { ChatBubbleWithProfile } from "./ChatBubble";
 import type { MessageSchema } from "@/library/idb/chat-store";
 import { useWebSocket } from "@/library/react/websocket-hook";
@@ -103,7 +103,7 @@ export function ChatDialog({
     const chatMessages = useChatRoomMessages(currentChatRoomUUID) ?? [];
     const chatDialogRef = useRef<HTMLDivElement>(null);
 
-    return (
+    return currentChatRoomUUID !== "" ? (
         <div
             className={`${outerFrame} flex h-full shrink items-start justify-end gap-4 overflow-auto`}
         >
@@ -132,6 +132,13 @@ export function ChatDialog({
                 </div>
                 <ChatMessageInputArea />
             </div>
+        </div>
+    ) : (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4">
+            <span className="text-4xl text-gray-50/80">
+                선택된 채팅창이 없습니다.
+            </span>
+            <Game.Ghost2 width="30%" height="30%" className="text-gray-50/80" />
         </div>
     );
 }
