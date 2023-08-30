@@ -62,22 +62,22 @@ export function ChatHeader({ isAdmin }: { isAdmin: boolean }) {
     const currentChatRoomTitle = useAtomValue(CurrentChatRoomTitleAtom);
 
     return (
-        <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch py-2">
+        <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch py-2 @container">
             <LeftSidebarButton />
             <div className="overflow-hidden">
                 <label
                     htmlFor="headerDropDown"
                     className="flex h-fit w-fit shrink-0 list-none flex-col justify-center rounded-md p-2 hover:bg-primary/30 active:bg-secondary/80"
                 >
-                    <div className="relative items-center justify-center gap-2.5 text-base">
-                        <div className="flex flex-col items-center justify-center px-4 py-0">
-                            <h1 className="line-clamp-1 max-w-[210px] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70">
-                                {currentChatRoomTitle === "" ? "채팅방을 선택하세요" : currentChatRoomTitle}
-                            </h1>
-                            <h2 className="line-clamp-1 overflow-hidden text-ellipsis text-center text-xs font-medium not-italic leading-[normal] text-white/50">
-                                채팅을 채팅채팅~
-                            </h2>
-                        </div>
+                    <div className=" relative flex flex-col items-center justify-center gap-2.5 px-4 py-0 text-base">
+                        <h1 className="line-clamp-1 max-w-[16rem] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70 sm:max-w-full">
+                            {currentChatRoomTitle === ""
+                                ? "채팅방을 선택하세요"
+                                : currentChatRoomTitle}
+                        </h1>
+                        <h2 className="line-clamp-1 overflow-hidden text-ellipsis text-center text-xs font-medium not-italic leading-[normal] text-white/50">
+                            채팅을 채팅채팅~
+                        </h2>
                     </div>
                 </label>
                 <input
