@@ -3,8 +3,10 @@
 import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 import { useAtomValue } from "jotai";
-import { CurrentChatRoomTitleAtom } from "@/atom/ChatAtom";
+import { CurrentChatRoomTitleAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
 import { useEffect, useState } from "react";
+import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
+import { ChatStore } from "@/library/idb/chat-store";
 
 function LeftSidebarButton() {
     return (
@@ -58,8 +60,24 @@ function RightSidebarButton() {
 }
 
 // TODO: isAdmin이 아니라, 어느 채팅방이 열려있는지 정보 받아와야
-export function ChatHeader({ isAdmin }: { isAdmin: boolean }) {
+export function ChatHeader() {
     const currentChatRoomTitle = useAtomValue(CurrentChatRoomTitleAtom);
+    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
+    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
+
+    const [currentChatRoomModeFlags, setCurrentChatRoomModeFlags] = useState(0);
+
+    // FIXME: 이게 맞나?
+    useEffect(() => {
+        ChatStore.getMember(currentChatRoomUUID, currentAccountUUID)
+            .then((member) => {
+                if (member === null) {
+                    throw new Error("근데 이럴 수 있나? 어떻게 해야 하지?");
+                }
+                setCurrentChatRoomModeFlags(member.modeFlags);
+            })
+            .catch((e) => console.log(e))
+    }, [currentAccountUUID, currentChatRoomUUID]);
 
     return (
         <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch py-2 @container">
@@ -86,7 +104,7 @@ export function ChatHeader({ isAdmin }: { isAdmin: boolean }) {
                     type="checkbox"
                 />
                 <ChatRoomMenu
-                    isAdmin={isAdmin}
+                    modeFlags={currentChatRoomModeFlags}
                     className="hidden peer-checked:flex"
                 />
             </div>
