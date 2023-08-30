@@ -1,15 +1,8 @@
 import { Icon } from "@/components/ImageLibrary";
 import { Avatar } from "@/components/Avatar";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
-import {
-    CurrentChatMessagesAtom,
-    CurrentChatRoomTitleAtom,
-    CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
+import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
 import { useSetAtom } from "jotai";
-
-import { ChatStore } from "@/library/idb/chat-store";
-import { useAtomSubscription } from "@/hooks/useAtomSubscription";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -35,19 +28,6 @@ export default function ChatRoomBlock({
     const numberOfUnreadMessages = 42;
     const latestMessage = "마지막 메시지를 알아서 잘 구해오세요.";
     const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
-    const setChatRoomTitle = useSetAtom(CurrentChatRoomTitleAtom);
-    const setChatMessages = useSetAtom(CurrentChatMessagesAtom);
-
-    const setCurrentRoomInfo = async (
-        _get: never,
-        _set: never,
-        uuid: string,
-    ) => {
-        setChatRoomTitle(await ChatStore.getTitle(uuid));
-        setChatMessages(await ChatStore.getAllMessages(uuid));
-    };
-
-    useAtomSubscription(CurrentChatRoomUUIDAtom, setCurrentRoomInfo);
 
     return (
         <button

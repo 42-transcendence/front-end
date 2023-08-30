@@ -23,7 +23,11 @@ import {
     CurrentChatMessagesAtom,
     CurrentChatRoomUUIDAtom,
 } from "@/atom/ChatAtom";
-import { EnemyEntryAtom, FriendEntryAtom, FriendRequestEntryAtom } from "@/atom/FriendAtom";
+import {
+    EnemyEntryAtom,
+    FriendEntryAtom,
+    FriendRequestEntryAtom,
+} from "@/atom/FriendAtom";
 
 export function ChatSocketProcessor() {
     const accessToken = useAtomValue(AccessTokenAtom);
@@ -68,7 +72,9 @@ export function ChatSocketProcessor() {
     );
     const [friendEntry, setFriendEntry] = useAtom(FriendEntryAtom);
     const [enemyEntry, setEnemyEntry] = useAtom(EnemyEntryAtom);
-    const [friendRequestEntry, setFriendRequestEntry] = useAtom(FriendRequestEntryAtom);
+    const [friendRequestEntry, setFriendRequestEntry] = useAtom(
+        FriendRequestEntryAtom,
+    );
     useWebSocket(
         "chat",
         [
@@ -80,17 +86,28 @@ export function ChatSocketProcessor() {
         async (opcode, buffer) => {
             switch (opcode) {
                 case ChatClientOpcode.INITIALIZE: {
+                    const roomSet =
+                        await ChatStore.getRoomSet(currentAccountUUID);
+                    if (roomSet === null) {
+                        throw new Error();
+                    }
+
                     const chatRoomList = buffer.readArray(readChatRoom);
-                    await Promise.allSettled(
-                        chatRoomList.map((chatRoom) =>
-                            ChatStore.addRoom(
-                                currentAccountUUID,
-                                chatRoom.uuid,
-                                chatRoom.title,
-                                chatRoom.modeFlags,
-                            ),
-                        ),
-                    );
+                    const promises =  Array<Promise<boolean>>();
+                    for (const room of chatRoomList) {
+                        roomSet.delete(room.uuid);
+                        promises.push(ChatStore.addRoom(
+                            currentAccountUUID,
+                            room.uuid,
+                            room.title,
+                            room.modeFlags,
+                        ));
+                    }
+                    for (const roomUUID of roomSet) {
+                        promises.push(ChatStore.deleteRoom(currentAccountUUID, roomUUID));
+                    }
+
+                    await Promise.allSettled(promises);
 
                     const chatMessageMapSize = buffer.readLength();
                     for (let i = 0; i < chatMessageMapSize; i++) {

@@ -17,6 +17,7 @@ import {
     CreateNewRoomCheckedAtom,
     CurrentChatRoomUUIDAtom,
 } from "@/atom/ChatAtom";
+import { ChatRoomModeFlags } from "@/library/payload/chat-payloads";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
@@ -95,7 +96,10 @@ export function CreateNewRoom() {
 
         const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CREATE_ROOM);
         buf.writeString(title);
-        buf.write1((privateChecked ? 1 : 0) | (secretChecked ? 2 : 0));
+        buf.write1(
+            (privateChecked ? ChatRoomModeFlags.PRIVATE : 0) |
+                (secretChecked ? ChatRoomModeFlags.SECRET : 0),
+        );
         if (secretChecked) {
             buf.writeString(password);
         }
@@ -104,6 +108,8 @@ export function CreateNewRoom() {
             buf.writeUUID(x),
         );
         sendPayload(buf);
+
+        //TODO: 조금 더 아름답게 reset
         setTitle("");
         setPassword("");
         setLimit(42);
