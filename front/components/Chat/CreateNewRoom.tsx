@@ -12,7 +12,11 @@ import {
 } from "@/library/payload/chat-opcodes";
 import { ByteBuffer } from "@/library/akasha-lib";
 import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+    CreateNewRoomCheckedAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
@@ -70,14 +74,19 @@ export function CreateNewRoom() {
     const [secretChecked, setSecretChecked] = useState(false);
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
+    const setCreateNewRoomChecked = useSetAtom(CreateNewRoomCheckedAtom);
+    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
     const [accountUUIDSet] = useUUIDSet();
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.CREATE_ROOM_FAILED,
         (_, buf) => {
             const errno = buf.read1();
-            //TODO: errno 처리
-            void errno;
+            if (errno === 0) {
+                const uuid = buf.readUUID();
+                console.log(uuid);
+                setCurrentChatRoomUUID(uuid);
+            }
         },
     );
     const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
@@ -96,6 +105,14 @@ export function CreateNewRoom() {
             buf.writeUUID(x),
         );
         sendPayload(buf);
+        setTitle("");
+        setPassword("");
+        setLimit(42);
+        setPrivateChecked(false);
+        setSecretChecked(false);
+        setLimitChecked(false);
+        setInviteChecked(false);
+        setCreateNewRoomChecked(false);
     };
 
     return (
