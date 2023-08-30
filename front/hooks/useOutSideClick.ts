@@ -1,29 +1,40 @@
 import { useCallback, useEffect } from "react";
 
 export function useOutsideClick(
-    divRef: React.RefObject<HTMLElement>,
+    ref: React.MutableRefObject<HTMLElement | null> | HTMLElement | null,
     callback: () => void,
     preventDefault: boolean,
 ) {
     const onClick = useCallback(
-        (e: MouseEvent) => {
-            const elem = divRef.current;
+        (ev: MouseEvent) => {
+            if (ev.defaultPrevented || ref === null) {
+                return;
+            }
+
+            const target = ev.target;
+            if (!(target instanceof Element)
+                || !target.getRootNode().contains(target)
+                || !target.isConnected
+            ) {
+                return;
+            }
+
+            const elem = (ref instanceof HTMLElement) ? ref : ref.current;
             if (elem === null) {
                 return;
             }
 
-            const target = e.target;
-            if (!(target instanceof Element)) {
-                return;
-            }
             if (elem.contains(target)) {
                 return;
             }
 
             callback();
-            preventDefault && e.preventDefault();
+
+            if (preventDefault) {
+                ev.preventDefault();
+            }
         },
-        [callback, divRef, preventDefault],
+        [callback, ref, preventDefault],
     );
 
     useEffect(() => {

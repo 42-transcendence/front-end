@@ -1,6 +1,7 @@
 "use client";
 
-import { ChatStore, MessageSchema } from "@/library/idb/chat-store";
+import type { MessageSchema } from "@/library/idb/chat-store";
+import { ChatStore } from "@/library/idb/chat-store";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
 import { atom } from "jotai";
 

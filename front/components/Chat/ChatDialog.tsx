@@ -26,7 +26,7 @@ function ChatMessageInputArea({
 }) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
-    const { sendPayload } = useWebSocket("chat", []);
+    const { sendPayload } = useWebSocket("chat", []); // TODO: 이게 맞나 일단 CHAT_MESSAGE  보내기만을 위한 sendPayload?
 
     const handleClick: React.MouseEventHandler = (event) => {
         event.preventDefault();
