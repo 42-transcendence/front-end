@@ -39,8 +39,6 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
 
         const data = new FormData(ref.current);
         const value = Object.fromEntries(data.entries());
-
-        console.log(value);
     };
 
     return (

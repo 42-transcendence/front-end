@@ -84,7 +84,6 @@ export function CreateNewRoom() {
             const errno = buf.read1();
             if (errno === 0) {
                 const uuid = buf.readUUID();
-                console.log(uuid);
                 setCurrentChatRoomUUID(uuid);
             }
         },

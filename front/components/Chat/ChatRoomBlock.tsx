@@ -53,7 +53,6 @@ export default function ChatRoomBlock({
         <button
             onClick={() => {
                 setChatRoomUUID(chatRoom.uuid);
-                console.log(chatRoom.uuid);
             }}
             className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
         >
