@@ -47,7 +47,7 @@ export function ChatSocketProcessor() {
                 return buf.toArray();
             },
         }),
-        [accessToken, currentAccountUUID],
+        [currentAccountUUID],
     );
     const getURL = useCallback(
         () => `wss://back.stri.dev/chat?token=${accessTokenRef.current}`,
@@ -57,7 +57,7 @@ export function ChatSocketProcessor() {
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
     useWebSocket(
         "chat",
-        [ChatClientOpcode.INITIALIZE, ChatClientOpcode.INSERT_ROOM],
+        [ChatClientOpcode.INITIALIZE, ChatClientOpcode.INSERT_ROOM], // TODO recieve message -> insert to IDB
         async (opcode, buffer) => {
             switch (opcode) {
                 case ChatClientOpcode.INITIALIZE: {
