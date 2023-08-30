@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Icon } from "@/components/ImageLibrary";
+import { Game, Icon } from "@/components/ImageLibrary";
 import { ChatBubbleWithProfile } from "./ChatBubble";
 import { useAtomValue } from "jotai";
 import { ChatStore } from "@/library/idb/chat-store";
@@ -120,7 +120,7 @@ export function ChatDialog({
         chatDialogElem.scrollTop = chatDialogElem.scrollHeight;
     };
 
-    return (
+    return chatRoomUUID !== "" ? (
         <div
             className={`${outerFrame} flex h-full shrink items-start justify-end gap-4 overflow-auto`}
         >
@@ -157,6 +157,13 @@ export function ChatDialog({
                     </div>
                 </div>
             </div>
+        </div>
+    ) : (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4">
+            <span className="text-4xl text-gray-50/80">
+                선택된 채팅창이 없습니다.
+            </span>
+            <Game.Ghost2 width="30%" height="30%" className="text-gray-50/80" />
         </div>
     );
 }

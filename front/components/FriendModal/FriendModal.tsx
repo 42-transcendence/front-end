@@ -13,6 +13,8 @@ import {
 import type { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
 import useSWR from "swr";
 import { fetcher } from "@/hooks/fetcher";
+import { GlassWindow } from "@/components/Frame/GlassWindow";
+import { useOutsideClick } from "@/hooks/useOutSideClick";
 
 //TODO change contents with query data.
 const profiles: ProfileItemConfig[] = [
@@ -57,12 +59,12 @@ export function FriendModal() {
     //TODO: fetch profile datas
 
     return (
-        <div className="gradient-border relative flex w-[262px] flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']">
+        <GlassWindow>
             <div className="w-full overflow-clip rounded-[28px] ">
                 <InviteList />
                 <FriendList />
             </div>
-        </div>
+        </GlassWindow>
     );
 }
 
