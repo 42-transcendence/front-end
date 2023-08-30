@@ -3,7 +3,10 @@
 import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 import { useAtomValue } from "jotai";
-import { CurrentChatRoomTitleAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
+import {
+    CurrentChatRoomTitleAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
 import { useEffect, useState } from "react";
 import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { ChatStore } from "@/library/idb/chat-store";
@@ -16,6 +19,7 @@ function LeftSidebarButton() {
                 type="radio"
                 name="leftRadio"
                 id="leftHeaderIcon"
+                defaultChecked
             />
             <label
                 htmlFor="leftHeaderIcon"
@@ -76,7 +80,7 @@ export function ChatHeader() {
                 }
                 setCurrentChatRoomModeFlags(member.modeFlags);
             })
-            .catch((e) => console.log(e))
+            .catch((e) => console.log(e));
     }, [currentAccountUUID, currentChatRoomUUID]);
 
     return (
@@ -103,10 +107,12 @@ export function ChatHeader() {
                     className="peer hidden"
                     type="checkbox"
                 />
-                <ChatRoomMenu
-                    modeFlags={currentChatRoomModeFlags}
-                    className="hidden peer-checked:flex"
-                />
+                {currentChatRoomTitle !== "" && (
+                    <ChatRoomMenu
+                        modeFlags={currentChatRoomModeFlags}
+                        className="hidden peer-checked:flex"
+                    />
+                )}
             </div>
             <RightSidebarButton />
         </div>
