@@ -69,7 +69,7 @@ export function ChatHeader({ isAdmin }: { isAdmin: boolean }) {
                     htmlFor="headerDropDown"
                     className="flex h-fit w-fit shrink-0 list-none flex-col justify-center rounded-md p-2 hover:bg-primary/30 active:bg-secondary/80"
                 >
-                    <div className=" relative flex flex-col items-center justify-center gap-2.5 px-4 py-0 text-base">
+                    <div className=" relative flex flex-col items-center justify-center px-4 py-0 text-base">
                         <h1 className="line-clamp-1 max-w-[16rem] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70 sm:max-w-full">
                             {currentChatRoomTitle === ""
                                 ? "채팅방을 선택하세요"
