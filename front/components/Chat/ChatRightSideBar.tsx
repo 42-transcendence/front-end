@@ -132,11 +132,11 @@ export default function ChatRightSideBar() {
     };
 
     return (
-        <div className="absolute right-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip text-gray-200/80 transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px_0px_0px_28px]">
-            <div className="flex h-full w-full shrink-0 flex-col items-start gap-2 bg-black/30 px-4 py-2 backdrop-blur-[20px] 2xl:py-4">
+        <div className="absolute right-0 top-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-hidden rounded-[0px_28px_28px_0px] bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px] 2xl:bg-black/30">
+            <div className="flex h-full w-full shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:py-4">
                 <div className="flex h-fit shrink-0 flex-row items-start justify-between gap-2 self-stretch 2xl:py-2">
                     <label htmlFor="rightSideBarIcon">
-                        <Icon.Members
+                        <Icon.MembersFilled
                             className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
                             width={48}
                             height={48}

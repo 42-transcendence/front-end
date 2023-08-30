@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Game, Icon } from "@/components/ImageLibrary";
 import { ChatBubbleWithProfile } from "./ChatBubble";
 import type { MessageSchema } from "@/library/idb/chat-store";
@@ -21,16 +21,13 @@ function ChatMessageInputArea() {
     const [value, setValue] = useState("");
     const { sendPayload } = useWebSocket("chat", []);
 
-    const handleClick: React.MouseEventHandler = (event) => {
-        event.preventDefault();
-
+    const sendMessage = () => {
         const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CHAT_MESSAGE);
         buf.writeUUID(currentChatRoomUUID);
         buf.writeString(value);
 
         sendPayload(buf);
         setValue("");
-        event.currentTarget.scroll({ behavior: "smooth" }); //FIXME: 스크롤
     };
 
     useLayoutEffect(() => {
@@ -48,10 +45,23 @@ function ChatMessageInputArea() {
         )}px`;
     }, [value]);
 
+    const handleEnter: React.KeyboardEventHandler<HTMLTextAreaElement> = (
+        event,
+    ) => {
+        if (event.key === "Enter") {
+            if (event.shiftKey) {
+                return;
+            }
+            event.preventDefault();
+            sendMessage();
+        }
+    };
+
     return (
         <div className="relative flex justify-center self-stretch">
             <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
                 <textarea
+                    onKeyDown={handleEnter}
                     onChange={(event) => setValue(event.target.value)}
                     rows={1}
                     spellCheck={false}
@@ -65,7 +75,7 @@ function ChatMessageInputArea() {
                     value={value}
                     className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
                 />
-                <button type="button" onClick={handleClick}>
+                <button type="button" onClick={() => handleEnter}>
                     <Icon.Send
                         className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
                         width={32}
@@ -102,6 +112,22 @@ export function ChatDialog({
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const chatMessages = useChatRoomMessages(currentChatRoomUUID) ?? [];
     const chatDialogRef = useRef<HTMLDivElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const scrollToBottom = () => {
+        if (messagesEndRef.current === null) {
+            return;
+        }
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        if (
+            chatMessages[chatMessages.length - 1].accountId ===
+            currentAccountUUID
+        ) {
+            scrollToBottom();
+        }
+    }, [chatMessages, currentAccountUUID]);
 
     return currentChatRoomUUID !== "" ? (
         <div
@@ -129,6 +155,7 @@ export function ChatDialog({
                             />
                         );
                     })}
+                    <div ref={messagesEndRef} />
                 </div>
                 <ChatMessageInputArea />
             </div>

@@ -3,10 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
-import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "@/components/ImageLibrary";
 import { FriendButton } from "./FriendButton";
 import { useCurrentAccountUUID } from "@/hooks/useCurrent";
+import { ChatButton } from "./ChatButton";
 
 export function NavigationBar() {
     const currentAccountUUID = useCurrentAccountUUID();
@@ -21,7 +21,7 @@ export function NavigationBar() {
                 />
             </Link>
             <div className="relative flex flex-row items-center justify-between gap-4">
-                <SocialButton />
+                <ChatButton />
                 <FriendButton />
                 {/* TODO: on click Avatar in navbar, show context menu myinfo */}
                 <Avatar
