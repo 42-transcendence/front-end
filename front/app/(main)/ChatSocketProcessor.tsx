@@ -28,6 +28,7 @@ import {
     FriendEntryAtom,
     FriendRequestEntryAtom,
 } from "@/atom/FriendAtom";
+import { mutate } from "swr";
 
 export function ChatSocketProcessor() {
     const accessToken = useAtomValue(AccessTokenAtom);
@@ -164,6 +165,10 @@ export function ChatSocketProcessor() {
                             message,
                         ]);
                     }
+
+                    mutate(["ChatStore", message.roomUUID, "Count"]);
+                    mutate(["ChatStore", message.roomUUID, "LatestMessage"]);
+                    mutate(["ChatStore", message.roomUUID, "ModeFlags"]);
                     break;
                 }
             }

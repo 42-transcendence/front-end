@@ -1,6 +1,9 @@
 import { Icon } from "@/components/ImageLibrary";
 import { Avatar } from "@/components/Avatar";
-import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
+import {
+    ChatRoomModeFlags,
+    type ChatRoomEntry,
+} from "@/library/payload/chat-payloads";
 import { CurrentChatRoomAtom } from "@/atom/ChatAtom";
 import { useSetAtom } from "jotai";
 import { useSWR } from "@/hooks/fetcher";
@@ -28,14 +31,20 @@ export default function ChatRoomBlock({
 }>) {
     //TODO: chatRoom.uuid 기준으로 idb에서 계산해오기. 변수 이름도 바꾸고, state로 바꿔야겠지?
     const { data: numberOfUnreadMessages } = useSWR(
-        chatRoom.lastMessageId !== null
-            ? [chatRoom.uuid, chatRoom.lastMessageId]
-            : null,
-        ([roomUUID, lastReadMessageUUID]) =>
-            ChatStore.countAfterMessage(roomUUID, lastReadMessageUUID),
+        ["ChatStore", chatRoom.uuid, "Count"],
+        ([, roomUUID]) =>
+            chatRoom.lastMessageId !== null
+                ? ChatStore.countAfterMessage(roomUUID, chatRoom.lastMessageId)
+                : 0,
     );
-    const { data: latestMessage } = useSWR(chatRoom.uuid, (roomUUID) =>
-        ChatStore.getLatestMessage(roomUUID),
+    const { data: latestMessage } = useSWR(
+        ["ChatStore", chatRoom.uuid, "LatestMessage"],
+        ([, roomUUID]) => ChatStore.getLatestMessage(roomUUID),
+    );
+    const { data: modeFlags } = useSWR(
+        ["ChatStore", chatRoom.uuid, "ModeFlags"],
+        ([, roomUUID]) => ChatStore.getModeFlags(roomUUID),
+        { fallbackData: 0 },
     );
     const setChatRoom = useSetAtom(CurrentChatRoomAtom);
 
@@ -66,13 +75,24 @@ export default function ChatRoomBlock({
                             <span className="relative line-clamp-1 max-w-[8rem] text-start font-sans text-base font-bold tracking-normal text-white/90">
                                 {children}
                             </span>
-                            <span className="flex h-fit w-fit shrink-0 flex-row gap-1">
-                                <Icon.Lock
-                                    width={12}
-                                    height={12}
-                                    className="text-yellow-200/70"
-                                />
-                            </span>
+                            {(modeFlags & ChatRoomModeFlags.PRIVATE) !== 0 && (
+                                <span className="flex h-fit w-fit shrink-0 flex-row gap-1">
+                                    <Icon.Lock
+                                        width={12}
+                                        height={12}
+                                        className="text-yellow-200/70"
+                                    />
+                                </span>
+                            )}
+                            {(modeFlags & ChatRoomModeFlags.SECRET) !== 0 && (
+                                <span className="flex h-fit w-fit shrink-0 flex-row gap-1">
+                                    <Icon.Key
+                                        width={12}
+                                        height={12}
+                                        className="text-yellow-200/70"
+                                    />
+                                </span>
+                            )}
                         </div>
 
                         <div className="line-clamp-2 h-fit text-ellipsis text-start font-sans text-xs font-normal text-gray-200">
