@@ -177,7 +177,7 @@ export default function ChatRightSideBar() {
             case "commitBanMemberList":
                 return <ChatCommitBanList />;
             case "newAccessBan":
-                return <AccessBan uuid={uuid} />;
+                return <AccessBan accountUUID={uuid} />;
             // case "newCommitBan":
             //     return <CommitBan uuid={uuid} />;
             default:
