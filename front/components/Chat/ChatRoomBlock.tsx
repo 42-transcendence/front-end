@@ -54,6 +54,7 @@ export default function ChatRoomBlock({
     };
 
     const setCurrentRoomInfo = useCallback(async () => {
+        console.log("inside of callback", chatRoom.uuid);
         setChatRoomTitle(await ChatStore.getTitle(chatRoom.uuid));
         setChatMessages(await ChatStore.getAllMessages(chatRoom.uuid));
     }, [chatRoom.uuid, setChatMessages, setChatRoomTitle]);
@@ -64,6 +65,7 @@ export default function ChatRoomBlock({
         <button
             onClick={() => {
                 setChatRoomUUID(chatRoom.uuid);
+                console.log(chatRoom.uuid);
             }}
             className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
         >
@@ -84,7 +86,7 @@ export default function ChatRoomBlock({
                 <div className="flex h-fit w-full justify-between gap-4 py-2 pl-0">
                     <div className="h-16 p-0">
                         <div className="flex h-8 flex-row items-center gap-2">
-                            <span className="relative line-clamp-1 min-w-min text-ellipsis font-sans text-base font-bold leading-none tracking-normal text-white/90">
+                            <span className="relative line-clamp-1 max-w-[8rem] text-start font-sans text-base font-bold tracking-normal text-white/90">
                                 {children}
                             </span>
                             <span className="flex h-fit w-fit shrink-0 flex-row gap-1">
@@ -96,7 +98,7 @@ export default function ChatRoomBlock({
                             </span>
                         </div>
 
-                        <div className="line-clamp-2 h-fit  text-ellipsis font-sans text-xs font-normal text-gray-200">
+                        <div className="line-clamp-2 h-fit text-ellipsis text-start font-sans text-xs font-normal text-gray-200">
                             {latestMessage}
                         </div>
                     </div>
