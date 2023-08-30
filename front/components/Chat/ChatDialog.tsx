@@ -6,7 +6,10 @@ import { ChatBubbleWithProfile } from "./ChatBubble";
 import { useAtomValue } from "jotai";
 import { ChatStore } from "@/library/idb/chat-store";
 import type { MessageSchema } from "@/library/idb/chat-store";
-import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
+import {
+    CurrentChatMessagesAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
 import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { useWebSocket } from "@/library/react/websocket-hook";
 import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
@@ -14,10 +17,16 @@ import { ByteBuffer } from "@/library/akasha-lib";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
-function ChatMessageInputArea({ chatRoomUUID, scrollToBottom }: { chatRoomUUID: string, scrollToBottom: () => void }) {
+function ChatMessageInputArea({
+    chatRoomUUID,
+    scrollToBottom,
+}: {
+    chatRoomUUID: string;
+    scrollToBottom: () => void;
+}) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
-    const { sendPayload } = useWebSocket("chat", [])
+    const { sendPayload } = useWebSocket("chat", []);
 
     const handleClick: React.MouseEventHandler = (event) => {
         event.preventDefault();
@@ -96,30 +105,20 @@ export function ChatDialog({
     outerFrame: string;
     innerFrame: string;
 }) {
-    const [chatMessages, setChatMessages] = useState<MessageSchema[]>([]);
+    const chatMessages = useAtomValue(CurrentChatMessagesAtom);
     const chatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
     const chatDialogRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        ChatStore.getLastMessage(chatRoomUUID)
-            .then((msg) =>
-                msg === null
-                    ? Promise.resolve(new Array<MessageSchema>())
-                    : ChatStore.getBeforeMessages(chatRoomUUID, msg.uuid),
-            )
-            .then((arr) => setChatMessages(arr))
-            .catch((error) => console.log(error));
-    }, [chatRoomUUID]);
 
     const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
 
     const scrollToBottom = () => {
+        //FIXME: 충분한 메시지 추가로 스크롤을 만들고 정상 동작 테스트 필요
         const chatDialogElem = chatDialogRef.current;
         if (chatDialogElem === null) {
             throw new Error();
         }
-        chatDialogElem.scrollTop = chatDialogElem.scrollHeight
-    }
+        chatDialogElem.scrollTop = chatDialogElem.scrollHeight;
+    };
 
     return (
         <div
@@ -128,7 +127,10 @@ export function ChatDialog({
             <div
                 className={`${innerFrame} flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4`}
             >
-                <div ref={chatDialogRef} className="flex flex-col gap-1 self-stretch overflow-auto">
+                <div
+                    ref={chatDialogRef}
+                    className="flex flex-col gap-1 self-stretch overflow-auto"
+                >
                     {chatMessages.map((msg, idx, arr) => {
                         // TODO: key for ChatBubbleWithProfile with chat message UUID
                         return (
@@ -148,7 +150,10 @@ export function ChatDialog({
 
                 <div className="relative flex justify-center self-stretch">
                     <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
-                        <ChatMessageInputArea chatRoomUUID={chatRoomUUID} scrollToBottom={scrollToBottom} />
+                        <ChatMessageInputArea
+                            chatRoomUUID={chatRoomUUID}
+                            scrollToBottom={scrollToBottom}
+                        />
                     </div>
                 </div>
             </div>

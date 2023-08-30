@@ -14,8 +14,8 @@ import { ByteBuffer } from "@/library/akasha-lib";
 import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { useAtomValue } from "jotai";
 
-const titlePattern = ".{4,32}";
-const maxMemberLimit = 1500;
+const TITLE_PATTERN = ".{4,32}";
+const MAX_MEMBER_LIMIT = 1500;
 
 //TODO: 네이밍 다시 하기. 필요하면 나중에 쓰기
 // export type CreateNewRoomParams = {
@@ -71,11 +71,15 @@ export function CreateNewRoom() {
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
     const [accountUUIDSet] = useUUIDSet();
-    const { sendPayload } = useWebSocket("chat", ChatClientOpcode.CREATE_ROOM_FAILED, (_, buf) => {
-        const errno = buf.read1();
-        //TODO: errno 처리
-        void errno;
-    });
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.CREATE_ROOM_FAILED,
+        (_, buf) => {
+            const errno = buf.read1();
+            //TODO: errno 처리
+            void errno;
+        },
+    );
     const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
@@ -107,7 +111,7 @@ export function CreateNewRoom() {
                             type="text"
                             className="relative min-h-[3rem] bg-black/30 px-4 py-1 text-xl"
                             placeholder="Title..."
-                            pattern={titlePattern}
+                            pattern={TITLE_PATTERN}
                             name="chatRoomTitle"
                             required
                             value={title}
@@ -196,7 +200,7 @@ export function CreateNewRoom() {
                                             name="limit"
                                             disabled={!limitChecked}
                                             min={1}
-                                            max={maxMemberLimit}
+                                            max={MAX_MEMBER_LIMIT}
                                             placeholder="최대인원 입력"
                                             className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
                                             value={limit}

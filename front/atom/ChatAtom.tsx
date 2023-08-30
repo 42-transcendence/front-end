@@ -1,15 +1,11 @@
 "use client";
 
-import { ChatStore } from "@/library/idb/chat-store";
+import { MessageSchema } from "@/library/idb/chat-store";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
 import { atom } from "jotai";
 
+export const ChatRoomListAtom = atom(Array<ChatRoomEntry>());
+
 export const CurrentChatRoomUUIDAtom = atom("");
-export const CurrentChatRoomTitleAtom = atom(async (get) => {
-    try {
-        return await ChatStore.getTitle(get(CurrentChatRoomUUIDAtom));
-    } catch {
-        return "";
-    }
-});
-export const ChatRoomListAtom = atom(new Array<ChatRoomEntry>());
+export const CurrentChatRoomTitleAtom = atom("");
+export const CurrentChatMessagesAtom = atom(Array<MessageSchema>());

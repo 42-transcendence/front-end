@@ -96,6 +96,8 @@ export class WebSocketRegistry {
             const webSocket = new WebSocket(url, props.protocols);
             webSocket.binaryType = "arraybuffer";
 
+            value.webSocket = webSocket;
+
             if (props.onClose !== undefined) {
                 webSocket.addEventListener("close", props.onClose);
             }
@@ -181,7 +183,6 @@ export class WebSocketRegistry {
                     number: SocketStateNumber.OPEN,
                 };
 
-                value.webSocket = webSocket;
                 value.lastState = state;
                 value.lastMessage = undefined;
 

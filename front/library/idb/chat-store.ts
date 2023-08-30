@@ -534,4 +534,34 @@ export class ChatStore {
     ): Promise<MessageSchema[]> {
         return this.getContinueMessages(true, roomUUID, messageUUID, limit);
     }
+
+    static async getAllMessages(
+        roomUUID: string,
+    ): Promise<MessageSchema[]> {
+        const db = await getDB(roomUUID);
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(["messages"], "readonly");
+            tx.onerror = () => reject(new Error());
+
+            const messages = tx.objectStore("messages");
+
+            const messageByTimestampIndex = messages.index("timestamp");
+            const messageAllByTimestampCursor = messageByTimestampIndex.openCursor(
+                null,
+                "next",
+            );
+            const messageAllByTimestamp =
+                new Array<MessageSchema>();
+            messageAllByTimestampCursor.onsuccess = () => {
+                const cursor = messageAllByTimestampCursor.result;
+                if (cursor !== null) {
+                    const message = cursor.value as MessageSchema;
+                    messageAllByTimestamp.push(message);
+                    cursor.continue();
+                } else {
+                    resolve(messageAllByTimestamp);
+                }
+            };
+        });
+    }
 }

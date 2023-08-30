@@ -4,6 +4,7 @@ import {
 } from "@/library/payload/chat-opcodes";
 import type { ChatRoomChatMessagePairEntry } from "@/library/payload/chat-payloads";
 import {
+    readChatMessage,
     readChatRoom,
     writeChatRoomChatMessagePair,
 } from "@/library/payload/chat-payloads";
@@ -15,8 +16,12 @@ import { useAtom, useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AccessTokenAtom, CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { ByteBuffer } from "@/library/akasha-lib";
-import { ChatStore } from "@/library/idb/chat-store";
-import { ChatRoomListAtom } from "@/atom/ChatAtom";
+import { ChatStore, MessageSchema } from "@/library/idb/chat-store";
+import {
+    ChatRoomListAtom,
+    CurrentChatMessagesAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
 
 export function ChatSocketProcessor() {
     const accessToken = useAtomValue(AccessTokenAtom);
@@ -55,9 +60,18 @@ export function ChatSocketProcessor() {
     );
     useWebSocketConnector("chat", getURL, props); //FIXME: props 이름?
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
+    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
+    const [currentChatMessages, setCurrentChatMessages] = useAtom(
+        CurrentChatMessagesAtom,
+    );
     useWebSocket(
         "chat",
-        [ChatClientOpcode.INITIALIZE, ChatClientOpcode.INSERT_ROOM], // TODO recieve message -> insert to IDB
+        [
+            ChatClientOpcode.INITIALIZE,
+            ChatClientOpcode.INSERT_ROOM,
+            ChatClientOpcode.REMOVE_ROOM,
+            ChatClientOpcode.CHAT_MESSAGE,
+        ], // TODO recieve message -> insert to IDB
         async (opcode, buffer) => {
             switch (opcode) {
                 case ChatClientOpcode.INITIALIZE: {
@@ -72,7 +86,7 @@ export function ChatSocketProcessor() {
                             ),
                         ),
                     );
-                    setChatRoomList(chatRoomList); //TODO: 도와줘 jotai!
+                    setChatRoomList(chatRoomList);
                     break;
                 }
 
@@ -85,6 +99,27 @@ export function ChatSocketProcessor() {
                         chatRoom.modeFlags,
                     );
                     setChatRoomList([...chatRoomList, chatRoom]);
+                    break;
+                }
+
+                case ChatClientOpcode.REMOVE_ROOM: {
+                    //TODO: 방 제외하기
+                    break;
+                }
+
+                case ChatClientOpcode.CHAT_MESSAGE: {
+                    const message = readChatMessage(buffer);
+                    const success = await ChatStore.addMessage(
+                        message.roomUUID,
+                        message,
+                    );
+
+                    if (success && message.roomUUID === currentChatRoomUUID) {
+                        setCurrentChatMessages([
+                            ...currentChatMessages,
+                            message,
+                        ]);
+                    }
                     break;
                 }
             }
