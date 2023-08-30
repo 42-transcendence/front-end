@@ -19,6 +19,7 @@ function LeftSidebarButton() {
                 type="radio"
                 name="leftRadio"
                 id="leftHeaderIcon"
+                defaultChecked
             />
             <label
                 htmlFor="leftHeaderIcon"
@@ -100,10 +101,12 @@ export function ChatHeader() {
                     className="peer hidden"
                     type="checkbox"
                 />
-                <ChatRoomMenu
-                    modeFlags={selfMemberModeFlags}
-                    className="hidden peer-checked:flex"
-                />
+                {currentChatRoomTitle !== "" && (
+                    <ChatRoomMenu
+                        modeFlags={selfMemberModeFlags}
+                        className="hidden peer-checked:flex"
+                    />
+                )}
             </div>
             <RightSidebarButton />
         </div>

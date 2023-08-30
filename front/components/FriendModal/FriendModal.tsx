@@ -13,13 +13,14 @@ import { useWebSocket } from "@/library/react/websocket-hook";
 import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { TargetedAccountUUIDAtom } from "@/atom/AccountAtom";
+import { GlassWindow } from "@/components/Frame/GlassWindow";
 
 export function FriendModal() {
     //TODO: fetch profile datas
     const { sendPayload } = useWebSocket("chat", []);
 
     return (
-        <div className="gradient-border relative flex w-[262px] flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']">
+        <GlassWindow>
             <div className="w-full overflow-clip rounded-[28px] ">
                 <InviteList />
                 <FriendList />
@@ -48,7 +49,7 @@ export function FriendModal() {
                     </div>
                 </div>
             </div>
-        </div>
+        </GlassWindow>
     );
 }
 
