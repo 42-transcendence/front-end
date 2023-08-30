@@ -93,18 +93,28 @@ export function ChatSocketProcessor() {
                     }
 
                     const chatRoomList = buffer.readArray(readChatRoom);
-                    const promises =  Array<Promise<boolean>>();
+                    const promises = Array<Promise<boolean>>();
                     for (const room of chatRoomList) {
                         roomSet.delete(room.uuid);
-                        promises.push(ChatStore.addRoom(
-                            currentAccountUUID,
-                            room.uuid,
-                            room.title,
-                            room.modeFlags,
-                        ));
+                        promises.push(
+                            ChatStore.addRoom(
+                                currentAccountUUID,
+                                room.uuid,
+                                room.title,
+                                room.modeFlags,
+                            ),
+                        );
+                        promises.push(ChatStore.truncateMember(room.uuid));
+                        for (const member of room.members) {
+                            promises.push(
+                                ChatStore.putMember(room.uuid, member),
+                            );
+                        }
                     }
                     for (const roomUUID of roomSet) {
-                        promises.push(ChatStore.deleteRoom(currentAccountUUID, roomUUID));
+                        promises.push(
+                            ChatStore.deleteRoom(currentAccountUUID, roomUUID),
+                        );
                     }
 
                     await Promise.allSettled(promises);

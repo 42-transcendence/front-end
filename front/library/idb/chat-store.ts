@@ -316,7 +316,7 @@ export class ChatStore {
     ): Promise<Map<string, MemberSchema> | null> {
         const db = await getDB(roomUUID);
         return new Promise((resolve) => {
-            const tx = db.transaction(["rooms"], "readonly");
+            const tx = db.transaction(["members"], "readonly");
             tx.onerror = () => resolve(null);
 
             const members = tx.objectStore("members");
@@ -339,7 +339,7 @@ export class ChatStore {
     ): Promise<MemberSchema | null> {
         const db = await getDB(roomUUID);
         return new Promise((resolve) => {
-            const tx = db.transaction(["rooms"], "readonly");
+            const tx = db.transaction(["members"], "readonly");
             tx.onerror = () => resolve(null);
 
             const members = tx.objectStore("members");
@@ -375,6 +375,19 @@ export class ChatStore {
         }
 
         return member;
+    }
+
+    static async truncateMember(roomUUID: string): Promise<boolean> {
+        const db = await getDB(roomUUID);
+        return new Promise((resolve) => {
+            const tx = db.transaction(["members"], "readwrite");
+            tx.onerror = () => resolve(false);
+
+            const members = tx.objectStore("members");
+            const memberClear = members.clear();
+
+            memberClear.onsuccess = () => resolve(true);
+        });
     }
 
     /// Manipulate Message List

@@ -1,7 +1,7 @@
 import { Icon } from "@/components/ImageLibrary";
 import { Avatar } from "@/components/Avatar";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
-import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
+import { CurrentChatRoomAtom } from "@/atom/ChatAtom";
 import { useSetAtom } from "jotai";
 
 function UnreadMessageBadge({ count }: { count: number }) {
@@ -27,13 +27,11 @@ export default function ChatRoomBlock({
     //TODO: chatRoom.uuid 기준으로 idb에서 계산해오기. 변수 이름도 바꾸고, state로 바꿔야겠지?
     const numberOfUnreadMessages = 42;
     const latestMessage = "마지막 메시지를 알아서 잘 구해오세요.";
-    const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
+    const setChatRoom = useSetAtom(CurrentChatRoomAtom);
 
     return (
         <button
-            onClick={() => {
-                setChatRoomUUID(chatRoom.uuid);
-            }}
+            onClick={() => setChatRoom(chatRoom.uuid)}
             className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
         >
             {/* chatrooms - image */}

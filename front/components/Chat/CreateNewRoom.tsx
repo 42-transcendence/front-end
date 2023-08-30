@@ -13,10 +13,7 @@ import {
 import { ByteBuffer } from "@/library/akasha-lib";
 import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-    CreateNewRoomCheckedAtom,
-    CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
+import { CreateNewRoomCheckedAtom, CurrentChatRoomAtom } from "@/atom/ChatAtom";
 import { ChatRoomModeFlags } from "@/library/payload/chat-payloads";
 
 const TITLE_PATTERN = ".{4,32}";
@@ -76,7 +73,7 @@ export function CreateNewRoom() {
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
     const setCreateNewRoomChecked = useSetAtom(CreateNewRoomCheckedAtom);
-    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
+    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom);
     const [accountUUIDSet] = useUUIDSet();
     const { sendPayload } = useWebSocket(
         "chat",
@@ -85,7 +82,7 @@ export function CreateNewRoom() {
             const errno = buf.read1();
             if (errno === 0) {
                 const uuid = buf.readUUID();
-                setCurrentChatRoomUUID(uuid);
+                setCurrentChatRoom(uuid);
             }
         },
     );
