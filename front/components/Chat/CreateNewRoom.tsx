@@ -277,7 +277,7 @@ function InviteFriendToggle({
                 htmlFor="sectionHeader"
                 data-checked={checked}
                 data-sticky={isSticky}
-                className="group sticky -top-1 z-10 flex h-fit w-full flex-row items-center gap-3 rounded p-3 transition-colors hover:bg-gray-500/30 hover:text-white data-[sticky=true]:bg-secondary data-[sticky=true]:duration-0"
+                className="group sticky -top-1 z-10 flex h-fit w-full flex-row items-center gap-3 rounded p-3 transition-colors hover:bg-gray-500/30 hover:text-white data-[checked=true]:data-[sticky=true]:bg-secondary data-[checked=true]:data-[sticky=true]:duration-0"
             >
                 <Icon.Invite
                     width={56}
