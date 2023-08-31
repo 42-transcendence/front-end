@@ -79,165 +79,152 @@ export function ChatSocketProcessor() {
     const [friendRequestEntry, setFriendRequestEntry] = useAtom(
         FriendRequestEntryAtom,
     );
-    useWebSocket(
-        "chat",
-        undefined,
-        async (opcode, buffer) => {
-            switch (opcode) {
-                case ChatClientOpcode.INITIALIZE: {
-                    const roomSet =
-                        await ChatStore.getRoomSet(currentAccountUUID);
-                    if (roomSet === null) {
-                        throw new Error();
-                    }
-
-                    const chatRoomList = buffer.readArray(readChatRoom);
-                    const promises = Array<Promise<boolean>>();
-                    for (const room of chatRoomList) {
-                        roomSet.delete(room.uuid);
-                        promises.push(
-                            ChatStore.addRoom(
-                                currentAccountUUID,
-                                room.uuid,
-                                room.title,
-                                room.modeFlags,
-                            ),
-                        );
-                        promises.push(ChatStore.truncateMember(room.uuid));
-                        for (const member of room.members) {
-                            promises.push(
-                                ChatStore.putMember(room.uuid, member),
-                            );
-                        }
-                    }
-                    for (const roomUUID of roomSet) {
-                        promises.push(
-                            ChatStore.deleteRoom(currentAccountUUID, roomUUID),
-                        );
-                    }
-
-                    await Promise.allSettled(promises);
-
-                    const chatMessageMapSize = buffer.readLength();
-                    for (let i = 0; i < chatMessageMapSize; i++) {
-                        const roomUUID = buffer.readUUID();
-                        const messageList = buffer.readArray(readChatMessage);
-
-                        await ChatStore.addMessageBulk(roomUUID, messageList);
-                        const latestMessage =
-                            await ChatStore.getLatestMessage(roomUUID);
-                        if (latestMessage !== null) {
-                            await ChatStore.setFetchedMessageUUID(
-                                roomUUID,
-                                latestMessage.uuid,
-                            );
-                        }
-                    }
-
-                    setChatRoomList(chatRoomList);
-
-                    const socialPayload = readSocialPayload(buffer);
-                    setFriendEntry(socialPayload.friendList);
-                    setFriendRequestEntry(socialPayload.friendRequestList);
-                    setEnemyEntry(socialPayload.enemyList);
-
-                    break;
+    useWebSocket("chat", undefined, async (opcode, buffer) => {
+        switch (opcode) {
+            case ChatClientOpcode.INITIALIZE: {
+                const roomSet = await ChatStore.getRoomSet(currentAccountUUID);
+                if (roomSet === null) {
+                    throw new Error();
                 }
 
-                case ChatClientOpcode.ADD_FRIEND_RESULT: {
-                    const errno = buffer.read1();
-                    if (errno === 0) {
-                        const friend = readFriend(buffer);
-                        setFriendEntry([...friendEntry, friend]);
-                        setFriendRequestEntry(
-                            friendRequestEntry.filter(
-                                (accountUUID) => accountUUID !== friend.uuid,
-                            ),
-                        );
-                    } else {
-                        console.log("ADD_FRIEND_RESULT에서 오류! " + errno);
-                    }
-                    break;
-                }
-
-                case ChatClientOpcode.DELETE_FRIEND_RESULT: {
-                    const friendUUID = buffer.readUUID();
-                    setFriendEntry(
-                        friendEntry.filter(
-                            (friend) => friend.uuid !== friendUUID,
+                const chatRoomList = buffer.readArray(readChatRoom);
+                const promises = Array<Promise<boolean>>();
+                for (const room of chatRoomList) {
+                    roomSet.delete(room.uuid);
+                    promises.push(
+                        ChatStore.addRoom(
+                            currentAccountUUID,
+                            room.uuid,
+                            room.title,
+                            room.modeFlags,
                         ),
                     );
+                    promises.push(ChatStore.truncateMember(room.uuid));
+                    for (const member of room.members) {
+                        promises.push(ChatStore.putMember(room.uuid, member));
+                    }
+                }
+                for (const roomUUID of roomSet) {
+                    promises.push(
+                        ChatStore.deleteRoom(currentAccountUUID, roomUUID),
+                    );
+                }
+
+                await Promise.allSettled(promises);
+
+                const chatMessageMapSize = buffer.readLength();
+                for (let i = 0; i < chatMessageMapSize; i++) {
+                    const roomUUID = buffer.readUUID();
+                    const messageList = buffer.readArray(readChatMessage);
+
+                    await ChatStore.addMessageBulk(roomUUID, messageList);
+                    const latestMessage =
+                        await ChatStore.getLatestMessage(roomUUID);
+                    if (latestMessage !== null) {
+                        await ChatStore.setFetchedMessageUUID(
+                            roomUUID,
+                            latestMessage.uuid,
+                        );
+                    }
+                }
+
+                setChatRoomList(chatRoomList);
+
+                const socialPayload = readSocialPayload(buffer);
+                setFriendEntry(socialPayload.friendList);
+                setFriendRequestEntry(socialPayload.friendRequestList);
+                setEnemyEntry(socialPayload.enemyList);
+
+                break;
+            }
+
+            case ChatClientOpcode.ADD_FRIEND_RESULT: {
+                const errno = buffer.read1();
+                if (errno === 0) {
+                    const friend = readFriend(buffer);
+                    setFriendEntry([...friendEntry, friend]);
                     setFriendRequestEntry(
                         friendRequestEntry.filter(
-                            (accountUUID) => accountUUID !== friendUUID,
+                            (accountUUID) => accountUUID !== friend.uuid,
                         ),
                     );
-                    break;
+                } else {
+                    console.log("ADD_FRIEND_RESULT에서 오류! " + errno);
                 }
-
-                case ChatClientOpcode.FRIEND_REQUEST: {
-                    const targetUUID = buffer.readUUID();
-                    const find = friendEntry.find((e) => e.uuid === targetUUID);
-                    if (find !== undefined) {
-                        //FIXME: 상대가 내 요청을 수락함. 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
-                    } else {
-                        setFriendRequestEntry([
-                            ...friendRequestEntry,
-                            targetUUID,
-                        ]);
-                        //TODO: 알림?
-                    }
-                    break;
-                }
-
-                case ChatClientOpcode.UPDATE_FRIEND_ACTIVE_STATUS: {
-                    const targetUUID = buffer.readUUID();
-                    //FIXME: 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
-                    break;
-                }
-
-                case ChatClientOpcode.INSERT_ROOM: {
-                    const chatRoom = readChatRoom(buffer);
-                    await ChatStore.addRoom(
-                        currentAccountUUID,
-                        chatRoom.uuid,
-                        chatRoom.title,
-                        chatRoom.modeFlags,
-                    );
-                    setChatRoomList([...chatRoomList, chatRoom]);
-                    break;
-                }
-
-                case ChatClientOpcode.REMOVE_ROOM: {
-                    const roomUUID = buffer.readUUID();
-                    if (currentChatRoomUUID === roomUUID) {
-                        await setCurrentChatRoom("");
-                    }
-                    setChatRoomList(
-                        chatRoomList.filter((e) => e.uuid !== roomUUID),
-                    );
-                    await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
-                    break;
-                }
-
-                case ChatClientOpcode.CHAT_MESSAGE: {
-                    const message = readChatMessage(buffer);
-                    await ChatStore.addMessage(message.roomUUID, message);
-
-                    if (message.roomUUID === currentChatRoomUUID) {
-                        setCurrentChatMessages([
-                            ...currentChatMessages,
-                            message,
-                        ]);
-                    }
-
-                    await mutate(["ChatStore", message.roomUUID, "Count"]);
-                    await mutate(["ChatStore", message.roomUUID, "LatestMessage"]);
-                    await mutate(["ChatStore", message.roomUUID, "ModeFlags"]);
-                    break;
-                }
+                break;
             }
-        },
-    );
+
+            case ChatClientOpcode.DELETE_FRIEND_RESULT: {
+                const friendUUID = buffer.readUUID();
+                setFriendEntry(
+                    friendEntry.filter((friend) => friend.uuid !== friendUUID),
+                );
+                setFriendRequestEntry(
+                    friendRequestEntry.filter(
+                        (accountUUID) => accountUUID !== friendUUID,
+                    ),
+                );
+                break;
+            }
+
+            case ChatClientOpcode.FRIEND_REQUEST: {
+                const targetUUID = buffer.readUUID();
+                const find = friendEntry.find((e) => e.uuid === targetUUID);
+                if (find !== undefined) {
+                    //FIXME: 상대가 내 요청을 수락함. 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
+                } else {
+                    setFriendRequestEntry([...friendRequestEntry, targetUUID]);
+                    //TODO: 알림?
+                }
+                break;
+            }
+
+            case ChatClientOpcode.UPDATE_FRIEND_ACTIVE_STATUS: {
+                const targetUUID = buffer.readUUID();
+                //FIXME: 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
+                break;
+            }
+
+            case ChatClientOpcode.INSERT_ROOM: {
+                const chatRoom = readChatRoom(buffer);
+                await ChatStore.addRoom(
+                    currentAccountUUID,
+                    chatRoom.uuid,
+                    chatRoom.title,
+                    chatRoom.modeFlags,
+                );
+                setChatRoomList([...chatRoomList, chatRoom]);
+                break;
+            }
+
+            case ChatClientOpcode.REMOVE_ROOM: {
+                const roomUUID = buffer.readUUID();
+                if (currentChatRoomUUID === roomUUID) {
+                    await setCurrentChatRoom("");
+                }
+                setChatRoomList(
+                    chatRoomList.filter((e) => e.uuid !== roomUUID),
+                );
+                await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
+                break;
+            }
+
+            case ChatClientOpcode.CHAT_MESSAGE: {
+                const message = readChatMessage(buffer);
+                await ChatStore.addMessage(message.roomUUID, message);
+
+                if (message.roomUUID === currentChatRoomUUID) {
+                    setCurrentChatMessages([...currentChatMessages, message]);
+                }
+
+                await mutate(["ChatStore", message.roomUUID, "Count"]);
+                await mutate(["ChatStore", message.roomUUID, "LatestMessage"]);
+                await mutate(["ChatStore", message.roomUUID, "ModeFlags"]);
+                break;
+            }
+
+            //FIXME: ROOM_MEMBER 옵코드 처리
+        }
+    });
     return <></>;
 }

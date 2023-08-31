@@ -27,9 +27,11 @@ function useLeaveChatRoom(chatRoomUUID: string) {
             alert("방이 선택되어 있지 않습니다.");
             return;
         }
+        if (confirm("정말로 나가시겠습니까?")) {
             const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.LEAVE_ROOM);
             buf.writeUUID(chatRoomUUID);
             sendPayload(buf);
+        }
     };
 }
 

@@ -56,6 +56,7 @@ class IndexedDBConnectionPool {
 
                 db.onversionchange = () => {
                     db.close();
+                    this.dictionary.delete(name);
                     options.onClose?.();
                 };
 

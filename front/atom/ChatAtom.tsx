@@ -1,6 +1,6 @@
 "use client";
 
-import type { MessageSchema } from "@/library/idb/chat-store";
+import type { MemberSchema, MessageSchema } from "@/library/idb/chat-store";
 import { ChatStore } from "@/library/idb/chat-store";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
 import { atom } from "jotai";
@@ -18,6 +18,12 @@ export const CurrentChatRoomAtom = atom(
             roomUUID !== "" ? await ChatStore.getTitle(roomUUID) : "",
         );
         set(
+            CurrentChatMembersAtom,
+            roomUUID !== ""
+                ? [...(await ChatStore.getMemberDictionary(roomUUID)).values()]
+                : [],
+        );
+        set(
             CurrentChatMessagesAtom,
             roomUUID !== "" ? await ChatStore.getAllMessages(roomUUID) : [],
         );
@@ -33,4 +39,5 @@ export const CurrentChatRoomTitleAtom = atom((get) =>
 const _backing_CurrentChatRoomUUIDAtom = atom("");
 const _backing_CurrentChatRoomTitleAtom = atom("");
 
+export const CurrentChatMembersAtom = atom(Array<MemberSchema>());
 export const CurrentChatMessagesAtom = atom(Array<MessageSchema>());

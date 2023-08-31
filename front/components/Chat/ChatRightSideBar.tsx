@@ -12,6 +12,18 @@ import { MenuItem } from "./MenuItem";
 import { AccessBan } from "./NewBan";
 import { Provider, useAtomValue } from "jotai";
 import { FriendEntryAtom } from "@/atom/FriendAtom";
+import { SelectedAccountUUIDsAtom } from "@/atom/AccountAtom";
+import { useWebSocket } from "@/library/react/websocket-hook";
+import {
+    ChatClientOpcode,
+    ChatServerOpcode,
+} from "@/library/payload/chat-opcodes";
+import { ByteBuffer } from "@/library/akasha-lib";
+import {
+    CurrentChatMembersAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
+import { GlobalStore } from "@/atom/GlobalStore";
 
 export type RightSideBarContents =
     | "report"
@@ -29,9 +41,9 @@ export type RightSideBarContents =
 export default function ChatRightSideBar() {
     const [selectedUUID, setSelectedUUID] = useState<string>();
     const [query, setQuery] = useState("");
-    const friendEntrySet = useAtomValue(FriendEntryAtom);
+    const currentChatMembers = useAtomValue(CurrentChatMembersAtom);
     const { results, getFzfHighlightProps } = useFzf({
-        items: friendEntrySet,
+        items: currentChatMembers,
         itemToString(item) {
             //TODO: fetch...? Fzf 지우기가 먼저인가? (2) 같은 문제가 InviteList에도 있으니 반드시 참조 바람
             return item.uuid;
@@ -54,11 +66,6 @@ export default function ChatRightSideBar() {
         }
     };
 
-    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-        event.preventDefault();
-        //TODO: invite selected ids;
-    };
-
     const pageTitle = (currentContent: RightSideBarContents) => {
         switch (currentContent) {
             case "accessBanMemberList":
@@ -75,23 +82,9 @@ export default function ChatRightSideBar() {
     };
 
     const memberList = inviteToggle ? (
-        <>
-            {/* TODO: complete form!! & add invite button */}
-            <form
-                className="h-full w-full overflow-auto"
-                onSubmit={handleSubmit}
-            >
-                <div className="flex h-full w-full flex-col justify-between gap-4">
-                    <Provider>
-                        <InviteList className="overflow-auto" />
-                        <ButtonOnRight
-                            buttonText="초대하기"
-                            className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
-                        />
-                    </Provider>
-                </div>
-            </form>
-        </>
+        <Provider>
+            <InviteForm />
+        </Provider>
     ) : (
         <>
             <TextField
@@ -243,5 +236,50 @@ export default function ChatRightSideBar() {
                 {listContent(currentPage)}
             </div>
         </div>
+    );
+}
+
+function InviteForm() {
+    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom, {
+        store: GlobalStore,
+    });
+    const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.INVITE_USER_FAILED,
+        (_, buf) => {
+            const errno = buf.read1();
+            if (errno !== 0) {
+                alert("초대 실패...");
+            }
+        },
+    );
+
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+        event.preventDefault();
+
+        const inviteAccountUUIDs = [...new Set([...selectedAccountUUIDs])];
+
+        for (const accountUUID of inviteAccountUUIDs) {
+            const buf = ByteBuffer.createWithOpcode(
+                ChatServerOpcode.INVITE_USER,
+            );
+            buf.writeUUID(currentChatRoomUUID);
+            buf.writeUUID(accountUUID);
+            sendPayload(buf);
+        }
+    };
+
+    // TODO: complete form!! & add invite button
+    return (
+        <form className="h-full w-full overflow-auto" onSubmit={handleSubmit}>
+            <div className="flex h-full w-full flex-col justify-between gap-4">
+                <InviteList className="overflow-auto" />
+                <ButtonOnRight
+                    buttonText="초대하기"
+                    className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
+                />
+            </div>
+        </form>
     );
 }
