@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Game, Icon } from "@/components/ImageLibrary";
 import { ChatBubbleWithProfile } from "./ChatBubble";
 import { useAtomValue } from "jotai";
-import { ChatStore } from "@/library/idb/chat-store";
 import type { MessageSchema } from "@/library/idb/chat-store";
 import {
     CurrentChatMessagesAtom,
