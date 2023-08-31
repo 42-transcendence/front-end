@@ -4,17 +4,20 @@ import { ButtonOnRight } from "@/components/Button/ButtonOnRight";
 import { InviteList } from "@/components/Service/InviteList";
 import { TextField } from "@/components/TextField";
 import { ToggleButton } from "@/components/Button/ToggleButton";
-import { useUUIDSet } from "@/hooks/UUIDSetContext";
 import { useWebSocket } from "@/library/react/websocket-hook";
 import {
     ChatClientOpcode,
     ChatServerOpcode,
 } from "@/library/payload/chat-opcodes";
 import { ByteBuffer } from "@/library/akasha-lib";
-import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
+import {
+    CurrentAccountUUIDAtom,
+    SelectedAccountUUIDsAtom,
+} from "@/atom/AccountAtom";
 import { useAtomValue, useSetAtom } from "jotai";
 import { CreateNewRoomCheckedAtom, CurrentChatRoomAtom } from "@/atom/ChatAtom";
 import { ChatRoomModeFlags } from "@/library/payload/chat-payloads";
+import { GlobalStore } from "@/atom/GlobalStore";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
@@ -72,9 +75,16 @@ export function CreateNewRoom() {
     const [secretChecked, setSecretChecked] = useState(false);
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
-    const setCreateNewRoomChecked = useSetAtom(CreateNewRoomCheckedAtom);
-    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom);
-    const [accountUUIDSet] = useUUIDSet();
+    const setCreateNewRoomChecked = useSetAtom(CreateNewRoomCheckedAtom, {
+        store: GlobalStore,
+    });
+    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom, {
+        store: GlobalStore,
+    });
+    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom, {
+        store: GlobalStore,
+    });
+    const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.CREATE_ROOM_FAILED,
@@ -86,10 +96,13 @@ export function CreateNewRoom() {
             }
         },
     );
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
+
+        const inviteAccountUUIDs = [
+            ...new Set([currentAccountUUID, ...selectedAccountUUIDs]),
+        ];
 
         const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CREATE_ROOM);
         buf.writeString(title);
@@ -101,9 +114,7 @@ export function CreateNewRoom() {
             buf.writeString(password);
         }
         buf.write2Unsigned(limit);
-        buf.writeArray([currentAccountUUID, ...accountUUIDSet], (x, buf) =>
-            buf.writeUUID(x),
-        );
+        buf.writeArray(inviteAccountUUIDs, (x, buf) => buf.writeUUID(x));
         sendPayload(buf);
 
         //TODO: 조금 더 아름답게 reset

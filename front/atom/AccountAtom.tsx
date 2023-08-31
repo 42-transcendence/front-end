@@ -8,3 +8,4 @@ export const CurrentAccountUUIDAtom = atom<string>("");
 export const AuthAtom = atom<AuthPayload | undefined>(undefined);
 
 export const TargetedAccountUUIDAtom = atom<string>("");
+export const SelectedAccountUUIDsAtom = atom<string[]>([]);

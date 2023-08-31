@@ -52,7 +52,7 @@ export default function ChatRoomBlock({
 
     return (
         <button
-            onClick={() => setChatRoom(chatRoom.uuid)}
+            onClick={() => void setChatRoom(chatRoom.uuid)}
             className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
         >
             {/* chatrooms - image */}

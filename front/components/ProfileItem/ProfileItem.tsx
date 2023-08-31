@@ -5,9 +5,8 @@ import {
     ContextMenu_Social,
     ContextMenu_MyProfile,
 } from "@/components/ContextMenu";
-import type { ProfileItemConfig as ProfileItemInternlConfig } from "@/components/ContextMenu";
 import { fetcher, useSWR } from "@/hooks/fetcher";
-import { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
+import type { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
 import { Provider, createStore } from "jotai";
 
 export function ProfileItem({

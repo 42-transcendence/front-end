@@ -81,7 +81,7 @@ export function ChatSocketProcessor() {
     );
     useWebSocket(
         "chat",
-        undefined, // TODO recieve message -> insert to IDB
+        undefined,
         async (opcode, buffer) => {
             switch (opcode) {
                 case ChatClientOpcode.INITIALIZE: {
@@ -172,6 +172,7 @@ export function ChatSocketProcessor() {
                             (accountUUID) => accountUUID !== friendUUID,
                         ),
                     );
+                    break;
                 }
 
                 case ChatClientOpcode.FRIEND_REQUEST: {
@@ -210,10 +211,10 @@ export function ChatSocketProcessor() {
                 case ChatClientOpcode.REMOVE_ROOM: {
                     const roomUUID = buffer.readUUID();
                     if (currentChatRoomUUID === roomUUID) {
-                        setCurrentChatRoom("");
+                        await setCurrentChatRoom("");
                     }
                     setChatRoomList(
-                        chatRoomList.filter((e) => e.uuid != roomUUID),
+                        chatRoomList.filter((e) => e.uuid !== roomUUID),
                     );
                     await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
                     break;
@@ -230,9 +231,9 @@ export function ChatSocketProcessor() {
                         ]);
                     }
 
-                    mutate(["ChatStore", message.roomUUID, "Count"]);
-                    mutate(["ChatStore", message.roomUUID, "LatestMessage"]);
-                    mutate(["ChatStore", message.roomUUID, "ModeFlags"]);
+                    await mutate(["ChatStore", message.roomUUID, "Count"]);
+                    await mutate(["ChatStore", message.roomUUID, "LatestMessage"]);
+                    await mutate(["ChatStore", message.roomUUID, "ModeFlags"]);
                     break;
                 }
             }

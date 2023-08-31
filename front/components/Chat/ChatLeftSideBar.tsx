@@ -6,8 +6,7 @@ import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
-import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
-import { useAtom, useAtomValue } from "jotai";
+import { Provider, useAtom, useAtomValue } from "jotai";
 import { ChatRoomListAtom, CreateNewRoomCheckedAtom } from "@/atom/ChatAtom";
 
 export default function ChatLeftSideBar() {
@@ -90,9 +89,9 @@ export default function ChatLeftSideBar() {
                     </div>
                 </div>
 
-                <UUIDSetContainer>
+                <Provider>
                     <CreateNewRoom />
-                </UUIDSetContainer>
+                </Provider>
             </div>
         </div>
     );

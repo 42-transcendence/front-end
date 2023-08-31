@@ -3,8 +3,6 @@
 import { MenuItem } from "./MenuItem";
 import { ChatMemberModeFlags } from "@/library/payload/chat-payloads";
 import { useChatRoomMenuActions } from "@/hooks/useChatRoomMenuActions";
-import { useAtomValue } from "jotai";
-import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
 
 type ChatRoomHeaderMenu = {
     name: string;
