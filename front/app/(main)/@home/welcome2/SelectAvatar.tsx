@@ -4,13 +4,14 @@ import { Icon } from "@/components/ImageLibrary";
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { UploadBox } from "./UploadBox";
+import { useRefMap } from "@/hooks/useRefMap";
 
 const defaultProfilesKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
 export function SelectAvatar() {
     const [profileName, setProfileName] = useState("");
     const rootRef = useRef<HTMLDivElement>(null);
-    const targetRefs = useRef<Map<string, HTMLImageElement> | null>(null);
+    const [targetRefsMap, refCallbackAt] = useRefMap<string, HTMLImageElement>();
     const observerOptions = useMemo(
         () => ({
             root: rootRef.current,
@@ -36,34 +37,22 @@ export function SelectAvatar() {
         },
         [],
     );
-    const referenceTarget = useCallback(
-        (name: string, node: HTMLImageElement | null) => {
-            targetRefs.current ??= new Map();
-            const map = targetRefs.current;
 
-            if (node !== null) {
-                map.set(name, node);
-            } else {
-                map.delete(name);
-            }
-        },
-        [],
-    );
     const observer = useMemo(
         () => new IntersectionObserver(handleIntersect, observerOptions),
         [handleIntersect, observerOptions],
     );
+
     useEffect(() => {
         if (rootRef.current === null) {
             return;
         }
 
-        if (targetRefs.current !== null) {
-            targetRefs.current.forEach((e) => observer.observe(e));
-        }
+        targetRefsMap.forEach((e) => observer.observe(e));
 
         return () => observer.disconnect();
-    }, [observer]);
+    }, [observer, targetRefsMap]);
+
     return (
         <>
             <div className="z-10 w-[24rem] overflow-clip">
@@ -80,7 +69,7 @@ export function SelectAvatar() {
                             className="z-10 flex-shrink-0 snap-center snap-always overflow-hidden"
                         >
                             <Image
-                                ref={(node) => referenceTarget(name, node)}
+                                ref={refCallbackAt(name)}
                                 className="box-content"
                                 src={`/${name}.png`}
                                 alt={`${name}'s Avatar`}
