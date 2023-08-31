@@ -52,10 +52,11 @@ export const DigitBlock = forwardRef(function DigitBlock(
             throw new Error();
         }
 
-        if (!refArray[index].disabled) {
+        // FIXME: 이거 안전한가..? 아닌듯 검증..이 아니라 수정 필요. 살려줘요
+        if (value !== "" && !refArray[index].disabled) {
             setValue("");
         }
-    }, [index, refArray, setValue]);
+    }, [index, setValue, refArray, value]);
 
     return (
         <input
