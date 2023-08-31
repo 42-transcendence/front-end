@@ -6,6 +6,7 @@ import type { ChatRoomChatMessagePairEntry } from "@/library/payload/chat-payloa
 import {
     readChatMessage,
     readChatRoom,
+    readFriend,
     readSocialPayload,
     writeChatRoomChatMessagePair,
 } from "@/library/payload/chat-payloads";
@@ -80,12 +81,7 @@ export function ChatSocketProcessor() {
     );
     useWebSocket(
         "chat",
-        [
-            ChatClientOpcode.INITIALIZE,
-            ChatClientOpcode.INSERT_ROOM,
-            ChatClientOpcode.REMOVE_ROOM,
-            ChatClientOpcode.CHAT_MESSAGE,
-        ], // TODO recieve message -> insert to IDB
+        undefined, // TODO recieve message -> insert to IDB
         async (opcode, buffer) => {
             switch (opcode) {
                 case ChatClientOpcode.INITIALIZE: {
@@ -128,6 +124,14 @@ export function ChatSocketProcessor() {
                         const messageList = buffer.readArray(readChatMessage);
 
                         await ChatStore.addMessageBulk(roomUUID, messageList);
+                        const latestMessage =
+                            await ChatStore.getLatestMessage(roomUUID);
+                        if (latestMessage !== null) {
+                            await ChatStore.setFetchedMessageUUID(
+                                roomUUID,
+                                latestMessage.uuid,
+                            );
+                        }
                     }
 
                     setChatRoomList(chatRoomList);
@@ -137,6 +141,57 @@ export function ChatSocketProcessor() {
                     setFriendRequestEntry(socialPayload.friendRequestList);
                     setEnemyEntry(socialPayload.enemyList);
 
+                    break;
+                }
+
+                case ChatClientOpcode.ADD_FRIEND_RESULT: {
+                    const errno = buffer.read1();
+                    if (errno === 0) {
+                        const friend = readFriend(buffer);
+                        setFriendEntry([...friendEntry, friend]);
+                        setFriendRequestEntry(
+                            friendRequestEntry.filter(
+                                (accountUUID) => accountUUID !== friend.uuid,
+                            ),
+                        );
+                    } else {
+                        console.log("ADD_FRIEND_RESULT에서 오류! " + errno);
+                    }
+                    break;
+                }
+
+                case ChatClientOpcode.DELETE_FRIEND_RESULT: {
+                    const friendUUID = buffer.readUUID();
+                    setFriendEntry(
+                        friendEntry.filter(
+                            (friend) => friend.uuid !== friendUUID,
+                        ),
+                    );
+                    setFriendRequestEntry(
+                        friendRequestEntry.filter(
+                            (accountUUID) => accountUUID !== friendUUID,
+                        ),
+                    );
+                }
+
+                case ChatClientOpcode.FRIEND_REQUEST: {
+                    const targetUUID = buffer.readUUID();
+                    const find = friendEntry.find((e) => e.uuid === targetUUID);
+                    if (find !== undefined) {
+                        //FIXME: 상대가 내 요청을 수락함. 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
+                    } else {
+                        setFriendRequestEntry([
+                            ...friendRequestEntry,
+                            targetUUID,
+                        ]);
+                        //TODO: 알림?
+                    }
+                    break;
+                }
+
+                case ChatClientOpcode.UPDATE_FRIEND_ACTIVE_STATUS: {
+                    const targetUUID = buffer.readUUID();
+                    //FIXME: 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
                     break;
                 }
 
@@ -154,7 +209,6 @@ export function ChatSocketProcessor() {
 
                 case ChatClientOpcode.REMOVE_ROOM: {
                     const roomUUID = buffer.readUUID();
-                    console.log(currentChatRoomUUID, " 흠... ", roomUUID);
                     if (currentChatRoomUUID === roomUUID) {
                         setCurrentChatRoom("");
                     }

@@ -1,31 +1,36 @@
-import { CurrentChatRoomAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
+import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
 import { ByteBuffer } from "@/library/akasha-lib";
-import { ChatClientOpcode, ChatServerOpcode } from "@/library/payload/chat-opcodes";
+import {
+    ChatClientOpcode,
+    ChatServerOpcode,
+} from "@/library/payload/chat-opcodes";
 import { useWebSocket } from "@/library/react/websocket-hook";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 
 function useLeaveChatRoom(chatRoomUUID: string) {
-    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom);
-    const { sendPayload } = useWebSocket("chat", ChatClientOpcode.LEAVE_ROOM_FAILED,
-        (_, buf) => {
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.LEAVE_ROOM_FAILED,
+        async (_, buf) => {
             const errno = buf.read1();
-            if (errno === 0) {
-                setCurrentChatRoom("")
-                    .then(() => { }) // FIXME: 왼쪽 목록에서도 사라지게 하기. setCurrentChatRoom이 실패하는 경우란?
-                    .catch(() => { });
-            }
-            else {
+            if (errno !== 0) {
+                alert("방 나가기 실패!!!" + errno);
                 // FIXME: 방 나가기가 실패하는 경우란?
                 // 입장하지 않았을 때? 방장? 이라고 백엔드 코드에 써져있네
             }
-        });
+        },
+    );
 
     return () => {
-        const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.LEAVE_ROOM);
-        buf.writeUUID(chatRoomUUID);
-        sendPayload(buf);
-        console.log(`i will leave room ${chatRoomUUID}`);
-    }
+        if (chatRoomUUID === "") {
+            //TODO: 뭐함?
+            alert("방이 선택되어 있지 않습니다.");
+            return;
+        }
+            const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.LEAVE_ROOM);
+            buf.writeUUID(chatRoomUUID);
+            sendPayload(buf);
+    };
 }
 
 function useLeaveCurrentChatRoom() {
@@ -37,5 +42,5 @@ function useLeaveCurrentChatRoom() {
 export function useChatRoomMenuActions() {
     return {
         leaveCurrentChatRoom: useLeaveCurrentChatRoom(),
-    }
+    };
 }

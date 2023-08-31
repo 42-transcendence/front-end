@@ -78,11 +78,11 @@ export function CreateNewRoom() {
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.CREATE_ROOM_FAILED,
-        (_, buf) => {
+        async (_, buf) => {
             const errno = buf.read1();
             if (errno === 0) {
                 const uuid = buf.readUUID();
-                setCurrentChatRoom(uuid);
+                await setCurrentChatRoom(uuid);
             }
         },
     );

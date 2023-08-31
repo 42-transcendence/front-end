@@ -61,6 +61,9 @@ export function OTPInputBlocks({ length }: { length: number }) {
         }
         // TODO: add animation for wrong OTP
         alert(`ERROR!! ${error.message}`);
+        window.localStorage.removeItem("refresh_token");
+
+        setAccessToken(null);
     }, []);
 
     useEffect(() => {

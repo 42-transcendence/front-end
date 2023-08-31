@@ -2,82 +2,69 @@
 
 import { useState } from "react";
 import { ProfileItem } from "@/components/ProfileItem";
-import type { ProfileItemConfig } from "@/components/ProfileItem";
 import { Avatar } from "../Avatar";
 import { Icon } from "../ImageLibrary";
 import { Provider, createStore, useAtomValue } from "jotai";
-import {
-    FriendRequestEntryAtom,
-    FriendRequestUUIDAtom,
-} from "@/atom/FriendAtom";
+import { FriendEntryAtom, FriendRequestEntryAtom } from "@/atom/FriendAtom";
 import type { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
 import useSWR from "swr";
 import { fetcher } from "@/hooks/fetcher";
-
-//TODO change contents with query data.
-const profiles: ProfileItemConfig[] = [
-    {
-        id: 1,
-        name: "hdoo",
-        tag: "#00001",
-        statusMessage: "Hello world!",
-        uuid: "asdf",
-    },
-    {
-        id: 2,
-        name: "chanhpar",
-        tag: "#00002",
-        statusMessage: "I'm chanhpar",
-        uuid: "asdf",
-    },
-    {
-        id: 3,
-        name: "iyun",
-        tag: "#00003",
-        statusMessage: "I'm IU",
-        uuid: "asdf",
-    },
-    {
-        id: 4,
-        name: "jkong",
-        tag: "#00004",
-        statusMessage: "I'm Jkong!",
-        uuid: "asdf",
-    },
-    {
-        id: 5,
-        name: "jisookim",
-        tag: "#00005",
-        statusMessage: "Hi I'm jisoo",
-        uuid: "asdf",
-    },
-];
+import { useWebSocket } from "@/library/react/websocket-hook";
+import { ByteBuffer } from "@/library/akasha-lib";
+import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
+import { TargetedAccountUUIDAtom } from "@/atom/AccountAtom";
 
 export function FriendModal() {
     //TODO: fetch profile datas
+    const { sendPayload } = useWebSocket("chat", []);
 
     return (
         <div className="gradient-border relative flex w-[262px] flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']">
             <div className="w-full overflow-clip rounded-[28px] ">
                 <InviteList />
                 <FriendList />
+                <div
+                    className={`relative flex h-fit w-full shrink-0 flex-col items-start`}
+                >
+                    <div
+                        className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 text-gray-300 hover:bg-primary/30"
+                        onClick={() => {
+                            //TODO: UUID 대신 닉네임으로도 할 수 있게?
+                            const nickNameTag = prompt("UUID 입력? 하시오?");
+
+                            if (nickNameTag !== null) {
+                                const buf = ByteBuffer.createWithOpcode(
+                                    ChatServerOpcode.ADD_FRIEND,
+                                );
+                                buf.writeUUID(nickNameTag);
+                                buf.writeString("기본 그룹"); //TODO: 으악
+                                buf.write1(0); //TODO: activeFlags
+                                sendPayload(buf);
+                            }
+                        }}
+                    >
+                        <Icon.Plus />
+                        <p className="text-normal text-xs">친구 추가하기?</p>
+                    </div>
+                </div>
             </div>
         </div>
     );
 }
 
 function FriendList() {
-    const [selectedId, setSelectedId] = useState<number>();
+    const friendEntrySet = useAtomValue(FriendEntryAtom);
+    const [selectedUUID, setSelectedUUID] = useState<string>();
 
-    return profiles.map((profile: ProfileItemConfig) => (
+    return friendEntrySet.map((friend) => (
         <ProfileItem
             type="friend"
-            key={profile.id}
-            info={profile}
-            selected={profile.id === selectedId}
+            key={friend.uuid}
+            accountUUID={friend.uuid}
+            selected={friend.uuid === selectedUUID}
             onClick={() => {
-                setSelectedId(
-                    profile.id !== selectedId ? profile.id : undefined,
+                setSelectedUUID(
+                    friend.uuid !== selectedUUID ? friend.uuid : undefined,
                 );
             }}
         />
@@ -85,13 +72,13 @@ function FriendList() {
 }
 
 function InviteList() {
-    const accountUUIDs = useAtomValue(FriendRequestEntryAtom);
+    const friendRequestUUIDs = useAtomValue(FriendRequestEntryAtom);
 
     return (
-        accountUUIDs.length !== 0 && (
+        friendRequestUUIDs.length !== 0 && (
             <div className="flex flex-col gap-2 py-2">
                 <InviteHeader />
-                {accountUUIDs.map((accountUUID) => (
+                {friendRequestUUIDs.map((accountUUID) => (
                     <InviteItem key={accountUUID} accountUUID={accountUUID} />
                 ))}
                 <div className="mx-4 h-[1px] bg-white/30" />
@@ -102,8 +89,9 @@ function InviteList() {
 
 function InviteItem({ accountUUID }: { accountUUID: string }) {
     const store = createStore();
-    store.set(FriendRequestUUIDAtom, accountUUID);
+    store.set(TargetedAccountUUIDAtom, accountUUID);
 
+    const { sendPayload } = useWebSocket("chat", []);
     const { data } = useSWR(
         `/profile/public/${accountUUID}`,
         fetcher<AccountProfilePublicPayload>,
@@ -132,14 +120,32 @@ function InviteItem({ accountUUID }: { accountUUID: string }) {
                     </div>
                 </div>
                 <div className="flex gap-2 px-4">
-                    <button>
+                    <button
+                        onClick={() => {
+                            const response = ByteBuffer.createWithOpcode(
+                                ChatServerOpcode.ADD_FRIEND,
+                            );
+                            response.writeUUID(accountUUID);
+                            response.writeString("기본 그룹"); //TODO: 으악
+                            response.write1(0); //TODO: activeFlags
+                            sendPayload(response);
+                        }}
+                    >
                         <Icon.Check
                             width={24}
                             height={24}
                             className="rounded-full bg-green-500 p-1.5 text-white/90"
                         />
                     </button>
-                    <button>
+                    <button
+                        onClick={() => {
+                            const response = ByteBuffer.createWithOpcode(
+                                ChatServerOpcode.DELETE_FRIEND,
+                            );
+                            response.writeUUID(accountUUID);
+                            sendPayload(response);
+                        }}
+                    >
                         <Icon.X
                             width={24}
                             height={24}

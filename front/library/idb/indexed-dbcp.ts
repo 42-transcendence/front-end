@@ -5,6 +5,7 @@ type OpenOptions = {
         oldVersion: number,
         newVersion: number | null,
     ) => void;
+    onClose?: (() => void) | undefined;
 };
 
 class IndexedDBConnectionPool {
@@ -55,9 +56,7 @@ class IndexedDBConnectionPool {
 
                 db.onversionchange = () => {
                     db.close();
-                    alert(
-                        "새로운 버전의 애플리케이션이 준비되었습니다. 페이지를 닫고 다시 연결을 진행해 주세요.",
-                    );
+                    options.onClose?.();
                 };
 
                 db.onclose = () => {

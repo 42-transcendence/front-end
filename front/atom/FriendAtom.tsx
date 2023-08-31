@@ -4,5 +4,3 @@ import { atom } from "jotai";
 export const FriendEntryAtom = atom<FriendEntry[]>([]);
 export const EnemyEntryAtom = atom<EnemyEntry[]>([]);
 export const FriendRequestEntryAtom = atom<string[]>([]);
-
-export const FriendRequestUUIDAtom = atom<string>("");
