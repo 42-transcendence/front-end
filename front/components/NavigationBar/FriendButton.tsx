@@ -14,7 +14,7 @@ export function FriendButton() {
     return (
         <>
             <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-                <div className="fixed inset-0 flex items-center justify-center">
+                <div className="absolute right-4 top-20 flex items-center justify-center 2xl:top-[5.5rem]">
                     <Dialog.Panel>
                         <FriendModal />
                     </Dialog.Panel>
