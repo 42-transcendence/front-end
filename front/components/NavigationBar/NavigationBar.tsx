@@ -3,11 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
-import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "@/components/ImageLibrary";
 import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
 import { fetcher, useSWR } from "@/hooks/fetcher";
-import { ChatButton, FriendButton } from "./FriendButton";
+import { FriendButton } from "./FriendButton";
+import { ChatButton } from "./ChatButton";
 
 export function NavigationBar() {
     const { data } = useSWR(
