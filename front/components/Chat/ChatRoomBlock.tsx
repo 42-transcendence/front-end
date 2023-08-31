@@ -53,11 +53,11 @@ export default function ChatRoomBlock({
     return (
         <button
             onClick={() => void setChatRoom(chatRoom.uuid)}
-            className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
+            className="relative w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
         >
             {/* chatrooms - image */}
-            <div className="flex h-fit shrink-0 items-center gap-4 self-stretch overflow-hidden">
-                <div className="flex items-center justify-center gap-2.5">
+            <div className="flex h-fit flex-row items-center gap-4 self-stretch">
+                <div className="flex w-fit items-center justify-center gap-2.5">
                     <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-slate-600">
                         {/* TODO: change to member preview (limit 4)*/}
                         <Avatar
@@ -69,8 +69,8 @@ export default function ChatRoomBlock({
                 </div>
 
                 {/* chatrooms - info */}
-                <div className="flex h-fit w-full justify-between gap-4 py-2 pl-0">
-                    <div className="h-16 p-0">
+                <div className="flex h-fit w-full gap-4 py-2">
+                    <div className="flex h-16 w-full flex-col p-0">
                         <div className="flex h-8 flex-row items-center gap-2">
                             <span className="relative line-clamp-1 max-w-[8rem] text-start font-sans text-base font-bold tracking-normal text-white/90">
                                 {children}
@@ -95,7 +95,7 @@ export default function ChatRoomBlock({
                             )}
                         </div>
 
-                        <div className="line-clamp-2 h-fit text-ellipsis text-start font-sans text-xs font-normal text-gray-200">
+                        <div className="line-clamp-2 max-w-[160px] break-words text-start font-sans text-xs font-normal text-gray-200">
                             {lastMessageContent}
                         </div>
                     </div>
