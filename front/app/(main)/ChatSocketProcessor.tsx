@@ -162,8 +162,6 @@ export function ChatSocketProcessor() {
                         chatRoomList.filter((e) => e.uuid != roomUUID),
                     );
                     await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
-
-                    //TODO: 방 제외하기 : 새로고침하면 되는데.. 바로 다시 렌더링 해줘야 함, 처음 채팅방을 선택해주세요 화면이 보일 수 있게.
                     break;
                 }
 
