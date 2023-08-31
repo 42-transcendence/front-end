@@ -8,10 +8,61 @@ import { useRefMap } from "@/hooks/useRefMap";
 
 const defaultProfilesKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
+// FIXME: change to jotai atom
+function useAccessToken() {
+    const accessToken: string | null =
+        window.localStorage.getItem("access_token");
+    if (accessToken === null) {
+        throw new Error("너 액세스 토큰 없음 ㅋㅋ");
+    }
+    return accessToken;
+}
+
+function useFormData(method: "POST" | "GET", url: string | URL): [
+    setFormData: (key: string, data: string | Blob | (string | Blob)[]) => void,
+    sendFormData: () => void,
+] {
+    const formData = useRef(new FormData()); // useState or useRef 같은거 써야하나?
+    const accessToken = useAccessToken();
+
+    const options = {
+        method: method,
+        body: formData.current,
+        headers: {
+            Authorization: ["Bearer", accessToken].join(" "),
+        },
+    }
+
+    const setFormData = (key: string, data: string | Blob | (string | Blob)[]) => {
+        formData.current.delete(key);
+        if (Array.isArray(data)) {
+            data.forEach((x) => formData.current.append(key, x));
+        }
+        else {
+            formData.current.set(key, data);
+        }
+    }
+    const sendFormData = () => {
+        fetch(url, options)
+            .then((res) => { console.log(res) }) // TODO: 받아서 어떻게 해야하지???
+            .catch((e) => { console.log(e) })
+    }
+
+    return [setFormData, sendFormData];
+}
+
 export function SelectAvatar() {
     const [profileName, setProfileName] = useState("");
     const rootRef = useRef<HTMLDivElement>(null);
-    const [targetRefsMap, refCallbackAt] = useRefMap<string, HTMLImageElement>();
+    const [targetRefsMap, refCallbackAt] = useRefMap<
+        string,
+        HTMLImageElement
+    >();
+
+    const [setFormData, sendFormData] = useFormData("POST", "https://back.stri.dev/profile/avatar");
+
+    const formDataKey = "profile-avatar"; // TODO: rename
+
     const observerOptions = useMemo(
         () => ({
             root: rootRef.current,
@@ -20,6 +71,7 @@ export function SelectAvatar() {
         }),
         [],
     );
+
     const handleIntersect = useCallback(
         (
             entries: IntersectionObserverEntry[],
@@ -31,11 +83,25 @@ export function SelectAvatar() {
             }
 
             const target = entry.target;
-            if (target instanceof HTMLElement) {
+            if (target instanceof HTMLImageElement) {
                 setProfileName(target.dataset["name"] ?? "");
+
+                // TODO: 함수 분리하기.... file 직접 upload하는 거랑 공통으로 쓸 수 있게
+                // HTMLImageElement -> HTMLCanvasElement -> Blob -> FormData
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d")
+                if (ctx === null) {
+                    return;
+                }
+                ctx.drawImage(target, 0, 0)
+                canvas.toBlob((blob) => {
+                    if (blob !== null) {
+                        setFormData(formDataKey, blob)
+                    }
+                })
             }
         },
-        [],
+        [setFormData],
     );
 
     const observer = useMemo(
@@ -68,6 +134,7 @@ export function SelectAvatar() {
                             key={name}
                             className="z-10 flex-shrink-0 snap-center snap-always overflow-hidden"
                         >
+                            {/* TODO: priority 설정 https://nextjs.org/docs/app/api-reference/components/image#priority */}
                             <Image
                                 ref={refCallbackAt(name)}
                                 className="box-content"
@@ -85,6 +152,7 @@ export function SelectAvatar() {
                         maxFileCount={1}
                         maxFileSize={4096576}
                         previewImage={true}
+                        setFormData={setFormData}
                     />
                     <div className="shrink-0 snap-center">
                         <div className="w-7 shrink-0"></div>
@@ -95,7 +163,9 @@ export function SelectAvatar() {
             <p>selected profile: {profileName}</p>
 
             {/* TODO : 서버에서 닉네임이 중복되었는지, 가능한 닉네임인지 확인 */}
-            <Icon.Arrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
+            <button className="z-50" type="button" onClick={() => sendFormData()}>
+                <Icon.Arrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
+            </button>
         </>
     );
 }
