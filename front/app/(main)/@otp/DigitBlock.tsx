@@ -1,4 +1,5 @@
-import { forwardRef } from "react";
+import { isNonNullArray } from "@/utils/isNonNullArray";
+import { forwardRef, useEffect } from "react";
 
 export const DigitBlock = forwardRef(function DigitBlock(
     {
@@ -31,11 +32,10 @@ export const DigitBlock = forwardRef(function DigitBlock(
     };
 
     const handleBackspace = (ev: React.KeyboardEvent<HTMLInputElement>) => {
-        if (ev.key !== "Backspace") return;
         if (!(ev.target instanceof HTMLInputElement)) return;
 
         const target = ev.target;
-        if (target.value === "") {
+        if (ev.key === "Backspace") {
             if (index > 0) {
                 target.disabled = true;
                 const prevElem = refArray[index - 1];
@@ -46,6 +46,16 @@ export const DigitBlock = forwardRef(function DigitBlock(
             }
         }
     };
+
+    useEffect(() => {
+        if (!isNonNullArray(refArray)) {
+            throw new Error();
+        }
+
+        if (!refArray[index].disabled) {
+            setValue("");
+        }
+    }, [index, refArray, setValue]);
 
     return (
         <input
