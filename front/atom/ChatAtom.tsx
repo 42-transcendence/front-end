@@ -15,9 +15,12 @@ export const CurrentChatRoomAtom = atom(
         set(_backing_CurrentChatRoomUUIDAtom, roomUUID);
         set(
             _backing_CurrentChatRoomTitleAtom,
-            await ChatStore.getTitle(roomUUID),
+            roomUUID !== "" ? await ChatStore.getTitle(roomUUID) : "",
         );
-        set(CurrentChatMessagesAtom, await ChatStore.getAllMessages(roomUUID));
+        set(
+            CurrentChatMessagesAtom,
+            roomUUID !== "" ? await ChatStore.getAllMessages(roomUUID) : [],
+        );
     },
 );
 export const CurrentChatRoomUUIDAtom = atom((get) =>

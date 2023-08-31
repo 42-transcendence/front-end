@@ -13,7 +13,7 @@ import {
     useWebSocket,
     useWebSocketConnector,
 } from "@/library/react/websocket-hook";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AccessTokenAtom, CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { ByteBuffer } from "@/library/akasha-lib";
@@ -21,6 +21,7 @@ import { ChatStore } from "@/library/idb/chat-store";
 import {
     ChatRoomListAtom,
     CurrentChatMessagesAtom,
+    CurrentChatRoomAtom,
     CurrentChatRoomUUIDAtom,
 } from "@/atom/ChatAtom";
 import {
@@ -67,6 +68,7 @@ export function ChatSocketProcessor() {
     );
     useWebSocketConnector("chat", getURL, props); //FIXME: props 이름?
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
+    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom);
     const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
     const [currentChatMessages, setCurrentChatMessages] = useAtom(
         CurrentChatMessagesAtom,
@@ -151,7 +153,17 @@ export function ChatSocketProcessor() {
                 }
 
                 case ChatClientOpcode.REMOVE_ROOM: {
-                    //TODO: 방 제외하기
+                    const roomUUID = buffer.readUUID();
+                    console.log(currentChatRoomUUID, " 흠... ", roomUUID);
+                    if (currentChatRoomUUID === roomUUID) {
+                        setCurrentChatRoom("");
+                    }
+                    setChatRoomList(
+                        chatRoomList.filter((e) => e.uuid != roomUUID),
+                    );
+                    await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
+
+                    //TODO: 방 제외하기 : 새로고침하면 되는데.. 바로 다시 렌더링 해줘야 함, 처음 채팅방을 선택해주세요 화면이 보일 수 있게.
                     break;
                 }
 

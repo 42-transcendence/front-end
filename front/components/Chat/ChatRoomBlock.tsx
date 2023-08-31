@@ -48,7 +48,7 @@ export default function ChatRoomBlock({
     );
     const setChatRoom = useSetAtom(CurrentChatRoomAtom);
 
-    const lastMessageContent = latestMessage?.content ?? "FALLBACK";
+    const lastMessageContent = latestMessage?.content ?? "채팅을 시작해보세요!";
 
     return (
         <button
