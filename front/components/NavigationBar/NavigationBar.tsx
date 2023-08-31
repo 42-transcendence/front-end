@@ -7,7 +7,7 @@ import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "@/components/ImageLibrary";
 import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
 import { fetcher, useSWR } from "@/hooks/fetcher";
-import { FriendButton } from "./FriendButton";
+import { ChatButton, FriendButton } from "./FriendButton";
 
 export function NavigationBar() {
     const { data } = useSWR(
@@ -25,7 +25,7 @@ export function NavigationBar() {
                 />
             </Link>
             <div className="relative flex flex-row items-center justify-between gap-4">
-                <SocialButton />
+                <ChatButton />
                 <FriendButton />
                 {/* TODO: on click Avatar in navbar, show context menu myinfo */}
                 <Avatar
