@@ -187,12 +187,14 @@ export function ChatSocketProcessor() {
 
             case ChatClientOpcode.INSERT_ROOM: {
                 const chatRoom = readChatRoom(buffer);
+                const messages = buffer.readArray(readChatMessage);
                 await ChatStore.addRoom(
                     currentAccountUUID,
                     chatRoom.uuid,
                     chatRoom.title,
                     chatRoom.modeFlags,
                 );
+                await ChatStore.addMessageBulk(chatRoom.uuid, messages);
                 setChatRoomList([...chatRoomList, chatRoom]);
                 break;
             }
