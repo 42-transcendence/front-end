@@ -1,37 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { DigitBlock } from "./DigitBlock";
 import { useRefArray } from "@/hooks/useRefArray";
 import { fetcher } from "@/hooks/fetcher";
 import { hasProperty } from "@/library/akasha-lib";
 import { useSetAtom } from "jotai";
 import { AccessTokenAtom } from "@/atom/AccountAtom";
+import { useStateArray } from "@/hooks/useStateArray";
 
-// TODO: refactor, change mock functions to real function
 export function OTPInputBlocks({ length }: { length: number }) {
-    const initialValue = useMemo(
-        () => Array<string>(length).fill(""),
-        [length],
-    );
-    const [values, setValues] = useState(initialValue);
+    const [values, setValuesAt, initializeValues] = useStateArray(length, "");
     const [refArray, refCallbackAt] = useRefArray<HTMLInputElement | null>(
         length,
         null,
     );
 
-    const setValuesAt = (index: number) => (newValue: string) => {
-        setValues(values.map((x, i) => (i === index ? newValue : x)));
-    }; // TODO: rename
-
     const initialize = useCallback(() => {
-        setValues(initialValue);
+        initializeValues();
         const first = refArray[0];
         if (first !== null) {
             first.disabled = false;
             first.focus();
         }
-    }, [refArray, initialValue]);
+    }, [initializeValues, refArray]);
 
     const setAccessToken = useSetAtom(AccessTokenAtom);
     const resolve = useCallback((json: unknown) => {
@@ -64,8 +56,9 @@ export function OTPInputBlocks({ length }: { length: number }) {
         window.localStorage.removeItem("refresh_token");
 
         setAccessToken(null);
-    }, []);
+    }, [setAccessToken]);
 
+    // TODO: useSWR mutate 쓰기
     useEffect(() => {
         if (values.every((e) => e !== "")) {
             //TODO: 와... 이거 searchParams 어떻게 넘겨야 예쁘지?
