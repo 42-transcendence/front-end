@@ -1,5 +1,3 @@
-"use client";
-
 import { byteToReadable } from "./byteConversion";
 import { useState, useRef } from "react";
 import { DragDropArea } from "./DragDropArea";
@@ -8,14 +6,10 @@ import { ImageViewer } from "./ImageViewer";
 type FileAcceptType = "image/*" | "video/*" | "audio/*";
 
 // TODO: hooks 디렉토리로 분리?
-function useFiles(setFormData: (key: string, data: string | Blob | (string | Blob)[]) => void, {
-    options: { maxFileCount, maxFileSize },
-}: {
-    options: {
-        maxFileCount?: number | undefined;
-        maxFileSize?: number | undefined;
-    };
-}): [files: File[], handleFiles: (files: FileList | null) => void] {
+function useFiles(
+    setFormData: (key: string, data: string | Blob) => void,
+    maxFileSize?: number | undefined
+): [files: File, handleFiles: (files: FileList | null) => void] {
     const [files, setFiles] = useState<File[]>([]);
 
     const clearInput = () => {
@@ -24,13 +18,6 @@ function useFiles(setFormData: (key: string, data: string | Blob | (string | Blo
 
     const handleFiles = (fileList: FileList | null) => {
         if (fileList === null || fileList.length === 0) return;
-
-        // check number of fileList
-        if (maxFileCount !== undefined && fileList.length > maxFileCount) {
-            alert(`최대 파일 개수: ${maxFileCount}`);
-            clearInput();
-            return;
-        }
 
         // check file size
         if (maxFileSize !== undefined) {
@@ -67,6 +54,8 @@ function useFiles(setFormData: (key: string, data: string | Blob | (string | Blo
                     blobList.push(blob);
                 }
             }, "image/webp")
+
+            URL.revokeObjectURL(img.src);
         }
         setFormData("profile-avatar", blobList)
     };
@@ -76,25 +65,15 @@ function useFiles(setFormData: (key: string, data: string | Blob | (string | Blo
 
 export function UploadBox({
     accept,
-    maxFileCount,
     maxFileSize,
-    previewImage,
     setFormData,
 }: {
     accept: FileAcceptType;
-    maxFileCount: number;
     maxFileSize: number;
-    previewImage: boolean;
-    setFormData: (key: string, data: string | Blob | (string | Blob)[]) => void;
+    setFormData: (key: string, data: string | Blob) => void;
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
-    const isMultiple = maxFileCount > 1;
-    const [files, handleFiles] = useFiles(setFormData, {
-        options: {
-            maxFileCount: maxFileCount,
-            maxFileSize: maxFileSize,
-        },
-    });
+    const [files, handleFiles] = useFiles(setFormData, maxFileSize: maxFileSize);
 
     // TODO: css layout fix
     return (
@@ -109,14 +88,13 @@ export function UploadBox({
                     name="avatar-image"
                     id="avatar-uploader"
                     accept={accept}
-                    multiple={isMultiple}
                     className="hidden"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleFiles(e.target.files)
                     }
                 />
                 <DragDropArea handleFiles={handleFiles} />
-                {previewImage && <ImageViewer uploadedFiles={files} />}
+                <ImageViewer uploadedFiles={[files]} />
             </label>
         </div>
     );

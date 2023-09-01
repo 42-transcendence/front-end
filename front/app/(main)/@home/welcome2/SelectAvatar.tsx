@@ -19,7 +19,7 @@ function useAccessToken() {
 }
 
 function useFormData(method: "POST" | "GET", url: string | URL): [
-    setFormData: (key: string, data: string | Blob | (string | Blob)[]) => void,
+    setFormData: (key: string, data: string | Blob) => void,
     sendFormData: () => void,
 ] {
     const formData = useRef(new FormData()); // useState or useRef 같은거 써야하나?
@@ -33,14 +33,8 @@ function useFormData(method: "POST" | "GET", url: string | URL): [
         },
     }
 
-    const setFormData = (key: string, data: string | Blob | (string | Blob)[]) => {
-        formData.current.delete(key);
-        if (Array.isArray(data)) {
-            data.forEach((x) => formData.current.append(key, x));
-        }
-        else {
-            formData.current.set(key, data);
-        }
+    const setFormData = (key: string, data: string | Blob) => {
+        formData.current.set(key, data);
     }
     const sendFormData = () => {
         fetch(url, options)
@@ -145,15 +139,14 @@ export function SelectAvatar() {
                                 data-name={name}
                                 width="250"
                                 height="250"
+                                priority
                             />
                         </div>
                     ))}
                     {/* TODO: appropriate file size limit? */}
                     <UploadBox
                         accept="image/*"
-                        maxFileCount={1}
                         maxFileSize={4096576}
-                        previewImage={true}
                         setFormData={setFormData}
                     />
                     <div className="shrink-0 snap-center">
