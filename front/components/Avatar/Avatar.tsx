@@ -42,7 +42,7 @@ export function Avatar({
         >
             <Image
                 className="relative rounded-full"
-                src={data?.avatarKey ?? "/jkong.png"} // TODO: fallback avatar image
+                src={data !== undefined ? `https://back.stri.dev/profile/raw-avatar/${data.avatarKey}` : "/jkong.png"} // TODO: fallback avatar image
                 alt="Avatar"
                 sizes="100%"
                 fill={true}
