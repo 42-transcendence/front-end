@@ -22,6 +22,24 @@ function PrivilegedSection({ accountUUID }: { accountUUID: string }) {
     );
 }
 
+const imageLoader = ({
+    src,
+    width,
+    quality,
+}: {
+    src: string;
+    width: number;
+    quality?: number;
+}) => {
+    void width;
+    void quality;
+    if (src === "") {
+        // TODO: fallback avatar image
+        return "/jkong.png";
+    }
+    return `https://back.stri.dev/internal/raw-avatar/${src}?a=AKASHA`;
+};
+
 export function Avatar({
     className,
     accountUUID,
@@ -42,10 +60,11 @@ export function Avatar({
         >
             <Image
                 className="relative rounded-full"
-                src={data !== undefined ? `https://back.stri.dev/profile/raw-avatar/${data.avatarKey}` : "/jkong.png"} // TODO: fallback avatar image
+                src={data?.avatarKey ?? ""}
                 alt="Avatar"
                 sizes="100%"
                 fill={true}
+                loader={imageLoader}
             />
             {privileged && <PrivilegedSection accountUUID={accountUUID} />}
         </div>

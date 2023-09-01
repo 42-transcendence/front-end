@@ -28,14 +28,4 @@ module.exports = {
 
         return config;
     },
-    images: {
-        remotePatterns: [
-            {
-                protocol: "https",
-                hostname: "back.stri.dev",
-                port: "",
-                pathname: "/profile/raw-avatar/**",
-            },
-        ],
-    },
 };
