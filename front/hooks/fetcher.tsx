@@ -4,8 +4,7 @@
 export { default as useSWR } from "swr";
 
 export async function fetcher<T>(url: string): Promise<T> {
-    const accessToken: string | null =
-        window.localStorage.getItem("access_token");
+    const accessToken = window.localStorage.getItem("access_token");
     if (accessToken === null) {
         throw new Error("너 액세스 토큰 없음 ㅋㅋ");
     }
@@ -19,8 +18,7 @@ export async function fetcher<T>(url: string): Promise<T> {
 }
 
 export async function fetcher_POST<T>(url: string, body: object): Promise<T> {
-    const accessToken: string | null =
-        window.localStorage.getItem("access_token");
+    const accessToken = window.localStorage.getItem("access_token");
     if (accessToken === null) {
         throw new Error("너 액세스 토큰 없음 ㅋㅋ");
     }

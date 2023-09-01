@@ -28,7 +28,9 @@ function useLeaveChatRoom(chatRoomUUID: string) {
             return;
         }
         if (confirm("정말로 나가시겠습니까?")) {
-            const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.LEAVE_ROOM);
+            const buf = ByteBuffer.createWithOpcode(
+                ChatServerOpcode.LEAVE_ROOM,
+            );
             buf.writeUUID(chatRoomUUID);
             sendPayload(buf);
         }

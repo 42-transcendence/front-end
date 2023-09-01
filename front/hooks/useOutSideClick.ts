@@ -12,14 +12,15 @@ export function useOutsideClick(
             }
 
             const target = ev.target;
-            if (!(target instanceof Element)
-                || !target.getRootNode().contains(target)
-                || !target.isConnected
+            if (
+                !(target instanceof Element) ||
+                !target.getRootNode().contains(target) ||
+                !target.isConnected
             ) {
                 return;
             }
 
-            const elem = (ref instanceof HTMLElement) ? ref : ref.current;
+            const elem = ref instanceof HTMLElement ? ref : ref.current;
             if (elem === null) {
                 return;
             }

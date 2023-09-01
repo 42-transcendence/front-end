@@ -5,7 +5,11 @@ import { decodeJwt } from "jose";
 import { AuthLevel, isAuthPayload } from "@/library/payload/auth-payload";
 import { fetcher, useSWR } from "@/hooks/fetcher";
 import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
-import { AccessTokenAtom, AuthAtom, CurrentAccountUUIDAtom }  from "@/atom/AccountAtom";
+import {
+    AccessTokenAtom,
+    AuthAtom,
+    CurrentAccountUUIDAtom,
+} from "@/atom/AccountAtom";
 import { useAtom, useSetAtom } from "jotai";
 import { ChatSocketProcessor } from "./ChatSocketProcessor";
 
