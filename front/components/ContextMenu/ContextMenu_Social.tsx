@@ -1,8 +1,7 @@
 import type { ProfileItemConfig } from "./ContextMenuBase_Profile";
 import { ContextMenuItem } from "./ContextMenuItem";
 
-export function ContextMenu_Social({ info }: { info: ProfileItemConfig }) {
-    void info;
+export function ContextMenu_Social() {
     //TODO : friend add logic : check whether user is already friend or not.
 
     return (

@@ -1,42 +1,60 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
+import { ChatBubbleWithProfile } from "./ChatBubble";
+import { useAtomValue } from "jotai";
+import { ChatStore } from "@/library/idb/chat-store";
+import type { MessageSchema } from "@/library/idb/chat-store";
 import {
-    // ChatBubble,
-    // ChatBubbleRight,
-    ChatBubbleWithProfile,
-} from "./ChatBubble";
+    CurrentChatMessagesAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
+import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { useWebSocket } from "@/library/react/websocket-hook";
-import { ChatClientOpcode } from "@/library/payload/chat-opcodes";
-import { readChatMessage } from "@/library/payload/chat-payloads";
-import type {
-    ChatMessageEntry,
-    ChatRoomEntry,
-} from "@/library/payload/chat-payloads";
+import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
+import { ByteBuffer } from "@/library/akasha-lib";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
-function MessageInputArea() {
-    const handleClick = () => {
-        //TODO: create chatbubble with value
-        console.log("heello");
-    };
+function ChatMessageInputArea({
+    chatRoomUUID,
+    scrollToBottom,
+}: {
+    chatRoomUUID: string;
+    scrollToBottom: () => void;
+}) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
+    const { sendPayload } = useWebSocket("chat", []); // TODO: 이게 맞나 일단 CHAT_MESSAGE  보내기만을 위한 sendPayload?
+
+    const handleClick: React.MouseEventHandler = (event) => {
+        event.preventDefault();
+
+        //TODO: create chatbubble with value
+
+        const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CHAT_MESSAGE);
+        buf.writeUUID(chatRoomUUID);
+        buf.writeString(value);
+
+        sendPayload(buf);
+        setValue("");
+        scrollToBottom();
+    };
 
     useLayoutEffect(() => {
         const element = textareaRef.current;
-
-        if (element) {
-            // Reset height - important to shrink on delete
-            element.style.height = "inherit";
-            // Set height
-            element.style.height = `${Math.max(
-                element.scrollHeight,
-                MIN_TEXTAREA_HEIGHT,
-            )}px`;
+        if (element === null) {
+            throw new Error();
         }
+
+        // Reset height - important to shrink on delete
+        element.style.height = "inherit";
+        // Set height
+        element.style.height = `${Math.max(
+            element.scrollHeight,
+            MIN_TEXTAREA_HEIGHT,
+        )}px`;
     }, [value]);
 
     return (
@@ -44,6 +62,7 @@ function MessageInputArea() {
             <textarea
                 onChange={(event) => setValue(event.target.value)}
                 rows={1}
+                spellCheck="false"
                 // autoFocus={true}
                 ref={textareaRef}
                 placeholder="Send a message"
@@ -65,72 +84,13 @@ function MessageInputArea() {
     );
 }
 
-// {{{
-// const dummyChatMessages = [
-//     {
-//         msgId: BigInt(3),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(4),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "iyun",
-//     },
-//     {
-//         msgId: BigInt(5),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(6),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(7),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(8),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "jkong",
-//     },
-//     {
-//         msgId: BigInt(9),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "hdoo",
-//     },
-//     {
-//         msgId: BigInt(10),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "chanhpar",
-//     },
-//     {
-//         msgId: BigInt(11),
-//         content: "lorem ipsum",
-//         timestamp: new Date(),
-//         sender: "chanhpar",
-//     },
-// ];
-// }}}
-
 const isSameMinute = (date1: Date, date2: Date) => {
     return (
         new Date(date1).setSeconds(0, 0) === new Date(date2).setSeconds(0, 0)
     );
 };
 
-const isContinuedMessage = (arr: ChatMessageEntry[], idx: number) => {
+const isContinuedMessage = (arr: MessageSchema[], idx: number) => {
     return (
         idx > 0 &&
         arr[idx].memberUUID === arr[idx - 1].memberUUID &&
@@ -145,14 +105,20 @@ export function ChatDialog({
     outerFrame: string;
     innerFrame: string;
 }) {
-    const [chatMessages, setChatMessages] = useState<ChatMessageEntry[]>([]);
-    let chatRoomInfo: ChatRoomEntry; // TODO: 인자로 받아오기
-    const myUUID = "chanhpar"; // TODO: get my actual uuid
+    const chatMessages = useAtomValue(CurrentChatMessagesAtom);
+    const chatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
+    const chatDialogRef = useRef<HTMLDivElement>(null);
 
-    useWebSocket("chat", ChatClientOpcode.CHAT_MESSAGE, (_, buffer) => {
-        const chatMessageList = buffer.readArray(readChatMessage);
-        setChatMessages(chatMessageList);
-    });
+    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
+
+    const scrollToBottom = () => {
+        //FIXME: 충분한 메시지 추가로 스크롤을 만들고 정상 동작 테스트 필요
+        const chatDialogElem = chatDialogRef.current;
+        if (chatDialogElem === null) {
+            throw new Error();
+        }
+        chatDialogElem.scrollTop = chatDialogElem.scrollHeight;
+    };
 
     return (
         <div
@@ -161,7 +127,10 @@ export function ChatDialog({
             <div
                 className={`${innerFrame} flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4`}
             >
-                <div className="flex flex-col gap-1 self-stretch overflow-auto">
+                <div
+                    ref={chatDialogRef}
+                    className="flex flex-col gap-1 self-stretch overflow-auto"
+                >
                     {chatMessages.map((msg, idx, arr) => {
                         // TODO: key for ChatBubbleWithProfile with chat message UUID
                         return (
@@ -170,7 +139,9 @@ export function ChatDialog({
                                 chatMessage={msg}
                                 isContinued={isContinuedMessage(arr, idx)}
                                 dir={
-                                    msg.memberUUID === myUUID ? "right" : "left"
+                                    msg.memberUUID === currentAccountUUID
+                                        ? "right"
+                                        : "left"
                                 }
                             />
                         );
@@ -179,7 +150,10 @@ export function ChatDialog({
 
                 <div className="relative flex justify-center self-stretch">
                     <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
-                        <MessageInputArea />
+                        <ChatMessageInputArea
+                            chatRoomUUID={chatRoomUUID}
+                            scrollToBottom={scrollToBottom}
+                        />
                     </div>
                 </div>
             </div>

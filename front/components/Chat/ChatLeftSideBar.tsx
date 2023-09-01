@@ -6,22 +6,17 @@ import ChatRoomBlock from "./ChatRoomBlock";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
-import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
-import { useWebSocket } from "@/library/react/websocket-hook";
-import { ChatClientOpcode } from "@/library/payload/chat-opcodes";
-import { readChatRoom } from "@/library/payload/chat-payloads";
-import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
+import { Provider, useAtom, useAtomValue } from "jotai";
+import { ChatRoomListAtom, CreateNewRoomCheckedAtom } from "@/atom/ChatAtom";
 
 export default function ChatLeftSideBar() {
-    const [chatRooms, setChatRooms] = useState<ChatRoomEntry[]>([]);
-    useWebSocket("chat", ChatClientOpcode.OWN_ROOM_LIST, (_, buffer) => {
-        const chatRoomList = buffer.readArray(readChatRoom);
-        setChatRooms(chatRoomList);
-    });
+    const chatRoomList = useAtomValue(ChatRoomListAtom);
     const [query, setQuery] = useState("");
-    const [checked, setChecked] = useState(false);
+    const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
+        CreateNewRoomCheckedAtom,
+    );
     const { results, getFzfHighlightProps } = useFzf({
-        items: chatRooms,
+        items: chatRoomList,
         itemToString: (item) => item.title,
         query,
     });
@@ -31,7 +26,7 @@ export default function ChatLeftSideBar() {
             <div className="flex h-full w-[310px] shrink flex-col items-start gap-2 bg-black/30 px-4 py-2 backdrop-blur-[50px] 2xl:py-4">
                 <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch peer-checked:text-gray-200/80 2xl:py-2">
                     <label
-                        data-checked={checked}
+                        data-checked={createNewRoomChecked}
                         htmlFor="CreateNewRoom"
                         className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white data-[checked=true]:bg-secondary/80"
                     >
@@ -57,8 +52,8 @@ export default function ChatLeftSideBar() {
 
                 <input
                     type="checkbox"
-                    checked={checked}
-                    onChange={(e) => setChecked(e.target.checked)}
+                    checked={createNewRoomChecked}
+                    onChange={(e) => setCreateNewRoomChecked(e.target.checked)}
                     id="CreateNewRoom"
                     className="peer hidden"
                 />
@@ -94,9 +89,9 @@ export default function ChatLeftSideBar() {
                     </div>
                 </div>
 
-                <UUIDSetContainer>
+                <Provider>
                     <CreateNewRoom />
-                </UUIDSetContainer>
+                </Provider>
             </div>
         </div>
     );

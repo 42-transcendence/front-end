@@ -4,52 +4,26 @@ import { useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
-import type { ProfileItemConfig } from "@/components/ProfileItem";
 import { ProfileItem } from "@/components/ProfileItem";
 import { InviteList } from "@/components/Service/InviteList";
-import { UUIDSetContainer } from "@/hooks/UUIDSetContext";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
 import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
 import { AccessBan } from "./NewBan";
-
-const profiles: ProfileItemConfig[] = [
-    {
-        id: 1,
-        uuid: "1234",
-        name: "hdoo",
-        tag: "#00001",
-        statusMessage: "Hello world!",
-    },
-    {
-        id: 2,
-        uuid: "1234",
-        name: "chanhpar",
-        tag: "#00002",
-        statusMessage: "I'm chanhpar",
-    },
-    {
-        id: 3,
-        uuid: "1234",
-        name: "iyun",
-        tag: "#00003",
-        statusMessage: "I'm IU",
-    },
-    {
-        id: 4,
-        uuid: "1234",
-        name: "jkong",
-        tag: "#00004",
-        statusMessage: "I'm Jkong!",
-    },
-    {
-        id: 5,
-        uuid: "1234",
-        name: "jisookim",
-        tag: "#00005",
-        statusMessage: "Hi I'm jisoo",
-    },
-];
+import { Provider, useAtomValue } from "jotai";
+import { FriendEntryAtom } from "@/atom/FriendAtom";
+import { SelectedAccountUUIDsAtom } from "@/atom/AccountAtom";
+import { useWebSocket } from "@/library/react/websocket-hook";
+import {
+    ChatClientOpcode,
+    ChatServerOpcode,
+} from "@/library/payload/chat-opcodes";
+import { ByteBuffer } from "@/library/akasha-lib";
+import {
+    CurrentChatMembersAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
+import { GlobalStore } from "@/atom/GlobalStore";
 
 export type RightSideBarContents =
     | "report"
@@ -65,12 +39,14 @@ export type RightSideBarContents =
 // TODO: refactoring 하고 어떻게 잘 함수 분리해보기
 
 export default function ChatRightSideBar() {
-    const [selectedId, setSelectedId] = useState<number>();
+    const [selectedUUID, setSelectedUUID] = useState<string>();
     const [query, setQuery] = useState("");
+    const currentChatMembers = useAtomValue(CurrentChatMembersAtom);
     const { results, getFzfHighlightProps } = useFzf({
-        items: profiles,
+        items: currentChatMembers,
         itemToString(item) {
-            return item.name;
+            //TODO: fetch...? Fzf 지우기가 먼저인가? (2) 같은 문제가 InviteList에도 있으니 반드시 참조 바람
+            return item.uuid;
         },
         limit: 5,
         query,
@@ -90,11 +66,6 @@ export default function ChatRightSideBar() {
         }
     };
 
-    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-        event.preventDefault();
-        //TODO: invite selected ids;
-    };
-
     const pageTitle = (currentContent: RightSideBarContents) => {
         switch (currentContent) {
             case "accessBanMemberList":
@@ -111,21 +82,9 @@ export default function ChatRightSideBar() {
     };
 
     const memberList = inviteToggle ? (
-        <UUIDSetContainer>
-            {/* TODO: complete form!! & add invite button */}
-            <form
-                className="h-full w-full overflow-auto"
-                onSubmit={handleSubmit}
-            >
-                <div className="flex h-full w-full flex-col justify-between gap-4">
-                    <InviteList className="overflow-auto" />
-                    <ButtonOnRight
-                        buttonText="초대하기"
-                        className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
-                    />
-                </div>
-            </form>
-        </UUIDSetContainer>
+        <Provider>
+            <InviteForm />
+        </Provider>
     ) : (
         <>
             <TextField
@@ -146,14 +105,16 @@ export default function ChatRightSideBar() {
                 {results.map((item, index) => (
                     <ProfileItem
                         type="social"
-                        key={item.id}
-                        info={item}
-                        selected={item.id === selectedId}
-                        onClick={() => {
-                            setSelectedId(
-                                item.id !== selectedId ? item.id : undefined,
-                            );
-                        }}
+                        key={item.uuid}
+                        accountUUID={item.uuid}
+                        selected={item.uuid === selectedUUID}
+                        onClick={() =>
+                            setSelectedUUID(
+                                item.uuid !== selectedUUID
+                                    ? item.uuid
+                                    : undefined,
+                            )
+                        }
                     >
                         <FzfHighlight
                             {...getFzfHighlightProps({
@@ -169,7 +130,7 @@ export default function ChatRightSideBar() {
     );
 
     const listContent = (currentList: RightSideBarContents) => {
-        const uuid = results.find((x) => x.id === selectedId)?.uuid ?? "";
+        const uuid = results.find((x) => x.uuid === selectedUUID)?.uuid ?? "";
 
         switch (currentList) {
             case "accessBanMemberList":
@@ -177,9 +138,9 @@ export default function ChatRightSideBar() {
             case "commitBanMemberList":
                 return <ChatCommitBanList />;
             case "newAccessBan":
-                return <AccessBan uuid={uuid} />;
+                return <AccessBan accountUUID={uuid} />;
             // case "newCommitBan":
-            //     return <CommitBan uuid={uuid} />;
+            //     return <CommitBan accountUUID={uuid} />;
             default:
                 return memberList;
         }
@@ -275,5 +236,50 @@ export default function ChatRightSideBar() {
                 {listContent(currentPage)}
             </div>
         </div>
+    );
+}
+
+function InviteForm() {
+    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom, {
+        store: GlobalStore,
+    });
+    const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.INVITE_USER_RESULT,
+        (_, buf) => {
+            const errno = buf.read1();
+            if (errno !== 0) {
+                alert("초대 실패...");
+            }
+        },
+    );
+
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+        event.preventDefault();
+
+        const inviteAccountUUIDs = [...new Set([...selectedAccountUUIDs])];
+
+        for (const accountUUID of inviteAccountUUIDs) {
+            const buf = ByteBuffer.createWithOpcode(
+                ChatServerOpcode.INVITE_USER,
+            );
+            buf.writeUUID(currentChatRoomUUID);
+            buf.writeUUID(accountUUID);
+            sendPayload(buf);
+        }
+    };
+
+    // TODO: complete form!! & add invite button
+    return (
+        <form className="h-full w-full overflow-auto" onSubmit={handleSubmit}>
+            <div className="flex h-full w-full flex-col justify-between gap-4">
+                <InviteList className="overflow-auto" />
+                <ButtonOnRight
+                    buttonText="초대하기"
+                    className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
+                />
+            </div>
+        </form>
     );
 }

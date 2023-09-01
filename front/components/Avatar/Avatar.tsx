@@ -22,6 +22,27 @@ function PrivilegedSection({ accountUUID }: { accountUUID: string }) {
     );
 }
 
+const imageLoader = ({
+    src,
+    width,
+    quality,
+}: {
+    src: string;
+    width: number;
+    quality?: number;
+}) => {
+    void width;
+    void quality;
+    if (src.startsWith("__DEFAULT__")) {
+        // TODO: fallback avatar image
+        return `https://www.gravatar.com/avatar/${
+            src.split("#")[1]
+        }?d=identicon`;
+    }
+
+    return `https://back.stri.dev/internal/raw-avatar/${src}?a=AKASHA`;
+};
+
 export function Avatar({
     className,
     accountUUID,
@@ -42,10 +63,11 @@ export function Avatar({
         >
             <Image
                 className="relative rounded-full"
-                src={data?.avatarKey ?? "/jkong.png"} // TODO: fallback avatar image
+                src={data?.avatarKey ?? `__DEFAULT__#${accountUUID}`}
                 alt="Avatar"
                 sizes="100%"
                 fill={true}
+                loader={imageLoader}
             />
             {privileged && <PrivilegedSection accountUUID={accountUUID} />}
         </div>

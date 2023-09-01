@@ -4,10 +4,23 @@ import { ButtonOnRight } from "@/components/Button/ButtonOnRight";
 import { InviteList } from "@/components/Service/InviteList";
 import { TextField } from "@/components/TextField";
 import { ToggleButton } from "@/components/Button/ToggleButton";
-import { useUUIDSet } from "@/hooks/UUIDSetContext";
+import { useWebSocket } from "@/library/react/websocket-hook";
+import {
+    ChatClientOpcode,
+    ChatServerOpcode,
+} from "@/library/payload/chat-opcodes";
+import { ByteBuffer } from "@/library/akasha-lib";
+import {
+    CurrentAccountUUIDAtom,
+    SelectedAccountUUIDsAtom,
+} from "@/atom/AccountAtom";
+import { useAtomValue, useSetAtom } from "jotai";
+import { CreateNewRoomCheckedAtom, CurrentChatRoomAtom } from "@/atom/ChatAtom";
+import { ChatRoomModeFlags } from "@/library/payload/chat-payloads";
+import { GlobalStore } from "@/atom/GlobalStore";
 
-const titlePattern = ".{4,32}";
-const maxMemberLimit = 1500;
+const TITLE_PATTERN = ".{4,32}";
+const MAX_MEMBER_LIMIT = 1500;
 
 //TODO: 네이밍 다시 하기. 필요하면 나중에 쓰기
 // export type CreateNewRoomParams = {
@@ -57,33 +70,66 @@ function useDetectSticky(): [
 export function CreateNewRoom() {
     const [title, setTitle] = useState("");
     const [password, setPassword] = useState("");
-    const [limit, setLimit] = useState(1);
+    const [limit, setLimit] = useState(42);
     const [privateChecked, setPrivateChecked] = useState(false);
     const [secretChecked, setSecretChecked] = useState(false);
     const [limitChecked, setLimitChecked] = useState(false);
     const [inviteChecked, setInviteChecked] = useState(false);
-    const [accountUUIDSet] = useUUIDSet();
-    const formRef = useRef<HTMLFormElement>(null);
-    const formID = "newChatRoom";
+    const setCreateNewRoomChecked = useSetAtom(CreateNewRoomCheckedAtom, {
+        store: GlobalStore,
+    });
+    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom, {
+        store: GlobalStore,
+    });
+    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom, {
+        store: GlobalStore,
+    });
+    const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.CREATE_ROOM_RESULT,
+        async (_, buf) => {
+            const errno = buf.read1();
+            if (errno === 0) {
+                const uuid = buf.readUUID();
+                await setCurrentChatRoom(uuid);
+            }
+        },
+    );
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-        if (formRef.current === null) {
-            throw new Error();
-        }
-
         event.preventDefault();
-        void accountUUIDSet;
 
-        const data = new FormData(formRef.current);
-        const value = Object.fromEntries(data.entries());
+        const inviteAccountUUIDs = [
+            ...new Set([currentAccountUUID, ...selectedAccountUUIDs]),
+        ];
 
-        console.log(value);
+        const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CREATE_ROOM);
+        buf.writeString(title);
+        buf.write1(
+            (privateChecked ? ChatRoomModeFlags.PRIVATE : 0) |
+                (secretChecked ? ChatRoomModeFlags.SECRET : 0),
+        );
+        if (secretChecked) {
+            buf.writeString(password);
+        }
+        buf.write2Unsigned(limit);
+        buf.writeArray(inviteAccountUUIDs, (x, buf) => buf.writeUUID(x));
+        sendPayload(buf);
+
+        //TODO: 조금 더 아름답게 reset
+        setTitle("");
+        setPassword("");
+        setLimit(42);
+        setPrivateChecked(false);
+        setSecretChecked(false);
+        setLimitChecked(false);
+        setInviteChecked(false);
+        setCreateNewRoomChecked(false);
     };
 
     return (
         <form
-            id={formID}
-            ref={formRef}
             autoComplete="off"
             onSubmit={handleSubmit}
             className="group hidden h-full w-full overflow-auto peer-checked:flex"
@@ -95,9 +141,8 @@ export function CreateNewRoom() {
                             type="text"
                             className="relative min-h-[3rem] bg-black/30 px-4 py-1 text-xl"
                             placeholder="Title..."
-                            pattern={titlePattern}
+                            pattern={TITLE_PATTERN}
                             name="chatRoomTitle"
-                            form={formID}
                             required
                             value={title}
                             onChange={(event) => setTitle(event.target.value)}
@@ -106,7 +151,6 @@ export function CreateNewRoom() {
                         <div className="flex flex-col">
                             <ToggleButton
                                 id="private"
-                                formID={formID}
                                 name="isPrivate"
                                 checked={privateChecked}
                                 setChecked={setPrivateChecked}
@@ -131,7 +175,6 @@ export function CreateNewRoom() {
 
                             <ToggleButton
                                 id="secret"
-                                formID={formID}
                                 name="isSecret"
                                 checked={secretChecked}
                                 setChecked={setSecretChecked}
@@ -151,7 +194,6 @@ export function CreateNewRoom() {
                                     <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
                                         <TextField
                                             type="new-password"
-                                            form={formID}
                                             name="password"
                                             placeholder="비밀번호 입력"
                                             className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
@@ -166,7 +208,6 @@ export function CreateNewRoom() {
 
                             <ToggleButton
                                 id="limit"
-                                formID={formID}
                                 name="isLimit"
                                 checked={limitChecked}
                                 setChecked={setLimitChecked}
@@ -186,11 +227,10 @@ export function CreateNewRoom() {
                                     <div className="relative hidden h-full flex-col items-start justify-end gap-1 text-sm group-data-[checked=true]:flex">
                                         <TextField
                                             type="number"
-                                            form={formID}
                                             name="limit"
                                             disabled={!limitChecked}
                                             min={1}
-                                            max={maxMemberLimit}
+                                            max={MAX_MEMBER_LIMIT}
                                             placeholder="최대인원 입력"
                                             className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
                                             value={limit}
@@ -205,7 +245,6 @@ export function CreateNewRoom() {
                             </ToggleButton>
 
                             <InviteFriendToggle
-                                formID={formID}
                                 checked={inviteChecked}
                                 setChecked={setInviteChecked}
                             />
@@ -224,11 +263,9 @@ export function CreateNewRoom() {
 
 function InviteFriendToggle({
     checked,
-    formID,
     setChecked,
 }: {
     checked: boolean;
-    formID: string;
     setChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [isSticky, ref] = useDetectSticky();
@@ -250,7 +287,6 @@ function InviteFriendToggle({
                 <input
                     onChange={(event) => setChecked(event.target.checked)}
                     checked={checked}
-                    form={formID}
                     type="checkbox"
                     id="sectionHeader"
                     className="hidden"

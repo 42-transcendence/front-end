@@ -1,34 +1,28 @@
-import { useUUIDSet } from "@/hooks/UUIDSetContext";
 import { useState } from "react";
 import { TextField } from "@/components/TextField";
 import { FzfHighlight, useFzf } from "react-fzf";
 import { ProfileItemSelectable } from "@/components/ProfileItem/ProfileItemSelectable";
-
-//TODO: 이거 지우기
-const FriendListMockup = [
-    { accountUUID: "123", tag: "42" },
-    { accountUUID: "0eb0761e-4b92-41ea-ae6d", tag: "a3746330085e" },
-    { accountUUID: "be67e302-27a3-460d-9fcf", tag: "59b3d8d9460b" },
-    { accountUUID: "e3eb8922-ce6d-4eb0-991e", tag: "1a7dc7d9ce7f" },
-    { accountUUID: "b5e0840d-7ba2-4836-a775", tag: "8dac118a8e20" },
-    { accountUUID: "2e2202cc-7687-4824-9831", tag: "f2c2fd7450ea" },
-    { accountUUID: "614c0bcc-1dd1-4c8d-be7c", tag: "f8f5f0889a32" },
-    { accountUUID: "c2104808-a9f5-44d5-afa3", tag: "38a2e73290eb" },
-    { accountUUID: "20ba35c9-69bb-4c62-ab53", tag: "fc9c89452b61" },
-    { accountUUID: "fe5429ea-d841-4301-98c1", tag: "9ae9fa40ab81" },
-];
+import { FriendEntryAtom } from "@/atom/FriendAtom";
+import { useAtom, useAtomValue } from "jotai";
+import { SelectedAccountUUIDsAtom } from "@/atom/AccountAtom";
+import { GlobalStore } from "@/atom/GlobalStore";
 
 export function InviteList({ className }: { className?: string | undefined }) {
     const [query, setQuery] = useState("");
+    const friendEntrySet = useAtomValue(FriendEntryAtom, {
+        store: GlobalStore,
+    });
     const { results, getFzfHighlightProps } = useFzf({
-        //TODO: Change mockup to real data with fetch!!
-        items: FriendListMockup,
+        items: friendEntrySet,
         itemToString(item) {
-            return item.accountUUID + "#" + item.tag;
+            //TODO: fetch...? Fzf 지우기가 먼저인가?
+            return item.uuid;
         },
         query,
     });
-    const [accountUUIDSet, toggleAccountUUID] = useUUIDSet();
+    const [selectedAccountUUIDs, setSelectedAccountUUIDs] = useAtom(
+        SelectedAccountUUIDsAtom,
+    );
 
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
@@ -43,10 +37,21 @@ export function InviteList({ className }: { className?: string | undefined }) {
                 {results.map((item, index) => {
                     return (
                         <ProfileItemSelectable
-                            key={item.accountUUID}
-                            accountUUID={item.accountUUID}
-                            selected={accountUUIDSet.has(item.accountUUID)}
-                            onClick={() => toggleAccountUUID(item.accountUUID)}
+                            key={item.uuid}
+                            accountUUID={item.uuid}
+                            selected={selectedAccountUUIDs.includes(item.uuid)}
+                            onClick={() => {
+                                const selected = selectedAccountUUIDs.includes(
+                                    item.uuid,
+                                );
+                                setSelectedAccountUUIDs(
+                                    selected
+                                        ? selectedAccountUUIDs.filter(
+                                              (uuid) => uuid !== item.uuid,
+                                          )
+                                        : [...selectedAccountUUIDs, item.uuid],
+                                );
+                            }}
                         >
                             <FzfHighlight
                                 {...getFzfHighlightProps({

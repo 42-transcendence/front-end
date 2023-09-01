@@ -2,19 +2,17 @@
 
 type ToggleButtonProp = React.LabelHTMLAttributes<HTMLLabelElement> & {
     id: string;
-    formID: string;
     name: string;
     bgClassName?: string;
     checked: boolean;
-    setChecked: React.Dispatch<SetStateAction<boolean>>;
-    icon?: ReactElement | undefined;
-    children: ReactNode;
+    setChecked: React.Dispatch<React.SetStateAction<boolean>>;
+    icon?: React.ReactElement | undefined;
+    children: React.ReactNode;
 };
 
 export function ToggleButton(props: React.PropsWithChildren<ToggleButtonProp>) {
     const {
         id,
-        formID,
         name,
         icon,
         bgClassName,
@@ -37,7 +35,6 @@ export function ToggleButton(props: React.PropsWithChildren<ToggleButtonProp>) {
                     setChecked(!checked);
                 }}
                 checked={checked}
-                form={formID}
                 name={name}
                 type="checkbox"
                 id={id}

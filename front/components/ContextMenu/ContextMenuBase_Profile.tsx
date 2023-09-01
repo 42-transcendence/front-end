@@ -9,17 +9,16 @@ export type ProfileItemConfig = {
     statusMessage: string;
 };
 
-export function ContextMenuBase_Profile({
-    profile,
-    children,
-}: React.PropsWithChildren<{ profile: ProfileItemConfig }>) {
-    //TODO: if profile.id is undefined, throw error
+export function ContextMenuBase_Profile({ children }: React.PropsWithChildren) {
+    //TODO: use SWR
+    const name = "FALLBACK";
+    const tag = "4242";
 
     return (
         <ContextMenuBase className="w-full">
             <ContextMenuItem
-                name={profile.name}
-                description={profile.tag}
+                name={name}
+                description={tag}
                 className="text-xl"
                 disabled
             />

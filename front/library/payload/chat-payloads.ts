@@ -1,10 +1,64 @@
-import {
+import type {
     ChatEntity,
     ChatMemberEntity,
     ChatMessageEntity,
+    EnemyEntity,
+    FriendEntity,
 } from "../generated/types";
-import { AccountUUID } from "./profile-payloads";
-import { ByteBuffer, NULL_UUID } from "@akasha-lib";
+import type { AccountUUID } from "./profile-payloads";
+import type { ByteBuffer } from "@akasha-lib";
+import { NULL_UUID } from "@akasha-lib";
+
+/// FriendEntry
+export type FriendEntry = AccountUUID &
+    Pick<FriendEntity, "groupName" | "activeFlags">;
+
+export function readFriend(buf: ByteBuffer): FriendEntry {
+    const uuid = buf.readUUID();
+    const groupName = buf.readString();
+    const activeFlags = buf.read1();
+    return { uuid, groupName, activeFlags };
+}
+
+export function writeFriend(obj: FriendEntry, buf: ByteBuffer) {
+    buf.writeUUID(obj.uuid);
+    buf.writeString(obj.groupName);
+    buf.write1(obj.activeFlags);
+}
+
+/// EnemyEntry
+export type EnemyEntry = AccountUUID & Pick<EnemyEntity, "memo">;
+
+export function readEnemy(buf: ByteBuffer): EnemyEntry {
+    const uuid = buf.readUUID();
+    const memo = buf.readString();
+    return { uuid, memo };
+}
+
+export function writeEnemy(obj: EnemyEntry, buf: ByteBuffer) {
+    buf.writeUUID(obj.uuid);
+    buf.writeString(obj.memo);
+}
+
+/// SocialPayload
+export type SocialPayload = {
+    friendList: FriendEntry[];
+    friendRequestList: string[];
+    enemyList: EnemyEntry[];
+};
+
+export function readSocialPayload(buf: ByteBuffer): SocialPayload {
+    const friendList = buf.readArray(readFriend);
+    const friendRequestList = buf.readArray((buf) => buf.readString());
+    const enemyList = buf.readArray(readEnemy);
+    return { friendList, friendRequestList, enemyList };
+}
+
+export function writeSocialPayload(obj: SocialPayload, buf: ByteBuffer) {
+    buf.writeArray(obj.friendList, writeFriend);
+    buf.writeArray(obj.friendRequestList, (x, buf) => buf.writeString(x));
+    buf.writeArray(obj.enemyList, writeEnemy);
+}
 
 /// ChatRoomModeFlags
 export const enum ChatRoomModeFlags {
@@ -24,6 +78,27 @@ export type ChatRoomUUID = Pick<ChatEntity, "uuid">;
 /// ChatMessageUUID
 export type ChatMessageUUID = Pick<ChatMessageEntity, "uuid">;
 
+/// ChatRoomChatMessagePairEntry
+export type ChatRoomChatMessagePairEntry = ChatRoomUUID & {
+    messageUUID: ChatMessageUUID["uuid"];
+};
+
+export function readChatRoomChatMessagePair(
+    buf: ByteBuffer,
+): ChatRoomChatMessagePairEntry {
+    const uuid = buf.readUUID();
+    const messageUUID = buf.readUUID();
+    return { uuid, messageUUID };
+}
+
+export function writeChatRoomChatMessagePair(
+    obj: ChatRoomChatMessagePairEntry,
+    buf: ByteBuffer,
+) {
+    buf.writeUUID(obj.uuid);
+    buf.writeUUID(obj.messageUUID);
+}
+
 /// ChatRoomEntry
 export type ChatRoomEntry = ChatRoomUUID &
     Pick<ChatEntity, "title" | "modeFlags" | "limit"> & {
@@ -36,7 +111,7 @@ export function readChatRoom(buf: ByteBuffer): ChatRoomEntry {
     const modeFlags = buf.read1();
     const limit = buf.read2();
     const members = buf.readArray(readChatRoomMember);
-    const lastMessageId = buf.readNullable(buf.readUUID, NULL_UUID);
+    const lastMessageId = buf.readNullable((buf) => buf.readUUID(), NULL_UUID);
     return { uuid, title, modeFlags, limit, members, lastMessageId };
 }
 
@@ -46,7 +121,11 @@ export function writeChatRoom(obj: ChatRoomEntry, buf: ByteBuffer) {
     buf.write1(obj.modeFlags);
     buf.write2(obj.limit);
     buf.writeArray(obj.members, writeChatRoomMember);
-    buf.writeNullable(obj.lastMessageId, buf.writeUUID, NULL_UUID);
+    buf.writeNullable(
+        obj.lastMessageId,
+        (x, buf) => buf.writeUUID(x),
+        NULL_UUID,
+    );
 }
 
 /// ChatRoomMemberEntry

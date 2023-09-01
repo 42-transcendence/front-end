@@ -11,15 +11,18 @@ export function ContextMenuItem({
     description,
     className,
     disabled,
+    onClick,
 }: {
     name: string;
     className: string;
     description?: string | undefined;
     disabled?: boolean | undefined;
+    onClick?: React.MouseEventHandler | undefined;
 }) {
     return (
         <div
             className={`relative ${className} flex h-fit w-full items-center rounded py-3 hover:bg-primary/30 active:bg-secondary/80 `}
+            onClick={onClick}
         >
             <div className="relative flex w-full flex-col justify-center px-4 py-1">
                 <div className={`select-none`}>{name}</div>

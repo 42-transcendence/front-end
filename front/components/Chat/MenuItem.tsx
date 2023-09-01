@@ -4,14 +4,15 @@ export function MenuItem({
     className,
 }: React.PropsWithChildren<{
     className?: string;
-    onClick: React.MouseEventHandler<HTMLSpanElement> | undefined;
+    onClick: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }>) {
     return (
-        <span
+        <button
+            type="button"
             onClick={onClick}
             className={`${className} w-full max-w-[240px] rounded p-3 text-center hover:bg-primary/50 `}
         >
             {children}
-        </span>
+        </button>
     );
 }

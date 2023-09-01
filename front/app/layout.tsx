@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { StrictMode } from "react";
+import { Providers } from "./Providers";
 
 const roboto = Roboto({ weight: "700", style: "normal", subsets: ["latin"] });
 
@@ -19,7 +20,9 @@ export default function RootLayout({
     return (
         <html lang="ko">
             <body className={`text-white ${roboto.className}`}>
-                <StrictMode>{children}</StrictMode>
+                <Providers>
+                    <StrictMode>{children}</StrictMode>
+                </Providers>
             </body>
         </html>
     );

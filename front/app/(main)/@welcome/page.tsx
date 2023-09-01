@@ -4,7 +4,8 @@ import { DoubleSharp, Icon } from "@/components/ImageLibrary";
 import { TextField } from "@/components/TextField";
 import { Card } from "@/components/Card/Card";
 import { useState } from "react";
-import { fetcher } from "@/hooks/fetcher";
+import { fetcher_POST } from "@/hooks/fetcher";
+import { mutate } from "swr";
 
 export default function Welcome() {
     const [query, setQuery] = useState("");
@@ -28,8 +29,10 @@ export default function Welcome() {
                     <button
                         className="relative w-8 rounded bg-white/20 p-0.5 text-xs peer-valid:bg-secondary/70"
                         onClick={() => {
-                            //TODO: Add then chains
-                            fetcher(`/profile/register?name=${query}`);
+                            //TODO: Add then chains 나중에 조금 더 잘 만들자 ㅋㅋ~
+                            fetcher_POST("/profile/nick", { name: query })
+                                .then(() => mutate("/profile/private"))
+                                .catch(() => {});
                         }}
                     >
                         확인

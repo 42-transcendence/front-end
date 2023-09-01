@@ -1,14 +1,13 @@
-// import { useState } from "react";
-import type { ChatMessageEntry } from "@/library/payload/chat-payloads";
 import { Avatar } from "../Avatar";
 import { Chat } from "@/components/ImageLibrary";
+import type { MessageSchema } from "@/library/idb/chat-store";
 
 export function ChatBubbleWithProfile({
     chatMessage,
     isContinued = false,
     dir = "left",
 }: {
-    chatMessage: ChatMessageEntry;
+    chatMessage: MessageSchema;
     isContinued: boolean;
     dir: "left" | "right";
 }) {
