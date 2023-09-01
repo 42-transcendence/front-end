@@ -61,7 +61,7 @@ export function SelectAvatar() {
 
     const [setFormData, sendFormData] = useFormData("POST", "https://back.stri.dev/profile/avatar");
 
-    const formDataKey = "profile-avatar"; // TODO: rename
+    const formDataKey = "avatar"; // TODO: rename
 
     const observerOptions = useMemo(
         () => ({
@@ -88,7 +88,9 @@ export function SelectAvatar() {
 
                 // TODO: 함수 분리하기.... file 직접 upload하는 거랑 공통으로 쓸 수 있게
                 // HTMLImageElement -> HTMLCanvasElement -> Blob -> FormData
-                const canvas = document.createElement("canvas");
+                const canvas = document.createElement("canvas") ;
+                canvas.width = target.width // TODO: 왜 이미지 잘림 왜안됨
+                canvas.height = target.height
                 const ctx = canvas.getContext("2d")
                 if (ctx === null) {
                     return;
@@ -98,7 +100,7 @@ export function SelectAvatar() {
                     if (blob !== null) {
                         setFormData(formDataKey, blob)
                     }
-                })
+                }, "image/webp")
             }
         },
         [setFormData],

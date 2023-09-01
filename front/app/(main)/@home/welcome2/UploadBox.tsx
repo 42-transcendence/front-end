@@ -66,7 +66,7 @@ function useFiles(setFormData: (key: string, data: string | Blob | (string | Blo
                 if (blob !== null) {
                     blobList.push(blob);
                 }
-            })
+            }, "image/webp")
         }
         setFormData("profile-avatar", blobList)
     };
