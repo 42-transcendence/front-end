@@ -87,7 +87,7 @@ export function CreateNewRoom() {
     const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
     const { sendPayload } = useWebSocket(
         "chat",
-        ChatClientOpcode.CREATE_ROOM_FAILED,
+        ChatClientOpcode.CREATE_ROOM_RESULT,
         async (_, buf) => {
             const errno = buf.read1();
             if (errno === 0) {

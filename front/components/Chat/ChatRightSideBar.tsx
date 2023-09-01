@@ -246,7 +246,7 @@ function InviteForm() {
     const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
     const { sendPayload } = useWebSocket(
         "chat",
-        ChatClientOpcode.INVITE_USER_FAILED,
+        ChatClientOpcode.INVITE_USER_RESULT,
         (_, buf) => {
             const errno = buf.read1();
             if (errno !== 0) {

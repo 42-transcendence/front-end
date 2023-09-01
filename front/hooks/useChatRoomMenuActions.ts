@@ -10,7 +10,7 @@ import { useAtomValue } from "jotai";
 function useLeaveChatRoom(chatRoomUUID: string) {
     const { sendPayload } = useWebSocket(
         "chat",
-        ChatClientOpcode.LEAVE_ROOM_FAILED,
+        ChatClientOpcode.LEAVE_ROOM_RESULT,
         async (_, buf) => {
             const errno = buf.read1();
             if (errno !== 0) {

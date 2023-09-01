@@ -33,10 +33,13 @@ const imageLoader = ({
 }) => {
     void width;
     void quality;
-    if (src === "") {
+    if (src.startsWith("__DEFAULT__")) {
         // TODO: fallback avatar image
-        return "/jkong.png";
+        return `https://www.gravatar.com/avatar/${
+            src.split("#")[1]
+        }?d=identicon`;
     }
+
     return `https://back.stri.dev/internal/raw-avatar/${src}?a=AKASHA`;
 };
 
@@ -60,7 +63,7 @@ export function Avatar({
         >
             <Image
                 className="relative rounded-full"
-                src={data?.avatarKey ?? ""}
+                src={data?.avatarKey ?? `__DEFAULT__#${accountUUID}`}
                 alt="Avatar"
                 sizes="100%"
                 fill={true}
