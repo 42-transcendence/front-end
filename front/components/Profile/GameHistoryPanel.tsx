@@ -640,7 +640,7 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
     );
 }
 
-function Seperator({ className }: { className?: string | undefined }) {
+export function Seperator({ className }: { className?: string | undefined }) {
     return (
         <div className={`${className} min-w-min py-4`}>
             <div className="h-full w-[1px] bg-black/30"> </div>

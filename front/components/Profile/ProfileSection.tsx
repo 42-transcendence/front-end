@@ -1,5 +1,7 @@
+import { editPanelVisibilityAtom } from "@/atom/ProfileAtom";
 import { Avatar } from "@/components/Avatar";
 import { Icon } from "@/components/ImageLibrary";
+import { useSetAtom } from "jotai";
 
 type Relationship = "myself" | "friend" | "stranger";
 
@@ -34,10 +36,14 @@ export function ProfileSection({ accountUUID }: { accountUUID: string }) {
 }
 
 function ProfileButton({ relationship }: { relationship: Relationship }) {
+    const showEditPanel = useSetAtom(editPanelVisibilityAtom);
     switch (relationship) {
         case "myself":
             return (
-                <button className="relative flex h-8 items-center justify-center rounded-xl bg-secondary p-2 lg:w-full">
+                <button
+                    onClick={() => showEditPanel((value) => !value)}
+                    className="relative flex h-8 items-center justify-center rounded-xl bg-secondary p-2 lg:w-full"
+                >
                     <span className="text-sm">Edit</span>
                 </button>
             );

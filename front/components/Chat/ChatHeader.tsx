@@ -4,19 +4,45 @@ import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 import { useCurrentChatRoomUUID } from "@/hooks/useCurrent";
 import { useChatRoomTitle } from "@/hooks/useChatRoom";
+import { useAtom } from "jotai";
+import { LeftSideBarIsOpenAtom } from "@/atom/ChatAtom";
+import { useEffect } from "react";
+
+export function LeftSideBarInput() {
+    return (
+        <input
+            className="peer/left hidden"
+            type="radio"
+            name="leftRadio"
+            id="forCloseLeftSideBar"
+            defaultChecked
+        />
+    );
+}
 
 function LeftSidebarButton() {
+    const currentChatRoom = useCurrentChatRoomUUID();
+
+    const [{ open }, setToOpen] = useAtom(LeftSideBarIsOpenAtom);
+
+    useEffect(() => {
+        if (currentChatRoom === "") {
+            setToOpen(true);
+        }
+    }, [currentChatRoom, setToOpen]);
+
     return (
         <>
             <input
                 className="peer/headerleft hidden"
+                checked={open}
+                onChange={() => setToOpen(true)}
                 type="radio"
                 name="leftRadio"
-                id="leftHeaderIcon"
-                defaultChecked
+                id="forOpenLeftSideBar"
             />
             <label
-                htmlFor="leftHeaderIcon"
+                htmlFor="forOpenLeftSideBar"
                 className="absolute left-4 top-2 z-[5] w-12 overflow-clip transition-all duration-500 peer-checked/headerleft:w-0"
             >
                 <Icon.Sidebar

@@ -115,15 +115,16 @@ export function ChatDialog({
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const scrollToBottom = () => {
         if (messagesEndRef.current === null) {
-            return;
+            throw new Error();
         }
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current.scrollIntoView({});
     };
 
     useEffect(() => {
         if (
+            chatMessages.length > 0 &&
             chatMessages[chatMessages.length - 1].accountId ===
-            currentAccountUUID
+                currentAccountUUID
         ) {
             scrollToBottom();
         }

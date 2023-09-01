@@ -1,9 +1,11 @@
 "use client";
 
+import { editPanelVisibilityAtom } from "@/atom/ProfileAtom";
 import { AchievementPanel } from "@/components/Profile/AchievementPanel";
+import { EditPanel } from "@/components/Profile/EditPanel";
 import { GameHistoryPanel } from "@/components/Profile/GameHistoryPanel";
-import { Panel } from "@/components/Profile/Panel";
 import { ProfileSection } from "@/components/Profile/ProfileSection";
+import { useAtomValue } from "jotai";
 import { useParams } from "next/navigation";
 
 function ErrorPage() {
@@ -17,6 +19,7 @@ function isValidProfileId(id: string | string[]) {
 
 export default function ProfilePage() {
     const params = useParams();
+    const editPanelVisibility = useAtomValue(editPanelVisibilityAtom);
 
     // TODO: 실제 로직으로 변경. game id 쪽 일단 복붙해옴. 같이 수정 요망
     const paramKeys = Object.keys(params);
@@ -34,7 +37,7 @@ export default function ProfilePage() {
         <>
             <ProfileSection accountUUID={accountUUID} />
             <div className="grid h-full w-full grid-cols-1 gap-8 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-4 lg:p-8">
-                <Panel className="md:col-span-2 lg:col-span-4 lg:row-span-2"></Panel>
+                {editPanelVisibility && <EditPanel />}
                 {/*TODO: put accountUUID of selected user */}
                 <AchievementPanel accountUUID={accountUUID} />
                 <GameHistoryPanel accountUUID={accountUUID} />
