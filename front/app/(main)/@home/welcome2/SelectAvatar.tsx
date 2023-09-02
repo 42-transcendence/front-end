@@ -3,129 +3,164 @@
 import { Icon } from "@/components/ImageLibrary";
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { UploadBox } from "./UploadBox";
+import { ImageUploadBox } from "./ImageUploadBox";
 import { useRefMap } from "@/hooks/useRefMap";
+import { useAtomValue } from "jotai";
+import { AccessTokenAtom } from "@/atom/AccountAtom";
+import { ScrollBox } from "./ScrollBox";
 
-const defaultProfilesKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
+const defaultAvatarsKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
-// FIXME: change to jotai atom
-function useAccessToken() {
-    const accessToken: string | null =
-        window.localStorage.getItem("access_token");
-    if (accessToken === null) {
-        throw new Error("너 액세스 토큰 없음 ㅋㅋ");
-    }
-    return accessToken;
+function useFormData(
+    url: string | URL,
+): [
+    setForm: React.Dispatch<React.SetStateAction<FormData | null>>,
+    sendForm: () => void,
+    clearForm: () => void,
+] {
+    const [formData, setForm] = useState<FormData | null>(null);
+
+    const accessToken = useAtomValue(AccessTokenAtom);
+
+    const options = useMemo(() => {
+        return {
+            method: "POST",
+            body: formData,
+            headers: {
+                Authorization: ["Bearer", accessToken].join(" "),
+            },
+        };
+    }, [accessToken, formData]);
+
+    const clearForm = useCallback(() => {
+        setForm(new FormData());
+    }, []);
+
+    const sendForm = useCallback(() => {
+        fetch(url, options)
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    }, [options, url]);
+
+    return [setForm, sendForm, clearForm];
 }
 
-function useFormData(method: "POST" | "GET", url: string | URL): [
-    setFormData: (key: string, data: string | Blob) => void,
-    sendFormData: () => void,
+function useImageAsFormData(): [
+    image: HTMLImageElement | null,
+    setImage: (image: HTMLImageElement) => void,
+    sendForm: () => void,
 ] {
-    const formData = useRef(new FormData()); // useState or useRef 같은거 써야하나?
-    const accessToken = useAccessToken();
+    const url = "https://back.stri.dev/profile/avatar";
+    const [setForm, sendForm, clearForm] = useFormData(url);
+    const [image, setImage] = useState<HTMLImageElement | null>(null);
+    const formDataKey = "avatar";
 
-    const options = {
-        method: method,
-        body: formData.current,
-        headers: {
-            Authorization: ["Bearer", accessToken].join(" "),
+    useEffect(() => {
+        if (image === null) {
+            clearForm();
+            return;
+        }
+    }, [clearForm, image]);
+
+    const makeNewForm = (key: string, value: string | Blob) => {
+        const newForm = new FormData();
+        newForm.set(key, value);
+        return newForm;
+    };
+
+    useEffect(() => {
+        if (image === null) {
+            return;
+        }
+        const canvas = document.createElement("canvas");
+        // FIXME: 왜 이미지 잘림 왜안됨
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        const ctx = canvas.getContext("2d");
+        if (ctx === null) {
+            return;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0, image.width, image.height);
+        canvas.toBlob((blob) => {
+            if (blob === null) {
+                return;
+            }
+            setForm(makeNewForm(formDataKey, blob));
+        }, "image/webp");
+    }, [image, setForm]);
+
+    return [image, setImage, sendForm];
+}
+
+function useIntersectionObserver(
+    callback: (target: Element) => void,
+    targets: Map<string, Element> | Set<Element> | Element[],
+    observerOptions: IntersectionObserverInit,
+) {
+    const handleIntersect = useCallback(
+        (
+            entries: IntersectionObserverEntry[],
+            _observer: IntersectionObserver,
+        ) => {
+            entries
+                .filter((entry) => entry.isIntersecting)
+                .forEach((entry) => callback(entry.target));
         },
-    }
+        [callback],
+    );
 
-    const setFormData = (key: string, data: string | Blob) => {
-        formData.current.set(key, data);
-    }
-    const sendFormData = () => {
-        fetch(url, options)
-            .then((res) => { console.log(res) }) // TODO: 받아서 어떻게 해야하지???
-            .catch((e) => { console.log(e) })
-    }
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            handleIntersect,
+            observerOptions,
+        );
 
-    return [setFormData, sendFormData];
+        for (const target of targets.values()) {
+            observer.observe(target);
+        }
+
+        return () => observer.disconnect();
+    }, [handleIntersect, observerOptions, targets]);
 }
 
 export function SelectAvatar() {
-    const [profileName, setProfileName] = useState("");
     const rootRef = useRef<HTMLDivElement>(null);
     const [targetRefsMap, refCallbackAt] = useRefMap<
         string,
         HTMLImageElement
     >();
 
-    const [setFormData, sendFormData] = useFormData("POST", "https://back.stri.dev/profile/avatar");
+    // TODO: appropriate file size limit?
+    const maxFileSize = 4096576;
 
-    const formDataKey = "avatar"; // TODO: rename
-
-    const observerOptions = useMemo(
-        () => ({
+    const observerOptions = useMemo(() => {
+        return {
             root: rootRef.current,
             rootMargin: "0px",
             threshold: 1.0,
-        }),
-        [],
+        };
+    }, []);
+
+    const [image, setImage, sendForm] = useImageAsFormData();
+
+    useIntersectionObserver(
+        (x: Element) => setImage(x as HTMLImageElement), // TODO: 이게 맞나??
+        targetRefsMap,
+        observerOptions,
     );
-
-    const handleIntersect = useCallback(
-        (
-            entries: IntersectionObserverEntry[],
-            _observer: IntersectionObserver,
-        ) => {
-            const entry = entries.find((e) => e.isIntersecting);
-            if (entry === undefined) {
-                return;
-            }
-
-            const target = entry.target;
-            if (target instanceof HTMLImageElement) {
-                setProfileName(target.dataset["name"] ?? "");
-
-                // TODO: 함수 분리하기.... file 직접 upload하는 거랑 공통으로 쓸 수 있게
-                // HTMLImageElement -> HTMLCanvasElement -> Blob -> FormData
-                const canvas = document.createElement("canvas") ;
-                canvas.width = target.width // TODO: 왜 이미지 잘림 왜안됨
-                canvas.height = target.height
-                const ctx = canvas.getContext("2d")
-                if (ctx === null) {
-                    return;
-                }
-                ctx.drawImage(target, 0, 0)
-                canvas.toBlob((blob) => {
-                    if (blob !== null) {
-                        setFormData(formDataKey, blob)
-                    }
-                }, "image/webp")
-            }
-        },
-        [setFormData],
-    );
-
-    const observer = useMemo(
-        () => new IntersectionObserver(handleIntersect, observerOptions),
-        [handleIntersect, observerOptions],
-    );
-
-    useEffect(() => {
-        if (rootRef.current === null) {
-            return;
-        }
-
-        targetRefsMap.forEach((e) => observer.observe(e));
-
-        return () => observer.disconnect();
-    }, [observer, targetRefsMap]);
 
     return (
         <>
-            <div className="z-10 w-[24rem] overflow-clip">
-                <div
-                    ref={rootRef}
-                    className="z-20 flex snap-x snap-mandatory flex-row gap-5 overflow-auto pb-10"
-                >
-                    <div className="shrink-0 snap-center">
-                        <div className="w-7 shrink-0"></div>
-                    </div>
-                    {defaultProfilesKey.map((name) => (
+            <div ref={rootRef} className="z-10 w-[24rem] overflow-clip">
+                <ScrollBox>
+                    {defaultAvatarsKey.map((name) => (
                         <div
                             key={name}
                             className="z-10 flex-shrink-0 snap-center snap-always overflow-hidden"
@@ -143,22 +178,14 @@ export function SelectAvatar() {
                             />
                         </div>
                     ))}
-                    {/* TODO: appropriate file size limit? */}
-                    <UploadBox
-                        accept="image/*"
-                        maxFileSize={4096576}
-                        setFormData={setFormData}
+                    <ImageUploadBox
+                        setImage={setImage}
+                        maxFileSize={maxFileSize}
                     />
-                    <div className="shrink-0 snap-center">
-                        <div className="w-7 shrink-0"></div>
-                    </div>
-                </div>
+                </ScrollBox>
             </div>
-            {/* TODO: if file select, change message to file select.*/}
-            <p>selected profile: {profileName}</p>
-
-            {/* TODO : 서버에서 닉네임이 중복되었는지, 가능한 닉네임인지 확인 */}
-            <button className="z-50" type="button" onClick={() => sendFormData()}>
+            <p>현재 아바타: {image !== null && image.dataset["name"]}</p>
+            <button className="z-50" type="button" onClick={() => sendForm()}>
                 <Icon.Arrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
             </button>
         </>

@@ -26,6 +26,7 @@ export function ImageViewer({ uploadedFiles }: { uploadedFiles: File[] }) {
             // img.crossOrigin = "use-credentials";
             img.decoding = "async";
             img.loading = "lazy";
+            img.dataset["name"] = file.name;
             // img.sizes = "";
             previewElem.appendChild(img);
         }
