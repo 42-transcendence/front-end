@@ -17,11 +17,8 @@ import {
     ChatServerOpcode,
 } from "@/library/payload/chat-opcodes";
 import { ByteBuffer } from "@/library/akasha-lib";
-import {
-    CurrentChatMembersAtom,
-    CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
-import { GlobalStore } from "@/atom/GlobalStore";
+import { useCurrentChatRoomUUID } from "@/hooks/useCurrent";
+import { useChatRoomMembers } from "@/hooks/useChatRoom";
 
 import { useFzf } from "react-fzf";
 
@@ -33,17 +30,15 @@ export type RightSideBarContents =
     | "accessBanMemberList"
     | undefined;
 
-// TODO: displaytitle을 front-end에서 직접 정하는게 아니라, 백엔드에서 없으면
-// 동일 로직으로 타이틀을 만들어서 프론트에 넘겨주고, 프론트에선 타이틀을 항상
-// 존재하는 프로퍼티로 추후 변경할 수도
 // TODO: refactoring 하고 어떻게 잘 함수 분리해보기
 
 export default function ChatRightSideBar() {
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const currentChatMembers = useChatRoomMembers(currentChatRoomUUID);
     const [selectedUUID, setSelectedUUID] = useState<string>();
     const [query, setQuery] = useState("");
-    const currentChatMembers = useAtomValue(CurrentChatMembersAtom);
     const { results: foundCurrentChatMembers } = useFzf({
-        items: currentChatMembers,
+        items: [...(currentChatMembers?.values() ?? [])],
         itemToString(item) {
             //TODO: fetch...? Fzf 지우기가 먼저인가? (2) 같은 문제가 InviteList에도 있으니 반드시 참조 바람
             return item.uuid;
@@ -122,18 +117,15 @@ export default function ChatRightSideBar() {
     );
 
     const listContent = (currentList: RightSideBarContents) => {
-        const uuid =
-            currentChatMembers.find((x) => x.uuid === selectedUUID)?.uuid ?? "";
-
         switch (currentList) {
             case "accessBanMemberList":
                 return <ChatAccessBanList />;
             case "commitBanMemberList":
                 return <ChatCommitBanList />;
             case "newAccessBan":
-                return <AccessBan accountUUID={uuid} />;
+                return <AccessBan accountUUID={selectedUUID ?? ""} />;
             // case "newCommitBan":
-            //     return <CommitBan accountUUID={uuid} />;
+            //     return <CommitBan accountUUID={selectedUUID ?? ""} />;
             default:
                 return memberList;
         }
@@ -233,9 +225,7 @@ export default function ChatRightSideBar() {
 }
 
 function InviteForm() {
-    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom, {
-        store: GlobalStore,
-    });
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
     const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
     const { sendPayload } = useWebSocket(
         "chat",

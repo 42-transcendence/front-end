@@ -16,25 +16,24 @@ import {
 } from "@/library/react/websocket-hook";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { AccessTokenAtom, CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
+import { AccessTokenAtom } from "@/atom/AccountAtom";
 import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatStore } from "@/library/idb/chat-store";
-import {
-    ChatRoomListAtom,
-    CurrentChatMessagesAtom,
-    CurrentChatRoomAtom,
-    CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
+import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
 import {
     EnemyEntryAtom,
     FriendEntryAtom,
     FriendRequestEntryAtom,
 } from "@/atom/FriendAtom";
-import { mutate } from "swr";
+import {
+    useCurrentAccountUUID,
+    useCurrentChatRoomUUID,
+} from "@/hooks/useCurrent";
+import { useChatRoomMutation } from "@/hooks/useChatRoom";
 
 export function ChatSocketProcessor() {
     const accessToken = useAtomValue(AccessTokenAtom);
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
+    const currentAccountUUID = useCurrentAccountUUID();
     const accessTokenRef = useRef(accessToken);
     useEffect(() => {
         accessTokenRef.current = accessToken;
@@ -68,12 +67,10 @@ export function ChatSocketProcessor() {
         [],
     );
     useWebSocketConnector("chat", getURL, props); //FIXME: props 이름?
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
-    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom);
-    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
-    const [currentChatMessages, setCurrentChatMessages] = useAtom(
-        CurrentChatMessagesAtom,
-    );
+    const mutateChatRoom = useChatRoomMutation();
+    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
     const [friendEntry, setFriendEntry] = useAtom(FriendEntryAtom);
     const [enemyEntry, setEnemyEntry] = useAtom(EnemyEntryAtom);
     const [friendRequestEntry, setFriendRequestEntry] = useAtom(
@@ -197,7 +194,7 @@ export function ChatSocketProcessor() {
             case ChatClientOpcode.REMOVE_ROOM: {
                 const roomUUID = buffer.readUUID();
                 if (currentChatRoomUUID === roomUUID) {
-                    await setCurrentChatRoom("");
+                    setCurrentChatRoomUUID("");
                 }
                 setChatRoomList(
                     chatRoomList.filter((e) => e.uuid !== roomUUID),
@@ -210,16 +207,7 @@ export function ChatSocketProcessor() {
                 const message = readChatMessage(buffer);
                 await ChatStore.addMessage(message.roomUUID, message);
 
-                if (message.roomUUID === currentChatRoomUUID) {
-                    setCurrentChatMessages([...currentChatMessages, message]);
-                }
-
-                await mutate(
-                    (key) =>
-                        Array.isArray(key) &&
-                        key[0] === "ChatStore" &&
-                        key[1] === message.roomUUID,
-                );
+                mutateChatRoom(message.roomUUID);
                 break;
             }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { AuthLevel } from "@/library/payload/auth-payload";
-import { AuthAtom, CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
+import { AuthAtom } from "@/atom/AccountAtom";
 import { useAtomValue } from "jotai";
 import { ChatSocketProcessor } from "./ChatSocketProcessor";
 import { usePrivateProfile } from "@/hooks/useProfile";

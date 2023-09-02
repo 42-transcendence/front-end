@@ -1,7 +1,5 @@
-import { useAtomValue } from "jotai";
 import { fetcher } from "./fetcher";
 import { useSWR } from "./useSWR";
-import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import type {
     AccountProfilePrivatePayload,
     AccountProfileProtectedPayload,
@@ -10,6 +8,7 @@ import type {
 import { useAtomCallback } from "jotai/utils";
 import { useCallback } from "react";
 import { GlobalStore } from "@/atom/GlobalStore";
+import { useCurrentAccountUUID } from "./useCurrent";
 
 export function usePublicProfile(accountUUID: string) {
     const callback = useAtomCallback(
@@ -34,7 +33,7 @@ export function useProtectedProfile(accountUUID: string) {
 }
 
 export function usePrivateProfile() {
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
+    const currentAccountUUID = useCurrentAccountUUID();
     const callback = useAtomCallback(
         useCallback(async (get, set, key: string) => {
             return await fetcher<AccountProfilePrivatePayload>(get, set, key);

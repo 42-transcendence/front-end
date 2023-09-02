@@ -6,11 +6,10 @@ import { Avatar } from "@/components/Avatar";
 import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "@/components/ImageLibrary";
 import { FriendButton } from "./FriendButton";
-import { useAtomValue } from "jotai";
-import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
+import { useCurrentAccountUUID } from "@/hooks/useCurrent";
 
 export function NavigationBar() {
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
+    const currentAccountUUID = useCurrentAccountUUID();
 
     return (
         <div className="relative flex h-fit w-full flex-row items-center justify-between bg-primary/30 p-2 backdrop-blur-[20px] backdrop-brightness-100">

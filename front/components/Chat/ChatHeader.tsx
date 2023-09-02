@@ -2,14 +2,11 @@
 
 import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
-import { useAtomValue } from "jotai";
 import {
-    CurrentChatRoomTitleAtom,
-    CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
-import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
-import { ChatStore } from "@/library/idb/chat-store";
-import { useSWR } from "@/hooks/fetcher";
+    useCurrentAccountUUID,
+    useCurrentChatRoomUUID,
+} from "@/hooks/useCurrent";
+import { useChatMember, useChatRoomTitle } from "@/hooks/useChatRoom";
 
 function LeftSidebarButton() {
     return (
@@ -62,18 +59,12 @@ function RightSidebarButton() {
     );
 }
 
-// TODO: isAdmin이 아니라, 어느 채팅방이 열려있는지 정보 받아와야
 export function ChatHeader() {
-    const currentChatRoomTitle = useAtomValue(CurrentChatRoomTitleAtom);
-    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
+    const currentAccountUUID = useCurrentAccountUUID();
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const currentChatRoomTitle = useChatRoomTitle(currentChatRoomUUID);
+    const selfMember = useChatMember(currentChatRoomUUID, currentAccountUUID);
 
-    // FIXME: mutate 안해줬음. 그런데 이런거 전부 Custom hook으로 잘 만들어야할듯...
-    const { data: selfMember } = useSWR(
-        ["ChatStore", currentChatRoomUUID, "Member", currentAccountUUID],
-        ([, roomUUID, , memberUUID]) =>
-            ChatStore.getMember(roomUUID, memberUUID),
-    );
     const selfMemberModeFlags = selfMember?.modeFlags ?? 0;
 
     return (
