@@ -9,12 +9,14 @@ import type {
 } from "@/library/payload/profile-payloads";
 import { useAtomCallback } from "jotai/utils";
 import { useCallback } from "react";
+import { GlobalStore } from "@/atom/GlobalStore";
 
 export function usePublicProfile(accountUUID: string) {
     const callback = useAtomCallback(
         useCallback(async (get, set, key: string) => {
             return await fetcher<AccountProfilePublicPayload>(get, set, key);
         }, []),
+        { store: GlobalStore },
     );
     const { data } = useSWR(`/profile/public/${accountUUID}`, callback);
     return data;
@@ -25,6 +27,7 @@ export function useProtectedProfile(accountUUID: string) {
         useCallback(async (get, set, key: string) => {
             return await fetcher<AccountProfileProtectedPayload>(get, set, key);
         }, []),
+        { store: GlobalStore },
     );
     const { data } = useSWR(`/profile/protected/${accountUUID}`, callback);
     return data;
@@ -36,6 +39,7 @@ export function usePrivateProfile() {
         useCallback(async (get, set, key: string) => {
             return await fetcher<AccountProfilePrivatePayload>(get, set, key);
         }, []),
+        { store: GlobalStore },
     );
     const { data } = useSWR(
         () => (currentAccountUUID !== "" ? "/profile/private" : null),

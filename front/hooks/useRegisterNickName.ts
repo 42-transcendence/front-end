@@ -3,6 +3,7 @@ import { useSWRMutation } from "./useSWR";
 import { useCallback } from "react";
 import { HTTPError, fetcherPOST } from "./fetcher";
 import { useSWRConfig } from "swr";
+import { GlobalStore } from "@/atom/GlobalStore";
 
 export function useRegisterNickName() {
     const { mutate } = useSWRConfig();
@@ -14,6 +15,7 @@ export function useRegisterNickName() {
             },
             [mutate],
         ),
+        { store: GlobalStore },
     );
     const result = useSWRMutation("/profile/nick", callback);
     const error = result.error !== undefined;

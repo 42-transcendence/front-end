@@ -3,6 +3,7 @@
 import { AccessTokenAtom, RefreshTokenAtom } from "@/atom/AccountAtom";
 import type { TokenSet } from "@/library/payload/auth-payload";
 import type { Getter as AtomGetter, Setter as AtomSetter } from "jotai";
+import { RESET } from "jotai/utils";
 import type { ReadonlyURLSearchParams } from "next/navigation";
 
 const urlBase = "https://back.stri.dev";
@@ -24,8 +25,8 @@ async function fetchToken(
         if (response.ok) {
             token = (await response.json()) as TokenSet;
         }
-        setAtom(AccessTokenAtom, token?.access_token ?? null);
-        setAtom(RefreshTokenAtom, token?.refresh_token ?? null);
+        setAtom(AccessTokenAtom, token?.access_token ?? RESET);
+        setAtom(RefreshTokenAtom, token?.refresh_token ?? RESET);
         return token !== undefined;
     } catch {
         return false;

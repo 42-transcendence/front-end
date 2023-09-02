@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { fetchEndAuth } from "./fetcher";
 import { useAtomCallback } from "jotai/utils";
 import type { ReadonlyURLSearchParams } from "next/navigation";
+import { GlobalStore } from "@/atom/GlobalStore";
 
 export function useAuthEnd(searchParams: ReadonlyURLSearchParams) {
     const callback = useAtomCallback(
@@ -12,6 +13,7 @@ export function useAuthEnd(searchParams: ReadonlyURLSearchParams) {
             },
             [searchParams],
         ),
+        { store: GlobalStore },
     );
     const { data } = useSWR("/auth/end", callback);
     return data;

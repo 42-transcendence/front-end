@@ -2,6 +2,7 @@ import { useAtomCallback } from "jotai/utils";
 import { useSWRMutation } from "./useSWR";
 import { useCallback } from "react";
 import { fetchPromotionAuth } from "./fetcher";
+import { GlobalStore } from "@/atom/GlobalStore";
 
 export function usePromotionOTP() {
     const callback = useAtomCallback(
@@ -11,6 +12,7 @@ export function usePromotionOTP() {
             },
             [],
         ),
+        { store: GlobalStore },
     );
     const { trigger } = useSWRMutation("/auth/promotion", callback);
     return trigger;
