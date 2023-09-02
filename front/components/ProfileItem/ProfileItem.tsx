@@ -5,24 +5,25 @@ import {
     ContextMenu_Social,
     ContextMenu_MyProfile,
 } from "@/components/ContextMenu";
-import { fetcher, useSWR } from "@/hooks/fetcher";
-import type { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
+import { useProtectedProfile, usePublicProfile } from "@/hooks/useProfile";
 import { Provider, createStore } from "jotai";
 
 export function ProfileItem({
     className,
     accountUUID,
     selected,
-    children,
     type,
     onClick,
-}: React.PropsWithChildren<{
+}: {
     className?: string | undefined;
     accountUUID: string;
     selected: boolean;
     onClick?: React.MouseEventHandler | undefined;
     type?: "social" | "friend" | "myprofile" | undefined;
-}>) {
+}) {
+    const profile = usePublicProfile(accountUUID);
+    const protectedProfile = useProtectedProfile(accountUUID);
+
     const store = createStore();
     store.set(TargetedAccountUUIDAtom, accountUUID);
 
@@ -39,16 +40,12 @@ export function ProfileItem({
         }
     };
 
-    const { data } = useSWR(
-        `/profile/public/${accountUUID}`,
-        fetcher<AccountProfilePublicPayload>,
-    );
-
-    const nickName =
-        children !== undefined
-            ? children
-            : `${data?.nickName}#${data?.nickTag}`;
-    const statusMessage = data?.uuid; // TODO: 으음... 실제 statusbar
+    const nick =
+        profile !== undefined
+            ? `${profile.nickName}#${profile.nickTag}`
+            : "불러오는 중...";
+    const statusMessage =
+        protectedProfile?.statusMessage ?? "상태 메시지를 볼 수 없습니다.";
 
     return (
         <Provider store={store}>
@@ -69,7 +66,7 @@ export function ProfileItem({
                         </div>
                         <div className="relative flex w-fit flex-col items-start gap-1">
                             <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                                {nickName}
+                                {nick}
                             </div>
                             <div className="text-normal text-xs text-gray-300">
                                 {statusMessage}

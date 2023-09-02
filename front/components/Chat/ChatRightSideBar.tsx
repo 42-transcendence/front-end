@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
-import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
 import { ProfileItem } from "@/components/ProfileItem";
 import { InviteList } from "@/components/Service/InviteList";
@@ -11,7 +10,6 @@ import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
 import { AccessBan } from "./NewBan";
 import { Provider, useAtomValue } from "jotai";
-import { FriendEntryAtom } from "@/atom/FriendAtom";
 import { SelectedAccountUUIDsAtom } from "@/atom/AccountAtom";
 import { useWebSocket } from "@/library/react/websocket-hook";
 import {
@@ -24,6 +22,8 @@ import {
     CurrentChatRoomUUIDAtom,
 } from "@/atom/ChatAtom";
 import { GlobalStore } from "@/atom/GlobalStore";
+
+import { useFzf } from "react-fzf";
 
 export type RightSideBarContents =
     | "report"
@@ -42,7 +42,7 @@ export default function ChatRightSideBar() {
     const [selectedUUID, setSelectedUUID] = useState<string>();
     const [query, setQuery] = useState("");
     const currentChatMembers = useAtomValue(CurrentChatMembersAtom);
-    const { results, getFzfHighlightProps } = useFzf({
+    const { results: foundCurrentChatMembers } = useFzf({
         items: currentChatMembers,
         itemToString(item) {
             //TODO: fetch...? Fzf 지우기가 먼저인가? (2) 같은 문제가 InviteList에도 있으니 반드시 참조 바람
@@ -102,7 +102,7 @@ export default function ChatRightSideBar() {
                 onChange={(event) => setQuery(event.target.value)}
             />
             <div className="h-fit w-full overflow-auto">
-                {results.map((item, index) => (
+                {foundCurrentChatMembers.map((item) => (
                     <ProfileItem
                         type="social"
                         key={item.uuid}
@@ -115,22 +115,15 @@ export default function ChatRightSideBar() {
                                     : undefined,
                             )
                         }
-                    >
-                        <FzfHighlight
-                            {...getFzfHighlightProps({
-                                index,
-                                item,
-                                className: "text-yellow-500",
-                            })}
-                        />
-                    </ProfileItem>
+                    />
                 ))}
             </div>
         </>
     );
 
     const listContent = (currentList: RightSideBarContents) => {
-        const uuid = results.find((x) => x.uuid === selectedUUID)?.uuid ?? "";
+        const uuid =
+            currentChatMembers.find((x) => x.uuid === selectedUUID)?.uuid ?? "";
 
         switch (currentList) {
             case "accessBanMemberList":

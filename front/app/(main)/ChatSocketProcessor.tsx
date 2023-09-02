@@ -169,13 +169,8 @@ export function ChatSocketProcessor() {
 
             case ChatClientOpcode.FRIEND_REQUEST: {
                 const targetUUID = buffer.readUUID();
-                const find = friendEntry.find((e) => e.uuid === targetUUID);
-                if (find !== undefined) {
-                    //FIXME: 상대가 내 요청을 수락함. 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
-                } else {
-                    setFriendRequestEntry([...friendRequestEntry, targetUUID]);
-                    //TODO: 알림?
-                }
+                setFriendRequestEntry([...friendRequestEntry, targetUUID]);
+                //TODO: 알림?
                 break;
             }
 
@@ -219,9 +214,12 @@ export function ChatSocketProcessor() {
                     setCurrentChatMessages([...currentChatMessages, message]);
                 }
 
-                await mutate(["ChatStore", message.roomUUID, "Count"]);
-                await mutate(["ChatStore", message.roomUUID, "LatestMessage"]);
-                await mutate(["ChatStore", message.roomUUID, "ModeFlags"]);
+                await mutate(
+                    (key) =>
+                        Array.isArray(key) &&
+                        key[0] === "ChatStore" &&
+                        key[1] === message.roomUUID,
+                );
                 break;
             }
 

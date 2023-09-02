@@ -1,14 +1,23 @@
 "use client";
 
+import { AccessTokenAtom, RefreshTokenAtom } from "@/atom/AccountAtom";
 import { SquareButton } from "@/components/Button/SquareButton";
+import { useSetAtom } from "jotai";
+import { mutate } from "swr";
 
 export function LogoutButton() {
+    const setAccessToken = useSetAtom(AccessTokenAtom);
+    const setRefreshToken = useSetAtom(RefreshTokenAtom);
+
     return (
         <SquareButton
             onClick={() => {
-                window.localStorage.removeItem("access_token");
-                window.localStorage.removeItem("refresh_token");
-                window.location.assign("/"); // TODO: fix logic
+                // Reset Token Atom
+                setAccessToken(null);
+                setRefreshToken(null);
+
+                // Invalidate All SWR Cache
+                void mutate(() => true, undefined, { revalidate: false });
             }}
         >
             Log out

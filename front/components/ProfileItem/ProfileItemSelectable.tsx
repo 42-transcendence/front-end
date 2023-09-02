@@ -1,22 +1,23 @@
 import { Avatar } from "@/components/Avatar";
 import { Icon } from "@/components/ImageLibrary";
+import { usePublicProfile } from "@/hooks/useProfile";
 
 export function ProfileItemSelectable({
     className,
     selected,
     accountUUID,
-    children,
     onClick,
 }: {
     className?: string | undefined;
     accountUUID: string;
     selected: boolean;
-    children?: React.ReactNode | undefined;
     onClick: React.MouseEventHandler;
 }) {
-    //TODO: get nick from accountUUID by fetch
-    //TODO: FZF 개선 후 children 받는 방식도 제거
-    const nickName = "fallback";
+    const profile = usePublicProfile(accountUUID);
+    const nick =
+        profile !== undefined
+            ? `${profile.nickName}#${profile.nickTag}`
+            : "불러오는 중...";
 
     return (
         <li
@@ -36,7 +37,7 @@ export function ProfileItemSelectable({
                     </div>
                     <div className="w-full overflow-hidden">
                         <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-[150%] group-hover/profile:overflow-visible group-hover/profile:delay-300 group-hover/profile:duration-[5000ms]">
-                            {children ?? nickName}
+                            {nick}
                         </div>
                     </div>
                     <input

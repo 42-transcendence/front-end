@@ -5,18 +5,15 @@ import { ByteBuffer } from "@/library/akasha-lib";
 import { useAtomValue } from "jotai";
 import { TargetedAccountUUIDAtom } from "@/atom/AccountAtom";
 import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
-import { fetcher, useSWR } from "@/hooks/fetcher";
-import { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
+import { usePublicProfile } from "@/hooks/useProfile";
 
 export function ContextMenu_Friend() {
-    //TODO: fetch score
-    const score = 1321;
     const { sendPayload } = useWebSocket("chat", []);
     const accountUUID = useAtomValue(TargetedAccountUUIDAtom);
-    const { data } = useSWR(
-        `/profile/public/${accountUUID}`,
-        fetcher<AccountProfilePublicPayload>,
-    );
+    const profile = usePublicProfile(accountUUID);
+    //TODO: fetch score
+    const score = 1321;
+
     return (
         <ContextMenuBase className="w-full">
             <ContextMenuItem
@@ -32,7 +29,7 @@ export function ContextMenu_Friend() {
                 onClick={() => {
                     if (
                         confirm(
-                            `진짜로 정말로 [${data?.nickName}]님을 친구 목록에서 삭제하실건가요...?`,
+                            `진짜로 정말로 [${profile?.nickName}]님을 친구 목록에서 삭제하실건가요...?`,
                         )
                     ) {
                         const buf = ByteBuffer.createWithOpcode(

@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
 import ChatRoomBlock from "./ChatRoomBlock";
-import { FzfHighlight, useFzf } from "react-fzf";
 import { TextField } from "@/components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
 import { Provider, useAtom, useAtomValue } from "jotai";
 import { ChatRoomListAtom, CreateNewRoomCheckedAtom } from "@/atom/ChatAtom";
+
+import { FzfHighlight, useFzf } from "react-fzf";
 
 export default function ChatLeftSideBar() {
     const chatRoomList = useAtomValue(ChatRoomListAtom);

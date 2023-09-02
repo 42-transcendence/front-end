@@ -1,49 +1,26 @@
 "use client";
 
+import { useAuthEnd } from "@/hooks/useAuthEnd";
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 export default function AuthCallback() {
     const searchParams = useSearchParams();
-    const [status, setStatus] = useState<number>();
-    const [token, setToken] = useState<string>();
+    const success = useAuthEnd(searchParams);
+
     useEffect(() => {
-        const url = new URL("https://back.stri.dev/auth/end");
-        for (const [key, val] of searchParams) {
-            url.searchParams.append(key, val);
+        if (success === true) {
+            window.close();
         }
-        fetch(url).then((response) => {
-            setStatus(response.status);
-            if (response.ok) {
-                response.json().then((json) => {
-                    setToken(JSON.stringify(json)); // TODO: For debug - remove after
-                    window.localStorage.setItem(
-                        "access_token",
-                        json.access_token,
-                    );
-                    window.localStorage.setItem(
-                        "refresh_token",
-                        json.refresh_token,
-                    );
-                    window.close();
-                });
-            }
-        });
-    }, [searchParams]);
+    }, [success]);
 
     return (
-        <>
-            <p>Authorization Code: {searchParams.get("code")}</p>
-            <p>State: {searchParams.get("state")}</p>
-            <p>
-                {status === undefined
-                    ? "로오딩..."
-                    : status === 200
-                    ? "성공했습니다!"
-                    : `실패했습니다... ${status}`}
-            </p>
-            <br />
-            <p>{token}</p>
-        </>
+        <p>
+            {success !== undefined
+                ? success
+                    ? "로그인 성공!! 창을 닫아도 좋습니다."
+                    : "로그인에 실패했습니다. 잠시후 다시 시도해주세요."
+                : "로그인을 진행하는 중입니다. 잠시만 기다려 주세요..."}
+        </p>
     );
 }
