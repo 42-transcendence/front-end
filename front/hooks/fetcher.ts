@@ -2,6 +2,7 @@
 
 import type { TokenSet } from "@/library/payload/auth-payload";
 import type { ReadonlyURLSearchParams } from "next/navigation";
+import { localStorageSetItem } from "./storage";
 
 export const ACCESS_TOKEN_KEY = "access_token";
 export const REFRESH_TOKEN_KEY = "refresh_token";
@@ -11,23 +12,6 @@ export class HTTPError extends Error {
     constructor(readonly status: number) {
         super("HTTP Error");
     }
-}
-
-function localStorageSetItem(key: string, value: string | null) {
-    const oldValue_access_token = window.localStorage.getItem(key);
-    if (value !== null) {
-        window.localStorage.setItem(key, value);
-    } else {
-        window.localStorage.removeItem(key);
-    }
-    window.dispatchEvent(
-        new StorageEvent("storage", {
-            storageArea: window.localStorage,
-            key: key,
-            oldValue: oldValue_access_token,
-            newValue: value,
-        }),
-    );
 }
 
 async function fetchToken(url: URL, init?: RequestInit | undefined) {

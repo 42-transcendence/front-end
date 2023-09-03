@@ -1,20 +1,17 @@
 "use client";
 
-import { AccessTokenAtom, RefreshTokenAtom } from "@/atom/AccountAtom";
 import { SquareButton } from "@/components/Button/SquareButton";
-import { useSetAtom } from "jotai";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/hooks/fetcher";
+import { localStorageSetItem } from "@/hooks/storage";
 import { mutate } from "swr";
 
 export function LogoutButton() {
-    const setAccessToken = useSetAtom(AccessTokenAtom);
-    const setRefreshToken = useSetAtom(RefreshTokenAtom);
-
     return (
         <SquareButton
             onClick={() => {
-                // Reset Token Atom
-                setAccessToken(null);
-                setRefreshToken(null);
+                // Reset Token
+                localStorageSetItem(ACCESS_TOKEN_KEY, null);
+                localStorageSetItem(REFRESH_TOKEN_KEY, null);
 
                 // Invalidate All SWR Cache
                 void mutate(() => true, undefined, { revalidate: false });
