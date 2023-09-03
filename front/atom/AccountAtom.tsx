@@ -1,4 +1,3 @@
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/hooks/fetcher";
 import {
     isAuthPayload,
     type AuthPayload,
