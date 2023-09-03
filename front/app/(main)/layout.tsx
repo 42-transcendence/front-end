@@ -1,14 +1,36 @@
 "use client";
 
 import { AuthLevel } from "@/library/payload/auth-payload";
-import { AuthAtom } from "@/atom/AccountAtom";
-import { useAtomValue } from "jotai";
+import {
+    AccessTokenAtom,
+    AuthAtom,
+    RefreshTokenAtom,
+} from "@/atom/AccountAtom";
+import { useAtomValue, useSetAtom } from "jotai";
 import { ChatSocketProcessor } from "./ChatSocketProcessor";
 import { usePrivateProfile } from "@/hooks/useProfile";
+import React, { useEffect, useState } from "react";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/hooks/fetcher";
+import { DoubleSharp } from "@/components/ImageLibrary";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
         <div className="flex h-[100dvh] flex-shrink-0 flex-col">{children}</div>
+    );
+}
+
+function LoadingLayout({ children }: React.PropsWithChildren) {
+    return (
+        <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
+            <div className="relative flex h-screen w-screen flex-col items-center justify-center ">
+                <DoubleSharp
+                    className="relative h-fit w-fit animate-spin-slow text-white drop-shadow-[0_0_0.3rem_#ffffff70] delay-300"
+                    width={130}
+                    height="100%"
+                />
+                {children}
+            </div>
+        </main>
     );
 }
 
@@ -23,8 +45,50 @@ export default function MainLayout({
     welcome: React.ReactNode;
     home: React.ReactNode;
 }) {
+    const [hydrated, setHydrated] = useState(false);
+    useEffect(() => {
+        setHydrated(true);
+    }, []);
+    const setAccessToken = useSetAtom(AccessTokenAtom);
+    useEffect(() => {
+        setAccessToken(window.localStorage.getItem(ACCESS_TOKEN_KEY));
+        const l = (ev: StorageEvent) => {
+            if (ev.storageArea === window.localStorage) {
+                if (ev.key === null || ev.key === ACCESS_TOKEN_KEY) {
+                    if (ev.oldValue !== ev.newValue) {
+                        setAccessToken(ev.newValue);
+                    }
+                }
+            }
+        };
+        window.addEventListener("storage", l);
+        return () => window.removeEventListener("storage", l);
+    }, [setAccessToken]);
+    const setRefreshToken = useSetAtom(RefreshTokenAtom);
+    useEffect(() => {
+        setRefreshToken(window.localStorage.getItem(REFRESH_TOKEN_KEY));
+        const l = (ev: StorageEvent) => {
+            if (ev.storageArea === window.localStorage) {
+                if (ev.key === null || ev.key === REFRESH_TOKEN_KEY) {
+                    if (ev.oldValue !== ev.newValue) {
+                        setRefreshToken(ev.newValue);
+                    }
+                }
+            }
+        };
+        window.addEventListener("storage", l);
+        return () => window.removeEventListener("storage", l);
+    }, [setRefreshToken]);
     const auth = useAtomValue(AuthAtom);
     const profile = usePrivateProfile();
+
+    if (!hydrated) {
+        return (
+            <LoadingLayout>
+                <p>불러오는 중...</p>
+            </LoadingLayout>
+        );
+    }
 
     if (auth === undefined) {
         return <DefaultLayout>{login}</DefaultLayout>;

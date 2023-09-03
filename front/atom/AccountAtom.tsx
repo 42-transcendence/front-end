@@ -1,3 +1,4 @@
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/hooks/fetcher";
 import {
     isAuthPayload,
     type AuthPayload,
@@ -5,16 +6,9 @@ import {
 } from "@/library/payload/auth-payload";
 import { decodeJwt } from "jose";
 import { atom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
 
-export const AccessTokenAtom = atomWithStorage<string | null>(
-    "access_token",
-    null,
-);
-export const RefreshTokenAtom = atomWithStorage<string | null>(
-    "refresh_token",
-    null,
-);
+export const AccessTokenAtom = atom<string | null>(null);
+export const RefreshTokenAtom = atom<string | null>(null);
 
 export const AuthAtom = atom<AuthPayload | undefined>((get) => {
     const accessToken = get(AccessTokenAtom);
@@ -29,7 +23,9 @@ export const AuthAtom = atom<AuthPayload | undefined>((get) => {
 });
 export const CurrentAccountUUIDAtom = atom<string>((get) => {
     const auth = get(AuthAtom);
-    return auth !== undefined && auth.auth_level === AuthLevel.COMPLETED ? auth.user_id : "";
+    return auth !== undefined && auth.auth_level === AuthLevel.COMPLETED
+        ? auth.user_id
+        : "";
 });
 
 export const TargetedAccountUUIDAtom = atom<string>("");

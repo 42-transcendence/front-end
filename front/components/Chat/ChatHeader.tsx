@@ -65,6 +65,8 @@ export function ChatHeader() {
     const currentChatRoomTitle = useChatRoomTitle(currentChatRoomUUID);
     const selfMember = useChatMember(currentChatRoomUUID, currentAccountUUID);
 
+    const title = currentChatRoomTitle ?? "채팅방을 선택하세요";
+    const desc = "채팅을 채팅채팅~";
     const selfMemberModeFlags = selfMember?.modeFlags ?? 0;
 
     return (
@@ -77,12 +79,10 @@ export function ChatHeader() {
                 >
                     <div className=" relative flex flex-col items-center justify-center px-4 py-0 text-base">
                         <h1 className="line-clamp-1 max-w-[16rem] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70 sm:max-w-full">
-                            {currentChatRoomTitle === ""
-                                ? "채팅방을 선택하세요"
-                                : currentChatRoomTitle}
+                            {title}
                         </h1>
                         <h2 className="line-clamp-1 overflow-hidden text-ellipsis text-center text-xs font-medium not-italic leading-[normal] text-white/50">
-                            채팅을 채팅채팅~
+                            {desc}
                         </h2>
                     </div>
                 </label>
