@@ -14,9 +14,8 @@ import {
     useWebSocket,
     useWebSocketConnector,
 } from "@/library/react/websocket-hook";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { AccessTokenAtom } from "@/atom/AccountAtom";
+import { useAtom, useSetAtom } from "jotai";
+import { useCallback,  useMemo } from "react";
 import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatStore } from "@/library/idb/chat-store";
 import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
@@ -30,14 +29,10 @@ import {
     useCurrentChatRoomUUID,
 } from "@/hooks/useCurrent";
 import { useChatRoomMutation } from "@/hooks/useChatRoom";
+import { ACCESS_TOKEN_KEY } from "@/hooks/fetcher";
 
 export function ChatSocketProcessor() {
-    const accessToken = useAtomValue(AccessTokenAtom);
     const currentAccountUUID = useCurrentAccountUUID();
-    const accessTokenRef = useRef(accessToken);
-    useEffect(() => {
-        accessTokenRef.current = accessToken;
-    }, [accessToken]);
     const props = useMemo(
         () => ({
             handshake: async () => {
@@ -63,7 +58,13 @@ export function ChatSocketProcessor() {
         [currentAccountUUID],
     );
     const getURL = useCallback(
-        () => `wss://back.stri.dev/chat?token=${accessTokenRef.current}`,
+        () => {
+            const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY)
+            if (accessToken === null) {
+                return "";
+            }
+            return `wss://back.stri.dev/chat?token=${accessToken}`
+        },
         [],
     );
     useWebSocketConnector("chat", getURL, props); //FIXME: props 이름?

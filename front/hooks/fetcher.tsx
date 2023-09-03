@@ -13,62 +13,39 @@ export class HTTPError extends Error {
     }
 }
 
+function localStorageSetItem(key: string, value: string | null) {
+    const oldValue_access_token = window.localStorage.getItem(key);
+    if (value !== null) {
+        window.localStorage.setItem(key, value);
+    } else {
+        window.localStorage.removeItem(key);
+    }
+    window.dispatchEvent(
+        new StorageEvent("storage", {
+            storageArea: window.localStorage,
+            key: key,
+            oldValue: oldValue_access_token,
+            newValue: value,
+        }),
+    );
+}
+
 async function fetchToken(url: URL, init?: RequestInit | undefined) {
     try {
-        const oldValue_access_token = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-        const oldValue_refresh_token = window.localStorage.getItem(REFRESH_TOKEN_KEY);
-
         const response = await fetch(url, init);
         if (response.ok) {
             const token = (await response.json()) as TokenSet;
-            window.localStorage.setItem(ACCESS_TOKEN_KEY, token.access_token);
-            window.dispatchEvent(
-                new StorageEvent("storage", {
-                    storageArea: window.localStorage,
-                    key: ACCESS_TOKEN_KEY,
-                    oldValue: oldValue_access_token,
-                    newValue: token.access_token,
-                }),
-            );
+            localStorageSetItem(ACCESS_TOKEN_KEY, token.access_token);
             if (token.refresh_token !== undefined) {
-                window.localStorage.setItem(
-                    REFRESH_TOKEN_KEY,
-                    token.refresh_token,
-                );
-                window.dispatchEvent(
-                    new StorageEvent("storage", {
-                        storageArea: window.localStorage,
-                        key: REFRESH_TOKEN_KEY,
-                        oldValue: oldValue_refresh_token,
-                        newValue: token.refresh_token,
-                    }),
-                );
+                localStorageSetItem(REFRESH_TOKEN_KEY, token.refresh_token);
             }
             return true;
         }
-
-        window.localStorage.removeItem(ACCESS_TOKEN_KEY);
-        window.dispatchEvent(
-            new StorageEvent("storage", {
-                storageArea: window.localStorage,
-                key: ACCESS_TOKEN_KEY,
-                oldValue: oldValue_access_token,
-                newValue: null,
-            }),
-        );
-        window.localStorage.removeItem(REFRESH_TOKEN_KEY);
-        window.dispatchEvent(
-            new StorageEvent("storage", {
-                storageArea: window.localStorage,
-                key: REFRESH_TOKEN_KEY,
-                oldValue: oldValue_refresh_token,
-                newValue: null,
-            }),
-        );
-        return false;
     } catch {
-        return false;
+        // do nothing
     }
+    localStorageSetItem(ACCESS_TOKEN_KEY, null);
+    return false;
 }
 
 export async function fetchBeginAuth(endpointKey: string, redirectURI: string) {
@@ -107,21 +84,37 @@ export async function fetchPromotionAuth(otp: string) {
 }
 
 export async function fetchRefreshAuth() {
-    const refreshToken = window.localStorage.getItem(REFRESH_TOKEN_KEY);
-    if (refreshToken === null) {
+    const refreshTokenPop = window.localStorage.getItem(REFRESH_TOKEN_KEY);
+    localStorageSetItem(REFRESH_TOKEN_KEY, null);
+    if (refreshTokenPop === null) {
+        const refresh = window.localStorage.getItem("_refresh");
+        if (refresh !== null) {
+            if (Date.now() - Number(refresh) < 4000) {
+                // refresh 시도 이후 4초 이내
+                //FIXME: delay or event
+                return true;
+            }
+        }
+
+        localStorageSetItem(ACCESS_TOKEN_KEY, null);
         return false;
     }
 
-    const url = new URL("/auth/refresh", URL_BASE);
-    url.searchParams.set("refresh_token", refreshToken);
-    return await fetchToken(url);
+    window.localStorage.setItem("_refresh", Date.now().toString());
+    try {
+        const url = new URL("/auth/refresh", URL_BASE);
+        url.searchParams.set("refresh_token", refreshTokenPop);
+        return await fetchToken(url);
+    } finally {
+        window.localStorage.removeItem("_refresh");
+    }
 }
 
 async function fetchBase<T>(
     url: URL,
     init?: RequestInit | undefined,
 ): Promise<T> {
-    let retry = 1;
+    let retry = 3;
     do {
         const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
         if (accessToken === null) {

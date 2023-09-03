@@ -85,7 +85,7 @@ export default function MainLayout({
     if (!hydrated) {
         return (
             <LoadingLayout>
-                <p>불러오는 중...</p>
+                <p>애플리케이션을 시작하는 중...</p>
             </LoadingLayout>
         );
     }
@@ -116,9 +116,9 @@ export default function MainLayout({
 
     if (profile === undefined) {
         return (
-            <DefaultLayout>
+            <LoadingLayout>
                 <p>내 정보를 불러오는 중입니다...</p>
-            </DefaultLayout>
+            </LoadingLayout>
         );
     }
 
