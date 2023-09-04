@@ -161,32 +161,24 @@ export default function ChatRightSideBar() {
                         </label>
                         {admin && (
                             <div className="hidden flex-col items-center text-base font-bold text-gray-100/80 group-data-[checked=true]:flex">
-                                {admin && (
-                                    <MenuItem
-                                        onClick={() => {
-                                            setCurrentPage(
-                                                "commitBanMemberList",
-                                            );
-                                            setMemberListDropDown(false);
-                                        }}
-                                        className="active:bg-secondary/80"
-                                    >
-                                        채팅금지 유저 관리
-                                    </MenuItem>
-                                )}
-                                {admin && (
-                                    <MenuItem
-                                        onClick={() => {
-                                            setCurrentPage(
-                                                "accessBanMemberList",
-                                            );
-                                            setMemberListDropDown(false);
-                                        }}
-                                        className="active:bg-secondary/80"
-                                    >
-                                        차단 유저 관리
-                                    </MenuItem>
-                                )}
+                                <MenuItem
+                                    onClick={() => {
+                                        setCurrentPage("commitBanMemberList");
+                                        setMemberListDropDown(false);
+                                    }}
+                                    className="active:bg-secondary/80"
+                                >
+                                    채팅금지 유저 관리
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        setCurrentPage("accessBanMemberList");
+                                        setMemberListDropDown(false);
+                                    }}
+                                    className="active:bg-secondary/80"
+                                >
+                                    차단 유저 관리
+                                </MenuItem>
                             </div>
                         )}
                     </div>

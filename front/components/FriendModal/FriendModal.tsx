@@ -22,7 +22,7 @@ export function FriendModal() {
                 <InviteList />
                 <FriendList />
                 <div
-                    className={`relative flex h-fit w-full shrink-0 flex-col items-start`}
+                    className={"relative flex h-fit w-full shrink-0 flex-col items-start"}
                 >
                     <div
                         className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 text-gray-300 hover:bg-primary/30"
@@ -69,6 +69,7 @@ function FriendList() {
     ));
 }
 
+// TODO: @/components/Service/InviteList 와 이름 겹침
 function InviteList() {
     const friendRequestUUIDs = useAtomValue(FriendRequestEntryAtom);
 
