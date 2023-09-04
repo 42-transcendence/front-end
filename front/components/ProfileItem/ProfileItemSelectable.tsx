@@ -1,6 +1,7 @@
 import { Avatar } from "@/components/Avatar";
 import { Icon } from "@/components/ImageLibrary";
 import { usePublicProfile } from "@/hooks/useProfile";
+import { useId } from "react";
 
 export function ProfileItemSelectable({
     className,
@@ -14,18 +15,20 @@ export function ProfileItemSelectable({
     onClick: React.MouseEventHandler;
 }) {
     const profile = usePublicProfile(accountUUID);
+    const profileItemId = useId();
     const nick =
         profile !== undefined
-            ? `${profile.nickName}#${profile.nickTag}`
+            ? `${profile.nickName}#${profile.nickTag}` // TODO: nickTag 는 약간 색깔 다르게?
             : "불러오는 중...";
 
+    // TODO: div를 label로 바꾸고 useId 섰는데, 추후확인 필요
     return (
         <li
             className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className}`}
         >
-            <div
+            <label
                 className="relative flex flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
-                onClick={onClick}
+                htmlFor={profileItemId}
             >
                 <div className="relative flex w-full select-none items-center gap-4 rounded">
                     <div className="relative flex items-center justify-center">
@@ -44,16 +47,15 @@ export function ProfileItemSelectable({
                         className="peer hidden"
                         type="checkbox"
                         checked={selected}
-                        onChange={() => {
-                            /** NOTE: Avoid react warning */
-                        }}
+                        onClick={onClick}
+                        id={profileItemId}
                     />
                     <div className="hidden h-6 w-6 shrink-0 rounded-full bg-secondary/80 outline outline-1 outline-secondary peer-checked:flex">
                         <Icon.Check className="h-6 w-6 p-1" />
                     </div>
                     <div className="h-6 w-6 shrink-0 rounded-full outline outline-1 outline-gray-300/60 peer-checked:hidden" />
                 </div>
-            </div>
+            </label>
         </li>
     );
 }
