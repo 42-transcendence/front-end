@@ -8,6 +8,8 @@ export const ACCESS_TOKEN_KEY = "access_token";
 export const REFRESH_TOKEN_KEY = "refresh_token";
 export const URL_BASE = "https://back.stri.dev";
 
+const LAST_REFRESH_TIMESTAMP = "_refresh";
+
 export class HTTPError extends Error {
     constructor(readonly status: number) {
         super("HTTP Error");
@@ -71,7 +73,7 @@ export async function fetchRefreshAuth() {
     const refreshTokenPop = window.localStorage.getItem(REFRESH_TOKEN_KEY);
     setLocalStorageItem(REFRESH_TOKEN_KEY, null);
     if (refreshTokenPop === null) {
-        const refresh = window.localStorage.getItem("_refresh");
+        const refresh = window.localStorage.getItem(LAST_REFRESH_TIMESTAMP);
         if (refresh !== null) {
             if (Date.now() - Number(refresh) < 4000) {
                 // refresh 시도 이후 4초 이내
@@ -84,15 +86,18 @@ export async function fetchRefreshAuth() {
         return false;
     }
 
-    window.localStorage.setItem("_refresh", Date.now().toString());
+    window.localStorage.setItem(LAST_REFRESH_TIMESTAMP, Date.now().toString());
     try {
         const url = new URL("/auth/refresh", URL_BASE);
-        url.searchParams.set("refresh_token", refreshTokenPop);
+        url.searchParams.set(REFRESH_TOKEN_KEY, refreshTokenPop);
         return await fetchToken(url);
     } finally {
-        window.localStorage.removeItem("_refresh");
+        window.localStorage.removeItem(LAST_REFRESH_TIMESTAMP);
     }
 }
+
+// TODO: 나중에 http response constansts 파일로 빼기?
+const HTTP_RESPONSE_UNAUTHORIZED = 401 as const;
 
 async function fetchBase<T>(
     url: URL,
@@ -100,7 +105,7 @@ async function fetchBase<T>(
 ): Promise<T> {
     let retry = 3;
     do {
-        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY); // TODO: 이것도 getItem 을 매번 해봐야하나요
         if (accessToken === null) {
             throw new Error("Access Token이 없습니다.");
         }
@@ -114,7 +119,7 @@ async function fetchBase<T>(
             },
         });
         if (!response.ok) {
-            if (response.status === 401) {
+            if (response.status === HTTP_RESPONSE_UNAUTHORIZED) {
                 if (!(await fetchRefreshAuth())) {
                     throw new Error("Token Refresh를 하지 못했습니다.");
                 }
