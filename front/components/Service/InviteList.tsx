@@ -7,6 +7,7 @@ import { SelectedAccountUUIDsAtom } from "@/atom/AccountAtom";
 import { GlobalStore } from "@/atom/GlobalStore";
 
 import { useFzf } from "react-fzf";
+import type { FriendEntry } from "@/library/payload/chat-payloads";
 
 export function InviteList({ className }: { className?: string | undefined }) {
     const [query, setQuery] = useState("");
@@ -25,6 +26,15 @@ export function InviteList({ className }: { className?: string | undefined }) {
         SelectedAccountUUIDsAtom,
     );
 
+    const handleClick = (item: FriendEntry) => () => {
+        const selected = selectedAccountUUIDs.includes(item.uuid);
+        setSelectedAccountUUIDs(
+            selected
+                ? selectedAccountUUIDs.filter((uuid) => uuid !== item.uuid)
+                : [...selectedAccountUUIDs, item.uuid],
+        );
+    };
+
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
             <TextField
@@ -40,18 +50,7 @@ export function InviteList({ className }: { className?: string | undefined }) {
                         key={item.uuid}
                         accountUUID={item.uuid}
                         selected={selectedAccountUUIDs.includes(item.uuid)}
-                        onClick={() => {
-                            const selected = selectedAccountUUIDs.includes(
-                                item.uuid,
-                            );
-                            setSelectedAccountUUIDs(
-                                selected
-                                    ? selectedAccountUUIDs.filter(
-                                          (uuid) => uuid !== item.uuid,
-                                      )
-                                    : [...selectedAccountUUIDs, item.uuid],
-                            );
-                        }}
+                        onClick={handleClick(item)}
                     />
                 ))}
             </div>
