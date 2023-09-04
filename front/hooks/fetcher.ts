@@ -2,7 +2,7 @@
 
 import type { TokenSet } from "@/library/payload/auth-payload";
 import type { ReadonlyURLSearchParams } from "next/navigation";
-import { localStorageSetItem } from "./storage";
+import { setLocalStorageItem } from "./storage";
 
 export const ACCESS_TOKEN_KEY = "access_token";
 export const REFRESH_TOKEN_KEY = "refresh_token";
@@ -19,16 +19,16 @@ async function fetchToken(url: URL, init?: RequestInit | undefined) {
         const response = await fetch(url, init);
         if (response.ok) {
             const token = (await response.json()) as TokenSet;
-            localStorageSetItem(ACCESS_TOKEN_KEY, token.access_token);
+            setLocalStorageItem(ACCESS_TOKEN_KEY, token.access_token);
             if (token.refresh_token !== undefined) {
-                localStorageSetItem(REFRESH_TOKEN_KEY, token.refresh_token);
+                setLocalStorageItem(REFRESH_TOKEN_KEY, token.refresh_token);
             }
             return true;
         }
     } catch {
         // do nothing
     }
-    localStorageSetItem(ACCESS_TOKEN_KEY, null);
+    setLocalStorageItem(ACCESS_TOKEN_KEY, null);
     return false;
 }
 
@@ -69,7 +69,7 @@ export async function fetchPromotionAuth(otp: string) {
 
 export async function fetchRefreshAuth() {
     const refreshTokenPop = window.localStorage.getItem(REFRESH_TOKEN_KEY);
-    localStorageSetItem(REFRESH_TOKEN_KEY, null);
+    setLocalStorageItem(REFRESH_TOKEN_KEY, null);
     if (refreshTokenPop === null) {
         const refresh = window.localStorage.getItem("_refresh");
         if (refresh !== null) {
@@ -80,7 +80,7 @@ export async function fetchRefreshAuth() {
             }
         }
 
-        localStorageSetItem(ACCESS_TOKEN_KEY, null);
+        setLocalStorageItem(ACCESS_TOKEN_KEY, null);
         return false;
     }
 

@@ -2,7 +2,7 @@
 
 import { SquareButton } from "@/components/Button/SquareButton";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/hooks/fetcher";
-import { localStorageSetItem } from "@/hooks/storage";
+import { setLocalStorageItem } from "@/hooks/storage";
 import { mutate } from "swr";
 
 export function LogoutButton() {
@@ -10,8 +10,8 @@ export function LogoutButton() {
         <SquareButton
             onClick={() => {
                 // Reset Token
-                localStorageSetItem(ACCESS_TOKEN_KEY, null);
-                localStorageSetItem(REFRESH_TOKEN_KEY, null);
+                setLocalStorageItem(ACCESS_TOKEN_KEY, null);
+                setLocalStorageItem(REFRESH_TOKEN_KEY, null);
 
                 // Invalidate All SWR Cache
                 void mutate(() => true, undefined, { revalidate: false });
