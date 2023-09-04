@@ -49,10 +49,11 @@ export default function MainLayout({
     useEffect(() => {
         setHydrated(true);
     }, []);
+
     const setAccessToken = useSetAtom(AccessTokenAtom);
     useEffect(() => {
         setAccessToken(window.localStorage.getItem(ACCESS_TOKEN_KEY));
-        const l = (ev: StorageEvent) => {
+        const handleAccessTokenEvent = (ev: StorageEvent) => {
             if (ev.storageArea === window.localStorage) {
                 if (ev.key === null || ev.key === ACCESS_TOKEN_KEY) {
                     if (ev.oldValue !== ev.newValue) {
@@ -61,13 +62,15 @@ export default function MainLayout({
                 }
             }
         };
-        window.addEventListener("storage", l);
-        return () => window.removeEventListener("storage", l);
+        window.addEventListener("storage", handleAccessTokenEvent);
+        return () =>
+            window.removeEventListener("storage", handleAccessTokenEvent);
     }, [setAccessToken]);
+
     const setRefreshToken = useSetAtom(RefreshTokenAtom);
     useEffect(() => {
         setRefreshToken(window.localStorage.getItem(REFRESH_TOKEN_KEY));
-        const l = (ev: StorageEvent) => {
+        const handleRefreshTokenEvent = (ev: StorageEvent) => {
             if (ev.storageArea === window.localStorage) {
                 if (ev.key === null || ev.key === REFRESH_TOKEN_KEY) {
                     if (ev.oldValue !== ev.newValue) {
@@ -76,8 +79,9 @@ export default function MainLayout({
                 }
             }
         };
-        window.addEventListener("storage", l);
-        return () => window.removeEventListener("storage", l);
+        window.addEventListener("storage", handleRefreshTokenEvent);
+        return () =>
+            window.removeEventListener("storage", handleRefreshTokenEvent);
     }, [setRefreshToken]);
     const auth = useAtomValue(AuthAtom);
     const profile = usePrivateProfile();

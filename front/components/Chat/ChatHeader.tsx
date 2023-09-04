@@ -66,7 +66,7 @@ export function ChatHeader() {
     const selfMember = useChatMember(currentChatRoomUUID, currentAccountUUID);
 
     const title = currentChatRoomTitle ?? "채팅방을 선택하세요";
-    const desc = "채팅을 채팅채팅~";
+    const desc = "채팅을 채팅채팅~"; // TODO: 이거 설정 가능하게 하나요?
     const selfMemberModeFlags = selfMember?.modeFlags ?? 0;
 
     return (

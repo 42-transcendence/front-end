@@ -27,7 +27,7 @@ export function OTPInputBlocks({ length }: { length: number }) {
     const sendOTP = usePromotionOTP();
     useEffect(() => {
         if (currentIndex === values.length) {
-            void sendOTP(values.join(""));
+            void sendOTP(values.join("")); // TODO: 틀리면 초기화
         }
     }, [sendOTP, values, currentIndex]);
 

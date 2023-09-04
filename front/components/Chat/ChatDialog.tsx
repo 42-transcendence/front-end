@@ -49,29 +49,31 @@ function ChatMessageInputArea() {
     }, [value]);
 
     return (
-        <>
-            <textarea
-                onChange={(event) => setValue(event.target.value)}
-                rows={1}
-                spellCheck={false}
-                // autoFocus={true}
-                ref={textareaRef}
-                placeholder="Send a message"
-                style={{
-                    minHeight: MIN_TEXTAREA_HEIGHT,
-                    resize: "none",
-                }}
-                value={value}
-                className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
-            />
-            <button type="button" onClick={handleClick}>
-                <Icon.Send
-                    className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
-                    width={32}
-                    height={32}
+        <div className="relative flex justify-center self-stretch">
+            <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
+                <textarea
+                    onChange={(event) => setValue(event.target.value)}
+                    rows={1}
+                    spellCheck={false}
+                    // autoFocus={true}
+                    ref={textareaRef}
+                    placeholder="Send a message"
+                    style={{
+                        minHeight: MIN_TEXTAREA_HEIGHT,
+                        resize: "none",
+                    }}
+                    value={value}
+                    className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
                 />
-            </button>
-        </>
+                <button type="button" onClick={handleClick}>
+                    <Icon.Send
+                        className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
+                        width={32}
+                        height={32}
+                    />
+                </button>
+            </div>
+        </div>
     );
 }
 
@@ -128,12 +130,7 @@ export function ChatDialog({
                         );
                     })}
                 </div>
-
-                <div className="relative flex justify-center self-stretch">
-                    <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
-                        <ChatMessageInputArea />
-                    </div>
-                </div>
+                <ChatMessageInputArea />
             </div>
         </div>
     );
