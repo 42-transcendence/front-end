@@ -8,10 +8,29 @@ import {
 import { useProtectedProfile, usePublicProfile } from "@/hooks/useProfile";
 import { Provider, createStore } from "jotai";
 
+// TODO: 나중에 다른 브랜치에서...리팩토링 합시다
+function ContextMenu({
+    type,
+}: {
+    type?: "social" | "friend" | "myprofile" | undefined;
+}) {
+    switch (type) {
+        case "social":
+            return <ContextMenu_Social />;
+        case "friend":
+            return <ContextMenu_Friend />;
+        case "myprofile":
+            return <ContextMenu_MyProfile />;
+        default:
+            return null;
+    }
+}
+
 export function ProfileItem({
     className,
     accountUUID,
     selected,
+    // TODO: 이거 정말 type이 undefined로 들어올 수 있나요??? 해당 처리가 꼭 필요한가
     type,
     onClick,
 }: {
@@ -26,19 +45,6 @@ export function ProfileItem({
 
     const store = createStore();
     store.set(TargetedAccountUUIDAtom, accountUUID);
-
-    const contextMenuType = () => {
-        switch (type) {
-            case "social":
-                return <ContextMenu_Social />;
-            case "friend":
-                return <ContextMenu_Friend />;
-            case "myprofile":
-                return <ContextMenu_MyProfile />;
-            default:
-                return null;
-        }
-    };
 
     const nick =
         profile !== undefined
@@ -74,7 +80,7 @@ export function ProfileItem({
                         </div>
                     </div>
                 </div>
-                {selected && contextMenuType()}
+                {selected && <ContextMenu type={type} />}
             </div>
         </Provider>
     );
