@@ -2,7 +2,7 @@
 
 import { Status } from "@/components/Status";
 import Image from "next/image";
-import { ActiveStatusNumber } from "@/library/generated/types";
+import { ActiveStatusNumber } from "@/library/payload/generated/types";
 import { useProtectedProfile, usePublicProfile } from "@/hooks/useProfile";
 
 function PrivilegedSection({ accountUUID }: { accountUUID: string }) {

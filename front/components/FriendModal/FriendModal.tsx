@@ -22,7 +22,9 @@ export function FriendModal() {
                 <InviteList />
                 <FriendList />
                 <div
-                    className={"relative flex h-fit w-full shrink-0 flex-col items-start"}
+                    className={
+                        "relative flex h-fit w-full shrink-0 flex-col items-start"
+                    }
                 >
                     <div
                         className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 text-gray-300 hover:bg-primary/30"
@@ -57,12 +59,14 @@ function FriendList() {
     return friendEntrySet.map((friend) => (
         <ProfileItem
             type="friend"
-            key={friend.uuid}
-            accountUUID={friend.uuid}
-            selected={friend.uuid === selectedUUID}
+            key={friend.friendAccountId}
+            accountUUID={friend.friendAccountId}
+            selected={friend.friendAccountId === selectedUUID}
             onClick={() => {
                 setSelectedUUID(
-                    friend.uuid !== selectedUUID ? friend.uuid : undefined,
+                    friend.friendAccountId !== selectedUUID
+                        ? friend.friendAccountId
+                        : undefined,
                 );
             }}
         />

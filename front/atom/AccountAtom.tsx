@@ -2,7 +2,7 @@ import {
     isAuthPayload,
     type AuthPayload,
     AuthLevel,
-} from "@/library/payload/auth-payload";
+} from "@/library/payload/auth-payloads";
 import { decodeJwt } from "jose";
 import { atom } from "jotai";
 

@@ -86,7 +86,7 @@ const isSameMinute = (date1: Date, date2: Date) => {
 const isContinuedMessage = (arr: MessageSchema[], idx: number) => {
     return (
         idx > 0 &&
-        arr[idx].memberUUID === arr[idx - 1].memberUUID &&
+        arr[idx].accountId === arr[idx - 1].accountId &&
         isSameMinute(arr[idx].timestamp, arr[idx - 1].timestamp)
     );
 };
@@ -122,7 +122,7 @@ export function ChatDialog({
                                 chatMessage={msg}
                                 isContinued={isContinuedMessage(arr, idx)}
                                 dir={
-                                    msg.memberUUID === currentAccountUUID
+                                    msg.accountId === currentAccountUUID
                                         ? "right"
                                         : "left"
                                 }

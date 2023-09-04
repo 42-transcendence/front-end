@@ -10,8 +10,8 @@ export default function Welcome() {
     const [value, setValue] = useState("");
     const {
         register,
-        error: error, //FIXME: 오류
-        conflict: conflict, //FIXME: 더 이상 사용할 수 없는 닉네임
+        error: _error, //FIXME: 오류
+        conflict: _conflict, //FIXME: 더 이상 사용할 수 없는 닉네임
     } = useRegisterNickName();
 
     return (

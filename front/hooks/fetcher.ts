@@ -1,6 +1,6 @@
 "use client";
 
-import type { TokenSet } from "@/library/payload/auth-payload";
+import type { TokenSet } from "@/library/payload/auth-payloads";
 import type { ReadonlyURLSearchParams } from "next/navigation";
 import { setLocalStorageItem } from "./storage";
 

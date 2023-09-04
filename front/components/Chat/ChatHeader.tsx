@@ -2,11 +2,8 @@
 
 import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
-import {
-    useCurrentAccountUUID,
-    useCurrentChatRoomUUID,
-} from "@/hooks/useCurrent";
-import { useChatMember, useChatRoomTitle } from "@/hooks/useChatRoom";
+import { useCurrentChatRoomUUID } from "@/hooks/useCurrent";
+import { useChatRoomTitle } from "@/hooks/useChatRoom";
 
 function LeftSidebarButton() {
     return (
@@ -60,14 +57,11 @@ function RightSidebarButton() {
 }
 
 export function ChatHeader() {
-    const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentChatRoomTitle = useChatRoomTitle(currentChatRoomUUID);
-    const selfMember = useChatMember(currentChatRoomUUID, currentAccountUUID);
 
     const title = currentChatRoomTitle ?? "채팅방을 선택하세요";
     const desc = "채팅을 채팅채팅~"; // TODO: 이거 설정 가능하게 하나요?
-    const selfMemberModeFlags = selfMember?.modeFlags ?? 0;
 
     return (
         <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch py-2 @container">
@@ -91,10 +85,7 @@ export function ChatHeader() {
                     className="peer hidden"
                     type="checkbox"
                 />
-                <ChatRoomMenu
-                    modeFlags={selfMemberModeFlags}
-                    className="hidden peer-checked:flex"
-                />
+                <ChatRoomMenu className="hidden peer-checked:flex" />
             </div>
             <RightSidebarButton />
         </div>

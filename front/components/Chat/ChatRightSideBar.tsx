@@ -41,7 +41,7 @@ export default function ChatRightSideBar() {
         items: [...(currentChatMembers?.values() ?? [])],
         itemToString(item) {
             //TODO: fetch...? Fzf 지우기가 먼저인가? (2) 같은 문제가 InviteList에도 있으니 반드시 참조 바람
-            return item.uuid;
+            return item.accountId;
         },
         limit: 5,
         query,
@@ -100,13 +100,13 @@ export default function ChatRightSideBar() {
                 {foundCurrentChatMembers.map((item) => (
                     <ProfileItem
                         type="social"
-                        key={item.uuid}
-                        accountUUID={item.uuid}
-                        selected={item.uuid === selectedUUID}
+                        key={item.accountId}
+                        accountUUID={item.accountId}
+                        selected={item.accountId === selectedUUID}
                         onClick={() =>
                             setSelectedUUID(
-                                item.uuid !== selectedUUID
-                                    ? item.uuid
+                                item.accountId !== selectedUUID
+                                    ? item.accountId
                                     : undefined,
                             )
                         }

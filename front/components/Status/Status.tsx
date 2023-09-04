@@ -1,5 +1,5 @@
 import { Status as StatusIcon } from "@/components/ImageLibrary";
-import { ActiveStatusNumber } from "@/library/generated/types";
+import { ActiveStatusNumber } from "@/library/payload/generated/types";
 
 const StatusPair = {
     [ActiveStatusNumber.ONLINE]: (

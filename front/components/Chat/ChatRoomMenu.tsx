@@ -1,14 +1,18 @@
 "use client";
 
 import { MenuItem } from "./MenuItem";
-import { ChatMemberModeFlags } from "@/library/payload/chat-payloads";
-import { useCurrentChatRoomUUID } from "@/hooks/useCurrent";
+import {
+    useCurrentAccountUUID,
+    useCurrentChatRoomUUID,
+} from "@/hooks/useCurrent";
 import { useWebSocket } from "@/library/react/websocket-hook";
 import {
     ChatClientOpcode,
     ChatServerOpcode,
 } from "@/library/payload/chat-opcodes";
 import { ByteBuffer } from "@/library/akasha-lib";
+import { RoleNumber } from "@/library/payload/generated/types";
+import { useChatMember } from "@/hooks/useChatRoom";
 
 type ChatRoomActions =
     | "notification"
@@ -20,7 +24,7 @@ type ChatRoomActions =
 type ChatRoomHeaderMenu = {
     name: string;
     action: ChatRoomActions;
-    modeFlags: number | undefined;
+    minRoleLevel: number | undefined;
     isImportant: boolean;
 };
 
@@ -28,43 +32,40 @@ const chatRoomHeaderMenus: ChatRoomHeaderMenu[] = [
     {
         name: "알림 설정",
         action: "notification",
-        modeFlags: undefined,
+        minRoleLevel: undefined,
         isImportant: false,
     },
     {
         name: "소유권 양도",
         action: "transfer",
-        modeFlags: ChatMemberModeFlags.ADMIN,
+        minRoleLevel: RoleNumber.ADMINISTRATOR,
         isImportant: false,
     },
     {
         name: "매니저 지정",
         action: "grant",
-        modeFlags: ChatMemberModeFlags.ADMIN /* | ChatMemberModeFlags.MANAGER*/, //NOTE: 매니저는 매니저를 지정할 수 없어야 함.
+        minRoleLevel: RoleNumber.ADMINISTRATOR,
         isImportant: false,
     },
     {
         name: "채팅방 삭제",
         action: "delete",
-        modeFlags: ChatMemberModeFlags.ADMIN,
+        minRoleLevel: RoleNumber.ADMINISTRATOR,
         isImportant: true,
     },
     {
         name: "방 나가기",
         action: "leave",
-        modeFlags: undefined,
+        minRoleLevel: undefined,
         isImportant: true,
     },
 ];
 
-export function ChatRoomMenu({
-    className,
-    modeFlags,
-}: {
-    className: string;
-    modeFlags: number;
-}) {
+export function ChatRoomMenu({ className }: { className: string }) {
+    const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const selfMember = useChatMember(currentChatRoomUUID, currentAccountUUID);
+    const roleLevel = Number(selfMember?.role ?? 0);
 
     const { sendPayload } = useWebSocket(
         "chat",
@@ -101,9 +102,7 @@ export function ChatRoomMenu({
             {currentChatRoomUUID !== "" &&
                 chatRoomHeaderMenus
                     .filter(
-                        (menu) =>
-                            menu.modeFlags === undefined ||
-                            (modeFlags & menu.modeFlags) !== 0,
+                        (menu) => roleLevel >= Number(menu.minRoleLevel ?? 0),
                     )
                     .map((menu) => {
                         return (

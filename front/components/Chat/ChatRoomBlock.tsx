@@ -32,7 +32,7 @@ export default function ChatRoomBlock({
 }: React.PropsWithChildren<{
     chatRoom: ChatRoomEntry;
 }>) {
-    const roomUUID = chatRoom.uuid;
+    const roomUUID = chatRoom.id;
     const numberOfUnreadMessages = useChatRoomUnreadCount(roomUUID);
     const latestMessage = useChatRoomLatestMessage(roomUUID);
     const modeFlagsRaw = useChatRoomModeFlags(roomUUID);
@@ -43,7 +43,7 @@ export default function ChatRoomBlock({
 
     return (
         <button
-            onClick={() => setChatRoomUUID(chatRoom.uuid)}
+            onClick={() => setChatRoomUUID(chatRoom.id)}
             className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
         >
             {/* chatrooms - image */}
@@ -53,7 +53,7 @@ export default function ChatRoomBlock({
                         {/* TODO: change to member preview (limit 4)*/}
                         <Avatar
                             className="relative h-10 w-10"
-                            accountUUID={chatRoom.members[0].uuid}
+                            accountUUID={chatRoom.members[0].accountId}
                             privileged={false}
                         />
                     </div>

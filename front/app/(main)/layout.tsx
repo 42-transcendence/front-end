@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthLevel } from "@/library/payload/auth-payload";
+import { AuthLevel } from "@/library/payload/auth-payloads";
 import {
     AccessTokenAtom,
     AuthAtom,

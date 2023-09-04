@@ -8,6 +8,7 @@ import {
     readChatRoom,
     readFriend,
     readSocialPayload,
+    toChatRoomModeFlags,
     writeChatRoomChatMessagePair,
 } from "@/library/payload/chat-payloads";
 import {
@@ -15,7 +16,7 @@ import {
     useWebSocketConnector,
 } from "@/library/react/websocket-hook";
 import { useAtom, useSetAtom } from "jotai";
-import { useCallback,  useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatStore } from "@/library/idb/chat-store";
 import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
@@ -45,9 +46,12 @@ export function ChatSocketProcessor() {
                 if (roomSet !== null) {
                     for (const roomUUID of roomSet) {
                         const messageUUID =
-                            await ChatStore.getFetchedMessageUUID(roomUUID);
+                            await ChatStore.getFetchedMessageId(roomUUID);
                         if (messageUUID !== null) {
-                            pairArray.push({ uuid: roomUUID, messageUUID });
+                            pairArray.push({
+                                chatId: roomUUID,
+                                messageId: messageUUID,
+                            });
                         }
                     }
                 }
@@ -57,16 +61,13 @@ export function ChatSocketProcessor() {
         }),
         [currentAccountUUID],
     );
-    const getURL = useCallback(
-        () => {
-            const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY)
-            if (accessToken === null) {
-                return "";
-            }
-            return `wss://back.stri.dev/chat?token=${accessToken}`
-        },
-        [],
-    );
+    const getURL = useCallback(() => {
+        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+        if (accessToken === null) {
+            return "";
+        }
+        return `wss://back.stri.dev/chat?token=${accessToken}`;
+    }, []);
     useWebSocketConnector("chat", getURL, props); //FIXME: props 이름?
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
@@ -88,18 +89,18 @@ export function ChatSocketProcessor() {
                 const chatRoomList = buffer.readArray(readChatRoom);
                 const promises = Array<Promise<boolean>>();
                 for (const room of chatRoomList) {
-                    roomSet.delete(room.uuid);
+                    roomSet.delete(room.id);
                     promises.push(
                         ChatStore.addRoom(
                             currentAccountUUID,
-                            room.uuid,
+                            room.id,
                             room.title,
-                            room.modeFlags,
+                            toChatRoomModeFlags(room),
                         ),
                     );
-                    promises.push(ChatStore.truncateMember(room.uuid));
+                    promises.push(ChatStore.truncateMember(room.id));
                     for (const member of room.members) {
-                        promises.push(ChatStore.putMember(room.uuid, member));
+                        promises.push(ChatStore.putMember(room.id, member));
                     }
                 }
                 for (const roomUUID of roomSet) {
@@ -119,9 +120,9 @@ export function ChatSocketProcessor() {
                     const latestMessage =
                         await ChatStore.getLatestMessage(roomUUID);
                     if (latestMessage !== null) {
-                        await ChatStore.setFetchedMessageUUID(
+                        await ChatStore.setFetchedMessageId(
                             roomUUID,
-                            latestMessage.uuid,
+                            latestMessage.accountId,
                         );
                     }
                 }
@@ -143,7 +144,8 @@ export function ChatSocketProcessor() {
                     setFriendEntry([...friendEntry, friend]);
                     setFriendRequestEntry(
                         friendRequestEntry.filter(
-                            (accountUUID) => accountUUID !== friend.uuid,
+                            (accountUUID) =>
+                                accountUUID !== friend.friendAccountId,
                         ),
                     );
                 } else {
@@ -183,11 +185,11 @@ export function ChatSocketProcessor() {
                 const messages = buffer.readArray(readChatMessage);
                 await ChatStore.addRoom(
                     currentAccountUUID,
-                    chatRoom.uuid,
+                    chatRoom.id,
                     chatRoom.title,
-                    chatRoom.modeFlags,
+                    toChatRoomModeFlags(chatRoom),
                 );
-                await ChatStore.addMessageBulk(chatRoom.uuid, messages);
+                await ChatStore.addMessageBulk(chatRoom.id, messages);
                 setChatRoomList([...chatRoomList, chatRoom]);
                 break;
             }
@@ -197,18 +199,16 @@ export function ChatSocketProcessor() {
                 if (currentChatRoomUUID === roomUUID) {
                     setCurrentChatRoomUUID("");
                 }
-                setChatRoomList(
-                    chatRoomList.filter((e) => e.uuid !== roomUUID),
-                );
+                setChatRoomList(chatRoomList.filter((e) => e.id !== roomUUID));
                 await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
                 break;
             }
 
             case ChatClientOpcode.CHAT_MESSAGE: {
                 const message = readChatMessage(buffer);
-                await ChatStore.addMessage(message.roomUUID, message);
+                await ChatStore.addMessage(message.id, message);
 
-                mutateChatRoom(message.roomUUID);
+                mutateChatRoom(message.id);
                 break;
             }
 

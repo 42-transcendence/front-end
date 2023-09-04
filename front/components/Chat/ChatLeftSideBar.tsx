@@ -77,7 +77,7 @@ export default function ChatLeftSideBar() {
 
                     <div className="h-fit w-full overflow-auto">
                         {results.map((item, index) => (
-                            <ChatRoomBlock key={item.uuid} chatRoom={item}>
+                            <ChatRoomBlock key={item.id} chatRoom={item}>
                                 <FzfHighlight
                                     {...getFzfHighlightProps({
                                         index,
