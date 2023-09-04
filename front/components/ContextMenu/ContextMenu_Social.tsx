@@ -1,4 +1,3 @@
-import type { ProfileItemConfig } from "./ContextMenuBase_Profile";
 import { ContextMenuItem } from "./ContextMenuItem";
 
 export function ContextMenu_Social() {

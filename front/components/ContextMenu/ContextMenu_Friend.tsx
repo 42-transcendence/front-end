@@ -25,7 +25,7 @@ export function ContextMenu_Friend() {
             <ContextMenuItem name="친구 그룹 변경하기" className="" />
             <ContextMenuItem
                 name="친구 삭제"
-                className=" hover:bg-red-500/30"
+                className="hover:bg-red-500/30"
                 onClick={() => {
                     if (
                         confirm(
