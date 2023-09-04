@@ -1,5 +1,6 @@
 import QRCode from "qrcode";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+// import { Dialog } from "@headlessui/react";
 
 type OTPAuthAlgorithm = "SHA1" | "SHA256" | "SHA512";
 type Base64String = string & { __base32__: never };
@@ -55,4 +56,15 @@ export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
     );
 }
 
-export const TestQR = <QRCodeCanvas authInfo={authInfo} />;
+export function GenerateQRButton() {
+    const [open, setOpen] = useState(false);
+
+    const handleClick = () => setOpen(!open);
+
+    return (
+        <>
+            <button className="" type="button" onClick={handleClick} />
+            {open && <QRCodeCanvas authInfo={authInfo} />}
+        </>
+    );
+}
