@@ -112,10 +112,9 @@ async function fetchBase<T>(
 
         const response = await fetch(url, {
             ...init,
-            ...{
-                headers: {
-                    ["Authorization"]: ["Bearer", accessToken].join(" "),
-                },
+            headers: {
+                ...init?.headers,
+                ["Authorization"]: ["Bearer", accessToken].join(" "),
             },
         });
         if (!response.ok) {
