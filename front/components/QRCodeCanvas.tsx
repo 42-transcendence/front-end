@@ -1,5 +1,7 @@
+"use client";
+
 import QRCode from "qrcode";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 // import { Dialog } from "@headlessui/react";
 
 type Base64String = string & { __base32__: never };
@@ -18,8 +20,13 @@ const authInfo = {
 
 export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [uri, setURI] = useState("");
     const digits = 6;
     const period = 30;
+
+    const handleClick = useCallback(() => {
+        window.location.href = uri; // TODO: 이러면 되나...?
+    }, [uri]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -37,33 +44,37 @@ export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
         uri.searchParams.set("period", period.toString());
 
         const errorCallback = (e: Error | null | undefined) => {
-            alert(e?.message);
+            if (e instanceof Error) {
+                alert(e.message);
+            }
         };
 
         QRCode.toCanvas(canvas, uri.toString(), errorCallback);
-    }, [
-        authInfo.algorithm,
-        authInfo.issuer,
-        authInfo.secret,
-        authInfo.subject,
-    ]);
+        setURI(uri.toString());
+    }, [authInfo.issuer, authInfo.secret, authInfo.subject]);
 
+    // TODO: add tailwind css
     return (
         <div className="">
-            <canvas ref={canvasRef} />
+            <button type="button" onClick={handleClick}>
+                <canvas ref={canvasRef} />
+                <p>위 QR코드를 스캔하거나 클릭해 주세요</p>
+            </button>
         </div>
     );
 }
 
+export const ExampleQR = () => <QRCodeCanvas authInfo={authInfo} />;
+
+const popupFeatures = ["popup=true", "width=600", "height=600"].join(",");
 export function GenerateQRButton() {
-    const [open, setOpen] = useState(false);
+    const handleClick = () =>
+        window.open("/qrtest/code", "qr code", popupFeatures);
 
-    const handleClick = () => setOpen(!open);
-
+    // TODO: add tailwind css
     return (
-        <>
-            <button className="" type="button" onClick={handleClick} />
-            {open && <QRCodeCanvas authInfo={authInfo} />}
-        </>
+        <button className="" type="button" onClick={handleClick}>
+            press!
+        </button>
     );
 }
