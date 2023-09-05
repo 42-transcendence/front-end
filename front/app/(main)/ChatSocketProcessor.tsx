@@ -206,9 +206,9 @@ export function ChatSocketProcessor() {
 
             case ChatClientOpcode.CHAT_MESSAGE: {
                 const message = readChatMessage(buffer);
-                await ChatStore.addMessage(message.id, message);
+                await ChatStore.addMessage(message.chatId, message);
 
-                mutateChatRoom(message.id);
+                mutateChatRoom(message.chatId);
                 break;
             }
 

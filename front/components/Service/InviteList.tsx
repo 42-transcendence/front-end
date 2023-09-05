@@ -18,7 +18,7 @@ export function InviteList({ className }: { className?: string | undefined }) {
         items: friendEntrySet,
         itemToString(item) {
             //TODO: fetch...? Fzf 지우기가 먼저인가?
-            return item.uuid;
+            return item.friendAccountId;
         },
         query,
     });
@@ -27,11 +27,11 @@ export function InviteList({ className }: { className?: string | undefined }) {
     );
 
     const handleClick = (item: FriendEntry) => () => {
-        const selected = selectedAccountUUIDs.includes(item.uuid);
+        const selected = selectedAccountUUIDs.includes(item.friendAccountId);
         setSelectedAccountUUIDs(
             selected
-                ? selectedAccountUUIDs.filter((uuid) => uuid !== item.uuid)
-                : [...selectedAccountUUIDs, item.uuid],
+                ? selectedAccountUUIDs.filter((uuid) => uuid !== item.friendAccountId)
+                : [...selectedAccountUUIDs, item.friendAccountId],
         );
     };
 
@@ -47,9 +47,9 @@ export function InviteList({ className }: { className?: string | undefined }) {
             <div className="flex h-full flex-col items-center gap-1 self-stretch overflow-auto">
                 {foundFriendEntrySet.map((item) => (
                     <ProfileItemSelectable
-                        key={item.uuid}
-                        accountUUID={item.uuid}
-                        selected={selectedAccountUUIDs.includes(item.uuid)}
+                        key={item.friendAccountId}
+                        accountUUID={item.friendAccountId}
+                        selected={selectedAccountUUIDs.includes(item.friendAccountId)}
                         onClick={handleClick(item)}
                     />
                 ))}

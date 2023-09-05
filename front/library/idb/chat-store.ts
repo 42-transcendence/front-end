@@ -4,7 +4,13 @@ const DB_NAME_PREFIX = "akasha-";
 
 function getMetadataDB(): Promise<IDBDatabase> {
     return IDBCP.getOrOpen(`${DB_NAME_PREFIX}chat`, {
+        version: 3,
         onUpgradeNeeded(db: IDBDatabase) {
+            try {
+                db.deleteObjectStore("rooms");
+            } catch {
+                //NOTE: ignore
+            }
             const rooms = db.createObjectStore("rooms", {
                 keyPath: "id",
             });
@@ -33,10 +39,21 @@ export type RoomSchema = {
 
 function getDB(chatId: string): Promise<IDBDatabase> {
     return IDBCP.getOrOpen(`${DB_NAME_PREFIX}chat-${chatId}`, {
+        version: 3,
         onUpgradeNeeded(db: IDBDatabase) {
+            try {
+                db.deleteObjectStore("members");
+            } catch {
+                //NOTE: ignore
+            }
             db.createObjectStore("members", { keyPath: "accountId" });
             // role
 
+            try {
+                db.deleteObjectStore("messages");
+            } catch {
+                //NOTE: ignore
+            }
             const messages = db.createObjectStore("messages", {
                 keyPath: "id",
             });
