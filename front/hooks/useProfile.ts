@@ -1,4 +1,4 @@
-import { fetcher } from "./fetcher";
+import { HTTPError, fetcher } from "./fetcher";
 import { useSWR } from "./useSWR";
 import type {
     AccountProfilePrivatePayload,
@@ -8,12 +8,18 @@ import type {
 import { useCurrentAccountUUID } from "./useCurrent";
 
 export function usePublicProfile(accountUUID: string) {
-    const { data } = useSWR(`/profile/public/${accountUUID}`, fetcher<AccountProfilePublicPayload>);
+    const { data } = useSWR(
+        () => (accountUUID !== "" ? `/profile/public/${accountUUID}` : null),
+        fetcher<AccountProfilePublicPayload>,
+    );
     return data;
 }
 
 export function useProtectedProfile(accountUUID: string) {
-    const { data } = useSWR(`/profile/protected/${accountUUID}`, fetcher<AccountProfileProtectedPayload>);
+    const { data } = useSWR(
+        () => (accountUUID !== "" ? `/profile/protected/${accountUUID}` : null),
+        fetcher<AccountProfileProtectedPayload>,
+    );
     return data;
 }
 
@@ -24,4 +30,15 @@ export function usePrivateProfile() {
         fetcher<AccountProfilePrivatePayload>,
     );
     return data;
+}
+
+export function useNickLookup(name: string, tag: number) {
+    const params = new URLSearchParams({ name, tag: tag.toString() });
+    const result = useSWR(
+        `/profile/lookup?${params.toString()}`,
+        fetcher<string>,
+    );
+    const notFound: boolean =
+        result.error instanceof HTTPError && result.error.status === 404;
+    return { accountUUID: result.data ?? "", isLoading: result.isLoading, notFound };
 }
