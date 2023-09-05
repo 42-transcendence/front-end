@@ -128,8 +128,14 @@ async function fetchBase<T>(
             throw new HTTPError(response.status);
         }
 
-        const json = (await response.json()) as T;
-        return json;
+        const contentType = response.headers.get("content-type");
+        if (contentType === null || !contentType.includes("application/json")) {
+            const text = (await response.text()) as T;
+            return text;
+        } else {
+            const json = (await response.json()) as T;
+            return json;
+        }
     } while (retry-- > 0);
 
     throw new Error("최대 시도 횟수를 초과했습니다.");
