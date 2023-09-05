@@ -3,11 +3,10 @@ import { Panel } from "./Panel";
 import { Avatar } from "../Avatar";
 import { Seperator } from "./GameHistoryPanel";
 import { usePublicProfile } from "@/hooks/useProfile";
-import { useAtomValue } from "jotai";
-import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
+import { useCurrentAccountUUID } from "@/hooks/useCurrent";
 
 export function EditPanel() {
-    const accountUUID = useAtomValue(CurrentAccountUUIDAtom);
+    const accountUUID = useCurrentAccountUUID();
     console.log(accountUUID);
 
     const profile = usePublicProfile(accountUUID);
