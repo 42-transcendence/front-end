@@ -12,6 +12,7 @@ import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { TargetedAccountUUIDAtom } from "@/atom/AccountAtom";
 import { usePublicProfile } from "@/hooks/useProfile";
 import { GlassWindow } from "@/components/Frame/GlassWindow";
+import { NICK_NAME_REGEX } from "@/library/payload/profile-constants";
 
 export function FriendModal() {
     //TODO: fetch profile datas
@@ -30,18 +31,33 @@ export function FriendModal() {
                     <div
                         className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 text-gray-300 hover:bg-primary/30"
                         onClick={() => {
-                            //TODO: UUID 대신 닉네임으로도 할 수 있게?
-                            const nickNameTag = prompt("UUID 입력? 하시오?");
-
-                            if (nickNameTag !== null) {
-                                const buf = ByteBuffer.createWithOpcode(
-                                    ChatServerOpcode.ADD_FRIEND,
-                                );
-                                buf.writeUUID(nickNameTag);
-                                buf.writeString("기본 그룹"); //TODO: 으악
-                                buf.write1(3); //TODO: activeFlags
-                                sendPayload(buf);
+                            const nickName = prompt("닉네임?을 입력하시오?");
+                            if (nickName === null) {
+                                return;
                             }
+                            if (!NICK_NAME_REGEX.test(nickName)) {
+                                alert("올바른 이름을 입력하십시오.");
+                                return;
+                            }
+                            const nickTagStr = prompt("태그?를 입력하시오?");
+                            if (nickTagStr === null) {
+                                return;
+                            }
+                            const nickTag = Number(nickTagStr);
+                            if (Number.isNaN(nickTag)) {
+                                alert("올바른 태그를 입력하십시오.");
+                                return;
+                            }
+
+                            const buf = ByteBuffer.createWithOpcode(
+                                ChatServerOpcode.ADD_FRIEND,
+                            );
+                            buf.writeBoolean(true);
+                            buf.writeString(nickName);
+                            buf.write4Unsigned(nickTag);
+                            buf.writeString("기본 그룹"); //TODO: 으악
+                            buf.write1(0b111); //TODO: activeFlags
+                            sendPayload(buf);
                         }}
                     >
                         <Icon.Plus />
@@ -126,9 +142,10 @@ function InviteItem({ accountUUID }: { accountUUID: string }) {
                             const response = ByteBuffer.createWithOpcode(
                                 ChatServerOpcode.ADD_FRIEND,
                             );
+                            response.writeBoolean(false);
                             response.writeUUID(accountUUID);
                             response.writeString("기본 그룹"); //TODO: 으악
-                            response.write1(3); //TODO: activeFlags
+                            response.write1(0b111); //TODO: activeFlags
                             sendPayload(response);
                         }}
                     >
