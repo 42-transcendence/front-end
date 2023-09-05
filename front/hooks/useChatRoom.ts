@@ -42,7 +42,7 @@ export function useChatRoomUnreadCount(roomUUID: string) {
             async (get, _set, [, roomUUID]: [string, string, string]) => {
                 const roomList = get(ChatRoomListAtom);
                 const lastReadMessageUUID =
-                    roomList.find((e) => e.uuid === roomUUID)?.lastMessageId ??
+                    roomList.find((e) => e.id === roomUUID)?.lastMessageId ??
                     "";
                 return lastReadMessageUUID !== ""
                     ? await ChatStore.countAfterMessage(
