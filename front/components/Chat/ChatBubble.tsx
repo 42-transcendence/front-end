@@ -24,7 +24,7 @@ export function ChatBubbleWithProfile({
             {/* TODO: get avatar from sender info */}
             <Avatar
                 className={`${hidden} absolute left-0 top-0 h-12 w-12`}
-                accountUUID={chatMessage.memberUUID}
+                accountUUID={chatMessage.accountId}
                 privileged={false}
             />
             <div
@@ -32,7 +32,7 @@ export function ChatBubbleWithProfile({
             >
                 {
                     // TODO: fetch name from uuid
-                    chatMessage.memberUUID
+                    chatMessage.accountId
                 }
             </div>
             <ChatBubble isContinued={isContinued} dir={dir}>

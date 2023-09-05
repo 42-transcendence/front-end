@@ -5,15 +5,11 @@ import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "@/components/ImageLibrary";
-import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
-import { fetcher, useSWR } from "@/hooks/fetcher";
 import { FriendButton } from "./FriendButton";
+import { useCurrentAccountUUID } from "@/hooks/useCurrent";
 
 export function NavigationBar() {
-    const { data } = useSWR(
-        "/profile/private",
-        fetcher<AccountProfilePrivatePayload>,
-    );
+    const currentAccountUUID = useCurrentAccountUUID();
 
     return (
         <div className="relative flex h-fit w-full flex-row items-center justify-between bg-primary/30 p-2 backdrop-blur-[20px] backdrop-brightness-100">
@@ -29,7 +25,7 @@ export function NavigationBar() {
                 <FriendButton />
                 {/* TODO: on click Avatar in navbar, show context menu myinfo */}
                 <Avatar
-                    accountUUID={data?.uuid ?? ""}
+                    accountUUID={currentAccountUUID}
                     className="relative h-9 w-9 bg-white/30"
                     privileged={true}
                 />

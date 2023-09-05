@@ -2,14 +2,8 @@
 
 import { Icon } from "@/components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
-import { useAtomValue } from "jotai";
-import {
-    CurrentChatRoomTitleAtom,
-    CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
-import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
-import { ChatStore } from "@/library/idb/chat-store";
-import { useSWR } from "@/hooks/fetcher";
+import { useCurrentChatRoomUUID } from "@/hooks/useCurrent";
+import { useChatRoomTitle } from "@/hooks/useChatRoom";
 
 function LeftSidebarButton() {
     return (
@@ -62,19 +56,12 @@ function RightSidebarButton() {
     );
 }
 
-// TODO: isAdmin이 아니라, 어느 채팅방이 열려있는지 정보 받아와야
 export function ChatHeader() {
-    const currentChatRoomTitle = useAtomValue(CurrentChatRoomTitleAtom);
-    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const currentChatRoomTitle = useChatRoomTitle(currentChatRoomUUID);
 
-    // FIXME: mutate 안해줬음. 그런데 이런거 전부 Custom hook으로 잘 만들어야할듯...
-    const { data: selfMember } = useSWR(
-        ["ChatStore", currentChatRoomUUID, "Member", currentAccountUUID],
-        ([, roomUUID, , memberUUID]) =>
-            ChatStore.getMember(roomUUID, memberUUID),
-    );
-    const selfMemberModeFlags = selfMember?.modeFlags ?? 0;
+    const title = currentChatRoomTitle ?? "채팅방을 선택하세요";
+    const desc = "채팅을 채팅채팅~"; // TODO: 이거 설정 가능하게 하나요?
 
     return (
         <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch py-2 @container">
@@ -86,12 +73,10 @@ export function ChatHeader() {
                 >
                     <div className=" relative flex flex-col items-center justify-center px-4 py-0 text-base">
                         <h1 className="line-clamp-1 max-w-[16rem] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70 sm:max-w-full">
-                            {currentChatRoomTitle === ""
-                                ? "채팅방을 선택하세요"
-                                : currentChatRoomTitle}
+                            {title}
                         </h1>
                         <h2 className="line-clamp-1 overflow-hidden text-ellipsis text-center text-xs font-medium not-italic leading-[normal] text-white/50">
-                            채팅을 채팅채팅~
+                            {desc}
                         </h2>
                     </div>
                 </label>
@@ -100,10 +85,7 @@ export function ChatHeader() {
                     className="peer hidden"
                     type="checkbox"
                 />
-                <ChatRoomMenu
-                    modeFlags={selfMemberModeFlags}
-                    className="hidden peer-checked:flex"
-                />
+                <ChatRoomMenu className="hidden peer-checked:flex" />
             </div>
             <RightSidebarButton />
         </div>

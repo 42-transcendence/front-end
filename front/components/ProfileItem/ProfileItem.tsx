@@ -5,50 +5,53 @@ import {
     ContextMenu_Social,
     ContextMenu_MyProfile,
 } from "@/components/ContextMenu";
-import { fetcher, useSWR } from "@/hooks/fetcher";
-import type { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
+import { useProtectedProfile, usePublicProfile } from "@/hooks/useProfile";
 import { Provider, createStore } from "jotai";
+
+// TODO: 나중에 다른 브랜치에서...리팩토링 합시다
+function ContextMenu({
+    type,
+}: {
+    type?: "social" | "friend" | "myprofile" | undefined;
+}) {
+    switch (type) {
+        case "social":
+            return <ContextMenu_Social />;
+        case "friend":
+            return <ContextMenu_Friend />;
+        case "myprofile":
+            return <ContextMenu_MyProfile />;
+        default:
+            return null;
+    }
+}
 
 export function ProfileItem({
     className,
     accountUUID,
     selected,
-    children,
+    // TODO: 이거 정말 type이 undefined로 들어올 수 있나요??? 해당 처리가 꼭 필요한가
     type,
     onClick,
-}: React.PropsWithChildren<{
+}: {
     className?: string | undefined;
     accountUUID: string;
     selected: boolean;
     onClick?: React.MouseEventHandler | undefined;
     type?: "social" | "friend" | "myprofile" | undefined;
-}>) {
+}) {
+    const profile = usePublicProfile(accountUUID);
+    const protectedProfile = useProtectedProfile(accountUUID);
+
     const store = createStore();
     store.set(TargetedAccountUUIDAtom, accountUUID);
 
-    const contextMenuType = () => {
-        switch (type) {
-            case "social":
-                return <ContextMenu_Social />;
-            case "friend":
-                return <ContextMenu_Friend />;
-            case "myprofile":
-                return <ContextMenu_MyProfile />;
-            default:
-                return null;
-        }
-    };
-
-    const { data } = useSWR(
-        `/profile/public/${accountUUID}`,
-        fetcher<AccountProfilePublicPayload>,
-    );
-
-    const nickName =
-        children !== undefined
-            ? children
-            : `${data?.nickName}#${data?.nickTag}`;
-    const statusMessage = data?.uuid; // TODO: 으음... 실제 statusbar
+    const nick =
+        profile !== undefined
+            ? `${profile.nickName}#${profile.nickTag}`
+            : "불러오는 중...";
+    const statusMessage =
+        protectedProfile?.statusMessage ?? "상태 메시지를 볼 수 없습니다.";
 
     return (
         <Provider store={store}>
@@ -69,7 +72,7 @@ export function ProfileItem({
                         </div>
                         <div className="relative flex w-fit flex-col items-start gap-1">
                             <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                                {nickName}
+                                {nick}
                             </div>
                             <div className="text-normal text-xs text-gray-300">
                                 {statusMessage}
@@ -77,7 +80,7 @@ export function ProfileItem({
                         </div>
                     </div>
                 </div>
-                {selected && contextMenuType()}
+                {selected && <ContextMenu type={type} />}
             </div>
         </Provider>
     );

@@ -6,13 +6,11 @@ import { Avatar } from "../Avatar";
 import { Icon } from "../ImageLibrary";
 import { Provider, createStore, useAtomValue } from "jotai";
 import { FriendEntryAtom, FriendRequestEntryAtom } from "@/atom/FriendAtom";
-import type { AccountProfilePublicPayload } from "@/library/payload/profile-payloads";
-import useSWR from "swr";
-import { fetcher } from "@/hooks/fetcher";
 import { useWebSocket } from "@/library/react/websocket-hook";
 import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { TargetedAccountUUIDAtom } from "@/atom/AccountAtom";
+import { usePublicProfile } from "@/hooks/useProfile";
 
 export function FriendModal() {
     //TODO: fetch profile datas
@@ -24,7 +22,9 @@ export function FriendModal() {
                 <InviteList />
                 <FriendList />
                 <div
-                    className={`relative flex h-fit w-full shrink-0 flex-col items-start`}
+                    className={
+                        "relative flex h-fit w-full shrink-0 flex-col items-start"
+                    }
                 >
                     <div
                         className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 text-gray-300 hover:bg-primary/30"
@@ -38,7 +38,7 @@ export function FriendModal() {
                                 );
                                 buf.writeUUID(nickNameTag);
                                 buf.writeString("기본 그룹"); //TODO: 으악
-                                buf.write1(0); //TODO: activeFlags
+                                buf.write1(3); //TODO: activeFlags
                                 sendPayload(buf);
                             }
                         }}
@@ -59,18 +59,21 @@ function FriendList() {
     return friendEntrySet.map((friend) => (
         <ProfileItem
             type="friend"
-            key={friend.uuid}
-            accountUUID={friend.uuid}
-            selected={friend.uuid === selectedUUID}
+            key={friend.friendAccountId}
+            accountUUID={friend.friendAccountId}
+            selected={friend.friendAccountId === selectedUUID}
             onClick={() => {
                 setSelectedUUID(
-                    friend.uuid !== selectedUUID ? friend.uuid : undefined,
+                    friend.friendAccountId !== selectedUUID
+                        ? friend.friendAccountId
+                        : undefined,
                 );
             }}
         />
     ));
 }
 
+// TODO: @/components/Service/InviteList 와 이름 겹침
 function InviteList() {
     const friendRequestUUIDs = useAtomValue(FriendRequestEntryAtom);
 
@@ -92,10 +95,7 @@ function InviteItem({ accountUUID }: { accountUUID: string }) {
     store.set(TargetedAccountUUIDAtom, accountUUID);
 
     const { sendPayload } = useWebSocket("chat", []);
-    const { data } = useSWR(
-        `/profile/public/${accountUUID}`,
-        fetcher<AccountProfilePublicPayload>,
-    );
+    const profile = usePublicProfile(accountUUID);
     //TODO: add suspend skeleton;
     //TODO: refactor profile part
 
@@ -112,10 +112,10 @@ function InviteItem({ accountUUID }: { accountUUID: string }) {
                     </div>
                     <div className="relative flex w-fit flex-col items-start justify-center gap-1">
                         <p className="relative w-fit select-none whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                            {data?.nickName}
+                            {profile?.nickName}
                         </p>
                         <p className="relative w-fit select-none whitespace-nowrap font-sans text-xs font-normal leading-none tracking-normal text-gray-300/60">
-                            {data?.nickTag}
+                            {profile?.nickTag}
                         </p>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ function InviteItem({ accountUUID }: { accountUUID: string }) {
                             );
                             response.writeUUID(accountUUID);
                             response.writeString("기본 그룹"); //TODO: 으악
-                            response.write1(0); //TODO: activeFlags
+                            response.write1(3); //TODO: activeFlags
                             sendPayload(response);
                         }}
                     >

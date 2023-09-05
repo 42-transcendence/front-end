@@ -1,6 +1,3 @@
-// TODO: remove unused export
-// export { ContextMenuItem } from "./ContextMenuItem";
-
 export function ContextMenuBase({
     className,
     children,

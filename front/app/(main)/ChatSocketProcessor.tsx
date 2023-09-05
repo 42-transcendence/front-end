@@ -8,37 +8,32 @@ import {
     readChatRoom,
     readFriend,
     readSocialPayload,
+    toChatRoomModeFlags,
     writeChatRoomChatMessagePair,
 } from "@/library/payload/chat-payloads";
 import {
     useWebSocket,
     useWebSocketConnector,
 } from "@/library/react/websocket-hook";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { AccessTokenAtom, CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
+import { useAtom, useSetAtom } from "jotai";
+import { useCallback, useMemo } from "react";
 import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatStore } from "@/library/idb/chat-store";
-import {
-    ChatRoomListAtom,
-    CurrentChatMessagesAtom,
-    CurrentChatRoomAtom,
-    CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
+import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
 import {
     EnemyEntryAtom,
     FriendEntryAtom,
     FriendRequestEntryAtom,
 } from "@/atom/FriendAtom";
-import { mutate } from "swr";
+import {
+    useCurrentAccountUUID,
+    useCurrentChatRoomUUID,
+} from "@/hooks/useCurrent";
+import { useChatRoomMutation } from "@/hooks/useChatRoom";
+import { ACCESS_TOKEN_KEY } from "@/hooks/fetcher";
 
 export function ChatSocketProcessor() {
-    const accessToken = useAtomValue(AccessTokenAtom);
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
-    const accessTokenRef = useRef(accessToken);
-    useEffect(() => {
-        accessTokenRef.current = accessToken;
-    }, [accessToken]);
+    const currentAccountUUID = useCurrentAccountUUID();
     const props = useMemo(
         () => ({
             handshake: async () => {
@@ -51,9 +46,12 @@ export function ChatSocketProcessor() {
                 if (roomSet !== null) {
                     for (const roomUUID of roomSet) {
                         const messageUUID =
-                            await ChatStore.getFetchedMessageUUID(roomUUID);
+                            await ChatStore.getFetchedMessageId(roomUUID);
                         if (messageUUID !== null) {
-                            pairArray.push({ uuid: roomUUID, messageUUID });
+                            pairArray.push({
+                                chatId: roomUUID,
+                                messageId: messageUUID,
+                            });
                         }
                     }
                 }
@@ -63,17 +61,18 @@ export function ChatSocketProcessor() {
         }),
         [currentAccountUUID],
     );
-    const getURL = useCallback(
-        () => `wss://back.stri.dev/chat?token=${accessTokenRef.current}`,
-        [],
-    );
+    const getURL = useCallback(() => {
+        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+        if (accessToken === null) {
+            return "";
+        }
+        return `wss://back.stri.dev/chat?token=${accessToken}`;
+    }, []);
     useWebSocketConnector("chat", getURL, props); //FIXME: props 이름?
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
-    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom);
-    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
-    const [currentChatMessages, setCurrentChatMessages] = useAtom(
-        CurrentChatMessagesAtom,
-    );
+    const mutateChatRoom = useChatRoomMutation();
+    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
     const [friendEntry, setFriendEntry] = useAtom(FriendEntryAtom);
     const [enemyEntry, setEnemyEntry] = useAtom(EnemyEntryAtom);
     const [friendRequestEntry, setFriendRequestEntry] = useAtom(
@@ -90,18 +89,18 @@ export function ChatSocketProcessor() {
                 const chatRoomList = buffer.readArray(readChatRoom);
                 const promises = Array<Promise<boolean>>();
                 for (const room of chatRoomList) {
-                    roomSet.delete(room.uuid);
+                    roomSet.delete(room.id);
                     promises.push(
                         ChatStore.addRoom(
                             currentAccountUUID,
-                            room.uuid,
+                            room.id,
                             room.title,
-                            room.modeFlags,
+                            toChatRoomModeFlags(room),
                         ),
                     );
-                    promises.push(ChatStore.truncateMember(room.uuid));
+                    promises.push(ChatStore.truncateMember(room.id));
                     for (const member of room.members) {
-                        promises.push(ChatStore.putMember(room.uuid, member));
+                        promises.push(ChatStore.putMember(room.id, member));
                     }
                 }
                 for (const roomUUID of roomSet) {
@@ -121,9 +120,9 @@ export function ChatSocketProcessor() {
                     const latestMessage =
                         await ChatStore.getLatestMessage(roomUUID);
                     if (latestMessage !== null) {
-                        await ChatStore.setFetchedMessageUUID(
+                        await ChatStore.setFetchedMessageId(
                             roomUUID,
-                            latestMessage.uuid,
+                            latestMessage.accountId,
                         );
                     }
                 }
@@ -145,7 +144,8 @@ export function ChatSocketProcessor() {
                     setFriendEntry([...friendEntry, friend]);
                     setFriendRequestEntry(
                         friendRequestEntry.filter(
-                            (accountUUID) => accountUUID !== friend.uuid,
+                            (accountUUID) =>
+                                accountUUID !== friend.friendAccountId,
                         ),
                     );
                 } else {
@@ -169,13 +169,8 @@ export function ChatSocketProcessor() {
 
             case ChatClientOpcode.FRIEND_REQUEST: {
                 const targetUUID = buffer.readUUID();
-                const find = friendEntry.find((e) => e.uuid === targetUUID);
-                if (find !== undefined) {
-                    //FIXME: 상대가 내 요청을 수락함. 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
-                } else {
-                    setFriendRequestEntry([...friendRequestEntry, targetUUID]);
-                    //TODO: 알림?
-                }
+                setFriendRequestEntry([...friendRequestEntry, targetUUID]);
+                //TODO: 알림?
                 break;
             }
 
@@ -190,11 +185,11 @@ export function ChatSocketProcessor() {
                 const messages = buffer.readArray(readChatMessage);
                 await ChatStore.addRoom(
                     currentAccountUUID,
-                    chatRoom.uuid,
+                    chatRoom.id,
                     chatRoom.title,
-                    chatRoom.modeFlags,
+                    toChatRoomModeFlags(chatRoom),
                 );
-                await ChatStore.addMessageBulk(chatRoom.uuid, messages);
+                await ChatStore.addMessageBulk(chatRoom.id, messages);
                 setChatRoomList([...chatRoomList, chatRoom]);
                 break;
             }
@@ -202,26 +197,18 @@ export function ChatSocketProcessor() {
             case ChatClientOpcode.REMOVE_ROOM: {
                 const roomUUID = buffer.readUUID();
                 if (currentChatRoomUUID === roomUUID) {
-                    await setCurrentChatRoom("");
+                    setCurrentChatRoomUUID("");
                 }
-                setChatRoomList(
-                    chatRoomList.filter((e) => e.uuid !== roomUUID),
-                );
+                setChatRoomList(chatRoomList.filter((e) => e.id !== roomUUID));
                 await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
                 break;
             }
 
             case ChatClientOpcode.CHAT_MESSAGE: {
                 const message = readChatMessage(buffer);
-                await ChatStore.addMessage(message.roomUUID, message);
+                await ChatStore.addMessage(message.chatId, message);
 
-                if (message.roomUUID === currentChatRoomUUID) {
-                    setCurrentChatMessages([...currentChatMessages, message]);
-                }
-
-                await mutate(["ChatStore", message.roomUUID, "Count"]);
-                await mutate(["ChatStore", message.roomUUID, "LatestMessage"]);
-                await mutate(["ChatStore", message.roomUUID, "ModeFlags"]);
+                mutateChatRoom(message.chatId);
                 break;
             }
 

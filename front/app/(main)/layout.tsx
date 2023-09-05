@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
-import { decodeJwt } from "jose";
-import { AuthLevel, isAuthPayload } from "@/library/payload/auth-payload";
-import { fetcher, useSWR } from "@/hooks/fetcher";
-import type { AccountProfilePrivatePayload } from "@/library/payload/profile-payloads";
+import { AuthLevel } from "@/library/payload/auth-payloads";
 import {
     AccessTokenAtom,
     AuthAtom,
-    CurrentAccountUUIDAtom,
+    RefreshTokenAtom,
 } from "@/atom/AccountAtom";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { ChatSocketProcessor } from "./ChatSocketProcessor";
+import { usePrivateProfile } from "@/hooks/useProfile";
+import React, { useEffect, useState } from "react";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/hooks/fetcher";
+import { DoubleSharp } from "@/components/ImageLibrary";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -19,8 +19,20 @@ function DefaultLayout({ children }: React.PropsWithChildren) {
     );
 }
 
-//TODO : Subtracting to a constant file later
-const ACCESS_TOKEN_KEY = "access_token";
+function LoadingLayout({ children }: React.PropsWithChildren) {
+    return (
+        <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
+            <div className="relative flex h-screen w-screen flex-col items-center justify-center ">
+                <DoubleSharp
+                    className="relative h-fit w-fit animate-spin-slow text-white drop-shadow-[0_0_0.3rem_#ffffff70] delay-300"
+                    width={130}
+                    height="100%"
+                />
+                {children}
+            </div>
+        </main>
+    );
+}
 
 export default function MainLayout({
     login,
@@ -33,99 +45,66 @@ export default function MainLayout({
     welcome: React.ReactNode;
     home: React.ReactNode;
 }) {
-    const [accessToken, setAccessToken] = useAtom(AccessTokenAtom);
-    const [auth, setAuth] = useAtom(AuthAtom);
-    const setCurrentAccountUUID = useSetAtom(CurrentAccountUUIDAtom);
-
+    const [hydrated, setHydrated] = useState(false);
     useEffect(() => {
-        const storedAccessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-        if (storedAccessToken !== null) {
-            setAccessToken(storedAccessToken);
-        }
+        setHydrated(true);
     }, []);
 
+    const setAccessToken = useSetAtom(AccessTokenAtom);
     useEffect(() => {
-        const receiveMessage = (event: StorageEvent) => {
-            if (event.storageArea !== window.localStorage) {
-                return;
-            }
-            if (event.key === ACCESS_TOKEN_KEY) {
-                setAccessToken(event.newValue);
+        setAccessToken(window.localStorage.getItem(ACCESS_TOKEN_KEY));
+        const handleAccessTokenEvent = (ev: StorageEvent) => {
+            if (ev.storageArea === window.localStorage) {
+                if (ev.key === null || ev.key === ACCESS_TOKEN_KEY) {
+                    if (ev.oldValue !== ev.newValue) {
+                        setAccessToken(ev.newValue);
+                    }
+                }
             }
         };
+        window.addEventListener("storage", handleAccessTokenEvent);
+        return () =>
+            window.removeEventListener("storage", handleAccessTokenEvent);
+    }, [setAccessToken]);
 
-        window.addEventListener("storage", receiveMessage);
-        return () => {
-            window.removeEventListener("storage", receiveMessage);
-        };
-    }, []);
-
+    const setRefreshToken = useSetAtom(RefreshTokenAtom);
     useEffect(() => {
-        let timeid: NodeJS.Timeout | null = null;
-
-        if (accessToken !== null) {
-            // 이거 가지고 검증할 수 있지 않을까?
-            try {
-                const payload = decodeJwt(accessToken);
-                const exp = payload.exp;
-                setCurrentAccountUUID(
-                    isAuthPayload(payload)
-                        ? payload.auth_level === AuthLevel.COMPLETED
-                            ? payload.user_id
-                            : ""
-                        : "",
-                );
-                if (exp === undefined || exp < Date.now() / 1000) {
-                    // 당신 토큰은 만료되었다 수고해라
-                    // 아니지 리프레시는 한번 시도해봐야지!
-                    console.log(Date.now(), Date.now() / 1000);
-                    throw new Error();
-                } else {
-                    // 타이머를 돌립시다. exp가 끝나는 시점까지
-                    // 근데 서버를 위한 톨러런스가 어느정도 있는게 좋지 않을까? 시간 차이가 좀 날 수도 있으니까
-                    // 근데 시간이 정 안맞아서 계속 리프레시를 날리는 클라이언트는 어떻게 해야할까? 시계 맞추라고 공지 띄워줘?
-
-                    const remainingSecs = exp - Date.now() / 1000;
-                    const tolerance = 30000;
-                    //TODO: 이 타임아웃을 없애주는 애를 리턴해야함.
-                    timeid = setTimeout(
-                        () => {},
-                        remainingSecs * 1000 - tolerance,
-                    );
+        setRefreshToken(window.localStorage.getItem(REFRESH_TOKEN_KEY));
+        const handleRefreshTokenEvent = (ev: StorageEvent) => {
+            if (ev.storageArea === window.localStorage) {
+                if (ev.key === null || ev.key === REFRESH_TOKEN_KEY) {
+                    if (ev.oldValue !== ev.newValue) {
+                        setRefreshToken(ev.newValue);
+                    }
                 }
-                if (!isAuthPayload(payload)) {
-                    throw new Error();
-                }
-                setAuth(payload);
-            } catch {
-                window.localStorage.removeItem(ACCESS_TOKEN_KEY);
-                setAccessToken(null);
-            }
-        }
-
-        return () => {
-            if (timeid !== null) {
-                clearTimeout(timeid);
             }
         };
-    }, [accessToken]);
+        window.addEventListener("storage", handleRefreshTokenEvent);
+        return () =>
+            window.removeEventListener("storage", handleRefreshTokenEvent);
+    }, [setRefreshToken]);
+    const auth = useAtomValue(AuthAtom);
+    const profile = usePrivateProfile();
 
-    const { data } = useSWR(
-        accessToken !== null ? "/profile/private" : null,
-        fetcher<AccountProfilePrivatePayload>,
-    );
+    if (!hydrated) {
+        return (
+            <LoadingLayout>
+                <p>애플리케이션을 시작하는 중...</p>
+            </LoadingLayout>
+        );
+    }
 
-    if (accessToken === null || data === undefined) {
+    if (auth === undefined) {
         return <DefaultLayout>{login}</DefaultLayout>;
     }
 
     // OTP로 가시오
-    if (auth?.auth_level === AuthLevel.TEMPORARY) {
+    if (auth.auth_level === AuthLevel.TEMPORARY) {
         return <DefaultLayout>{otp}</DefaultLayout>;
     }
 
     // 당신은 정지당했습니다.
-    if (auth?.auth_level === AuthLevel.BLOCKED) {
+    if (auth.auth_level === AuthLevel.BLOCKED) {
         return (
             <DefaultLayout>
                 <p>정지당했습니다... 심장이 뛰질 않아요.</p>
@@ -139,13 +118,21 @@ export default function MainLayout({
         );
     }
 
+    if (profile === undefined) {
+        return (
+            <LoadingLayout>
+                <p>내 정보를 불러오는 중입니다...</p>
+            </LoadingLayout>
+        );
+    }
+
     //TODO: 탈퇴 유예기간인 경우
     // if (auth?.auth_level === AuthLevel.UNREGISTERING) {
     //     return <DefaultLayout>{???}</DefaultLayout>
     // }
 
-    //TODO: AccessToken으로 private을 조회했더니 nickName이 null일 때
-    if (data.nickName === null) {
+    // 먼저 닉네임을 설정하세요.
+    if (profile.nickName === null) {
         return <DefaultLayout>{welcome}</DefaultLayout>;
     }
 

@@ -1,62 +1,37 @@
-import { isNonNullArray } from "@/utils/isNonNullArray";
-import { forwardRef, useEffect } from "react";
+"use client";
+
+import { forwardRef } from "react";
 
 export const DigitBlock = forwardRef(function DigitBlock(
     {
         index,
-        refArray,
         value,
         setValue,
+        disabled,
+        setCurrentIndex,
     }: {
         index: number;
-        refArray: (HTMLInputElement | null)[];
         value: string;
         setValue: (value: string) => void;
+        disabled: boolean;
+        setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
     },
     ref: React.ForwardedRef<HTMLInputElement>,
 ) {
     const handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
         const replacedValue = ev.target.value.replace(/[^0-9]*/g, "");
         setValue(replacedValue);
-
         if (replacedValue !== "") {
-            ev.target.disabled = true;
-            if (index < refArray.length - 1) {
-                const nextElem = refArray[index + 1];
-                if (nextElem !== null) {
-                    nextElem.disabled = false;
-                    nextElem.focus();
-                }
-            }
+            setCurrentIndex((i) => i + 1);
         }
     };
-
     const handleBackspace = (ev: React.KeyboardEvent<HTMLInputElement>) => {
-        if (!(ev.target instanceof HTMLInputElement)) return;
-
-        const target = ev.target;
         if (ev.key === "Backspace") {
             if (index > 0) {
-                target.disabled = true;
-                const prevElem = refArray[index - 1];
-                if (prevElem !== null) {
-                    prevElem.disabled = false;
-                    prevElem.focus();
-                }
+                setCurrentIndex((i) => i - 1);
             }
         }
     };
-
-    useEffect(() => {
-        if (!isNonNullArray(refArray)) {
-            throw new Error();
-        }
-
-        // FIXME: 이거 안전한가..? 아닌듯 검증..이 아니라 수정 필요. 살려줘요
-        if (value !== "" && !refArray[index].disabled) {
-            setValue("");
-        }
-    }, [index, setValue, refArray, value]);
 
     return (
         <input
@@ -69,7 +44,7 @@ export const DigitBlock = forwardRef(function DigitBlock(
             onChange={handleChange}
             onKeyDown={handleBackspace}
             maxLength={1}
-            disabled={index !== 0}
+            disabled={disabled}
         />
     );
 });

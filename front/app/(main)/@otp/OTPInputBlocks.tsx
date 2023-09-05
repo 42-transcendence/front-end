@@ -1,92 +1,46 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DigitBlock } from "./DigitBlock";
 import { useRefArray } from "@/hooks/useRefArray";
-import { fetcher } from "@/hooks/fetcher";
-import { hasProperty } from "@/library/akasha-lib";
-import { useSetAtom } from "jotai";
-import { AccessTokenAtom } from "@/atom/AccountAtom";
 import { useStateArray } from "@/hooks/useStateArray";
+import { usePromotionOTP } from "@/hooks/usePromotionOTP";
 
 export function OTPInputBlocks({ length }: { length: number }) {
-    const [values, setValuesAt, initializeValues] = useStateArray(length, "");
+    const [values, setValuesAt] = useStateArray(length, "");
     const [refArray, refCallbackAt] = useRefArray<HTMLInputElement | null>(
         length,
         null,
     );
-
-    const initialize = useCallback(() => {
-        initializeValues();
-        const first = refArray[0];
-        if (first !== null) {
-            first.disabled = false;
-            first.focus();
-        }
-    }, [initializeValues, refArray]);
-
-    const setAccessToken = useSetAtom(AccessTokenAtom);
-    const resolve = useCallback(
-        (json: unknown) => {
-            if (typeof json !== "object" || json === null) {
-                throw new Error();
-            }
-
-            if (!hasProperty("string", json, "access_token")) {
-                throw new Error();
-            }
-
-            window.localStorage.setItem("access_token", json.access_token);
-
-            if (hasProperty("string", json, "refresh_token")) {
-                window.localStorage.setItem(
-                    "refresh_token",
-                    json.refresh_token,
-                );
-            } else {
-                window.localStorage.removeItem("refresh_token");
-            }
-
-            setAccessToken(json.access_token);
-        },
-        [setAccessToken],
-    );
-
-    const failed = useCallback(
-        (error: unknown) => {
-            // TODO: error ㅊㅓ리 어떻게?
-            if (!(error instanceof Error)) {
-                throw error;
-            }
-            // TODO: add animation for wrong OTP
-            alert(`ERROR!! ${error.message}`);
-            window.localStorage.removeItem("refresh_token");
-
-            setAccessToken(null);
-        },
-        [setAccessToken],
-    );
-
-    // TODO: useSWR mutate 쓰기
+    const [currentIndex, setCurrentIndex] = useState(0);
     useEffect(() => {
-        if (values.every((e) => e !== "")) {
-            //TODO: 와... 이거 searchParams 어떻게 넘겨야 예쁘지?
-            fetcher(`/auth/promotion?otp=${values.join("")}`)
-                .then((response) => resolve(response))
-                .catch((error) => failed(error))
-                .finally(() => initialize());
+        if (currentIndex >= refArray.length) {
+            return;
         }
-    }, [failed, initialize, length, resolve, values]);
 
-    return refArray.map((_node, index) => {
+        const current = refArray[currentIndex];
+        if (current === null) {
+            throw new Error();
+        }
+        current.focus();
+    }, [refArray, currentIndex]);
+    const sendOTP = usePromotionOTP();
+    useEffect(() => {
+        if (currentIndex === values.length) {
+            void sendOTP(values.join("")); // TODO: 틀리면 초기화
+        }
+    }, [sendOTP, values, currentIndex]);
+
+    return refArray.map((_elem, index) => {
         return (
             <DigitBlock
-                key={index}
-                index={index}
-                refArray={refArray}
+                key={index - currentIndex}
                 ref={refCallbackAt(index)}
+                index={index}
                 value={values[index]}
                 setValue={setValuesAt(index)}
+                disabled={index !== currentIndex}
+                setCurrentIndex={setCurrentIndex}
             />
         );
     });

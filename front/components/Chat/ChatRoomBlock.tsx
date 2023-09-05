@@ -4,10 +4,13 @@ import {
     ChatRoomModeFlags,
     type ChatRoomEntry,
 } from "@/library/payload/chat-payloads";
-import { CurrentChatRoomAtom } from "@/atom/ChatAtom";
 import { useSetAtom } from "jotai";
-import { useSWR } from "@/hooks/fetcher";
-import { ChatStore } from "@/library/idb/chat-store";
+import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
+import {
+    useChatRoomLatestMessage,
+    useChatRoomModeFlags,
+    useChatRoomUnreadCount,
+} from "@/hooks/useChatRoom";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -29,30 +32,18 @@ export default function ChatRoomBlock({
 }: React.PropsWithChildren<{
     chatRoom: ChatRoomEntry;
 }>) {
-    //TODO: chatRoom.uuid 기준으로 idb에서 계산해오기. 변수 이름도 바꾸고, state로 바꿔야겠지?
-    const { data: numberOfUnreadMessages } = useSWR(
-        ["ChatStore", chatRoom.uuid, "Count"],
-        ([, roomUUID]) =>
-            chatRoom.lastMessageId !== null
-                ? ChatStore.countAfterMessage(roomUUID, chatRoom.lastMessageId)
-                : 0,
-    );
-    const { data: latestMessage } = useSWR(
-        ["ChatStore", chatRoom.uuid, "LatestMessage"],
-        ([, roomUUID]) => ChatStore.getLatestMessage(roomUUID),
-    );
-    const { data: modeFlags } = useSWR(
-        ["ChatStore", chatRoom.uuid, "ModeFlags"],
-        ([, roomUUID]) => ChatStore.getModeFlags(roomUUID),
-        { fallbackData: 0 },
-    );
-    const setChatRoom = useSetAtom(CurrentChatRoomAtom);
+    const roomUUID = chatRoom.id;
+    const numberOfUnreadMessages = useChatRoomUnreadCount(roomUUID);
+    const latestMessage = useChatRoomLatestMessage(roomUUID);
+    const modeFlagsRaw = useChatRoomModeFlags(roomUUID);
+    const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
 
     const lastMessageContent = latestMessage?.content ?? "채팅을 시작해보세요!";
+    const modeFlags = modeFlagsRaw ?? 0;
 
     return (
         <button
-            onClick={() => void setChatRoom(chatRoom.uuid)}
+            onClick={() => setChatRoomUUID(chatRoom.id)}
             className="w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
         >
             {/* chatrooms - image */}
@@ -62,7 +53,7 @@ export default function ChatRoomBlock({
                         {/* TODO: change to member preview (limit 4)*/}
                         <Avatar
                             className="relative h-10 w-10"
-                            accountUUID={chatRoom.members[0].uuid}
+                            accountUUID={chatRoom.members[0].accountId}
                             privileged={false}
                         />
                     </div>

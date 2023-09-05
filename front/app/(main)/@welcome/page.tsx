@@ -4,11 +4,15 @@ import { DoubleSharp, Icon } from "@/components/ImageLibrary";
 import { TextField } from "@/components/TextField";
 import { Card } from "@/components/Card/Card";
 import { useState } from "react";
-import { fetcher_POST } from "@/hooks/fetcher";
-import { mutate } from "swr";
+import { useRegisterNickName } from "@/hooks/useRegisterNickName";
 
 export default function Welcome() {
-    const [query, setQuery] = useState("");
+    const [value, setValue] = useState("");
+    const {
+        register,
+        error, //FIXME: 오류
+        conflict, //FIXME: 더 이상 사용할 수 없는 닉네임
+    } = useRegisterNickName();
 
     return (
         <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
@@ -20,20 +24,15 @@ export default function Welcome() {
                 <div className="flex flex-row gap-2">
                     <TextField
                         className="peer p-3"
-                        value={query}
+                        value={value}
                         pattern="[a-zA-Z0-9가-힣]{2,8}"
                         placeholder="닉네임을 입력해주세요!"
                         required
-                        onChange={(event) => setQuery(event.target.value)}
+                        onChange={(event) => setValue(event.target.value)}
                     />
                     <button
                         className="relative w-8 rounded bg-white/20 p-0.5 text-xs peer-valid:bg-secondary/70"
-                        onClick={() => {
-                            //TODO: Add then chains 나중에 조금 더 잘 만들자 ㅋㅋ~
-                            fetcher_POST("/profile/nick", { name: query })
-                                .then(() => mutate("/profile/private"))
-                                .catch(() => {});
-                        }}
+                        onClick={() => void register(value)}
                     >
                         확인
                     </button>

@@ -10,14 +10,15 @@ import {
     ChatServerOpcode,
 } from "@/library/payload/chat-opcodes";
 import { ByteBuffer } from "@/library/akasha-lib";
-import {
-    CurrentAccountUUIDAtom,
-    SelectedAccountUUIDsAtom,
-} from "@/atom/AccountAtom";
+import { SelectedAccountUUIDsAtom } from "@/atom/AccountAtom";
 import { useAtomValue, useSetAtom } from "jotai";
-import { CreateNewRoomCheckedAtom, CurrentChatRoomAtom } from "@/atom/ChatAtom";
+import {
+    CreateNewRoomCheckedAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@/atom/ChatAtom";
 import { ChatRoomModeFlags } from "@/library/payload/chat-payloads";
 import { GlobalStore } from "@/atom/GlobalStore";
+import { useCurrentAccountUUID } from "@/hooks/useCurrent";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
@@ -68,6 +69,7 @@ function useDetectSticky(): [
 
 // TODO: refactoring 하고 어떻게 잘 함수 분리해보기
 export function CreateNewRoom() {
+    const currentAccountUUID = useCurrentAccountUUID();
     const [title, setTitle] = useState("");
     const [password, setPassword] = useState("");
     const [limit, setLimit] = useState(42);
@@ -78,21 +80,18 @@ export function CreateNewRoom() {
     const setCreateNewRoomChecked = useSetAtom(CreateNewRoomCheckedAtom, {
         store: GlobalStore,
     });
-    const setCurrentChatRoom = useSetAtom(CurrentChatRoomAtom, {
-        store: GlobalStore,
-    });
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom, {
+    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom, {
         store: GlobalStore,
     });
     const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.CREATE_ROOM_RESULT,
-        async (_, buf) => {
+        (_, buf) => {
             const errno = buf.read1();
             if (errno === 0) {
                 const uuid = buf.readUUID();
-                await setCurrentChatRoom(uuid);
+                setCurrentChatRoomUUID(uuid);
             }
         },
     );

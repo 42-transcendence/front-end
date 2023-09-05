@@ -81,18 +81,15 @@ export class WebSocketRegistry {
     private readonly listeners = new Map<string, Set<WebSocketListenProps>>();
 
     register(props: WebSocketRegisterProps): () => void {
-        const url = typeof props.url === "function" ? props.url() : props.url;
-        if (url === "") {
-            return () => {};
-        }
-
         const key = props.name;
         if (this.registry.has(key)) {
             throw new ReferenceError();
         }
         const value = new WebSocketEntry();
+        let ignore = false;
 
         const connect = () => {
+            const url = typeof props.url === "function" ? props.url() : props.url;
             const webSocket = new WebSocket(url, props.protocols);
             webSocket.binaryType = "arraybuffer";
 
@@ -117,12 +114,12 @@ export class WebSocketRegistry {
             const listeners = this.ensureListenerSet(key);
 
             webSocket.addEventListener("close", (ev) => {
+                value.webSocket = undefined;
+
                 const state: ClosedSocketState = {
                     number: SocketStateNumber.CLOSED,
                     ...ev,
                 };
-
-                value.webSocket = undefined;
                 value.lastState = state;
                 value.lastMessage = undefined;
 
@@ -133,8 +130,10 @@ export class WebSocketRegistry {
                     listener.setLastMessage(undefined);
                 }
 
-                //TODO: reconnect
-                // connect();
+                if (!ignore) {
+                    //TODO: 지수 백오프
+                    connect();
+                }
             });
 
             webSocket.addEventListener("error", (ev) => {
@@ -144,7 +143,7 @@ export class WebSocketRegistry {
             });
 
             webSocket.addEventListener("message", (ev) => {
-                const message: ArrayBuffer = ev.data;
+                const message = ev.data as ArrayBuffer;
 
                 value.lastMessage = message;
 
@@ -197,6 +196,7 @@ export class WebSocketRegistry {
 
         this.registry.set(key, value);
         return () => {
+            ignore = true;
             this.registry.delete(key);
             value.webSocket?.close();
         };

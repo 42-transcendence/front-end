@@ -1,45 +1,36 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
 import { ChatBubbleWithProfile } from "./ChatBubble";
-import { useAtomValue } from "jotai";
-import { ChatStore } from "@/library/idb/chat-store";
 import type { MessageSchema } from "@/library/idb/chat-store";
-import {
-    CurrentChatMessagesAtom,
-    CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
-import { CurrentAccountUUIDAtom } from "@/atom/AccountAtom";
 import { useWebSocket } from "@/library/react/websocket-hook";
 import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { ByteBuffer } from "@/library/akasha-lib";
+import {
+    useCurrentAccountUUID,
+    useCurrentChatRoomUUID,
+} from "@/hooks/useCurrent";
+import { useChatRoomMessages } from "@/hooks/useChatRoom";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
-function ChatMessageInputArea({
-    chatRoomUUID,
-    scrollToBottom,
-}: {
-    chatRoomUUID: string;
-    scrollToBottom: () => void;
-}) {
+function ChatMessageInputArea() {
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
-    const { sendPayload } = useWebSocket("chat", []); // TODO: 이게 맞나 일단 CHAT_MESSAGE  보내기만을 위한 sendPayload?
+    const { sendPayload } = useWebSocket("chat", []);
 
     const handleClick: React.MouseEventHandler = (event) => {
         event.preventDefault();
 
-        //TODO: create chatbubble with value
-
         const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CHAT_MESSAGE);
-        buf.writeUUID(chatRoomUUID);
+        buf.writeUUID(currentChatRoomUUID);
         buf.writeString(value);
 
         sendPayload(buf);
         setValue("");
-        scrollToBottom();
+        event.currentTarget.scroll({ behavior: "smooth" }); //FIXME: 스크롤
     };
 
     useLayoutEffect(() => {
@@ -58,29 +49,31 @@ function ChatMessageInputArea({
     }, [value]);
 
     return (
-        <>
-            <textarea
-                onChange={(event) => setValue(event.target.value)}
-                rows={1}
-                spellCheck="false"
-                // autoFocus={true}
-                ref={textareaRef}
-                placeholder="Send a message"
-                style={{
-                    minHeight: MIN_TEXTAREA_HEIGHT,
-                    resize: "none",
-                }}
-                value={value}
-                className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
-            />
-            <button type="button" onClick={handleClick}>
-                <Icon.Send
-                    className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
-                    width={32}
-                    height={32}
+        <div className="relative flex justify-center self-stretch">
+            <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
+                <textarea
+                    onChange={(event) => setValue(event.target.value)}
+                    rows={1}
+                    spellCheck={false}
+                    // autoFocus={true}
+                    ref={textareaRef}
+                    placeholder="Send a message"
+                    style={{
+                        minHeight: MIN_TEXTAREA_HEIGHT,
+                        resize: "none",
+                    }}
+                    value={value}
+                    className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
                 />
-            </button>
-        </>
+                <button type="button" onClick={handleClick}>
+                    <Icon.Send
+                        className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
+                        width={32}
+                        height={32}
+                    />
+                </button>
+            </div>
+        </div>
     );
 }
 
@@ -93,7 +86,7 @@ const isSameMinute = (date1: Date, date2: Date) => {
 const isContinuedMessage = (arr: MessageSchema[], idx: number) => {
     return (
         idx > 0 &&
-        arr[idx].memberUUID === arr[idx - 1].memberUUID &&
+        arr[idx].accountId === arr[idx - 1].accountId &&
         isSameMinute(arr[idx].timestamp, arr[idx - 1].timestamp)
     );
 };
@@ -105,20 +98,10 @@ export function ChatDialog({
     outerFrame: string;
     innerFrame: string;
 }) {
-    const chatMessages = useAtomValue(CurrentChatMessagesAtom);
-    const chatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
+    const currentAccountUUID = useCurrentAccountUUID();
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const chatMessages = useChatRoomMessages(currentChatRoomUUID) ?? [];
     const chatDialogRef = useRef<HTMLDivElement>(null);
-
-    const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
-
-    const scrollToBottom = () => {
-        //FIXME: 충분한 메시지 추가로 스크롤을 만들고 정상 동작 테스트 필요
-        const chatDialogElem = chatDialogRef.current;
-        if (chatDialogElem === null) {
-            throw new Error();
-        }
-        chatDialogElem.scrollTop = chatDialogElem.scrollHeight;
-    };
 
     return (
         <div
@@ -139,7 +122,7 @@ export function ChatDialog({
                                 chatMessage={msg}
                                 isContinued={isContinuedMessage(arr, idx)}
                                 dir={
-                                    msg.memberUUID === currentAccountUUID
+                                    msg.accountId === currentAccountUUID
                                         ? "right"
                                         : "left"
                                 }
@@ -147,15 +130,7 @@ export function ChatDialog({
                         );
                     })}
                 </div>
-
-                <div className="relative flex justify-center self-stretch">
-                    <div className="group relative flex w-full max-w-[640px] flex-shrink-0 items-center rounded-xl bg-black/30 px-4 py-2">
-                        <ChatMessageInputArea
-                            chatRoomUUID={chatRoomUUID}
-                            scrollToBottom={scrollToBottom}
-                        />
-                    </div>
-                </div>
+                <ChatMessageInputArea />
             </div>
         </div>
     );

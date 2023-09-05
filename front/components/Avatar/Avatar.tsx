@@ -2,22 +2,17 @@
 
 import { Status } from "@/components/Status";
 import Image from "next/image";
-import type {
-    AccountProfileProtectedPayload,
-    AccountProfilePublicPayload,
-} from "@/library/payload/profile-payloads";
-import { ActiveStatusNumber } from "@/library/generated/types";
-import { fetcher, useSWR } from "@/hooks/fetcher";
+import { ActiveStatusNumber } from "@/library/payload/generated/types";
+import { useProtectedProfile, usePublicProfile } from "@/hooks/useProfile";
 
 function PrivilegedSection({ accountUUID }: { accountUUID: string }) {
-    const { data } = useSWR(
-        `/profile/protected/${accountUUID}`,
-        fetcher<AccountProfileProtectedPayload>,
-    );
+    const profile = useProtectedProfile(accountUUID);
 
     return (
         <div className="absolute bottom-0 right-0 aspect-square h-1/3 w-1/3 rounded-full">
-            <Status type={data?.activeStatus ?? ActiveStatusNumber.INVISIBLE} />
+            <Status
+                type={profile?.activeStatus ?? ActiveStatusNumber.INVISIBLE}
+            />
         </div>
     );
 }
@@ -52,10 +47,7 @@ export function Avatar({
     accountUUID: string;
     privileged: boolean;
 }) {
-    const { data } = useSWR(
-        `/profile/public/${accountUUID}`,
-        fetcher<AccountProfilePublicPayload>,
-    );
+    const profile = usePublicProfile(accountUUID);
 
     return (
         <div
@@ -63,7 +55,7 @@ export function Avatar({
         >
             <Image
                 className="relative rounded-full"
-                src={data?.avatarKey ?? `__DEFAULT__#${accountUUID}`}
+                src={profile?.avatarKey ?? `__DEFAULT__#${accountUUID}`}
                 alt="Avatar"
                 sizes="100%"
                 fill={true}

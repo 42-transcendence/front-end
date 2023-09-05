@@ -1,42 +1,65 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import type {
     ChatEntity,
     ChatMemberEntity,
     ChatMessageEntity,
     EnemyEntity,
     FriendEntity,
-} from "../generated/types";
-import type { AccountUUID } from "./profile-payloads";
+} from "./generated/types";
 import type { ByteBuffer } from "@akasha-lib";
 import { NULL_UUID } from "@akasha-lib";
 
+/// FriendActiveFlags
+export const FRIEND_ACTIVE_FLAGS_SIZE = 8;
+export const enum FriendActiveFlags {
+    SHOW_ACTIVE_STATUS = 1 << 0,
+    SHOW_ACTIVE_TIMESTAMP = 1 << 1,
+}
+
+/// FriendModifyFlags
+export const enum FriendModifyFlags {
+    MODIFY_GROUP_NAME = 1 << 0,
+    MODIFY_ACTIVE_FLAGS = 1 << 1,
+}
+
 /// FriendEntry
-export type FriendEntry = AccountUUID &
-    Pick<FriendEntity, "groupName" | "activeFlags">;
+export type FriendEntry = Pick<
+    FriendEntity,
+    "friendAccountId" | "groupName"
+> & { activeFlags: number };
 
 export function readFriend(buf: ByteBuffer): FriendEntry {
-    const uuid = buf.readUUID();
+    const friendAccountId = buf.readUUID();
     const groupName = buf.readString();
     const activeFlags = buf.read1();
-    return { uuid, groupName, activeFlags };
+    return { friendAccountId, groupName, activeFlags };
 }
 
 export function writeFriend(obj: FriendEntry, buf: ByteBuffer) {
-    buf.writeUUID(obj.uuid);
+    buf.writeUUID(obj.friendAccountId);
     buf.writeString(obj.groupName);
     buf.write1(obj.activeFlags);
 }
 
+/// FriendErrorNumber
+export const enum FriendErrorNumber {
+    SUCCESS,
+    ERROR_ALREADY_FRIEND,
+    ERROR_NOT_FRIEND,
+    ERROR_SELF_FRIEND,
+}
+
 /// EnemyEntry
-export type EnemyEntry = AccountUUID & Pick<EnemyEntity, "memo">;
+export type EnemyEntry = Pick<EnemyEntity, "enemyAccountId" | "memo">;
 
 export function readEnemy(buf: ByteBuffer): EnemyEntry {
-    const uuid = buf.readUUID();
+    const enemyAccountId = buf.readUUID();
     const memo = buf.readString();
-    return { uuid, memo };
+    return { enemyAccountId, memo };
 }
 
 export function writeEnemy(obj: EnemyEntry, buf: ByteBuffer) {
-    buf.writeUUID(obj.uuid);
+    buf.writeUUID(obj.enemyAccountId);
     buf.writeString(obj.memo);
 }
 
@@ -49,15 +72,25 @@ export type SocialPayload = {
 
 export function readSocialPayload(buf: ByteBuffer): SocialPayload {
     const friendList = buf.readArray(readFriend);
-    const friendRequestList = buf.readArray((buf) => buf.readString());
+    const friendRequestList = buf.readArray(buf.readString);
     const enemyList = buf.readArray(readEnemy);
     return { friendList, friendRequestList, enemyList };
 }
 
 export function writeSocialPayload(obj: SocialPayload, buf: ByteBuffer) {
     buf.writeArray(obj.friendList, writeFriend);
-    buf.writeArray(obj.friendRequestList, (x, buf) => buf.writeString(x));
+    buf.writeArray(obj.friendRequestList, buf.writeString);
     buf.writeArray(obj.enemyList, writeEnemy);
+}
+
+/// RoomErrorNumber
+export const enum RoomErrorNumber {
+    SUCCESS,
+    ERROR_ALREADY_MEMBER,
+    ERROR_NOT_MEMBER,
+    ERROR_OWNER,
+    ERROR_NOT_OWNER,
+    ERROR_NOT_MANAGER,
 }
 
 /// ChatRoomModeFlags
@@ -66,135 +99,156 @@ export const enum ChatRoomModeFlags {
     SECRET = 1 << 1,
 }
 
-/// ChatMemberModeFlags
-export const enum ChatMemberModeFlags {
-    ADMIN = 1 << 0,
-    MANAGER = 1 << 1,
+export function toChatRoomModeFlags(obj: {
+    isPrivate: boolean;
+    isSecret: boolean;
+}): number {
+    return (
+        (obj.isPrivate ? ChatRoomModeFlags.PRIVATE : 0) |
+        (obj.isSecret ? ChatRoomModeFlags.SECRET : 0)
+    );
 }
 
-/// ChatRoomUUID
-export type ChatRoomUUID = Pick<ChatEntity, "uuid">;
-
-/// ChatMessageUUID
-export type ChatMessageUUID = Pick<ChatMessageEntity, "uuid">;
+export function fromChatRoomModeFlags(modeFlags: number): {
+    isPrivate: boolean;
+    isSecret: boolean;
+} {
+    return {
+        isPrivate: (modeFlags & ChatRoomModeFlags.PRIVATE) !== 0,
+        isSecret: (modeFlags & ChatRoomModeFlags.SECRET) !== 0,
+    };
+}
 
 /// ChatRoomChatMessagePairEntry
-export type ChatRoomChatMessagePairEntry = ChatRoomUUID & {
-    messageUUID: ChatMessageUUID["uuid"];
+export type ChatRoomChatMessagePairEntry = {
+    chatId: ChatEntity["id"];
+    messageId: ChatMessageEntity["id"];
 };
 
 export function readChatRoomChatMessagePair(
     buf: ByteBuffer,
 ): ChatRoomChatMessagePairEntry {
-    const uuid = buf.readUUID();
-    const messageUUID = buf.readUUID();
-    return { uuid, messageUUID };
+    const chatId = buf.readUUID();
+    const messageId = buf.readUUID();
+    return { chatId, messageId };
 }
 
 export function writeChatRoomChatMessagePair(
     obj: ChatRoomChatMessagePairEntry,
     buf: ByteBuffer,
 ) {
-    buf.writeUUID(obj.uuid);
-    buf.writeUUID(obj.messageUUID);
+    buf.writeUUID(obj.chatId);
+    buf.writeUUID(obj.messageId);
 }
 
 /// ChatRoomEntry
-export type ChatRoomEntry = ChatRoomUUID &
-    Pick<ChatEntity, "title" | "modeFlags" | "limit"> & {
-        members: ChatRoomMemberEntry[];
-    } & Pick<ChatMemberEntity, "lastMessageId">;
+export type ChatRoomEntry = Pick<
+    ChatEntity,
+    "id" | "title" | "limit" | "isPrivate" | "isSecret"
+> & {
+    members: ChatRoomMemberEntry[];
+} & Pick<ChatMemberEntity, "lastMessageId">;
 
 export function readChatRoom(buf: ByteBuffer): ChatRoomEntry {
-    const uuid = buf.readUUID();
+    const id = buf.readUUID();
     const title = buf.readString();
-    const modeFlags = buf.read1();
     const limit = buf.read2();
+    const modeFlags = buf.read1();
     const members = buf.readArray(readChatRoomMember);
-    const lastMessageId = buf.readNullable((buf) => buf.readUUID(), NULL_UUID);
-    return { uuid, title, modeFlags, limit, members, lastMessageId };
+    const lastMessageId = buf.readNullable(buf.readUUID, NULL_UUID);
+    return {
+        id,
+        title,
+        ...fromChatRoomModeFlags(modeFlags),
+        limit,
+        members,
+        lastMessageId,
+    };
 }
 
 export function writeChatRoom(obj: ChatRoomEntry, buf: ByteBuffer) {
-    buf.writeUUID(obj.uuid);
+    buf.writeUUID(obj.id);
     buf.writeString(obj.title);
-    buf.write1(obj.modeFlags);
     buf.write2(obj.limit);
+    buf.write1(toChatRoomModeFlags(obj));
     buf.writeArray(obj.members, writeChatRoomMember);
-    buf.writeNullable(
-        obj.lastMessageId,
-        (x, buf) => buf.writeUUID(x),
-        NULL_UUID,
-    );
+    buf.writeNullable(obj.lastMessageId, buf.writeUUID, NULL_UUID);
 }
 
 /// ChatRoomMemberEntry
-export type ChatRoomMemberEntry = AccountUUID &
-    Pick<ChatMemberEntity, "modeFlags">;
+export type ChatRoomMemberEntry = Pick<ChatMemberEntity, "accountId" | "role">;
 
 export function readChatRoomMember(buf: ByteBuffer): ChatRoomMemberEntry {
-    const uuid = buf.readUUID();
-    const modeFlags = buf.read1();
-    return { uuid, modeFlags };
+    const accountId = buf.readUUID();
+    const role = buf.read1();
+    return { accountId, role };
 }
 
 export function writeChatRoomMember(obj: ChatRoomMemberEntry, buf: ByteBuffer) {
-    buf.writeUUID(obj.uuid);
-    buf.write1(obj.modeFlags);
+    buf.writeUUID(obj.accountId);
+    buf.write1(obj.role);
 }
 
 /// ChatRoomViewEntry
-export type ChatRoomViewEntry = ChatRoomUUID &
-    Pick<ChatEntity, "title" | "modeFlags" | "limit"> & {
-        memberCount: number;
-    };
+export type ChatRoomViewEntry = Pick<
+    ChatEntity,
+    "id" | "title" | "limit" | "isPrivate" | "isSecret"
+> & {
+    memberCount: number;
+};
 
 export function readChatRoomView(buf: ByteBuffer): ChatRoomViewEntry {
-    const uuid = buf.readUUID();
+    const id = buf.readUUID();
     const title = buf.readString();
-    const modeFlags = buf.read1();
     const limit = buf.read2();
+    const modeFlags = buf.read1();
     const memberCount = buf.read2();
-    return { uuid, title, modeFlags, limit, memberCount };
+    return {
+        id,
+        title,
+        ...fromChatRoomModeFlags(modeFlags),
+        limit,
+        memberCount,
+    };
 }
 
 export function writeChatRoomView(obj: ChatRoomViewEntry, buf: ByteBuffer) {
-    buf.writeUUID(obj.uuid);
+    buf.writeUUID(obj.id);
     buf.writeString(obj.title);
-    buf.write1(obj.modeFlags);
     buf.write2(obj.limit);
+    buf.write1(toChatRoomModeFlags(obj));
     buf.write2(obj.memberCount);
 }
 
 /// NewChatRoomRequest
 export type NewChatRoomRequest = Pick<
     ChatEntity,
-    "title" | "modeFlags" | "password" | "limit"
+    "title" | "password" | "limit" | "isPrivate" | "isSecret"
 > & {
     members: ChatRoomMemberEntry[];
 };
 
 /// ChatMessageEntry
-export type ChatMessageEntry = ChatMessageUUID & {
-    roomUUID: ChatRoomUUID["uuid"];
-    memberUUID: AccountUUID["uuid"];
-} & Pick<ChatMessageEntity, "content" | "modeFlags" | "timestamp">;
+export type ChatMessageEntry = Pick<
+    ChatMessageEntity,
+    "id" | "chatId" | "accountId" | "content" | "messageType" | "timestamp"
+>;
 
 export function readChatMessage(buf: ByteBuffer): ChatMessageEntry {
-    const uuid = buf.readUUID();
-    const roomUUID = buf.readUUID();
-    const memberUUID = buf.readUUID();
+    const id = buf.readUUID();
+    const chatId = buf.readUUID();
+    const accountId = buf.readUUID();
     const content = buf.readString();
-    const modeFlags = buf.read1();
+    const messageType = buf.read1();
     const timestamp = buf.readDate();
-    return { uuid, roomUUID, memberUUID, content, modeFlags, timestamp };
+    return { id, chatId, accountId, content, messageType, timestamp };
 }
 
 export function writeChatMessage(obj: ChatMessageEntry, buf: ByteBuffer) {
-    buf.writeUUID(obj.uuid);
-    buf.writeUUID(obj.roomUUID);
-    buf.writeUUID(obj.memberUUID);
+    buf.writeUUID(obj.id);
+    buf.writeUUID(obj.chatId);
+    buf.writeUUID(obj.accountId);
     buf.writeString(obj.content);
-    buf.write1(obj.modeFlags);
+    buf.write1(obj.messageType);
     buf.writeDate(obj.timestamp);
 }
