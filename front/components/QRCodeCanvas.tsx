@@ -2,18 +2,15 @@ import QRCode from "qrcode";
 import { useEffect, useRef, useState } from "react";
 // import { Dialog } from "@headlessui/react";
 
-type OTPAuthAlgorithm = "SHA1" | "SHA256" | "SHA512";
 type Base64String = string & { __base32__: never };
 
 type AuthInfo = {
-    algorithm: OTPAuthAlgorithm;
     secret: Base64String;
     issuer: string;
     subject: string;
 };
 
 const authInfo = {
-    algorithm: "SHA-512" as OTPAuthAlgorithm,
     secret: "ZGVlcF9kYXJrX3NlY3JldA==" as Base64String,
     issuer: "doublesharp",
     subject: "test-oauth",
@@ -29,12 +26,13 @@ export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
         if (canvas === null) {
             throw new Error();
         }
+
         const uri = new URL("otpauth://");
         uri.hostname = "totp";
         uri.pathname = `${authInfo.issuer}:${authInfo.subject}`;
         uri.searchParams.set("secret", authInfo.secret);
         uri.searchParams.set("issuer", authInfo.issuer);
-        uri.searchParams.set("algorithm", authInfo.algorithm);
+        uri.searchParams.set("algorithm", "SHA-512");
         uri.searchParams.set("digits", digits.toString());
         uri.searchParams.set("period", period.toString());
 
@@ -49,6 +47,7 @@ export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
         authInfo.secret,
         authInfo.subject,
     ]);
+
     return (
         <div className="">
             <canvas ref={canvasRef} />
