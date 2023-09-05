@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
 // import { Dialog } from "@headlessui/react";
@@ -20,13 +21,15 @@ const authInfo = {
 
 export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const router = useRouter();
     const [uri, setURI] = useState("");
     const digits = 6;
     const period = 30;
 
+    // TODO: 이러면 되나...? nextjs문서에서 외부 링크는 router.push말고 그냥 window location쓰래서 이렇게 해놨습니다 일단
     const handleClick = useCallback(() => {
-        window.location.href = uri; // TODO: 이러면 되나...?
-    }, [uri]);
+        router.push(uri);
+    }, [router, uri]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
