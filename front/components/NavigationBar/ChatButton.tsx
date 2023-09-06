@@ -32,7 +32,7 @@ export function ChatButton() {
                 initialFocus={ref}
                 onClose={() => setIsOpen(false)}
             >
-                <Dialog.Panel className="absolute inset-0 top-16 flex items-center justify-center lg:inset-32 lg:bottom-16">
+                <Dialog.Panel className="absolute inset-0 top-16 flex items-center justify-center lg:inset-x-1/2 lg:inset-y-32">
                     <div className="relative flex h-full w-full justify-center 2xl:w-fit">
                         <ChatLayout />
                     </div>

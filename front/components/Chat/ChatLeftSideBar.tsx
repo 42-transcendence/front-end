@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
 import ChatRoomBlock from "./ChatRoomBlock";
 import { TextField } from "@/components/TextField";
@@ -9,7 +9,7 @@ import { Provider, useAtom, useAtomValue } from "jotai";
 import { ChatRoomListAtom, CreateNewRoomCheckedAtom } from "@/atom/ChatAtom";
 
 import { FzfHighlight, useFzf } from "react-fzf";
-import { Tab, Transition } from "@headlessui/react";
+import { Tab } from "@headlessui/react";
 import type { ChatRoomEntry } from "@/library/payload/chat-payloads";
 
 function classNames(...classes: string[]) {
