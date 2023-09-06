@@ -50,7 +50,7 @@ export default function ChatRoomBlock({
                 setChatRoomUUID(chatRoom.id);
                 setLeftSideBar(false);
             }}
-            className="relative w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
+            className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
         >
             {/* chatrooms - image */}
             <div className="flex h-fit flex-row items-center gap-4 self-stretch">

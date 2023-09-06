@@ -77,7 +77,7 @@ export default function ChatLeftSideBar() {
                         onChange={(event) => setQuery(event.target.value)}
                     />
 
-                    <div className="h-fit w-full overflow-auto">
+                    <div className="h-fit w-full p-1">
                         {results.map((item, index) => (
                             <ChatRoomBlock key={item.id} chatRoom={item}>
                                 <FzfHighlight
