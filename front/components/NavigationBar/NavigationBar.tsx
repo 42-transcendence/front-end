@@ -13,11 +13,12 @@ import { usePrivateProfile } from "@/hooks/useProfile";
 export function NavigationBar() {
     return (
         <div className="relative flex h-fit w-full flex-row items-center justify-between bg-primary/30 p-2 backdrop-blur-[20px] backdrop-brightness-100">
-            <Link className="relative" href="/">
+            <Link tabIndex={-1} className="relative" href="/">
                 <DoubleSharp
-                    className="w-12 p-2 text-white hover:drop-shadow-[0_0_0.3rem_#ffffff70]"
-                    width="100%"
-                    height="100%"
+                    tabIndex={0}
+                    className="w-12 rounded-lg p-2 text-white outline-none transition-all hover:drop-shadow-[0_0_0.3rem_#ffffff90] focus-visible:outline-primary/70"
+                    width={48}
+                    height={48}
                 />
             </Link>
             <div className="relative flex flex-row items-center justify-between gap-4">
@@ -42,10 +43,13 @@ function ProfileButton() {
     };
 
     return (
-        <button onClick={asyncRoute}>
+        <button
+            className="flex h-12 w-12 items-center justify-center rounded-lg outline-none hover:bg-primary/30 focus-visible:outline-primary/70 active:bg-secondary/70"
+            onClick={asyncRoute}
+        >
             <Avatar
                 accountUUID={currentAccountUUID}
-                className="relative h-9 w-9 bg-white/30"
+                className="relative h-8 w-8 bg-white/30"
                 privileged={true}
             />
         </button>
