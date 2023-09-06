@@ -5,7 +5,10 @@ import {
     type ChatRoomEntry,
 } from "@/library/payload/chat-payloads";
 import { useSetAtom } from "jotai";
-import { CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
+import {
+    CurrentChatRoomUUIDAtom,
+    LeftSideBarIsOpenAtom,
+} from "@/atom/ChatAtom";
 import {
     useChatRoomLatestMessage,
     useChatRoomModeFlags,
@@ -37,13 +40,16 @@ export default function ChatRoomBlock({
     const latestMessage = useChatRoomLatestMessage(roomUUID);
     const modeFlagsRaw = useChatRoomModeFlags(roomUUID);
     const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
-
     const lastMessageContent = latestMessage?.content ?? "채팅을 시작해보세요!";
     const modeFlags = modeFlagsRaw ?? 0;
+    const setLeftSideBar = useSetAtom(LeftSideBarIsOpenAtom);
 
     return (
         <button
-            onClick={() => setChatRoomUUID(chatRoom.id)}
+            onClick={() => {
+                setChatRoomUUID(chatRoom.id);
+                setLeftSideBar(false);
+            }}
             className="relative w-full rounded-lg px-2 hover:bg-primary/30 active:bg-secondary/80"
         >
             {/* chatrooms - image */}

@@ -9,13 +9,18 @@ import { LeftSideBarIsOpenAtom } from "@/atom/ChatAtom";
 import { useEffect } from "react";
 
 export function LeftSideBarInput() {
+    const [{ close }, setToClose] = useAtom(LeftSideBarIsOpenAtom);
+
     return (
         <input
             className="peer/left hidden"
             type="radio"
+            onClick={() => {
+                setToClose(false);
+            }}
+            checked={close}
             name="leftRadio"
             id="forCloseLeftSideBar"
-            defaultChecked
         />
     );
 }
@@ -36,7 +41,7 @@ function LeftSidebarButton() {
             <input
                 className="peer/headerleft hidden"
                 checked={open}
-                onChange={() => setToOpen(true)}
+                onClick={() => setToOpen(true)}
                 type="radio"
                 name="leftRadio"
                 id="forOpenLeftSideBar"

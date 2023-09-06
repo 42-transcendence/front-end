@@ -1,17 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Icon } from "@/components/ImageLibrary";
 import ChatRoomBlock from "./ChatRoomBlock";
 import { TextField } from "@/components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
-import { Provider, useAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-    ChatRoomListAtom,
-    CreateNewRoomCheckedAtom,
-    CurrentChatRoomUUIDAtom,
-    LeftSideBarIsOpenAtom,
-} from "@/atom/ChatAtom";
+import { Provider, useAtom, useAtomValue } from "jotai";
+import { ChatRoomListAtom, CreateNewRoomCheckedAtom } from "@/atom/ChatAtom";
 
 import { FzfHighlight, useFzf } from "react-fzf";
 
@@ -27,25 +22,9 @@ export default function ChatLeftSideBar() {
         query,
     });
 
-    const currentChatRoom = useAtomValue(CurrentChatRoomUUIDAtom);
-    const ref = useRef<HTMLDivElement>(null);
-    const setSideBarOpen = useSetAtom(LeftSideBarIsOpenAtom);
-
-    useEffect(() => {
-        if (ref.current === null) {
-            throw new Error();
-        }
-        if (ref.current.classList.contains("absolute")) {
-            setSideBarOpen(false);
-        }
-    }, [ref, currentChatRoom, setSideBarOpen]);
-
     return (
-        <div
-            ref={ref}
-            className="absolute z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/left:w-0 peer-checked/left:min-w-0 peer-checked/left:p-0 2xl:relative 2xl:flex 2xl:rounded-[0px_28px_28px_0px]"
-        >
-            <div className="flex h-full w-[310px] shrink flex-col items-start gap-2 px-4 py-2 2xl:py-4">
+        <div className="absolute z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/left:w-0 peer-checked/left:min-w-0 peer-checked/left:p-0 2xl:relative 2xl:flex 2xl:rounded-[0px_28px_28px_0px]">
+            <div className="flex h-full w-[310px] shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:py-4">
                 <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch peer-checked:text-gray-200/80 2xl:py-2">
                     <label
                         data-checked={createNewRoomChecked}
@@ -53,7 +32,7 @@ export default function ChatLeftSideBar() {
                         className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white data-[checked=true]:bg-secondary/80"
                     >
                         <Icon.Edit className="" width={17} height={17} />
-                        <p className="font-sans text-base leading-4 ">
+                        <p className="font-sans text-base leading-4">
                             방 만들기
                         </p>
                     </label>
