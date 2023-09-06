@@ -12,10 +12,11 @@ import { useAtomValue, useSetAtom } from "jotai";
 import {
     CreateNewRoomCheckedAtom,
     CurrentChatRoomUUIDAtom,
-} from "@atoms/ChatAtom";
-import { ChatRoomModeFlags } from "@common/chat-payloads";
-import { GlobalStore } from "@atoms/GlobalStore";
-import { useCurrentAccountUUID } from "@hooks/useCurrent";
+} from "@/atom/ChatAtom";
+import { ChatRoomModeFlags } from "@/library/payload/chat-payloads";
+import { GlobalStore } from "@/atom/GlobalStore";
+import { useCurrentAccountUUID } from "@/hooks/useCurrent";
+import { AnimatePresence, motion } from "framer-motion";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
@@ -130,7 +131,7 @@ export function CreateNewRoom() {
         <form
             autoComplete="off"
             onSubmit={handleSubmit}
-            className="group hidden h-full w-full overflow-auto peer-checked:flex"
+            className="group h-full w-full overflow-auto"
         >
             <div className="flex h-full w-full flex-col justify-between gap-4">
                 <div className="flex flex-col gap-2 self-stretch overflow-auto">
@@ -275,7 +276,7 @@ function InviteFriendToggle({
                 htmlFor="sectionHeader"
                 data-checked={checked}
                 data-sticky={isSticky}
-                className="group sticky -top-1 z-10 flex h-fit w-full flex-row items-center gap-3 rounded p-3 transition-colors hover:bg-gray-500/30 hover:text-white data-[checked=true]:data-[sticky=true]:bg-secondary data-[checked=true]:data-[sticky=true]:duration-0"
+                className="group sticky -top-1 z-10 flex h-fit w-full flex-row items-center gap-3 rounded p-3 transition-colors hover:bg-gray-500/30 hover:text-gray-50/80 data-[checked=true]:data-[sticky=true]:bg-secondary data-[checked=true]:data-[sticky=true]:duration-0"
             >
                 <Icon.Invite
                     width={56}
@@ -289,7 +290,7 @@ function InviteFriendToggle({
                     id="sectionHeader"
                     className="hidden"
                 />
-                <p className="px-1 text-sm group-data-[checked=true]:text-white">
+                <p className="px-1 text-sm group-data-[checked=true]:text-gray-50/80">
                     초대 상대 선택
                 </p>
             </label>

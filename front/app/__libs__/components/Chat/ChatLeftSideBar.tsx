@@ -82,7 +82,7 @@ export default function ChatLeftSideBar() {
                     data-checked={createNewRoomChecked}
                     tabIndex={0}
                     htmlFor="CreateNewRoom"
-                    className="relative flex h-12 items-center gap-2 rounded-md p-4 outline-none hover:bg-primary/30 hover:transition-all focus-visible:outline-primary/70 data-[checked=true]:scale-105 data-[checked=true]:bg-secondary/80"
+                    className="relative flex h-12 items-center gap-2 rounded-md p-4 outline-none hover:bg-primary/30 hover:transition-all focus-visible:outline-primary/70 data-[checked=true]:scale-105 data-[checked=true]:bg-secondary/70"
                 >
                     <Icon.Edit className="" width={17} height={17} />
                     <p className="font-sans text-base leading-4">방 만들기</p>
@@ -110,65 +110,87 @@ export default function ChatLeftSideBar() {
                 className="peer hidden"
             />
 
-            <AnimatePresence>
-                <Tab.Group>
-                    <Tab.List
+            {!createNewRoomChecked && (
+                <AnimatePresence>
+                    <Tab.Group
                         as={motion.div}
-                        onClick={() => {
-                            setQuery("");
-                        }}
-                        className={({ selectedIndex }) => {
-                            setTab(selectedIndex);
-                            return "flex h-10 w-full space-x-1 rounded-lg bg-black/30 p-1";
-                        }}
+                        className="h-full w-full flex-col gap-2"
+                        initial={{ display: "none", opacity: 0 }}
+                        animate={{ opacity: 1, display: "flex" }}
+                        exit={{ opacity: 0 }}
+                        transition={{ delay: 0.2 }}
                     >
-                        <motion.div
-                            animate={
-                                tab === 0
-                                    ? { x: [null, 139, 0] }
-                                    : { x: [null, 0, 139] }
-                            }
-                            transition={{ type: "spring", duration: 0.3 }}
-                            className={classNames(
-                                "absolute flex h-8 w-full pb-1",
-                            )}
+                        <Tab.List
+                            onClick={() => {
+                                setQuery("");
+                            }}
+                            className={({ selectedIndex }) => {
+                                setTab(selectedIndex);
+                                return "flex w-full rounded-lg bg-black/30 p-1";
+                            }}
                         >
-                            {categories.map((category, idx) => (
+                            <motion.div
+                                animate={
+                                    tab === 0
+                                        ? { x: [null, 135, 0] }
+                                        : { x: [null, 0, 135] }
+                                }
+                                transition={{ type: "spring", duration: 0.3 }}
+                                className={classNames(
+                                    "absolute flex h-8 w-full pb-1",
+                                )}
+                            >
+                                <div className="h-full w-[135px] rounded-lg bg-secondary/80" />
+                            </motion.div>
+                            {Object.keys(categories).map((category) => (
                                 <Tab
-                                    key={idx}
+                                    as={motion.div}
+                                    key={category}
                                     className={({ selected }) =>
                                         classNames(
-                                            "w-full rounded-lg py-1 text-sm font-medium leading-5 text-gray-50/70",
-                                            "outline-none focus-within:outline-primary/30",
+                                            "z-[1] flex w-full items-center justify-center rounded-lg py-1 text-sm font-medium leading-5 text-gray-50/70",
+                                            "outline-none focus-within:outline-primary/70",
                                             selected
-                                                ? "bg-secondary/30 shadow"
-                                                : "hover:bg-primary/30 hover:text-white",
+                                                ? ""
+                                                : "hover:bg-primary/10 hover:text-white",
                                         )
                                     }
                                 >
-                                    {category.name}
+                                    {category}
                                 </Tab>
                             ))}
-                            <div className="h-full w-[139px] rounded-lg bg-secondary/80" />
-                        </motion.div>
-                    </Tab.List>
-                    <ListQuaryTextField
-                        value={query}
-                        onChange={(event) => setQuery(event.target.value)}
-                    />
-                    <Tab.Panels className="h-full w-full overflow-auto">
-                        {categories.map((category, idx) => (
-                            <Tab.Panel key={idx}>
-                                {category.Component}
-                            </Tab.Panel>
-                        ))}
-                    </Tab.Panels>
-                </Tab.Group>
-            </AnimatePresence>
+                        </Tab.List>
+                        <Tab.Panels className="w-full">
+                            <ListQuaryTextField
+                                value={query}
+                                onChange={(event) =>
+                                    setQuery(event.target.value)
+                                }
+                            />
 
-            <Provider>
-                <CreateNewRoom />
-            </Provider>
+                            {Object.values(categories).map((rooms, idx) => (
+                                <Tab.Panel key={idx}>
+                                    <RoomPanel rooms={rooms} query={query} />
+                                </Tab.Panel>
+                            ))}
+                        </Tab.Panels>
+                    </Tab.Group>
+                </AnimatePresence>
+            )}
+
+            <AnimatePresence>
+                {createNewRoomChecked && (
+                    <motion.div
+                        initial={{ y: "100%", opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: "100%", opacity: 0 }}
+                        className="h-full w-full overflow-auto"
+                        transition={{ type: "spring", damping: 17 }}
+                    >
+                        <CreateNewRoom />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </ChatLeftSideBarLayout>
     );
 }
