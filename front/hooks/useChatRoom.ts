@@ -46,11 +46,12 @@ export function useChatRoomTotalUnreadCount() {
                 return ChatStore.countAfterMessage(room.id, lastMessageId);
             });
 
-            const unReadCounts = await Promise.all(promises);
-            return unReadCounts.reduce(
+            const unreadCounts = await Promise.all(promises);
+            const totalUnreadCount = unreadCounts.reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
             );
+            return totalUnreadCount;
         }, []),
         { store: GlobalStore },
     );
