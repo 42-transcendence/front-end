@@ -1,11 +1,16 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Icon } from "../ImageLibrary";
+import { Icon } from "@/components/ImageLibrary";
 import { Dialog } from "@headlessui/react";
-import ChatLayout from "../Chat/ChatLayout";
 import { useChatRoomTotalUnreadCount } from "@/hooks/useChatRoom";
 import { NotificationBadge } from "./NotificationBadge";
+import ChatLayout from "@/components/Chat/ChatLayout";
+import ChatLeftSideBar from "@/components/Chat/ChatLeftSideBar";
+import ChatMainPage from "@/components/Chat/ChatMainPage";
+import ChatRightSideBar from "@/components/Chat/ChatRightSideBar";
+import { ChatHeader } from "@/components/Chat/ChatHeader";
+import { ChatDialog } from "@/components/Chat/ChatDialog";
 
 export function ChatButton() {
     const [isOpen, setIsOpen] = useState(false);
@@ -32,11 +37,23 @@ export function ChatButton() {
                 initialFocus={ref}
                 onClose={() => setIsOpen(false)}
             >
-                <Dialog.Panel className="absolute inset-0 top-16 flex items-center justify-center lg:inset-x-1/2 lg:inset-y-32">
-                    <div className="relative flex h-full w-full justify-center 2xl:w-fit">
-                        <ChatLayout />
-                    </div>
-                </Dialog.Panel>
+                <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+
+                <div className="fixed inset-0 flex w-screen items-center justify-center">
+                    <Dialog.Panel className="absolute inset-0 top-12 mx-auto max-w-7xl lg:inset-32">
+                        <ChatLayout>
+                            <ChatLeftSideBar />
+                            <ChatMainPage>
+                                <ChatHeader />
+                                <ChatDialog
+                                    innerFrame={"2xl:rounded-lg"}
+                                    outerFrame={"w-full"}
+                                />
+                            </ChatMainPage>
+                            <ChatRightSideBar />
+                        </ChatLayout>
+                    </Dialog.Panel>
+                </div>
             </Dialog>
             <button
                 onClick={() => setIsOpen(true)}

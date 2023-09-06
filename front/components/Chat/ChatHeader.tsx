@@ -8,6 +8,18 @@ import { useAtom } from "jotai";
 import { LeftSideBarIsOpenAtom } from "@/atom/ChatAtom";
 import { useEffect } from "react";
 
+export function RightSideBarInput() {
+    return (
+        <input
+            className="peer/right hidden"
+            type="radio"
+            name="rightRadio"
+            id="rightSideBarIcon"
+            defaultChecked
+        />
+    );
+}
+
 export function LeftSideBarInput() {
     const [{ close }, setToClose] = useAtom(LeftSideBarIsOpenAtom);
 
