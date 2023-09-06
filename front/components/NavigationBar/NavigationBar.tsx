@@ -36,16 +36,16 @@ function ProfileButton() {
     const router = useRouter();
     const profile = usePrivateProfile();
 
-    const asyncRoute = async () => {
-        //FIXME: 이거 어떻게 해야하나요 프로미스 리턴 해결법..?
-        await new Promise((res) => setTimeout(res, 0));
-        router.push("/profile/" + profile?.nickName + "/" + profile?.nickTag);
+    const gotoMyProfile = () => {
+        if (profile !== undefined) {
+            router.push(`/profile/${profile.nickName}/${profile.nickTag}`);
+        }
     };
 
     return (
         <button
             className="flex h-12 w-12 items-center justify-center rounded-lg outline-none hover:bg-primary/30 focus-visible:outline-primary/70 active:bg-secondary/70"
-            onClick={asyncRoute}
+            onClick={() => gotoMyProfile()}
         >
             <Avatar
                 accountUUID={currentAccountUUID}
