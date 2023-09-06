@@ -17,6 +17,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function ChatLeftSideBar() {
+    // TODO: 두개 다른 atom 써야함
     const chatJoinRoomList = useAtomValue(ChatRoomListAtom);
     const chatPublicRoomList = useAtomValue(ChatRoomListAtom);
     const [query, setQuery] = useState("");
