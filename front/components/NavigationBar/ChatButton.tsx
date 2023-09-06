@@ -12,10 +12,13 @@ import ChatMainPage from "@/components/Chat/ChatMainPage";
 import ChatRightSideBar from "@/components/Chat/ChatRightSideBar";
 import { ChatHeader } from "@/components/Chat/ChatHeader";
 import { ChatDialog } from "@/components/Chat/ChatDialog";
+import { useSetAtom } from "jotai";
+import { CreateNewRoomCheckedAtom } from "@/atom/ChatAtom";
 
 export function ChatButton() {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLButtonElement>(null);
+    const setCreateNewRoom = useSetAtom(CreateNewRoomCheckedAtom);
     const totalUnreadMessages = useChatRoomTotalUnreadCount();
 
     const iconClassName = [
@@ -42,7 +45,10 @@ export function ChatButton() {
                         key="ChatModal"
                         open={isOpen}
                         initialFocus={ref}
-                        onClose={() => setIsOpen(false)}
+                        onClose={() => {
+                            setIsOpen(false);
+                            setCreateNewRoom(false);
+                        }}
                     >
                         <motion.div
                             ref={constraintsRef}

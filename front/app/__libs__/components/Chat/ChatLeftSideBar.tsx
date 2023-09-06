@@ -115,7 +115,6 @@ export default function ChatLeftSideBar() {
                     <Tab.Group
                         as={motion.div}
                         className="h-full w-full flex-col gap-2"
-                        initial={{ display: "none", opacity: 0 }}
                         animate={{ opacity: 1, display: "flex" }}
                         exit={{ opacity: 0 }}
                         transition={{ delay: 0.2 }}
