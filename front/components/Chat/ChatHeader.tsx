@@ -18,6 +18,7 @@ export function LeftSideBarInput() {
             onClick={() => {
                 setToClose(false);
             }}
+            readOnly
             checked={close}
             name="leftRadio"
             id="forCloseLeftSideBar"
@@ -39,6 +40,7 @@ function LeftSidebarButton() {
     return (
         <>
             <input
+                readOnly
                 className="peer/headerleft hidden"
                 checked={open}
                 onClick={() => setToOpen(true)}
