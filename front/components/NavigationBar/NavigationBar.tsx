@@ -1,14 +1,8 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
-import { Avatar } from "@/components/Avatar";
 import { DoubleSharp } from "@/components/ImageLibrary";
 import { FriendButton } from "./FriendButton";
-import { useCurrentAccountUUID } from "@/hooks/useCurrent";
 import { ChatButton } from "./ChatButton";
-import { useRouter } from "next/navigation";
-import { usePrivateProfile } from "@/hooks/useProfile";
+import { ProfileButton } from "./ProfileButton";
 
 export function NavigationBar() {
     return (
@@ -21,6 +15,7 @@ export function NavigationBar() {
                     height={48}
                 />
             </Link>
+            {/* TODO: matching 대기중이면 중간에 정보 표시? */}
             <div className="relative flex flex-row items-center justify-between gap-4">
                 <ChatButton />
                 <FriendButton />
@@ -28,30 +23,5 @@ export function NavigationBar() {
                 <ProfileButton />
             </div>
         </div>
-    );
-}
-
-function ProfileButton() {
-    const currentAccountUUID = useCurrentAccountUUID();
-    const router = useRouter();
-    const profile = usePrivateProfile();
-
-    const gotoMyProfile = () => {
-        if (profile !== undefined) {
-            router.push(`/profile/${profile.nickName}/${profile.nickTag}`);
-        }
-    };
-
-    return (
-        <button
-            className="flex h-12 w-12 items-center justify-center rounded-lg outline-none hover:bg-primary/30 focus-visible:outline-primary/70 active:bg-secondary/70"
-            onClick={() => gotoMyProfile()}
-        >
-            <Avatar
-                accountUUID={currentAccountUUID}
-                className="relative h-8 w-8 bg-white/30"
-                privileged={true}
-            />
-        </button>
     );
 }
