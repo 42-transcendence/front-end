@@ -36,6 +36,29 @@ export function useChatRoomLatestMessage(roomUUID: string) {
     return data;
 }
 
+export function useChatRoomTotalUnreadCount() {
+    const callback = useAtomCallback(
+        useCallback(async (get, _set) => {
+            const roomList = get(ChatRoomListAtom);
+            const promises = roomList.map((room) => {
+                const lastMessageId = room.lastMessageId ?? "";
+                if (lastMessageId !== "")
+                    return ChatStore.countAfterMessage(room.id, lastMessageId);
+                else return Promise.resolve(0);
+            });
+
+            const unReadCounts = await Promise.all(promises);
+            return unReadCounts.reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            );
+        }, []),
+        { store: GlobalStore },
+    );
+    const { data } = useSWR(["ChatStore", "TotalUnreadCount"], callback);
+    return data;
+}
+
 export function useChatRoomUnreadCount(roomUUID: string) {
     const callback = useAtomCallback(
         useCallback(
