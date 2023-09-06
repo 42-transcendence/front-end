@@ -50,7 +50,7 @@ function LeftSidebarButton() {
             />
             <label
                 htmlFor="forOpenLeftSideBar"
-                className="absolute left-4 top-2 z-[5] w-12 overflow-clip transition-all duration-500 peer-checked/headerleft:w-0"
+                className="absolute left-4 top-4 z-[5] w-12 overflow-clip transition-all duration-500 peer-checked/headerleft:w-0"
             >
                 <Icon.Sidebar
                     className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 active:bg-secondary/80 2xl:block"
@@ -78,7 +78,7 @@ function RightSidebarButton() {
             />
             <label
                 htmlFor="rightHeaderIcon"
-                className="absolute right-4 top-2 z-[5] w-12 overflow-clip transition-all duration-500 peer-checked/headerright:w-0"
+                className="absolute right-4 top-4 z-[5] w-12 overflow-clip transition-all duration-500 peer-checked/headerright:w-0"
             >
                 <Icon.MembersFilled
                     className="rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/80"
@@ -98,7 +98,7 @@ export function ChatHeader() {
     const desc = "채팅을 채팅채팅~"; // TODO: 이거 설정 가능하게 하나요?
 
     return (
-        <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch bg-transparent py-2">
+        <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch bg-transparent py-4">
             <LeftSidebarButton />
             <div className="overflow-hidden">
                 <label

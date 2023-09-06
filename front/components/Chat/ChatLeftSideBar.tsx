@@ -25,11 +25,12 @@ export default function ChatLeftSideBar() {
     return (
         <div className="absolute z-10 h-full w-[310px] min-w-[310px] select-none overflow-clip bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/left:w-0 peer-checked/left:min-w-0 peer-checked/left:p-0 2xl:relative 2xl:flex 2xl:rounded-[0px_28px_28px_0px]">
             <div className="flex h-full w-[310px] shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:py-4">
-                <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch peer-checked:text-gray-200/80 2xl:py-2">
+                <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch py-2 peer-checked:text-gray-200/80">
                     <label
                         data-checked={createNewRoomChecked}
+                        tabIndex={0}
                         htmlFor="CreateNewRoom"
-                        className="relative flex h-12 items-center gap-2 rounded-md p-4 outline-none hover:bg-primary/30 hover:text-white focus-visible:outline-primary/70 data-[checked=true]:bg-secondary/80"
+                        className="relative flex h-12 items-center gap-2 rounded-md p-4 outline-none hover:bg-primary/30 hover:transition-all focus-visible:outline-primary/70 data-[checked=true]:scale-105 data-[checked=true]:bg-secondary/80"
                     >
                         <Icon.Edit className="" width={17} height={17} />
                         <p className="font-sans text-base leading-4">
