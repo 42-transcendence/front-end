@@ -13,7 +13,7 @@ export function LeftSideBarInput() {
 
     return (
         <input
-            className="peer/left hidden"
+            className="peer/left invisible absolute"
             type="radio"
             onClick={() => {
                 setToClose(false);

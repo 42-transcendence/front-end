@@ -29,7 +29,7 @@ export default function ChatLeftSideBar() {
                     <label
                         data-checked={createNewRoomChecked}
                         htmlFor="CreateNewRoom"
-                        className="relative flex h-12 items-center gap-2 rounded-md p-4 hover:bg-primary/30 hover:text-white data-[checked=true]:bg-secondary/80"
+                        className="relative flex h-12 items-center gap-2 rounded-md p-4 outline-none hover:bg-primary/30 hover:text-white focus-visible:outline-primary/70 data-[checked=true]:bg-secondary/80"
                     >
                         <Icon.Edit className="" width={17} height={17} />
                         <p className="font-sans text-base leading-4">
@@ -37,7 +37,7 @@ export default function ChatLeftSideBar() {
                         </p>
                     </label>
 
-                    <label htmlFor="forCloseLeftSideBar">
+                    <label tabIndex={0} htmlFor="forCloseLeftSideBar">
                         <Icon.Sidebar
                             className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:block"
                             width={48}
