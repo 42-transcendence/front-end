@@ -57,6 +57,7 @@ export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
     }, [authInfo.issuer, authInfo.secret, authInfo.subject]);
 
     // TODO: add tailwind css
+    // TODO: Add link!!
     return (
         <div className="">
             <button type="button" onClick={handleClick}>
