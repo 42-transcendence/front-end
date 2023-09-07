@@ -38,6 +38,8 @@ export function ImageUploadBox({
             return;
         }
 
+        URL.revokeObjectURL(imageInfo.src);
+
         setImageInfo({
             src: URL.createObjectURL(firstFile),
             alt: `업로드한 파일: ${firstFile.name}`,
@@ -77,10 +79,21 @@ function PreviewArea({
     setImage: (image: HTMLImageElement) => void;
 }) {
     const imageRef = useRef<HTMLImageElement>(null);
-    const [child, setChild] = useState<React.ReactNode>(null);
 
     useEffect(() => {
-        setChild(
+        const oldElem = imageRef.current;
+        if (oldElem === null) {
+            return;
+        }
+
+        oldElem.onload = () => {
+            const newElem = oldElem.cloneNode(true) as HTMLImageElement;
+            newElem.onload = () => setImage(newElem); // TODO: 정말 정말 이게 최선인가???
+        };
+    }, [setImage]);
+
+    return (
+        <div className="absolute h-full w-full">
             <Image
                 ref={imageRef}
                 className="box-content"
@@ -91,19 +104,7 @@ function PreviewArea({
                 width="250"
                 height="250"
                 // fill={true}
-            />,
-        );
-    }, [imageInfo]);
-
-    useEffect(() => {
-        const a = imageRef.current;
-        if (a === null) {
-            return;
-        }
-        a.onload = () => {
-            setImage(a);
-        };
-    }, [child, setImage]);
-
-    return <div className="absolute h-full w-full">{child}</div>;
+            />
+        </div>
+    );
 }

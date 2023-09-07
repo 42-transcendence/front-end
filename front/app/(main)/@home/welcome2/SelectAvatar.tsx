@@ -77,7 +77,6 @@ function useImageAsFormData(): [
             return;
         }
         const canvas = document.createElement("canvas");
-        // FIXME: 왜 이미지 잘림 왜안됨
         canvas.width = image.width;
         canvas.height = image.height;
 
@@ -104,11 +103,8 @@ function useIntersectionObserver(
     targets: Map<string, Element> | Set<Element> | Element[],
     observerOptions: IntersectionObserverInit,
 ) {
-    const handleIntersect = useCallback(
-        (
-            entries: IntersectionObserverEntry[],
-            _observer: IntersectionObserver,
-        ) => {
+    const handleIntersect: IntersectionObserverCallback = useCallback(
+        (entries, _observer) => {
             entries
                 .filter((entry) => entry.isIntersecting)
                 .forEach((entry) => callback(entry.target));
