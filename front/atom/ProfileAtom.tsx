@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const editPanelVisibilityAtom = atom(false);
+export const EditPanelVisibilityAtom = atom(false);

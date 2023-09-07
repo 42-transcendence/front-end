@@ -1,6 +1,6 @@
 "use client";
 
-import { editPanelVisibilityAtom } from "@/atom/ProfileAtom";
+import { EditPanelVisibilityAtom } from "@/atom/ProfileAtom";
 import { RoundButtonBase } from "@/components/Button/RoundButton";
 import { AchievementPanel } from "@/components/Profile/AchievementPanel";
 import { EditPanel } from "@/components/Profile/EditPanel";
@@ -35,7 +35,7 @@ function isValidProfileId(params: string[] | undefined) {
 export default function ProfilePage({
     params,
 }: {
-    params: { id: string[] | undefined };
+    params: { id?: string[] | undefined };
 }) {
     const profile = usePrivateProfile();
     const nick =
@@ -43,7 +43,7 @@ export default function ProfilePage({
     const tag =
         params.id !== undefined ? Number(params.id[1]) : profile?.nickTag ?? 0;
     const result = useNickLookup(nick, tag);
-    const editPanelVisibility = useAtomValue(editPanelVisibilityAtom);
+    const editPanelVisibility = useAtomValue(EditPanelVisibilityAtom);
     const accountUUID = result.accountUUID;
 
     if (profile === undefined) {

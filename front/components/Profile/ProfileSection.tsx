@@ -1,4 +1,4 @@
-import { editPanelVisibilityAtom } from "@/atom/ProfileAtom";
+import { EditPanelVisibilityAtom } from "@/atom/ProfileAtom";
 import { Avatar } from "@/components/Avatar";
 import { DoubleSharp, Icon } from "@/components/ImageLibrary";
 import { useCurrentAccountUUID } from "@/hooks/useCurrent";
@@ -22,14 +22,14 @@ export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     return (
         <div className="h-20 w-full shrink-0 bg-windowGlass/30 p-4 lg:h-full lg:w-28">
             <div className="flex w-full flex-row items-center justify-between gap-4 lg:flex-col">
-                <Link href={"/"}>
+                <Link href="/">
                     <DoubleSharp className="h-8 w-8 shadow-white hover:drop-shadow-[0_0_0.3rem_#ffffff70] " />
                 </Link>
                 <div className="flex h-full w-full flex-row justify-start gap-4 lg:flex-col">
                     <Avatar
                         accountUUID={accountUUID}
                         className="relative h-12 w-12 bg-white/30 lg:h-20 lg:w-20"
-                        privileged={relationship === "stranger" ? false : true}
+                        privileged={relationship !== "stranger"}
                     />
                     <div className="flex w-full flex-col items-start justify-center text-base md:text-lg lg:text-xl">
                         <h1>{profile?.nickName}</h1>
@@ -45,7 +45,7 @@ export function ProfileSection({ accountUUID }: { accountUUID: string }) {
 }
 
 function RelationshipButton({ relationship }: { relationship: Relationship }) {
-    const showEditPanel = useSetAtom(editPanelVisibilityAtom);
+    const showEditPanel = useSetAtom(EditPanelVisibilityAtom);
 
     switch (relationship) {
         case "myself":
