@@ -45,12 +45,6 @@ export default function MainLayout({
     welcome: React.ReactNode;
     home: React.ReactNode;
 }) {
-    return (
-        <DefaultLayout>
-            <ChatSocketProcessor />
-            {home}
-        </DefaultLayout>
-    );
     const [hydrated, setHydrated] = useState(false);
     useEffect(() => {
         setHydrated(true);
@@ -143,4 +137,10 @@ export default function MainLayout({
     }
 
     // 넌 최고야!
+    return (
+        <DefaultLayout>
+            <ChatSocketProcessor />
+            {home}
+        </DefaultLayout>
+    );
 }
