@@ -21,14 +21,14 @@ export function RightSideBarInput() {
 }
 
 export function LeftSideBarInput() {
-    const [{ close }, setToClose] = useAtom(LeftSideBarIsOpenAtom);
+    const [{ close }, setToOpen] = useAtom(LeftSideBarIsOpenAtom);
 
     return (
         <input
             className="peer/left invisible absolute"
             type="radio"
             onClick={() => {
-                setToClose(false);
+                setToOpen(false);
             }}
             readOnly
             checked={close}
