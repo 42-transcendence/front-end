@@ -1,7 +1,6 @@
 import { Avatar } from "@/components/Avatar";
 import { Icon } from "@/components/ImageLibrary";
-
-type Relationship = "myself" | "friend" | "stranger";
+import type { Relationship } from "@/components/ContextMenu";
 
 export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     //TODO: get info from accountUUID

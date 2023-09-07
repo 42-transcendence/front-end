@@ -1,30 +1,9 @@
 import { TargetedAccountUUIDAtom } from "@/atom/AccountAtom";
 import { Avatar } from "@/components/Avatar";
-import {
-    ContextMenu_Friend,
-    ContextMenu_Social,
-    ContextMenu_MyProfile,
-} from "@/components/ContextMenu";
 import { useProtectedProfile, usePublicProfile } from "@/hooks/useProfile";
 import { Provider, createStore } from "jotai";
-
-// TODO: 나중에 다른 브랜치에서...리팩토링 합시다
-function ContextMenu({
-    type,
-}: {
-    type?: "social" | "friend" | "myprofile" | undefined;
-}) {
-    switch (type) {
-        case "social":
-            return <ContextMenu_Social />;
-        case "friend":
-            return <ContextMenu_Friend />;
-        case "myprofile":
-            return <ContextMenu_MyProfile />;
-        default:
-            return null;
-    }
-}
+import type { Relationship } from "@/components/ContextMenu";
+import { ContextMenu } from "@/components/ContextMenu";
 
 export function ProfileItem({
     className,
@@ -38,7 +17,7 @@ export function ProfileItem({
     accountUUID: string;
     selected: boolean;
     onClick?: React.MouseEventHandler | undefined;
-    type?: "social" | "friend" | "myprofile" | undefined;
+    type: Relationship;
 }) {
     const profile = usePublicProfile(accountUUID);
     const protectedProfile = useProtectedProfile(accountUUID);
