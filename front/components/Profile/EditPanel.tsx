@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { Panel } from "./Panel";
 import { Avatar } from "../Avatar";
-import { Seperator } from "./GameHistoryPanel";
+import { Separator } from "./GameHistoryPanel";
 import { usePublicProfile } from "@/hooks/useProfile";
 import { useCurrentAccountUUID } from "@/hooks/useCurrent";
 
@@ -23,7 +23,7 @@ export function EditPanel() {
                             privileged={false}
                         />
                     </EditPanelItemHeaderTitle>
-                    <Seperator />
+                    <Separator />
                     <EditPanelItemHeaderContent>
                         <div className="flex flex-col">
                             <span>{profile?.nickName}</span>
