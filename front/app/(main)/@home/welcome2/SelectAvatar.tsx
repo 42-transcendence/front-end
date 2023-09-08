@@ -11,6 +11,7 @@ import { ScrollBox } from "./ScrollBox";
 
 const defaultAvatarsKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
+//FIXME: 긴급, SWR 적용하기
 function useFormData(
     url: string | URL,
 ): [
