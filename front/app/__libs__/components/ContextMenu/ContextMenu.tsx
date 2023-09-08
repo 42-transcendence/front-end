@@ -6,7 +6,7 @@ import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
 import { ChatServerOpcode } from "@common/chat-opcodes";
 import { usePublicProfile } from "@hooks/useProfile";
 import { useEffect, useRef } from "react";
-import { ActiveStatusNumber } from "@common/generated/types";
+import { ActiveStatus, getActiveStatusNumber } from "@common/generated/types";
 import { FriendModifyFlags } from "@common/chat-payloads";
 import { logoutAction } from "@/app/(main)/@home/(nav)/logoutAction";
 
@@ -190,14 +190,11 @@ export function ContextMenu({ type }: { type: Relationship }) {
         },
         ["changeactivestatus"]: () => {
             // TODO: 입력으로 받기
-            const newActiveStatus = "ONLINE";
+            const newActiveStatus = ActiveStatus.ONLINE;
             const buf = ByteBuffer.createWithOpcode(
                 ChatServerOpcode.ACTIVE_STATUS_MANUAL,
             );
-            switch (newActiveStatus) {
-                case "ONLINE":
-                    buf.write1(ActiveStatusNumber.ONLINE);
-            }
+            buf.write1(getActiveStatusNumber(newActiveStatus));
             sendPayload(buf);
         },
         ["addfriend"]: () => {

@@ -24,7 +24,7 @@ function ChatMessageInputArea() {
     const sendMessage = () => {
         if (value !== "") {
             const buf = ByteBuffer.createWithOpcode(
-                ChatServerOpcode.CHAT_MESSAGE,
+                ChatServerOpcode.SEND_MESSAGE,
             );
             buf.writeUUID(currentChatRoomUUID);
             buf.writeString(value);
