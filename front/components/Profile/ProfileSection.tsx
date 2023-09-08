@@ -1,12 +1,12 @@
 import { EditPanelVisibilityAtom } from "@/atom/ProfileAtom";
 import { Avatar } from "@/components/Avatar";
-import { DoubleSharp, Icon } from "@/components/ImageLibrary";
+import type { Relationship } from "@/components/ContextMenu";
 import { useCurrentAccountUUID } from "@/hooks/useCurrent";
 import { useProtectedProfile } from "@/hooks/useProfile";
-import { useSetAtom } from "jotai";
 import Link from "next/link";
-
-type Relationship = "myself" | "friend" | "stranger";
+import { DoubleSharp } from "../ImageLibrary";
+import { useSetAtom } from "jotai";
+import { Icon } from "@/components/ImageLibrary";
 
 export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     const profile = useProtectedProfile(accountUUID);
