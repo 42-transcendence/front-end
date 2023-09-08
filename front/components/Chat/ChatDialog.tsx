@@ -22,12 +22,16 @@ function ChatMessageInputArea() {
     const { sendPayload } = useWebSocket("chat", []);
 
     const sendMessage = () => {
-        const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CHAT_MESSAGE);
-        buf.writeUUID(currentChatRoomUUID);
-        buf.writeString(value);
+        if (value !== "") {
+            const buf = ByteBuffer.createWithOpcode(
+                ChatServerOpcode.CHAT_MESSAGE,
+            );
+            buf.writeUUID(currentChatRoomUUID);
+            buf.writeString(value);
 
-        sendPayload(buf);
-        setValue("");
+            sendPayload(buf);
+            setValue("");
+        }
     };
 
     useLayoutEffect(() => {
@@ -75,7 +79,7 @@ function ChatMessageInputArea() {
                     value={value}
                     className="relative h-6 max-h-20 min-h-fit w-full flex-grow resize-none overflow-hidden bg-transparent font-sans text-base font-light text-white/80 outline-none focus:ring-0 focus-visible:ring-0"
                 />
-                <button type="button" onClick={() => handleEnter}>
+                <button type="button" onClick={() => sendMessage()}>
                     <Icon.Send
                         className="rounded-md bg-transparent p-2 text-gray-300/50 transition-colors group-focus-within:bg-secondary/80 group-focus-within:text-white/80"
                         width={32}
