@@ -212,7 +212,7 @@ export function CreateNewRoom() {
                                 setChecked={setLimitChecked}
                                 bgClassName="gap-3 rounded p-3 hover:bg-gray-500/30"
                                 icon={
-                                    <Icon.Members
+                                    <Icon.MembersFilled
                                         width={56}
                                         height={56}
                                         className="shrink-0 rounded-xl bg-gray-700/80 p-4 text-gray-50/50 transition-colors group-data-[checked=true]:bg-secondary group-data-[checked=true]:text-gray-50/80"
@@ -276,7 +276,7 @@ function InviteFriendToggle({
                 htmlFor="sectionHeader"
                 data-checked={checked}
                 data-sticky={isSticky}
-                className="group sticky -top-1 z-10 flex h-fit w-full flex-row items-center gap-3 rounded p-3 transition-colors hover:bg-gray-500/30 hover:text-white data-[sticky=true]:bg-secondary data-[sticky=true]:duration-0"
+                className="group sticky -top-1 z-10 flex h-fit w-full flex-row items-center gap-3 rounded p-3 transition-colors hover:bg-gray-500/30 hover:text-white data-[checked=true]:data-[sticky=true]:bg-secondary data-[checked=true]:data-[sticky=true]:duration-0"
             >
                 <Icon.Invite
                     width={56}
