@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
 import type { ChatRoomChatMessagePairEntry } from "@common/chat-payloads";
 import {
-    ChatErrorNumber,
     SocialErrorNumber,
     readChatBanSummary,
-    readChatDirect,
     readChatMessage,
     readChatRoom,
     readChatRoomChatMessagePair,
@@ -21,8 +20,8 @@ import {
 } from "@akasha-utils/react/websocket-hook";
 import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useMemo } from "react";
-import { ByteBuffer } from "@akasha-lib";
-import { ChatStore } from "@akasha-utils/idb/chat-store";
+import { ByteBuffer, NULL_UUID } from "@akasha-lib";
+import { ChatStore, makeDirectChatKey } from "@akasha-utils/idb/chat-store";
 import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
 import {
     EnemyEntryListAtom,
@@ -184,7 +183,7 @@ export function ChatSocketProcessor() {
                     if (latestMessage !== null) {
                         await ChatStore.setFetchedMessageId(
                             roomUUID,
-                            latestMessage.accountId,
+                            latestMessage.id,
                         );
                     }
                 }
@@ -361,6 +360,8 @@ export function ChatSocketProcessor() {
                 //FIXME: 구현: 현재 채팅방 목록에서 lastReadMessage 바꿔주기. SWR도 mutate?
                 const pair = readChatRoomChatMessagePair(buffer);
                 void pair;
+
+                mutateChatRoom(pair.chatId);
                 break;
             }
 
@@ -378,14 +379,41 @@ export function ChatSocketProcessor() {
             }
 
             case ChatClientOpcode.DIRECTS_LIST: {
-                //FIXME: 구현: Insert to IDB
                 const targetAccountId = buffer.readUUID();
-                const messages = buffer.readArray(readChatDirect);
+                const messages = buffer.readArray(readChatMessage);
+                const lastMessageId = buffer.readNullable(
+                    buffer.readUUID,
+                    NULL_UUID,
+                );
+                void lastMessageId; //FIXME: 상태에 잘 저장해두고 뱃지에 사용
+
+                const roomKey = makeDirectChatKey(
+                    currentAccountUUID,
+                    targetAccountId,
+                );
+                await ChatStore.addMessageBulk(roomKey, messages);
+                const latestMessage = await ChatStore.getLatestMessage(roomKey);
+                if (latestMessage !== null) {
+                    await ChatStore.setFetchedMessageId(
+                        roomKey,
+                        latestMessage.id,
+                    );
+                }
+
+                mutateChatRoom(roomKey);
                 break;
             }
             case ChatClientOpcode.CHAT_DIRECT: {
-                //FIXME: 구현: Insert to IDB
-                const message = readChatDirect(buffer);
+                const targetAccountId = buffer.readUUID();
+                const message = readChatMessage(buffer);
+
+                const roomKey = makeDirectChatKey(
+                    currentAccountUUID,
+                    targetAccountId,
+                );
+                await ChatStore.addMessage(roomKey, message);
+
+                mutateChatRoom(roomKey);
                 break;
             }
         }

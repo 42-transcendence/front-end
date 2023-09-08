@@ -1,4 +1,3 @@
-import { NULL_UUID } from "@akasha-lib";
 import { IDBCP } from "./indexed-dbcp";
 
 const DB_NAME_PREFIX = "akasha-";
@@ -541,14 +540,6 @@ export class ChatStore {
             tx.onerror = () => reject(new Error());
 
             const messages = tx.objectStore("messages");
-            if (messageId === NULL_UUID) {
-                //FIXME: 임시 처리
-                const messageCount = messages.count();
-                messageCount.onsuccess = () => {
-                    resolve(messageCount.result);
-                };
-                return;
-            }
             const messageGet = messages.get(messageId);
 
             messageGet.onsuccess = () => {
@@ -738,6 +729,52 @@ export class ChatStore {
                 const directArray =
                     directAllByAccountGet.result as DirectSchema[];
                 resolve(new Set<string>(directArray.map((e) => e["target"])));
+            };
+        });
+    }
+
+    static async getDirectFetchedMessageId(
+        chatId: string,
+    ): Promise<string | null> {
+        const db = await getMetadataDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(["directs"], "readonly");
+            tx.onerror = () => reject(new Error());
+
+            const directs = tx.objectStore("directs");
+            const directGet = directs.get(chatId);
+            directGet.onsuccess = () => {
+                const direct = directGet.result as DirectSchema | undefined;
+                if (direct !== undefined) {
+                    resolve(direct["fetchedMessageId"]);
+                } else {
+                    reject(new Error());
+                }
+            };
+        });
+    }
+
+    static async setDirectFetchedMessageId(
+        chatId: string,
+        fetchedMessageId: string,
+    ): Promise<void> {
+        const db = await getMetadataDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(["directs"], "readwrite");
+            tx.onerror = () => reject(new Error());
+
+            const directs = tx.objectStore("directs");
+            const directGet = directs.get(chatId);
+            directGet.onsuccess = () => {
+                const direct = directGet.result as DirectSchema | undefined;
+                if (direct !== undefined) {
+                    direct["fetchedMessageId"] = fetchedMessageId;
+                    const directPut = directs.put(direct);
+
+                    directPut.onsuccess = () => resolve();
+                } else {
+                    reject(new Error());
+                }
             };
         });
     }
