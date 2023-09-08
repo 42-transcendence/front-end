@@ -1,36 +1,27 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
-import { Avatar } from "@/components/Avatar";
-import { SocialButton } from "./SocialButton";
 import { DoubleSharp } from "@/components/ImageLibrary";
 import { FriendButton } from "./FriendButton";
-import { useCurrentAccountUUID } from "@/hooks/useCurrent";
+import { ChatButton } from "./ChatButton";
+import { ProfileButton } from "./ProfileButton";
 
 export function NavigationBar() {
-    const currentAccountUUID = useCurrentAccountUUID();
-
     return (
         <div className="relative flex h-fit w-full flex-row items-center justify-between bg-primary/30 p-2 backdrop-blur-[20px] backdrop-brightness-100">
-            <Link className="relative" href="/">
+            <Link tabIndex={-1} className="relative" href="/">
                 <DoubleSharp
-                    className="w-12 p-2 text-white drop-shadow-[0_0_0.3rem_#ffffff70]"
-                    width="100%"
-                    height="100%"
+                    tabIndex={0}
+                    className="w-12 rounded-lg p-2 text-white outline-none transition-all hover:drop-shadow-[0_0_0.3rem_#ffffff90] focus-visible:outline-primary/70"
+                    width={48}
+                    height={48}
                 />
             </Link>
+            {/* TODO: matching 대기중이면 중간에 정보 표시? */}
             <div className="relative flex flex-row items-center justify-between gap-4">
-                <SocialButton />
+                <ChatButton />
                 <FriendButton />
                 {/* TODO: on click Avatar in navbar, show context menu myinfo */}
-                <Avatar
-                    accountUUID={currentAccountUUID}
-                    className="relative h-9 w-9 bg-white/30"
-                    privileged={true}
-                />
+                <ProfileButton />
             </div>
         </div>
     );
 }
-//

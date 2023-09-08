@@ -1,8 +1,11 @@
 /* eslint-disable   */
 /* prettier-ignore  */
-import _DoubleSharp from "/public/double-sharp.svg"; export const DoubleSharp = _DoubleSharp;
-import _Logo42 from "/public/logo-42.svg"; export const Logo42 = _Logo42;
-import _LogoGoogle from "/public/logo-google.svg"; export const LogoGoogle = _LogoGoogle;
+import _DoubleSharp from "/public/double-sharp.svg";
+export const DoubleSharp = _DoubleSharp;
+import _Logo42 from "/public/logo-42.svg";
+export const Logo42 = _Logo42;
+import _LogoGoogle from "/public/logo-google.svg";
+export const LogoGoogle = _LogoGoogle;
 import _Chat_ChatBubbleTailLeft from "/public/chat/chat-bubble-tail-left.svg";
 import _Chat_ChatBubbleTailRight from "/public/chat/chat-bubble-tail-right.svg";
 import _Game_GameStart from "/public/game/game-start.svg";
@@ -35,7 +38,8 @@ import _IconLockOpen from "/public/icon/lock-open.svg";
 import _IconMagicCircleDoubleBorder from "/public/icon/magic-circle-double-border.svg";
 import _IconMagicCircleSingleBorder from "/public/icon/magic-circle-single-border.svg";
 import _IconMagicCircleComplex from "/public/icon/magic-circle-complex.svg";
-import _IconMembers from "/public/icon/members.svg";
+import _IconMembersFilled from "/public/icon/members-filled.svg";
+import _IconMembersOutLined from "/public/icon/members-outlined.svg";
 import _IconPerson from "/public/icon/person.svg";
 import _IconPlus from "/public/icon/plus.svg";
 import _IconSearch from "/public/icon/search.svg";
@@ -93,7 +97,8 @@ export const Icon = {
     MagicCircleDoubleBorder: _IconMagicCircleDoubleBorder,
     MagicCircleSingleBorder: _IconMagicCircleSingleBorder,
     MagicCircleComplex: _IconMagicCircleComplex,
-    Members: _IconMembers,
+    MembersFilled: _IconMembersFilled,
+    MembersOutLined: _IconMembersOutLined,
     Person: _IconPerson,
     Plus: _IconPlus,
     Search: _IconSearch,

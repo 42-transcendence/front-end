@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type {
+    BanCategoryNumber,
+    ChatBanEntity,
+    ChatDirectEntity,
     ChatEntity,
     ChatMemberEntity,
     ChatMessageEntity,
@@ -14,6 +17,7 @@ export const FRIEND_ACTIVE_FLAGS_SIZE = 8;
 export const enum FriendActiveFlags {
     SHOW_ACTIVE_STATUS = 1 << 0,
     SHOW_ACTIVE_TIMESTAMP = 1 << 1,
+    SHOW_STATUS_MESSAGE = 1 << 2,
 }
 
 /// FriendModifyFlags
@@ -41,14 +45,6 @@ export function writeFriend(obj: FriendEntry, buf: ByteBuffer) {
     buf.write1(obj.activeFlags);
 }
 
-/// FriendErrorNumber
-export const enum FriendErrorNumber {
-    SUCCESS,
-    ERROR_ALREADY_FRIEND,
-    ERROR_NOT_FRIEND,
-    ERROR_SELF_FRIEND,
-}
-
 /// EnemyEntry
 export type EnemyEntry = Pick<EnemyEntity, "enemyAccountId" | "memo">;
 
@@ -61,6 +57,17 @@ export function readEnemy(buf: ByteBuffer): EnemyEntry {
 export function writeEnemy(obj: EnemyEntry, buf: ByteBuffer) {
     buf.writeUUID(obj.enemyAccountId);
     buf.writeString(obj.memo);
+}
+
+/// SocialErrorNumber
+export const enum SocialErrorNumber {
+    SUCCESS,
+    ERROR_ALREADY_EXISTS,
+    ERROR_NOT_FOUND,
+    ERROR_DENIED,
+    ERROR_SELF,
+    ERROR_LOOKUP_FAILED,
+    ERROR_UNKNOWN,
 }
 
 /// SocialPayload
@@ -83,14 +90,23 @@ export function writeSocialPayload(obj: SocialPayload, buf: ByteBuffer) {
     buf.writeArray(obj.enemyList, writeEnemy);
 }
 
-/// RoomErrorNumber
-export const enum RoomErrorNumber {
+/// ChatErrorNumber
+export const enum ChatErrorNumber {
     SUCCESS,
+    ERROR_NO_ROOM,
+    ERROR_NO_MEMBER,
+    ERROR_UNJOINED,
     ERROR_ALREADY_MEMBER,
-    ERROR_NOT_MEMBER,
-    ERROR_OWNER,
-    ERROR_NOT_OWNER,
-    ERROR_NOT_MANAGER,
+    ERROR_PERMISSION,
+    ERROR_RESTRICTED,
+    ERROR_SELF,
+    ERROR_NOT_FRIEND,
+    ERROR_ENEMY,
+    ERROR_CHAT_BANNED,
+    ERROR_WRONG_PASSWORD,
+    ERROR_EXCEED_LIMIT,
+    ERROR_UNKNOWN,
+    ERROR_ACCOUNT_BAN,
 }
 
 /// ChatRoomModeFlags
@@ -117,6 +133,14 @@ export function fromChatRoomModeFlags(modeFlags: number): {
         isPrivate: (modeFlags & ChatRoomModeFlags.PRIVATE) !== 0,
         isSecret: (modeFlags & ChatRoomModeFlags.SECRET) !== 0,
     };
+}
+
+/// RoomModifyFlags
+export const enum RoomModifyFlags {
+    MODIFY_TITLE = 1 << 0,
+    MODIFY_MODE_FLAGS = 1 << 1,
+    MODIFY_PASSWORD = 1 << 2,
+    MODIFY_LIMIT = 1 << 3,
 }
 
 /// ChatRoomChatMessagePairEntry
@@ -250,5 +274,87 @@ export function writeChatMessage(obj: ChatMessageEntry, buf: ByteBuffer) {
     buf.writeUUID(obj.accountId);
     buf.writeString(obj.content);
     buf.write1(obj.messageType);
+    buf.writeDate(obj.timestamp);
+}
+
+/// ChatBanSummaryEntry
+export type ChatBanSummaryEntry = Pick<
+    ChatBanEntity,
+    "category" | "reason" | "expireTimestamp"
+> & {
+    category: BanCategoryNumber;
+};
+
+export function readChatBanSummary(buf: ByteBuffer): ChatBanSummaryEntry {
+    const category = buf.read1();
+    const reason = buf.readString();
+    const expireTimestamp = buf.readNullable(buf.readDate);
+    return { category, reason, expireTimestamp };
+}
+
+export function writeChatBanSummary(obj: ChatBanSummaryEntry, buf: ByteBuffer) {
+    buf.write1(obj.category);
+    buf.writeString(obj.reason);
+    buf.writeNullable(obj.expireTimestamp, buf.writeDate);
+}
+
+/// ChatBanDetailEntry
+export type ChatBanDetailEntry = ChatBanEntity & {
+    category: BanCategoryNumber;
+};
+
+export function readChatBanDetail(buf: ByteBuffer): ChatBanDetailEntry {
+    const id = buf.readString();
+    const chatId = buf.readUUID();
+    const accountId = buf.readUUID();
+    const managerAccountId = buf.readUUID();
+    const category = buf.read1();
+    const reason = buf.readString();
+    const memo = buf.readString();
+    const expireTimestamp = buf.readNullable(buf.readDate);
+    const bannedTimestamp = buf.readDate();
+    return {
+        id,
+        chatId,
+        accountId,
+        managerAccountId,
+        category,
+        reason,
+        memo,
+        expireTimestamp,
+        bannedTimestamp,
+    };
+}
+
+export function writeChatBanDetail(obj: ChatBanDetailEntry, buf: ByteBuffer) {
+    buf.writeString(obj.id);
+    buf.writeUUID(obj.chatId);
+    buf.writeUUID(obj.accountId);
+    buf.writeUUID(obj.managerAccountId);
+    buf.write1(obj.category);
+    buf.writeString(obj.reason);
+    buf.writeString(obj.memo);
+    buf.writeNullable(obj.expireTimestamp, buf.writeDate);
+    buf.writeDate(obj.bannedTimestamp);
+}
+
+/// ChatDirectEntry
+export type ChatDirectEntry = Pick<
+    ChatDirectEntity,
+    "sourceAccountId" | "destinationAccountId" | "content" | "timestamp"
+>;
+
+export function readChatDirect(buf: ByteBuffer): ChatDirectEntry {
+    const sourceAccountId = buf.readUUID();
+    const destinationAccountId = buf.readUUID();
+    const content = buf.readString();
+    const timestamp = buf.readDate();
+    return { sourceAccountId, destinationAccountId, content, timestamp };
+}
+
+export function writeChatDirect(obj: ChatDirectEntry, buf: ByteBuffer) {
+    buf.writeUUID(obj.sourceAccountId);
+    buf.writeUUID(obj.destinationAccountId);
+    buf.writeString(obj.content);
     buf.writeDate(obj.timestamp);
 }

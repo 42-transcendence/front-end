@@ -481,20 +481,20 @@ function StatRating({ history }: { history: GameHistory }) {
 function ItemWrapper({
     children,
     className,
-    seperatorDir = "left",
+    separatorDir = "left",
 }: React.PropsWithChildren<{
     className: string;
-    seperatorDir?: "left" | "right" | "none";
+    separatorDir?: "left" | "right" | "none";
 }>) {
     return (
         <>
-            {seperatorDir === "left" && <Seperator className={className} />}
+            {separatorDir === "left" && <Separator className={className} />}
             <div
                 className={`${className} mx-1 h-full w-20 shrink-0 flex-col items-center justify-center py-4`}
             >
                 {children}
             </div>
-            {seperatorDir === "right" && <Seperator className={className} />}
+            {separatorDir === "right" && <Separator className={className} />}
         </>
     );
 }
@@ -512,7 +512,7 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                 <div className="flex h-full w-full flex-row justify-around">
                     <ProfileBlockInGame team={history.ally} />
 
-                    <Seperator className="flex" />
+                    <Separator className="flex" />
 
                     <ProfileBlockInGame team={history.enemy} />
                 </div>
@@ -531,20 +531,20 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                     </span>
                 </div>
 
-                <ItemWrapper seperatorDir="right" className="flex @md:hidden">
+                <ItemWrapper separatorDir="right" className="flex @md:hidden">
                     <span className="relative flex text-sm font-semibold italic">
                         {history.statistics.playTime}
                     </span>
                 </ItemWrapper>
 
-                <ItemWrapper seperatorDir="right" className={"flex @lg:hidden"}>
+                <ItemWrapper separatorDir="right" className={"flex @lg:hidden"}>
                     <span className="relative flex text-sm font-semibold italic">
                         {history.statistics.startTimeStamp}
                     </span>
                 </ItemWrapper>
 
                 <ItemWrapper
-                    seperatorDir="right"
+                    separatorDir="right"
                     className="hidden @md:flex @2xl:hidden"
                 >
                     <span className="relative flex shrink-0 text-sm font-semibold italic">
@@ -601,13 +601,13 @@ function SetScore({ setData }: { setData: SetData }) {
                         {setData.ally}
                     </span>
                 </div>
-                <Seperator />
+                <Separator />
                 <div className="flex items-center justify-center px-4 py-2">
                     <span className="rounded p-1 pr-1.5 text-xl font-extrabold italic">
                         {setData.enemy}
                     </span>
                 </div>
-                <Seperator />
+                <Separator />
                 <div className="flex flex-col items-center justify-center p-3">
                     <span className="rounded p-1 pr-1.5 font-extrabold italic text-tertiary/80">
                         MVP
@@ -640,7 +640,7 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
     );
 }
 
-function Seperator({ className }: { className?: string | undefined }) {
+export function Separator({ className }: { className?: string | undefined }) {
     return (
         <div className={`${className} min-w-min py-4`}>
             <div className="h-full w-[1px] bg-black/30"> </div>

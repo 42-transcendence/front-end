@@ -22,7 +22,7 @@ function DefaultLayout({ children }: React.PropsWithChildren) {
 function LoadingLayout({ children }: React.PropsWithChildren) {
     return (
         <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
-            <div className="relative flex h-screen w-screen flex-col items-center justify-center ">
+            <div className="relative flex h-screen w-screen flex-col items-center justify-center gap-16">
                 <DoubleSharp
                     className="relative h-fit w-fit animate-spin-slow text-white drop-shadow-[0_0_0.3rem_#ffffff70] delay-300"
                     width={130}

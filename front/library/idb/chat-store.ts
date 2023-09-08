@@ -1,3 +1,4 @@
+import { NULL_UUID } from "../akasha-lib";
 import { IDBCP } from "./indexed-dbcp";
 
 const DB_NAME_PREFIX = "akasha-";
@@ -488,21 +489,33 @@ export class ChatStore {
             tx.onerror = () => reject(new Error());
 
             const messages = tx.objectStore("messages");
-            const messageGet = messages.get(messageId);
+            if (messageId === NULL_UUID) {
+                console.log("here!");
+                const messageCount = messages.count();
+                messageCount.onsuccess = () => {
+                    resolve(messageCount.result);
+                };
+            } else {
+                console.log("there!");
+                const messageGet = messages.get(messageId);
+                messageGet.onsuccess = () => {
+                    const message = messageGet.result as
+                        | MessageSchema
+                        | undefined;
+                    if (message === undefined) {
+                        reject(new Error());
+                        return;
+                    }
 
-            messageGet.onsuccess = () => {
-                const message = messageGet.result as MessageSchema | undefined;
-                if (message === undefined) {
-                    reject(new Error());
-                    return;
-                }
-
-                const messageAfterByTimestampCount = messages
-                    .index("timestamp")
-                    .count(IDBKeyRange.lowerBound(message["timestamp"], true));
-                messageAfterByTimestampCount.onsuccess = () =>
-                    resolve(messageAfterByTimestampCount.result);
-            };
+                    const messageAfterByTimestampCount = messages
+                        .index("timestamp")
+                        .count(
+                            IDBKeyRange.lowerBound(message["timestamp"], true),
+                        );
+                    messageAfterByTimestampCount.onsuccess = () =>
+                        resolve(messageAfterByTimestampCount.result);
+                };
+            }
         });
     }
 

@@ -11,6 +11,7 @@ import { ByteBuffer } from "@/library/akasha-lib";
 import { ChatServerOpcode } from "@/library/payload/chat-opcodes";
 import { TargetedAccountUUIDAtom } from "@/atom/AccountAtom";
 import { usePublicProfile } from "@/hooks/useProfile";
+import { GlassWindow } from "@/components/Frame/GlassWindow";
 import { NICK_NAME_REGEX } from "@/library/payload/profile-constants";
 
 export function FriendModal() {
@@ -18,7 +19,7 @@ export function FriendModal() {
     const { sendPayload } = useWebSocket("chat", []);
 
     return (
-        <div className="gradient-border relative flex w-[262px] flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']">
+        <GlassWindow>
             <div className="w-full overflow-clip rounded-[28px] ">
                 <InviteList />
                 <FriendList />
@@ -64,7 +65,7 @@ export function FriendModal() {
                     </div>
                 </div>
             </div>
-        </div>
+        </GlassWindow>
     );
 }
 

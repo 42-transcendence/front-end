@@ -82,11 +82,11 @@ function ChatBubble({
             className={`relative flex h-fit w-full ${styleOption.flexDirection} ${styleOption.padding}`}
         >
             {!isContinued && styleOption.tail}
-            <div
-                className={`static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs whitespace-normal rounded-xl ${styleOption.bgColor} p-3 font-sans text-base font-normal text-gray-100/90`}
+            <span
+                className={`static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs whitespace-pre-wrap rounded-xl ${styleOption.bgColor} p-3 font-sans text-base font-normal text-gray-100/90`}
             >
                 {children}
-            </div>
+            </span>
         </div>
     );
 }
