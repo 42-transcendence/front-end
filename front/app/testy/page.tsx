@@ -1,9 +1,9 @@
-import { GameUserFrame } from "@/components/Game/GameUserFrame";
+import { GameUserFrame } from "@components/Game/GameUserFrame";
 import {
     PlayAgainCard,
     NewAchievementCard,
     TrophyCard,
-} from "@/components/Game/AfterGameCards";
+} from "@components/Game/AfterGameCards";
 
 export default function Main() {
     return (

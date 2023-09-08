@@ -1,14 +1,14 @@
 "use client";
 
-import { EditPanelVisibilityAtom } from "@/atom/ProfileAtom";
-import { RoundButtonBase } from "@/components/Button/RoundButton";
-import { AchievementPanel } from "@/components/Profile/AchievementPanel";
-import { EditPanel } from "@/components/Profile/EditPanel";
-import { GameHistoryPanel } from "@/components/Profile/GameHistoryPanel";
-import { ProfileSection } from "@/components/Profile/ProfileSection";
-import { useNickLookup, usePrivateProfile } from "@/hooks/useProfile";
-import { NICK_NAME_REGEX } from "@/library/payload/profile-constants";
-import type { AccountProfileProtectedPayload } from "@/library/payload/profile-payloads";
+import { EditPanelVisibilityAtom } from "@atoms/ProfileAtom";
+import { RoundButtonBase } from "@components/Button/RoundButton";
+import { AchievementPanel } from "@components/Profile/AchievementPanel";
+import { EditPanel } from "@components/Profile/EditPanel";
+import { GameHistoryPanel } from "@components/Profile/GameHistoryPanel";
+import { ProfileSection } from "@components/Profile/ProfileSection";
+import { useNickLookup, usePrivateProfile } from "@hooks/useProfile";
+import { NICK_NAME_REGEX } from "@common/profile-constants";
+import type { AccountProfileProtectedPayload } from "@common/profile-payloads";
 import { useAtomValue } from "jotai";
 import Link from "next/link";
 

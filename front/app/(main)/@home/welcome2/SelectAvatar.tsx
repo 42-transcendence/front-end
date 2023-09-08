@@ -1,12 +1,12 @@
 "use client";
 
-import { Icon } from "@/components/ImageLibrary";
+import { Icon } from "@components/ImageLibrary";
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { ImageUploadBox } from "./ImageUploadBox";
-import { useRefMap } from "@/hooks/useRefMap";
+import { useRefMap } from "@hooks/useRefMap";
 import { useAtomValue } from "jotai";
-import { AccessTokenAtom } from "@/atom/AccountAtom";
+import { AccessTokenAtom } from "@atoms/AccountAtom";
 import { ScrollBox } from "./ScrollBox";
 
 const defaultAvatarsKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];

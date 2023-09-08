@@ -1,5 +1,5 @@
-import { Card } from "@/components/Card/Card";
-import { DoubleSharp } from "@/components/ImageLibrary";
+import { Card } from "@components/Card/Card";
+import { DoubleSharp } from "@components/ImageLibrary";
 import { SelectAvatar } from "./SelectAvatar";
 
 export default function Welcome2() {

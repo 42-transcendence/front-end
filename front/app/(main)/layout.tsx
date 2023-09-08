@@ -1,17 +1,17 @@
 "use client";
 
-import { AuthLevel } from "@/library/payload/auth-payloads";
+import { AuthLevel } from "@common/auth-payloads";
 import {
     AccessTokenAtom,
     AuthAtom,
     RefreshTokenAtom,
-} from "@/atom/AccountAtom";
+} from "@atoms/AccountAtom";
 import { useAtomValue, useSetAtom } from "jotai";
 import { ChatSocketProcessor } from "./ChatSocketProcessor";
-import { usePrivateProfile } from "@/hooks/useProfile";
+import { usePrivateProfile } from "@hooks/useProfile";
 import React, { useEffect, useState } from "react";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/hooks/fetcher";
-import { DoubleSharp } from "@/components/ImageLibrary";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@hooks/fetcher";
+import { DoubleSharp } from "@components/ImageLibrary";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (

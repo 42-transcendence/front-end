@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthBegin } from "@/hooks/useAuthBegin";
+import { useAuthBegin } from "@hooks/useAuthBegin";
 import { redirect } from "next/navigation";
 
 export default function StartBegin({ params }: { params: { src: string } }) {

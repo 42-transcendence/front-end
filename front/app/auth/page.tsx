@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthEnd } from "@/hooks/useAuthEnd";
+import { useAuthEnd } from "@hooks/useAuthEnd";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 

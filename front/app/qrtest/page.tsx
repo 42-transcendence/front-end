@@ -1,4 +1,4 @@
-import { GenerateQRButton } from "@/components/QRCodeCanvas";
+import { GenerateQRButton } from "@components/QRCodeCanvas";
 import { OTPInputBlocks } from "../(main)/@otp/OTPInputBlocks";
 
 export default function QRButtonPage() {

@@ -1,4 +1,4 @@
-import { NavigationBar } from "@/components/NavigationBar";
+import { NavigationBar } from "@components/NavigationBar";
 
 // TODO: 좋은 이름 추천 받습니다. 해당 (nav) 폴더 이름도요
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { SquareButton } from "@/components/Button/SquareButton";
+import { SquareButton } from "@components/Button/SquareButton";
 import { logoutAction } from "./logoutAction";
 
 export function LogoutButton() {

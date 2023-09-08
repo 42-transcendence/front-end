@@ -1,10 +1,10 @@
 "use client";
 
-import { DoubleSharp, Icon } from "@/components/ImageLibrary";
-import { TextField } from "@/components/TextField";
-import { Card } from "@/components/Card/Card";
+import { DoubleSharp, Icon } from "@components/ImageLibrary";
+import { TextField } from "@components/TextField";
+import { Card } from "@components/Card/Card";
 import { useState } from "react";
-import { useRegisterNickName } from "@/hooks/useRegisterNickName";
+import { useRegisterNickName } from "@hooks/useRegisterNickName";
 
 export default function Welcome() {
     const [value, setValue] = useState("");

@@ -1,6 +1,6 @@
 "use client";
 
-import { RoundButtonBase } from "@/components/Button/RoundButton";
+import { RoundButtonBase } from "@components/Button/RoundButton";
 import { useRouter } from "next/navigation";
 
 export function CreateGameButton() {

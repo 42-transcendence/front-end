@@ -1,10 +1,10 @@
 "use client";
 
-import { GameChipProfile } from "@/components/Game/GameUserProfile";
-import CharacterSelector from "@/components/Game/GameCharacterSelector";
-import GameStartButton from "@/components/Game/GameStartButton";
+import { GameChipProfile } from "@components/Game/GameUserProfile";
+import CharacterSelector from "@components/Game/GameCharacterSelector";
+import GameStartButton from "@components/Game/GameStartButton";
 import Link from "next/link";
-import { ChatDialog } from "@/components/Chat/ChatDialog";
+import { ChatDialog } from "@components/Chat/ChatDialog";
 import { useParams } from "next/navigation";
 
 function InvalidGameIdPage() {

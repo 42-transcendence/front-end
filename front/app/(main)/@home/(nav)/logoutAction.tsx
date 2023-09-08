@@ -1,7 +1,7 @@
 "use client";
 
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/hooks/fetcher";
-import { setLocalStorageItem } from "@/hooks/storage";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@hooks/fetcher";
+import { setLocalStorageItem } from "@hooks/storage";
 import { mutate } from "swr";
 
 export function logoutAction() {

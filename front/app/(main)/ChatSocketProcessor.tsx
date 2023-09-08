@@ -1,8 +1,5 @@
-import {
-    ChatClientOpcode,
-    ChatServerOpcode,
-} from "@/library/payload/chat-opcodes";
-import type { ChatRoomChatMessagePairEntry } from "@/library/payload/chat-payloads";
+import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
+import type { ChatRoomChatMessagePairEntry } from "@common/chat-payloads";
 import {
     readChatMessage,
     readChatRoom,
@@ -10,27 +7,27 @@ import {
     readSocialPayload,
     toChatRoomModeFlags,
     writeChatRoomChatMessagePair,
-} from "@/library/payload/chat-payloads";
+} from "@common/chat-payloads";
 import {
     useWebSocket,
     useWebSocketConnector,
-} from "@/library/react/websocket-hook";
+} from "@akasha-utils/react/websocket-hook";
 import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useMemo } from "react";
-import { ByteBuffer } from "@/library/akasha-lib";
-import { ChatStore } from "@/library/idb/chat-store";
-import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@/atom/ChatAtom";
+import { ByteBuffer } from "@akasha-lib";
+import { ChatStore } from "@akasha-utils/idb/chat-store";
+import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
 import {
     EnemyEntryAtom,
     FriendEntryAtom,
     FriendRequestEntryAtom,
-} from "@/atom/FriendAtom";
+} from "@atoms/FriendAtom";
 import {
     useCurrentAccountUUID,
     useCurrentChatRoomUUID,
-} from "@/hooks/useCurrent";
-import { useChatRoomMutation } from "@/hooks/useChatRoom";
-import { ACCESS_TOKEN_KEY } from "@/hooks/fetcher";
+} from "@hooks/useCurrent";
+import { useChatRoomMutation } from "@hooks/useChatRoom";
+import { ACCESS_TOKEN_KEY } from "@hooks/fetcher";
 
 export function ChatSocketProcessor() {
     const currentAccountUUID = useCurrentAccountUUID();

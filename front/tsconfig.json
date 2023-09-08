@@ -20,9 +20,14 @@
             }
         ],
         "paths": {
-            "@/*": ["./*"],
-            "@akasha-common/*": ["./library/*"],
-            "@akasha-lib": ["./library/akasha-lib/index"]
+            "@akasha-lib": ["./app/__libs__/akasha-lib/index"],
+            "@akasha-utils/*": ["./app/__libs__/akasha-utils/*"],
+            "@common/*": ["./app/__libs__/common/*"],
+            "@components/*": ["./app/__libs__/components/*"],
+            "@hooks/*": ["./app/__libs__/hooks/*"],
+            "@atoms/*": ["./app/__libs__/atoms/*"],
+            "@utils/*": ["./app/__libs__/utils/*"],
+            "@/*": ["./*"]
         }
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
