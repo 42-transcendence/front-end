@@ -24,7 +24,7 @@ function ChatMessageInputArea() {
     const handleClick: React.MouseEventHandler = (event) => {
         event.preventDefault();
 
-        const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CHAT_MESSAGE);
+        const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.SEND_MESSAGE);
         buf.writeUUID(currentChatRoomUUID);
         buf.writeString(value);
 
