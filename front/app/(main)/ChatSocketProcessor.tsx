@@ -157,7 +157,9 @@ export function ChatSocketProcessor() {
             case ChatClientOpcode.DELETE_FRIEND_RESULT: {
                 const friendUUID = buffer.readUUID();
                 setFriendEntry(
-                    friendEntry.filter((friend) => friend.uuid !== friendUUID),
+                    friendEntry.filter(
+                        (friend) => friend.friendAccountId !== friendUUID,
+                    ),
                 );
                 setFriendRequestEntry(
                     friendRequestEntry.filter(

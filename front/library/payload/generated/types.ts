@@ -265,7 +265,7 @@ export type AccountEntity = {
   id: string;
   authIssuer: number;
   authSubject: string;
-  otpSecretKey: string | null;
+  otpSecretKey: number | null;
   createdTimestamp: Date;
   changedTimestamp: Date;
   registrationState: RegistrationStateNumber;
@@ -283,7 +283,7 @@ export type AccountModel = {
   authIssuer: number;
   authSubject: string;
   otpSecret: SecretModel | null;
-  otpSecretKey: string | null;
+  otpSecretKey: number | null;
   createdTimestamp: Date;
   changedTimestamp: Date;
   registrationState: RegistrationStateNumber;
@@ -307,6 +307,8 @@ export type AccountModel = {
   chatMessages: ChatMessageModel[];
   chatBans: ChatBanModel[];
   managedChatBanTargets: ChatBanModel[];
+  sentChatDirects: ChatDirectModel[];
+  receivedChatDirects: ChatDirectModel[];
   gameQueue: GameQueueModel | null;
   gameMember: GameMemberModel | null;
   gameHistory: GameHistoryModel[];
@@ -327,37 +329,37 @@ export type AuthorizationModel = {
 };
 
 export type SessionEntity = {
-  id: number;
+  id: bigint;
   accountId: string;
   token: string;
   createdTimestamp: Date;
-  predecessorId: number | null;
+  predecessorId: bigint | null;
   isValid: boolean;
 };
 
 export type SessionModel = {
-  id: number;
+  id: bigint;
   account: AccountModel;
   accountId: string;
   token: string;
   createdTimestamp: Date;
   successor: SessionModel | null;
   predecessor: SessionModel | null;
-  predecessorId: number | null;
+  predecessorId: bigint | null;
   isValid: boolean;
 };
 
 export type SecretEntity = {
-  id: string;
-  data: Buffer;
+  id: number;
+  data: Uint8Array;
   params: JsonValue;
   createdTimestamp: Date;
   updatedTimestamp: Date;
 };
 
 export type SecretModel = {
-  id: string;
-  data: Buffer;
+  id: number;
+  data: Uint8Array;
   params: JsonValue;
   createdTimestamp: Date;
   updatedTimestamp: Date;
@@ -366,14 +368,14 @@ export type SecretModel = {
 
 export type AvatarEntity = {
   id: string;
-  data: Buffer;
+  data: Uint8Array;
   createdTimestamp: Date;
   updatedTimestamp: Date;
 };
 
 export type AvatarModel = {
   id: string;
-  data: Buffer;
+  data: Uint8Array;
   createdTimestamp: Date;
   updatedTimestamp: Date;
   accountReferences: AccountModel[];
@@ -552,6 +554,24 @@ export type ChatBanModel = {
   memo: string;
   expireTimestamp: Date | null;
   bannedTimestamp: Date;
+};
+
+export type ChatDirectEntity = {
+  id: string;
+  sourceAccountId: string;
+  destinationAccountId: string;
+  content: string;
+  timestamp: Date;
+};
+
+export type ChatDirectModel = {
+  id: string;
+  sourceAccount: AccountModel;
+  sourceAccountId: string;
+  destinationAccount: AccountModel;
+  destinationAccountId: string;
+  content: string;
+  timestamp: Date;
 };
 
 export type GameEntity = {
