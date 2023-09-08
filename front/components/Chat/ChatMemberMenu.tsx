@@ -1,4 +1,4 @@
-import React from "react";
+// FIXME: 현재 안쓰이는 컴포넌트
 import { MenuItem } from "./MenuItem";
 
 export function ChatMemberMenu({

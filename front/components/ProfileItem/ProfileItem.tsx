@@ -9,7 +9,6 @@ export function ProfileItem({
     className,
     accountUUID,
     selected,
-    // TODO: 이거 정말 type이 undefined로 들어올 수 있나요??? 해당 처리가 꼭 필요한가
     type,
     onClick,
 }: {

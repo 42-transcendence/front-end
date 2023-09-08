@@ -101,9 +101,7 @@ export function ChatRoomMenu({ className }: { className: string }) {
         >
             {currentChatRoomUUID !== "" &&
                 chatRoomHeaderMenus
-                    .filter(
-                        (menu) => roleLevel >= Number(menu.minRoleLevel ?? 0),
-                    )
+                    .filter((menu) => roleLevel >= (menu.minRoleLevel ?? 0))
                     .map((menu) => {
                         return (
                             <MenuItem

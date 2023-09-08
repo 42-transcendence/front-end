@@ -99,7 +99,7 @@ export default function ChatRightSideBar() {
             <div className="h-fit w-full overflow-auto">
                 {foundCurrentChatMembers.map((item) => (
                     <ProfileItem
-                        type="stranger"
+                        type="friend"
                         key={item.accountId}
                         accountUUID={item.accountId}
                         selected={item.accountId === selectedUUID}
