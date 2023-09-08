@@ -1,8 +1,15 @@
 import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
 import type { ChatRoomChatMessagePairEntry } from "@common/chat-payloads";
 import {
+    ChatErrorNumber,
+    SocialErrorNumber,
+    readChatBanSummary,
+    readChatDirect,
     readChatMessage,
     readChatRoom,
+    readChatRoomChatMessagePair,
+    readChatRoomView,
+    readEnemy,
     readFriend,
     readSocialPayload,
     toChatRoomModeFlags,
@@ -18,9 +25,9 @@ import { ByteBuffer } from "@akasha-lib";
 import { ChatStore } from "@akasha-utils/idb/chat-store";
 import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
 import {
-    EnemyEntryAtom,
-    FriendEntryAtom,
-    FriendRequestEntryAtom,
+    EnemyEntryListAtom,
+    FriendEntryListAtom,
+    FriendRequestListAtom,
 } from "@atoms/FriendAtom";
 import {
     useCurrentAccountUUID,
@@ -28,6 +35,64 @@ import {
 } from "@hooks/useCurrent";
 import { useChatRoomMutation } from "@hooks/useChatRoom";
 import { ACCESS_TOKEN_KEY } from "@hooks/fetcher";
+
+function handleFriendSocialError(errno: SocialErrorNumber) {
+    let message = "";
+    switch (errno) {
+        case SocialErrorNumber.ERROR_ALREADY_EXISTS:
+            message = "이미 친구로 추가되어 있습니다.";
+            break;
+        case SocialErrorNumber.ERROR_NOT_FOUND:
+            message = "친구 목록에서 찾을 수 없습니다.";
+            break;
+        case SocialErrorNumber.ERROR_DENIED:
+            message = "상대방에게 차단당했습니다.";
+            break;
+        case SocialErrorNumber.ERROR_SELF:
+            message = "나 자신은 영원한 인생의 친구입니다";
+            break;
+        case SocialErrorNumber.ERROR_LOOKUP_FAILED:
+            message = "해당하는 닉네임을 찾지 못했습니다.";
+            break;
+        case SocialErrorNumber.ERROR_UNKNOWN:
+            message = "알 수 없는 오류로 실패했습니다.";
+            break;
+        default:
+            break;
+    }
+    if (message !== "") {
+        alert(message);
+    }
+}
+
+function handleEnemySocialError(errno: SocialErrorNumber) {
+    let message = "";
+    switch (errno) {
+        case SocialErrorNumber.ERROR_ALREADY_EXISTS:
+            message = "이미 친구로 추가되어 있습니다.";
+            break;
+        case SocialErrorNumber.ERROR_NOT_FOUND:
+            message = "친구 목록에서 찾을 수 없습니다.";
+            break;
+        case SocialErrorNumber.ERROR_DENIED:
+            message = "상대방에게 차단당했습니다.";
+            break;
+        case SocialErrorNumber.ERROR_SELF:
+            message = "나 자신은 영원한 인생의 친구입니다";
+            break;
+        case SocialErrorNumber.ERROR_LOOKUP_FAILED:
+            message = "해당하는 닉네임을 찾지 못했습니다.";
+            break;
+        case SocialErrorNumber.ERROR_UNKNOWN:
+            message = "알 수 없는 오류로 실패했습니다.";
+            break;
+        default:
+            break;
+    }
+    if (message !== "") {
+        alert(message);
+    }
+}
 
 export function ChatSocketProcessor() {
     const currentAccountUUID = useCurrentAccountUUID();
@@ -65,15 +130,15 @@ export function ChatSocketProcessor() {
         }
         return `wss://back.stri.dev/chat?token=${accessToken}`;
     }, []);
-    useWebSocketConnector("chat", getURL, props); //FIXME: props 이름?
+    useWebSocketConnector("chat", getURL, props);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
     const mutateChatRoom = useChatRoomMutation();
     const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
-    const [friendEntry, setFriendEntry] = useAtom(FriendEntryAtom);
-    const [enemyEntry, setEnemyEntry] = useAtom(EnemyEntryAtom);
-    const [friendRequestEntry, setFriendRequestEntry] = useAtom(
-        FriendRequestEntryAtom,
+    const [friendEntryList, setFriendEntryList] = useAtom(FriendEntryListAtom);
+    const [enemyEntryList, setEnemyEntryList] = useAtom(EnemyEntryListAtom);
+    const [friendRequestList, setFriendRequestList] = useAtom(
+        FriendRequestListAtom,
     );
     useWebSocket("chat", undefined, async (opcode, buffer) => {
         switch (opcode) {
@@ -127,40 +192,24 @@ export function ChatSocketProcessor() {
                 setChatRoomList(chatRoomList);
 
                 const socialPayload = readSocialPayload(buffer);
-                setFriendEntry(socialPayload.friendList);
-                setFriendRequestEntry(socialPayload.friendRequestList);
-                setEnemyEntry(socialPayload.enemyList);
-
+                setFriendEntryList(socialPayload.friendList);
+                setFriendRequestList(socialPayload.friendRequestList);
+                setEnemyEntryList(socialPayload.enemyList);
                 break;
             }
 
             case ChatClientOpcode.ADD_FRIEND_RESULT: {
-                const errno = buffer.read1();
-                if (errno === 0) {
-                    const friend = readFriend(buffer);
-                    setFriendEntry([...friendEntry, friend]);
-                    setFriendRequestEntry(
-                        friendRequestEntry.filter(
-                            (accountUUID) =>
-                                accountUUID !== friend.friendAccountId,
-                        ),
-                    );
-                } else {
-                    console.log("ADD_FRIEND_RESULT에서 오류! " + errno);
+                const errno: SocialErrorNumber = buffer.read1();
+                if (errno !== SocialErrorNumber.SUCCESS) {
+                    handleFriendSocialError(errno);
+                    break;
                 }
-                break;
-            }
 
-            case ChatClientOpcode.DELETE_FRIEND_RESULT: {
-                const friendUUID = buffer.readUUID();
-                setFriendEntry(
-                    friendEntry.filter(
-                        (friend) => friend.friendAccountId !== friendUUID,
-                    ),
-                );
-                setFriendRequestEntry(
-                    friendRequestEntry.filter(
-                        (accountUUID) => accountUUID !== friendUUID,
+                const friend = readFriend(buffer);
+                setFriendEntryList([...friendEntryList, friend]);
+                setFriendRequestList(
+                    friendRequestList.filter(
+                        (accountUUID) => accountUUID !== friend.friendAccountId,
                     ),
                 );
                 break;
@@ -168,14 +217,101 @@ export function ChatSocketProcessor() {
 
             case ChatClientOpcode.FRIEND_REQUEST: {
                 const targetUUID = buffer.readUUID();
-                setFriendRequestEntry([...friendRequestEntry, targetUUID]);
+                setFriendRequestList([...friendRequestList, targetUUID]);
                 //TODO: 알림?
+                break;
+            }
+
+            case ChatClientOpcode.MODIFY_FRIEND_RESULT: {
+                const errno: SocialErrorNumber = buffer.read1();
+                if (errno !== SocialErrorNumber.SUCCESS) {
+                    handleFriendSocialError(errno);
+                    break;
+                }
+
+                const targetAccountId = buffer.readUUID();
+                const friend = readFriend(buffer);
+                setFriendEntryList([
+                    ...friendEntryList.filter(
+                        (entry) => entry.friendAccountId !== targetAccountId,
+                    ),
+                    friend,
+                ]);
                 break;
             }
 
             case ChatClientOpcode.UPDATE_FRIEND_ACTIVE_STATUS: {
                 const targetUUID = buffer.readUUID();
                 //FIXME: 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
+                break;
+            }
+
+            case ChatClientOpcode.DELETE_FRIEND_RESULT: {
+                const errno: SocialErrorNumber = buffer.read1();
+                if (errno !== SocialErrorNumber.SUCCESS) {
+                    handleFriendSocialError(errno);
+                    return;
+                }
+
+                const friendUUID = buffer.readUUID();
+                const half = buffer.readBoolean();
+                if (half) {
+                    setFriendRequestList(
+                        friendRequestList.filter(
+                            (accountUUID) => accountUUID !== friendUUID,
+                        ),
+                    );
+                } else {
+                    setFriendEntryList(
+                        friendEntryList.filter(
+                            (friend) => friend.friendAccountId !== friendUUID,
+                        ),
+                    );
+                }
+                break;
+            }
+
+            case ChatClientOpcode.ADD_ENEMY_RESULT: {
+                const errno: SocialErrorNumber = buffer.read1();
+                if (errno !== SocialErrorNumber.SUCCESS) {
+                    handleEnemySocialError(errno);
+                    break;
+                }
+
+                const enemy = readEnemy(buffer);
+                setEnemyEntryList([...enemyEntryList, enemy]);
+                break;
+            }
+            case ChatClientOpcode.MODIFY_ENEMY_RESULT: {
+                const errno: SocialErrorNumber = buffer.read1();
+                if (errno !== SocialErrorNumber.SUCCESS) {
+                    handleEnemySocialError(errno);
+                    break;
+                }
+
+                const targetAccountId = buffer.readUUID();
+                const enemy = readEnemy(buffer);
+                setEnemyEntryList([
+                    ...enemyEntryList.filter(
+                        (entry) => entry.enemyAccountId !== targetAccountId,
+                    ),
+                    enemy,
+                ]);
+                break;
+            }
+            case ChatClientOpcode.DELETE_ENEMY_RESULT: {
+                const errno: SocialErrorNumber = buffer.read1();
+                if (errno !== SocialErrorNumber.SUCCESS) {
+                    handleFriendSocialError(errno);
+                    return;
+                }
+
+                const enemyUUID = buffer.readUUID();
+                setEnemyEntryList(
+                    enemyEntryList.filter(
+                        (enemy) => enemy.enemyAccountId !== enemyUUID,
+                    ),
+                );
                 break;
             }
 
@@ -192,10 +328,20 @@ export function ChatSocketProcessor() {
                 setChatRoomList([...chatRoomList, chatRoom]);
                 break;
             }
-
+            case ChatClientOpcode.UPDATE_ROOM: {
+                const chatRoom = readChatRoomView(buffer);
+                await ChatStore.addRoom(
+                    currentAccountUUID,
+                    chatRoom.id,
+                    chatRoom.title,
+                    toChatRoomModeFlags(chatRoom),
+                );
+                break;
+            }
             case ChatClientOpcode.REMOVE_ROOM: {
                 const roomUUID = buffer.readUUID();
                 if (currentChatRoomUUID === roomUUID) {
+                    //NOTE: 내가 선택한 방에서 나간거면 리셋해주기
                     setCurrentChatRoomUUID("");
                 }
                 setChatRoomList(chatRoomList.filter((e) => e.id !== roomUUID));
@@ -211,7 +357,37 @@ export function ChatSocketProcessor() {
                 break;
             }
 
-            //FIXME: ROOM_MEMBER 옵코드 처리
+            case ChatClientOpcode.SYNC_CURSOR: {
+                //FIXME: 구현: 현재 채팅방 목록에서 lastReadMessage 바꿔주기. SWR도 mutate?
+                const pair = readChatRoomChatMessagePair(buffer);
+                void pair;
+                break;
+            }
+
+            case ChatClientOpcode.KICK_NOTIFY: {
+                //FIXME: 구현
+                const chatId = buffer.readUUID();
+                const ban = readChatBanSummary(buffer);
+                break;
+            }
+            case ChatClientOpcode.MUTE_NOTIFY: {
+                //FIXME: 구현
+                const chatId = buffer.readUUID();
+                const ban = readChatBanSummary(buffer);
+                break;
+            }
+
+            case ChatClientOpcode.DIRECTS_LIST: {
+                //FIXME: 구현: Insert to IDB
+                const targetAccountId = buffer.readUUID();
+                const messages = buffer.readArray(readChatDirect);
+                break;
+            }
+            case ChatClientOpcode.CHAT_DIRECT: {
+                //FIXME: 구현: Insert to IDB
+                const message = readChatDirect(buffer);
+                break;
+            }
         }
     });
     return <></>;

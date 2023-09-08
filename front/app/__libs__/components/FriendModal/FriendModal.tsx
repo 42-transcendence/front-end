@@ -5,7 +5,7 @@ import { ProfileItem } from "@components/ProfileItem";
 import { Avatar } from "../Avatar";
 import { Icon } from "../ImageLibrary";
 import { Provider, createStore, useAtomValue } from "jotai";
-import { FriendEntryAtom, FriendRequestEntryAtom } from "@atoms/FriendAtom";
+import { FriendEntryListAtom, FriendRequestListAtom } from "@atoms/FriendAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ByteBuffer } from "@akasha-lib";
 import { ChatServerOpcode } from "@common/chat-opcodes";
@@ -70,7 +70,7 @@ export function FriendModal() {
 }
 
 function FriendList() {
-    const friendEntrySet = useAtomValue(FriendEntryAtom);
+    const friendEntrySet = useAtomValue(FriendEntryListAtom);
     const [selectedUUID, setSelectedUUID] = useState<string>();
 
     return friendEntrySet.map((friend) => (
@@ -92,7 +92,7 @@ function FriendList() {
 
 // TODO: @/components/Service/InviteList 와 이름 겹침
 function InviteList() {
-    const friendRequestUUIDs = useAtomValue(FriendRequestEntryAtom);
+    const friendRequestUUIDs = useAtomValue(FriendRequestListAtom);
 
     return (
         friendRequestUUIDs.length !== 0 && (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TextField } from "@components/TextField";
 import { ProfileItemSelectable } from "@components/ProfileItem/ProfileItemSelectable";
-import { FriendEntryAtom } from "@atoms/FriendAtom";
+import { FriendEntryListAtom } from "@atoms/FriendAtom";
 import { useAtom, useAtomValue } from "jotai";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
@@ -11,7 +11,7 @@ import type { FriendEntry } from "@common/chat-payloads";
 
 export function InviteList({ className }: { className?: string | undefined }) {
     const [query, setQuery] = useState("");
-    const friendEntrySet = useAtomValue(FriendEntryAtom, {
+    const friendEntrySet = useAtomValue(FriendEntryListAtom, {
         store: GlobalStore,
     });
     const { results: foundFriendEntrySet } = useFzf({

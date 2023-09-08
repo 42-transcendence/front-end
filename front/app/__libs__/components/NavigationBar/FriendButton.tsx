@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Icon } from "../ImageLibrary";
 import { FriendModal } from "../FriendModal/FriendModal";
 import { useAtomValue } from "jotai";
-import { FriendRequestEntryAtom } from "@atoms/FriendAtom";
+import { FriendRequestListAtom } from "@atoms/FriendAtom";
 import { Dialog } from "@headlessui/react";
 import { NotificationBadge } from "./NotificationBadge";
 
 export function FriendButton() {
-    const accountUUIDs = useAtomValue(FriendRequestEntryAtom);
+    const accountUUIDs = useAtomValue(FriendRequestListAtom);
     const [isOpen, setIsOpen] = useState(false);
 
     const iconClassName = [
