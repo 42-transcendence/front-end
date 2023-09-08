@@ -89,6 +89,8 @@ export function CreateNewRoom() {
             if (errno === 0) {
                 const uuid = buf.readUUID();
                 setCurrentChatRoomUUID(uuid);
+            } else {
+                // TODO: ㅇㅔ러 처리
             }
         },
     );
