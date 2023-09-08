@@ -14,6 +14,8 @@ export function useRefMap<T, V>(): [
         return refs.current;
     }, []);
 
+    const refMap = useMemo(() => getRefMap(), [getRefMap]);
+
     const refCallbackAt = useCallback(
         (key: T) => (node: V | null) => {
             const refMap = getRefMap();
@@ -25,8 +27,6 @@ export function useRefMap<T, V>(): [
         },
         [getRefMap],
     );
-
-    const refMap = useMemo(() => getRefMap(), [getRefMap]);
 
     return [refMap, refCallbackAt];
 }
