@@ -6,6 +6,7 @@ import { ChatRoomListAtom } from "@atoms/ChatAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import { useAtomCallback } from "jotai/utils";
 import { NULL_UUID } from "@akasha-lib";
+import { MessageTypeNumber } from "@common/generated/types";
 
 export function useChatRoomTitle(roomUUID: string) {
     const callback = useCallback(
@@ -30,7 +31,7 @@ export function useChatRoomModeFlags(roomUUID: string) {
 export function useChatRoomLatestMessage(roomUUID: string) {
     const callback = useCallback(
         async ([, roomUUID]: [string, string, string]) =>
-            ChatStore.getLatestMessage(roomUUID),
+            ChatStore.getLatestMessage(roomUUID, MessageTypeNumber.REGULAR),
         [],
     );
     const { data } = useSWR(["ChatStore", roomUUID, "LatestMessage"], callback);

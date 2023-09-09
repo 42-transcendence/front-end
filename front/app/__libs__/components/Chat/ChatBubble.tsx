@@ -119,7 +119,7 @@ export function NoticeBubble({ chatMessage }: { chatMessage: MessageSchema }) {
             ? `${sourceProfile.nickName}#${sourceProfile.nickTag}`
             : "불러오는 중...";
 
-    let content = params.toString();
+    let content = "";
     switch (params.get("type") ?? "") {
         case "create": {
             content = `${memberNick}님이 채팅방[${
@@ -167,6 +167,11 @@ export function NoticeBubble({ chatMessage }: { chatMessage: MessageSchema }) {
         }
         case "unban": {
             content = `${sourceNick}님이 ${memberNick}님에 대한 제재를 취소했습니다.`;
+            break;
+        }
+        case "": {
+            //TODO: 사실 데이터가 잘못되지 않는 이상 이럴 일은 없다.
+            content = chatMessage.content;
             break;
         }
     }
