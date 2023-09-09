@@ -24,7 +24,11 @@ import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useMemo } from "react";
 import { ByteBuffer } from "@akasha-lib";
 import { ChatStore, makeDirectChatKey } from "@akasha-utils/idb/chat-store";
-import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
+import {
+    ChatRoomListAtom,
+    CurrentChatRoomUUIDAtom,
+    DirectRoomListAtom,
+} from "@atoms/ChatAtom";
 import {
     EnemyEntryListAtom,
     FriendEntryListAtom,
@@ -156,6 +160,7 @@ export function ChatSocketProcessor() {
     useWebSocketConnector("chat", getURL, props);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
+    const [directRoomList, setDirectRoomList] = useAtom(DirectRoomListAtom);
     const mutateChatRoom = useChatRoomMutation();
     const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
     const [friendEntryList, setFriendEntryList] = useAtom(FriendEntryListAtom);
@@ -266,8 +271,7 @@ export function ChatSocketProcessor() {
                         }
                     }
 
-                    //FIXME: DirectRoom
-                    // setDirectRoomList(directRoomList);
+                    setDirectRoomList(directRoomList);
                 }
 
                 const socialPayload = readSocialPayload(buffer);
@@ -418,6 +422,16 @@ export function ChatSocketProcessor() {
                     chatRoom.title,
                     toChatRoomModeFlags(chatRoom),
                 );
+                const existsRoom = chatRoomList.find(
+                    (room) => room.id === chatRoom.id,
+                );
+                if (existsRoom === undefined) {
+                    throw new Error();
+                }
+                setChatRoomList([
+                    ...chatRoomList.filter((e) => e.id !== chatRoom.id),
+                    { ...existsRoom, ...chatRoom },
+                ]);
                 break;
             }
             case ChatClientOpcode.REMOVE_ROOM: {
@@ -496,6 +510,12 @@ export function ChatSocketProcessor() {
                 );
                 await ChatStore.addMessage(roomKey, message);
 
+                setDirectRoomList([
+                    ...directRoomList.filter(
+                        (e) => e.targetAccountId !== targetAccountId,
+                    ),
+                    { targetAccountId, lastMessageId: message.id },
+                ]);
                 mutateChatRoom(roomKey);
                 break;
             }

@@ -1,11 +1,15 @@
 "use client";
 
-import type { ChatRoomEntry } from "@common/chat-payloads";
+import type {
+    ChatDirectEntry,
+    ChatRoomEntry,
+} from "@common/chat-payloads";
 import { atom } from "jotai";
 
 export const CreateNewRoomCheckedAtom = atom(false);
 
 export const ChatRoomListAtom = atom(Array<ChatRoomEntry>());
+export const DirectRoomListAtom = atom(Array<ChatDirectEntry>());
 
 export const CurrentChatRoomUUIDAtom = atom("");
 

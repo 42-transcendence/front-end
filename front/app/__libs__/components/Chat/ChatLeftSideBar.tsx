@@ -1,30 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
-import ChatRoomBlock from "./ChatRoomBlock";
+import {
+    ChatDirectRoomBlock,
+    ChatPublicRoomBlock,
+    ChatRoomBlock,
+} from "./ChatRoomBlock";
 import { TextField } from "@components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
 import { Provider, useAtom, useAtomValue } from "jotai";
-import { ChatRoomListAtom, CreateNewRoomCheckedAtom } from "@atoms/ChatAtom";
+import {
+    ChatRoomListAtom,
+    CreateNewRoomCheckedAtom,
+    DirectRoomListAtom,
+} from "@atoms/ChatAtom";
 
 import { FzfHighlight, useFzf } from "react-fzf";
 import { Tab } from "@headlessui/react";
-import type { ChatRoomEntry } from "@common/chat-payloads";
+import type {
+    ChatDirectEntry,
+    ChatRoomEntry,
+    ChatRoomViewEntry,
+} from "@common/chat-payloads";
+import { useWebSocket } from "@akasha-utils/react/websocket-hook";
+import { ChatClientOpcode } from "@common/chat-opcodes";
+import { handlePublicRoomList } from "@akasha-utils/chat-gateway-client";
+import { makePublicRoomListRequest } from "@akasha-utils/chat-payload-builder-client";
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
 export default function ChatLeftSideBar() {
-    // TODO: 두개 다른 atom 써야함
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.PUBLIC_ROOM_LIST,
+        (_, buffer) => {
+            const list = handlePublicRoomList(buffer);
+            setChatPublicRoomList(list);
+        },
+    );
+    useEffect(() => {
+        sendPayload(makePublicRoomListRequest());
+    }, [sendPayload]);
     const chatJoinRoomList = useAtomValue(ChatRoomListAtom);
-    const chatPublicRoomList = useAtomValue(ChatRoomListAtom);
+    const chatDirectRoomList = useAtomValue(DirectRoomListAtom);
+    const [chatPublicRoomList, setChatPublicRoomList] = useState(
+        Array<ChatRoomViewEntry>(),
+    );
     const [query, setQuery] = useState("");
-    const categories = {
-        참가방: chatJoinRoomList,
-        공개방: chatPublicRoomList,
-    };
+    const categories = [
+        {
+            name: "그룹",
+            Component: <RoomPanel rooms={chatJoinRoomList} query={query} />,
+        },
+        {
+            name: "1:1",
+            Component: (
+                <DirectRoomPanel rooms={chatDirectRoomList} query={query} />
+            ),
+        },
+        {
+            name: "찾기",
+            Component: (
+                <PublicRoomPanel rooms={chatPublicRoomList} query={query} />
+            ),
+        },
+    ];
 
     const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
         CreateNewRoomCheckedAtom,
@@ -70,9 +113,9 @@ export default function ChatLeftSideBar() {
                     onClick={() => setQuery("")}
                     className="flex h-10 w-full space-x-1 rounded-lg bg-black/30 p-1"
                 >
-                    {Object.keys(categories).map((category) => (
+                    {categories.map((category, idx) => (
                         <Tab
-                            key={category}
+                            key={idx}
                             className={({ selected }) =>
                                 classNames(
                                     "w-full rounded-lg py-1 text-sm font-medium leading-5 text-gray-50/70",
@@ -83,7 +126,7 @@ export default function ChatLeftSideBar() {
                                 )
                             }
                         >
-                            {category}
+                            {category.name}
                         </Tab>
                     ))}
                 </Tab.List>
@@ -92,10 +135,8 @@ export default function ChatLeftSideBar() {
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                     />
-                    {Object.values(categories).map((rooms, idx) => (
-                        <Tab.Panel key={idx}>
-                            <RoomPanel rooms={rooms} query={query} />
-                        </Tab.Panel>
+                    {categories.map((category, idx) => (
+                        <Tab.Panel key={idx}>{category.Component}</Tab.Panel>
                     ))}
                 </Tab.Panels>
             </Tab.Group>
@@ -140,6 +181,58 @@ function RoomPanel({
                 })}
             />
         </ChatRoomBlock>
+    ));
+}
+
+function DirectRoomPanel({
+    rooms,
+    query,
+}: {
+    rooms: ChatDirectEntry[];
+    query: string;
+}) {
+    const { results, getFzfHighlightProps } = useFzf({
+        items: rooms,
+        itemToString: (item) => item.targetAccountId, //FIXME: 여기서 이름을 알 수가 없는데?
+        query,
+    });
+
+    return results.map((item, index) => (
+        <ChatDirectRoomBlock key={item.targetAccountId} chatRoom={item}>
+            <FzfHighlight
+                {...getFzfHighlightProps({
+                    index,
+                    item,
+                    className: "text-yellow-500",
+                })}
+            />
+        </ChatDirectRoomBlock>
+    ));
+}
+
+function PublicRoomPanel({
+    rooms,
+    query,
+}: {
+    rooms: ChatRoomViewEntry[];
+    query: string;
+}) {
+    const { results, getFzfHighlightProps } = useFzf({
+        items: rooms,
+        itemToString: (item) => item.title,
+        query,
+    });
+
+    return results.map((item, index) => (
+        <ChatPublicRoomBlock key={item.id} chatRoom={item}>
+            <FzfHighlight
+                {...getFzfHighlightProps({
+                    index,
+                    item,
+                    className: "text-yellow-500",
+                })}
+            />
+        </ChatPublicRoomBlock>
     ));
 }
 

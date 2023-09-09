@@ -5,7 +5,6 @@ import { useSWRConfig } from "swr";
 import { ChatRoomListAtom } from "@atoms/ChatAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import { useAtomCallback } from "jotai/utils";
-import { NULL_UUID } from "@akasha-lib";
 import { MessageTypeNumber } from "@common/generated/types";
 
 export function useChatRoomTitle(roomUUID: string) {
@@ -43,7 +42,7 @@ export function useChatRoomTotalUnreadCount() {
         useCallback(async (get, _set) => {
             const roomList = get(ChatRoomListAtom);
             const promises = roomList.map((room) => {
-                const lastMessageId = room.lastMessageId ?? NULL_UUID;
+                const lastMessageId = room.lastMessageId;
                 return ChatStore.countAfterMessage(room.id, lastMessageId);
             });
 
@@ -67,7 +66,7 @@ export function useChatRoomUnreadCount(roomUUID: string) {
                 const roomList = get(ChatRoomListAtom);
                 const lastReadMessageUUID =
                     roomList.find((e) => e.id === roomUUID)?.lastMessageId ??
-                    NULL_UUID;
+                    null;
                 return await ChatStore.countAfterMessage(
                     roomUUID,
                     lastReadMessageUUID,

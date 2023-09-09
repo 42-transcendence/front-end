@@ -492,7 +492,10 @@ export class ChatStore {
                 const cursor = messageAllReverseByTimestampCursor.result;
                 if (cursor !== null) {
                     const message = cursor.value as MessageSchema;
-                    if (message.messageType !== messageType) {
+                    if (
+                        messageType !== undefined &&
+                        message.messageType !== messageType
+                    ) {
                         cursor.continue();
                         return;
                     }
