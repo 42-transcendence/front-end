@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Game, Icon } from "@components/ImageLibrary";
-import { ChatBubbleWithProfile } from "./ChatBubble";
+import { ChatBubbleWithProfile, NoticeBubble } from "./ChatBubble";
 import type { MessageSchema } from "@akasha-utils/idb/chat-store";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatServerOpcode } from "@common/chat-opcodes";
@@ -12,6 +12,7 @@ import {
     useCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
 import { useChatRoomMessages } from "@hooks/useChatRoom";
+import { MessageTypeNumber } from "@common/generated/types";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -146,10 +147,18 @@ export function ChatDialog({
                     className="flex flex-col gap-1 self-stretch overflow-auto"
                 >
                     {chatMessages.map((msg, idx, arr) => {
-                        // TODO: key for ChatBubbleWithProfile with chat message UUID
+                        if (
+                            (msg.messageType as MessageTypeNumber) ===
+                            MessageTypeNumber.NOTICE
+                        ) {
+                            return (
+                                <NoticeBubble key={msg.id} chatMessage={msg} />
+                            );
+                        }
+
                         return (
                             <ChatBubbleWithProfile
-                                key={idx}
+                                key={msg.id}
                                 chatMessage={msg}
                                 isContinued={isContinuedMessage(arr, idx)}
                                 dir={

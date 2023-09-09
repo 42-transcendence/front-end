@@ -89,7 +89,8 @@ export class WebSocketRegistry {
         let ignore = false;
 
         const connect = () => {
-            const url = typeof props.url === "function" ? props.url() : props.url;
+            const url =
+                typeof props.url === "function" ? props.url() : props.url;
             const webSocket = new WebSocket(url, props.protocols);
             webSocket.binaryType = "arraybuffer";
 
@@ -170,8 +171,9 @@ export class WebSocketRegistry {
                         }
                     };
                     if (data instanceof Promise) {
-                        data.then(sendHandshake).catch(() => {
+                        data.then(sendHandshake).catch((e) => {
                             //NOTE: do not handle error
+                            throw e;
                         });
                     } else {
                         sendHandshake(data);

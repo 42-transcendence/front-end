@@ -8,6 +8,7 @@ import {
     readChatMessage,
     readChatRoom,
     readChatRoomChatMessagePair,
+    readChatRoomMember,
     readChatRoomView,
     readEnemy,
     readFriend,
@@ -403,6 +404,9 @@ export function ChatSocketProcessor() {
                     toChatRoomModeFlags(chatRoom),
                 );
                 await ChatStore.addMessageBulk(chatRoom.id, messages);
+                for (const member of chatRoom.members) {
+                    await ChatStore.putMember(chatRoom.id, member);
+                }
                 setChatRoomList([...chatRoomList, chatRoom]);
                 break;
             }
@@ -424,6 +428,31 @@ export function ChatSocketProcessor() {
                 }
                 setChatRoomList(chatRoomList.filter((e) => e.id !== roomUUID));
                 await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
+                break;
+            }
+
+            case ChatClientOpcode.INSERT_ROOM_MEMBER: {
+                const chatId = buffer.readUUID();
+                const member = readChatRoomMember(buffer);
+                await ChatStore.putMember(chatId, member);
+
+                mutateChatRoom(chatId);
+                break;
+            }
+            case ChatClientOpcode.UPDATE_ROOM_MEMBER: {
+                const chatId = buffer.readUUID();
+                const member = readChatRoomMember(buffer);
+                await ChatStore.putMember(chatId, member);
+
+                mutateChatRoom(chatId);
+                break;
+            }
+            case ChatClientOpcode.REMOVE_ROOM_MEMBER: {
+                const chatId = buffer.readUUID();
+                const memberAccountId = buffer.readUUID();
+                await ChatStore.deleteMember(chatId, memberAccountId);
+
+                mutateChatRoom(chatId);
                 break;
             }
 
