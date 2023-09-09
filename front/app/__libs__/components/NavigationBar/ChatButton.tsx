@@ -58,10 +58,10 @@ export function ChatButton() {
                             <ChatLayout>
                                 <ChatLeftSideBar />
                                 <ChatMainPage>
-                                    <Dialog.Title className="relative w-full">
+                                    <Dialog.Title as={Fragment}>
                                         <ChatHeader />
                                     </Dialog.Title>
-                                    <Dialog.Description className="relative h-full w-full">
+                                    <Dialog.Description as={Fragment}>
                                         <ChatDialog
                                             innerFrame={"2xl:rounded-lg"}
                                             outerFrame={"w-full"}
