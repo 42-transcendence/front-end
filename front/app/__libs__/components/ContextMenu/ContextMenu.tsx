@@ -147,7 +147,9 @@ function ContextMenuItem({
             } ${!disabled && "active:bg-secondary/80"}`}
         >
             <div className="relative flex w-full flex-col justify-center px-4 py-1">
-                <div className="select-none">{menuInfo.name}</div>
+                <div className="flex select-none justify-start">
+                    {menuInfo.name}
+                </div>
                 {menuInfo.description !== undefined && (
                     <div className="select-none text-base text-purple-900">
                         {menuInfo.description}
@@ -158,7 +160,6 @@ function ContextMenuItem({
     );
 }
 
-// TODO: disabled 와 아예 안보이는 메뉴 차이?
 export function ContextMenu({ type }: { type: Relationship }) {
     const accountUUID = useAtomValue(TargetedAccountUUIDAtom);
     // TODO: profile undefined 면 뭘 어떻게 해야??
