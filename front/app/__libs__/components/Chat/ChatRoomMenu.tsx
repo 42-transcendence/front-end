@@ -14,19 +14,24 @@ import {
     handleDestroyRoomResult,
     handleLeaveRoomResult,
 } from "@akasha-utils/chat-gateway-client";
-import { ChatErrorNumber } from "@common/chat-payloads";
+import { ChatErrorNumber, toChatRoomModeFlags } from "@common/chat-payloads";
 import { CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
 import { useSetAtom } from "jotai";
 import {
     makeChangeMemberRoleRequest,
+    makeChangeRoomPropertyRequest,
     makeDestroyRoomRequest,
     makeHandoverRoomOwnerRequest,
     makeLeaveRoomRequest,
 } from "@akasha-utils/chat-payload-builder-client";
 import { handleChatError } from "./handleChatError";
+import { MAX_CHAT_MEMBER_CAPACITY } from "@common/chat-constants";
 
 type ChatRoomActions =
     | "notification"
+    | "changeChatRoomTitle"
+    | "changeChatRoomMode"
+    | "changeChatRoomLimit"
     | "transfer"
     | "grant"
     | "delete"
@@ -44,6 +49,24 @@ const chatRoomHeaderMenus: ChatRoomHeaderMenu[] = [
         name: "알림 설정",
         action: "notification",
         minRoleLevel: undefined,
+        isImportant: false,
+    },
+    {
+        name: "방 제목 변경",
+        action: "changeChatRoomTitle",
+        minRoleLevel: RoleNumber.MANAGER,
+        isImportant: false,
+    },
+    {
+        name: "방 설정 변경",
+        action: "changeChatRoomMode",
+        minRoleLevel: RoleNumber.ADMINISTRATOR,
+        isImportant: false,
+    },
+    {
+        name: "방 인원제한 변경",
+        action: "changeChatRoomLimit",
+        minRoleLevel: RoleNumber.MANAGER,
         isImportant: false,
     },
     {
@@ -143,6 +166,61 @@ export function ChatRoomMenu({ className }: { className: string }) {
                     targetRole,
                 );
                 sendPayload(buf);
+            }
+        },
+        ["changeChatRoomTitle"]: () => {
+            const newTitle = prompt("새 채팅방 이름을 입력해주세요");
+            if (newTitle !== null) {
+                const buf = makeChangeRoomPropertyRequest(
+                    currentChatRoomUUID,
+                    newTitle,
+                    undefined,
+                    undefined,
+                    undefined,
+                );
+                sendPayload(buf);
+            }
+        },
+        ["changeChatRoomMode"]: () => {
+            const isPrivate = confirm("private?");
+            const isSecret = confirm("secret?");
+            const password = isSecret
+                ? prompt("new password?") ?? undefined
+                : undefined;
+            const modeFlags = toChatRoomModeFlags({
+                isPrivate: isPrivate,
+                isSecret: isSecret,
+            });
+            const buf = makeChangeRoomPropertyRequest(
+                currentChatRoomUUID,
+                undefined,
+                modeFlags,
+                password,
+                undefined,
+            );
+            sendPayload(buf);
+        },
+        ["changeChatRoomLimit"]: () => {
+            const newLimit = Number(
+                prompt(
+                    `새 인원제한을 입력해주세요 1 ~ ${MAX_CHAT_MEMBER_CAPACITY}`,
+                ),
+            );
+            if (
+                Number.isSafeInteger(newLimit) &&
+                newLimit > 0 &&
+                newLimit < MAX_CHAT_MEMBER_CAPACITY
+            ) {
+                const buf = makeChangeRoomPropertyRequest(
+                    currentChatRoomUUID,
+                    undefined,
+                    undefined,
+                    undefined,
+                    newLimit,
+                );
+                sendPayload(buf);
+            } else {
+                alert("올바른 숫자를 입력해 주세요");
             }
         },
         ["delete"]: () => {
