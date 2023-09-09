@@ -132,29 +132,29 @@ export function handleInviteRoomResult(
     return [errno, chatId, targetAccountId];
 }
 
-export function handleInsertRoomMember(
-    payload: ByteBuffer,
-): [chatId: string, member: ChatRoomMemberEntry] {
-    const chatId = payload.readUUID();
-    const member = readChatRoomMember(payload);
-    return [chatId, member];
-}
+// export function handleInsertRoomMember(
+//     payload: ByteBuffer,
+// ): [chatId: string, member: ChatRoomMemberEntry] {
+//     const chatId = payload.readUUID();
+//     const member = readChatRoomMember(payload);
+//     return [chatId, member];
+// }
+//
+// export function handleUpdateRoomMember(
+//     payload: ByteBuffer,
+// ): [chatId: string, member: ChatRoomMemberEntry] {
+//     const chatId = payload.readUUID();
+//     const member = readChatRoomMember(payload);
+//     return [chatId, member];
+// }
 
-export function handleUpdateRoomMember(
-    payload: ByteBuffer,
-): [chatId: string, member: ChatRoomMemberEntry] {
-    const chatId = payload.readUUID();
-    const member = readChatRoomMember(payload);
-    return [chatId, member];
-}
-
-export function handleRemoveRoomMember(
-    payload: ByteBuffer,
-): [chatId: string, memberAccountId: string] {
-    const chatId = payload.readUUID();
-    const memberAccountId = payload.readUUID();
-    return [chatId, memberAccountId];
-}
+// export function handleRemoveRoomMember(
+//     payload: ByteBuffer,
+// ): [chatId: string, memberAccountId: string] {
+//     const chatId = payload.readUUID();
+//     const memberAccountId = payload.readUUID();
+//     return [chatId, memberAccountId];
+// }
 
 export function handleChatMessagePayload(
     payload: ByteBuffer,
