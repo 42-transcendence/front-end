@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
 import { Dialog, Transition } from "@headlessui/react";
 import { useChatRoomTotalUnreadCount } from "@hooks/useChatRoom";
@@ -15,7 +15,7 @@ import { ChatDialog } from "@components/Chat/ChatDialog";
 export function ChatButton() {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLButtonElement>(null);
-    const totalUnreadMessages = useChatRoomTotalUnreadCount();
+    const totalUnreadCount = useChatRoomTotalUnreadCount();
 
     const iconClassName = [
         "h-12 w-12 rounded-lg p-2 shadow-white",
@@ -80,8 +80,7 @@ export function ChatButton() {
                 className="relative flex h-fit w-fit rounded outline-none focus-visible:outline-primary/70"
             >
                 {ChatIcon}
-                {totalUnreadMessages !== undefined &&
-                    totalUnreadMessages !== 0 && <NotificationBadge />}
+                <NotificationBadge totalUnreadCount={totalUnreadCount} />
             </button>
         </>
     );
