@@ -4,6 +4,7 @@ import type { ChatRoomChatMessagePairEntry } from "@common/chat-payloads";
 import {
     SocialErrorNumber,
     readChatBanSummary,
+    readChatDirect,
     readChatMessage,
     readChatRoom,
     readChatRoomChatMessagePair,
@@ -20,7 +21,7 @@ import {
 } from "@akasha-utils/react/websocket-hook";
 import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useMemo } from "react";
-import { ByteBuffer, NULL_UUID } from "@akasha-lib";
+import { ByteBuffer } from "@akasha-lib";
 import { ChatStore, makeDirectChatKey } from "@akasha-utils/idb/chat-store";
 import { ChatRoomListAtom, CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
 import {
@@ -117,6 +118,27 @@ export function ChatSocketProcessor() {
                     }
                 }
                 buf.writeArray(pairArray, writeChatRoomChatMessagePair);
+
+                const directSet =
+                    await ChatStore.getDirectSet(currentAccountUUID);
+                const pairArrayDirect =
+                    new Array<ChatRoomChatMessagePairEntry>();
+                if (directSet !== null) {
+                    for (const targetAccountId of directSet) {
+                        const messageUUID =
+                            await ChatStore.getDirectFetchedMessageId(
+                                targetAccountId,
+                            );
+                        if (messageUUID !== null) {
+                            pairArrayDirect.push({
+                                chatId: targetAccountId,
+                                messageId: messageUUID,
+                            });
+                        }
+                    }
+                }
+                buf.writeArray(pairArrayDirect, writeChatRoomChatMessagePair);
+
                 return buf.toArray();
             },
         }),
@@ -146,49 +168,104 @@ export function ChatSocketProcessor() {
                 if (roomSet === null) {
                     throw new Error();
                 }
+                const directSet =
+                    await ChatStore.getDirectSet(currentAccountUUID);
+                if (directSet === null) {
+                    throw new Error();
+                }
 
-                const chatRoomList = buffer.readArray(readChatRoom);
-                const promises = Array<Promise<boolean>>();
-                for (const room of chatRoomList) {
-                    roomSet.delete(room.id);
-                    promises.push(
-                        ChatStore.addRoom(
-                            currentAccountUUID,
-                            room.id,
-                            room.title,
-                            toChatRoomModeFlags(room),
-                        ),
-                    );
-                    promises.push(ChatStore.truncateMember(room.id));
-                    for (const member of room.members) {
-                        promises.push(ChatStore.putMember(room.id, member));
+                {
+                    const chatRoomList = buffer.readArray(readChatRoom);
+                    const promises = Array<Promise<boolean>>();
+                    for (const room of chatRoomList) {
+                        roomSet.delete(room.id);
+                        promises.push(
+                            ChatStore.addRoom(
+                                currentAccountUUID,
+                                room.id,
+                                room.title,
+                                toChatRoomModeFlags(room),
+                            ),
+                        );
+                        promises.push(ChatStore.truncateMember(room.id));
+                        for (const member of room.members) {
+                            promises.push(ChatStore.putMember(room.id, member));
+                        }
                     }
-                }
-                for (const roomUUID of roomSet) {
-                    promises.push(
-                        ChatStore.deleteRoom(currentAccountUUID, roomUUID),
-                    );
-                }
-
-                await Promise.allSettled(promises);
-
-                const chatMessageMapSize = buffer.readLength();
-                for (let i = 0; i < chatMessageMapSize; i++) {
-                    const roomUUID = buffer.readUUID();
-                    const messageList = buffer.readArray(readChatMessage);
-
-                    await ChatStore.addMessageBulk(roomUUID, messageList);
-                    const latestMessage =
-                        await ChatStore.getLatestMessage(roomUUID);
-                    if (latestMessage !== null) {
-                        await ChatStore.setFetchedMessageId(
-                            roomUUID,
-                            latestMessage.id,
+                    for (const roomUUID of roomSet) {
+                        promises.push(
+                            ChatStore.deleteRoom(currentAccountUUID, roomUUID),
                         );
                     }
+
+                    await Promise.allSettled(promises);
+
+                    const chatMessageMapSize = buffer.readLength();
+                    for (let i = 0; i < chatMessageMapSize; i++) {
+                        const roomUUID = buffer.readUUID();
+                        const messageList = buffer.readArray(readChatMessage);
+
+                        await ChatStore.addMessageBulk(roomUUID, messageList);
+                        const latestMessage =
+                            await ChatStore.getLatestMessage(roomUUID);
+                        if (latestMessage !== null) {
+                            await ChatStore.setFetchedMessageId(
+                                roomUUID,
+                                latestMessage.id,
+                            );
+                        }
+                    }
+
+                    setChatRoomList(chatRoomList);
                 }
 
-                setChatRoomList(chatRoomList);
+                {
+                    const directRoomList = buffer.readArray(readChatDirect);
+                    const promises = Array<Promise<boolean>>();
+                    for (const direct of directRoomList) {
+                        directSet.delete(direct.targetAccountId);
+                        promises.push(
+                            ChatStore.addDirect(
+                                currentAccountUUID,
+                                direct.targetAccountId,
+                                direct.lastMessageId,
+                            ),
+                        );
+                    }
+                    for (const targetAccountId of directSet) {
+                        promises.push(
+                            ChatStore.deleteDirect(
+                                currentAccountUUID,
+                                targetAccountId,
+                            ),
+                        );
+                    }
+
+                    await Promise.allSettled(promises);
+
+                    const directMessageMapSize = buffer.readLength();
+                    for (let i = 0; i < directMessageMapSize; i++) {
+                        const targetAccountId = buffer.readUUID();
+                        const messageList = buffer.readArray(readChatMessage);
+
+                        const roomUUID = makeDirectChatKey(
+                            currentAccountUUID,
+                            targetAccountId,
+                        );
+                        await ChatStore.addMessageBulk(roomUUID, messageList);
+                        const latestMessage =
+                            await ChatStore.getLatestMessage(roomUUID);
+                        if (latestMessage !== null) {
+                            await ChatStore.setFetchedMessageId(
+                                roomUUID,
+                                latestMessage.id,
+                            );
+                        }
+                    }
+
+                    //FIXME: DirectRoom
+                    // setDirectRoomList(directRoomList);
+                }
 
                 const socialPayload = readSocialPayload(buffer);
                 setFriendEntryList(socialPayload.friendList);
@@ -378,31 +455,6 @@ export function ChatSocketProcessor() {
                 break;
             }
 
-            case ChatClientOpcode.DIRECTS_LIST: {
-                const targetAccountId = buffer.readUUID();
-                const messages = buffer.readArray(readChatMessage);
-                const lastMessageId = buffer.readNullable(
-                    buffer.readUUID,
-                    NULL_UUID,
-                );
-                void lastMessageId; //FIXME: 상태에 잘 저장해두고 뱃지에 사용
-
-                const roomKey = makeDirectChatKey(
-                    currentAccountUUID,
-                    targetAccountId,
-                );
-                await ChatStore.addMessageBulk(roomKey, messages);
-                const latestMessage = await ChatStore.getLatestMessage(roomKey);
-                if (latestMessage !== null) {
-                    await ChatStore.setFetchedMessageId(
-                        roomKey,
-                        latestMessage.id,
-                    );
-                }
-
-                mutateChatRoom(roomKey);
-                break;
-            }
             case ChatClientOpcode.CHAT_DIRECT: {
                 const targetAccountId = buffer.readUUID();
                 const message = readChatMessage(buffer);

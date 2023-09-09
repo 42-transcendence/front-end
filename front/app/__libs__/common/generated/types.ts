@@ -561,7 +561,9 @@ export type ChatDirectEntity = {
   sourceAccountId: string;
   destinationAccountId: string;
   content: string;
+  messageType: MessageTypeNumber;
   timestamp: Date;
+  isLastMessage: boolean;
 };
 
 export type ChatDirectModel = {
@@ -571,7 +573,9 @@ export type ChatDirectModel = {
   destinationAccount: AccountModel;
   destinationAccountId: string;
   content: string;
+  messageType: MessageTypeNumber;
   timestamp: Date;
+  isLastMessage: boolean;
 };
 
 export type GameEntity = {
