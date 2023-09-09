@@ -1,21 +1,21 @@
+import type {
+    ChatBanSummaryEntry,
+    ChatMessageEntry,
+    ChatRoomMemberEntry,
+    ChatRoomViewEntry,
+} from "@common/chat-payloads";
 import {
     ChatErrorNumber,
-    SocialErrorNumber,
     readChatBanDetail,
     readChatBanSummary,
-    readChatDirect,
     readChatMessage,
-    readChatRoom,
-    readChatRoomChatMessagePair,
     readChatRoomMember,
     readChatRoomView,
-    readEnemy,
-    readFriend,
 } from "@common/chat-payloads";
 import type { ByteBuffer } from "@akasha-lib";
 
 // export function handleAddFriendResult(payload: ByteBuffer) {
-//     const errno = payload.read1();
+//     const errno : SocialErrorNumber = payload.read1();
 //     if (errno !== SocialErrorNumber.SUCCESS) {
 //     } else {
 //         const entry = readFriend(payload);
@@ -27,7 +27,7 @@ import type { ByteBuffer } from "@akasha-lib";
 // }
 
 // export function handleModifyFriendResult(payload: ByteBuffer) {
-//     const errno = payload.read1();
+//     const errno : SocialErrorNumber = payload.read1();
 //     if (errno !== SocialErrorNumber.SUCCESS) {
 //     } else {
 //         const targetAccountId = payload.readUUID();
@@ -40,7 +40,7 @@ import type { ByteBuffer } from "@akasha-lib";
 // }
 
 // export function handleDeleteFriendResult(payload: ByteBuffer) {
-//     const errno = payload.read1();
+//     const errno : SocialErrorNumber = payload.read1();
 //     if (errno !== SocialErrorNumber.SUCCESS) {
 //     } else {
 //         const targetAccountId = payload.readUUID();
@@ -49,7 +49,7 @@ import type { ByteBuffer } from "@akasha-lib";
 // }
 
 // export function handleAddEnemyResult(payload: ByteBuffer) {
-//     const errno = payload.read1();
+//     const errno : SocialErrorNumber = payload.read1();
 //     if (errno !== SocialErrorNumber.SUCCESS) {
 //     } else {
 //         const entry = readEnemy(payload);
@@ -57,7 +57,7 @@ import type { ByteBuffer } from "@akasha-lib";
 // }
 
 // export function handleModifyEnemyResult(payload: ByteBuffer) {
-//     const errno = payload.read1();
+//     const errno : SocialErrorNumber = payload.read1();
 //     if (errno !== SocialErrorNumber.SUCCESS) {
 //     } else {
 //         const targetAccountId = payload.readUUID();
@@ -66,15 +66,16 @@ import type { ByteBuffer } from "@akasha-lib";
 // }
 
 // export function handleDeleteEnemyResult(payload: ByteBuffer) {
-//     const errno = payload.read1();
+//     const errno : SocialErrorNumber = payload.read1();
 //     if (errno !== SocialErrorNumber.SUCCESS) {
 //     } else {
 //         const targetAccountId = payload.readUUID();
 //     }
 // }
 
-export function handlePublicRoomList(payload: ByteBuffer) {
+export function handlePublicRoomList(payload: ByteBuffer): ChatRoomViewEntry[] {
     const chatRoomViewList = payload.readArray(readChatRoomView);
+    return chatRoomViewList;
 }
 
 // export function handleInsertRoom(payload: ByteBuffer) {
@@ -82,20 +83,28 @@ export function handlePublicRoomList(payload: ByteBuffer) {
 //     const messages = payload.readArray(readChatMessage);
 // }
 
-export function handleCreateRoomResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleCreateRoomResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, chatId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
+    return [errno, chatId];
 }
 
-export function handleEnterRoomResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleEnterRoomResult(
+    payload: ByteBuffer,
+): [
+    errno: ChatErrorNumber,
+    chatId: string,
+    bans?: ChatBanSummaryEntry[] | undefined,
+] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
-
     if (errno === ChatErrorNumber.ERROR_CHAT_BANNED) {
         const bans = payload.readArray(readChatBanSummary);
-    } else if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
+        return [errno, chatId, bans];
     }
+    return [errno, chatId];
 }
 
 // export function handleUpdateRoom(payload: ByteBuffer) {
@@ -106,87 +115,112 @@ export function handleEnterRoomResult(payload: ByteBuffer) {
 //     const chatId = payload.readUUID();
 // }
 
-export function handleLeaveRoomResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleLeaveRoomResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, chatId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
+    return [errno, chatId];
 }
 
-export function handleInviteRoomResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleInviteRoomResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, chatId: string, targetAccountId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
     const targetAccountId = payload.readUUID();
+    return [errno, chatId, targetAccountId];
 }
 
-export function handleInsertRoomMember(payload: ByteBuffer) {
+export function handleInsertRoomMember(
+    payload: ByteBuffer,
+): [chatId: string, member: ChatRoomMemberEntry] {
     const chatId = payload.readUUID();
     const member = readChatRoomMember(payload);
+    return [chatId, member];
 }
 
-export function handleUpdateRoomMember(payload: ByteBuffer) {
+export function handleUpdateRoomMember(
+    payload: ByteBuffer,
+): [chatId: string, member: ChatRoomMemberEntry] {
     const chatId = payload.readUUID();
     const member = readChatRoomMember(payload);
+    return [chatId, member];
 }
 
-export function handleRemoveRoomMember(payload: ByteBuffer) {
+export function handleRemoveRoomMember(
+    payload: ByteBuffer,
+): [chatId: string, memberAccountId: string] {
     const chatId = payload.readUUID();
     const memberAccountId = payload.readUUID();
+    return [chatId, memberAccountId];
 }
 
-export function handleChatMessagePayload(payload: ByteBuffer) {
+export function handleChatMessagePayload(
+    payload: ByteBuffer,
+): ChatMessageEntry {
     const message = readChatMessage(payload);
+    return message;
 }
 
-export function handleSendMessageResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleSendMessageResult(
+    payload: ByteBuffer,
+): [
+    errno: ChatErrorNumber,
+    chatId: string,
+    bans?: ChatBanSummaryEntry[] | undefined,
+] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
-
     if (errno === ChatErrorNumber.ERROR_CHAT_BANNED) {
         const bans = payload.readArray(readChatBanSummary);
-    } else if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
+        return [errno, chatId, bans];
     }
+    return [errno, chatId];
 }
 
 // export function handleSyncCursorPayload(payload: ByteBuffer) {
 //     const pair = readChatRoomChatMessagePair(payload);
 // }
 
-export function handleChangeRoomPropertyResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleChangeRoomPropertyResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, chatId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
-
-    if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
-    }
+    return [errno, chatId];
 }
 
-export function handleChangeMemberRoleResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleChangeMemberRoleResult(
+    payload: ByteBuffer,
+): [
+    errno: ChatErrorNumber,
+    chatId: string,
+    targetAccountId: string,
+    targetRole: number,
+] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
     const targetAccountId = payload.readUUID();
     const targetRole = payload.read1();
-
-    if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
-    }
+    return [errno, chatId, targetAccountId, targetRole];
 }
 
-export function handleHandoverRoomOwnerResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleHandoverRoomOwnerResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, chatId: string, targetAccountId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
     const targetAccountId = payload.readUUID();
-    if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
-    }
+    return [errno, chatId, targetAccountId];
 }
 
-export function handleKickMemberResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleKickMemberResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, chatId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
-
-    if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
-    }
+    return [errno, chatId];
 }
 
 // export function handleKickNotify(payload: ByteBuffer) {
@@ -194,12 +228,12 @@ export function handleKickMemberResult(payload: ByteBuffer) {
 //     const ban = readChatBanSummary(payload);
 // }
 
-export function handleMuteMemberResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleMuteMemberResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, chatId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
-    if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
-    }
+    return [errno, chatId];
 }
 
 // export function handleMuteNotify(payload: ByteBuffer) {
@@ -209,22 +243,24 @@ export function handleMuteMemberResult(payload: ByteBuffer) {
 
 export function handleBanList(payload: ByteBuffer) {
     const bans = payload.readArray(readChatBanDetail);
+    return bans;
 }
 
-export function handleUnbanMemberResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+// banId is nanoId
+export function handleUnbanMemberResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, banId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const banId = payload.readString();
-    if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
-    }
+    return [errno, banId];
 }
 
-export function handleDestroyRoomResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleDestroyRoomResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, chatId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const chatId = payload.readUUID();
-    if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
-    }
+    return [errno, chatId];
 }
 
 // export function handleDirectsList(payload: ByteBuffer) {
@@ -236,11 +272,10 @@ export function handleDestroyRoomResult(payload: ByteBuffer) {
 //     const message = readChatDirect(payload);
 // }
 
-export function handleSendDirectResult(payload: ByteBuffer) {
-    const errno = payload.read1();
+export function handleSendDirectResult(
+    payload: ByteBuffer,
+): [errno: ChatErrorNumber, targetAccountId: string] {
+    const errno: ChatErrorNumber = payload.read1();
     const targetAccountId = payload.readUUID();
-
-    if (errno !== ChatErrorNumber.SUCCESS) {
-    } else {
-    }
+    return [errno, targetAccountId];
 }
