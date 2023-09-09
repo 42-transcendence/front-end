@@ -127,6 +127,7 @@ export function ChatSocketProcessor() {
                     for (const targetAccountId of directSet) {
                         const messageUUID =
                             await ChatStore.getDirectFetchedMessageId(
+                                currentAccountUUID,
                                 targetAccountId,
                             );
                         if (messageUUID !== null) {
@@ -256,8 +257,9 @@ export function ChatSocketProcessor() {
                         const latestMessage =
                             await ChatStore.getLatestMessage(roomUUID);
                         if (latestMessage !== null) {
-                            await ChatStore.setFetchedMessageId(
-                                roomUUID,
+                            await ChatStore.setDirectFetchedMessageId(
+                                currentAccountUUID,
+                                targetAccountId,
                                 latestMessage.id,
                             );
                         }
