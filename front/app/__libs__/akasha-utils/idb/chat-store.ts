@@ -4,6 +4,7 @@ const DB_NAME_PREFIX = "akasha-";
 
 function getMetadataDB(): Promise<IDBDatabase> {
     return IDBCP.getOrOpen(`${DB_NAME_PREFIX}chat`, {
+        version: 4,
         onUpgradeNeeded(db: IDBDatabase) {
             try {
                 db.deleteObjectStore("rooms");
@@ -55,6 +56,7 @@ export type DirectSchema = {
 
 function getRoomDB(chatId: string): Promise<IDBDatabase> {
     return IDBCP.getOrOpen(`${DB_NAME_PREFIX}chat-${chatId}`, {
+        version: 4,
         onUpgradeNeeded(db: IDBDatabase) {
             try {
                 db.deleteObjectStore("members");
