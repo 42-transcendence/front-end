@@ -31,13 +31,13 @@ function HelloWorldPaper() {
 
 export default function Home() {
     return (
-        <div className="flex h-full w-full items-center justify-center bg-black/30 lg:backdrop-blur-[3px]">
-            <div className="flex flex-[1_0_0] flex-col items-center justify-center gap-2.5 self-stretch lg:flex-row">
+        <div className="flex h-full w-full items-center justify-center bg-black/30">
+            <div className="flex w-full flex-col items-center justify-center gap-2.5 self-stretch lg:flex-row">
                 <div className="flex flex-col items-start">
                     <HelloWorldPaper />
                 </div>
 
-                <div className="flex h-[300px] flex-col items-center justify-center gap-[30px] px-[75px] py-[69px]">
+                <div className="flex flex-col items-center justify-center gap-4">
                     <QuickMatchButton />
                     <CreateGameButton />
                     <LogoutButton />
