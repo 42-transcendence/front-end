@@ -6,10 +6,24 @@ import {
     useCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
-import { ByteBuffer } from "@akasha-lib";
+import { ChatClientOpcode } from "@common/chat-opcodes";
 import { RoleNumber } from "@common/generated/types";
 import { useChatMember } from "@hooks/useChatRoom";
+import {
+    handleChangeRoomPropertyResult,
+    handleDestroyRoomResult,
+    handleLeaveRoomResult,
+} from "@akasha-utils/chat-gateway-client";
+import { ChatErrorNumber } from "@common/chat-payloads";
+import { CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
+import { useSetAtom } from "jotai";
+import {
+    makeChangeMemberRoleRequest,
+    makeDestroyRoomRequest,
+    makeHandoverRoomOwnerRequest,
+    makeLeaveRoomRequest,
+} from "@akasha-utils/chat-payload-builder-client";
+import { handleChatError } from "./handleChatError";
 
 type ChatRoomActions =
     | "notification"
@@ -61,32 +75,85 @@ const chatRoomHeaderMenus: ChatRoomHeaderMenu[] = [
 export function ChatRoomMenu({ className }: { className: string }) {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
     const selfMember = useChatMember(currentChatRoomUUID, currentAccountUUID);
     const roleLevel = Number(selfMember?.role ?? 0);
 
     const { sendPayload } = useWebSocket(
         "chat",
-        ChatClientOpcode.LEAVE_ROOM_RESULT,
-        (_, buf) => {
-            const errno = buf.read1();
-            if (errno !== 0) {
-                alert("방 나가기 실패!!!" + errno);
-                //FIXME: enum으로 고치고, 적절히 토스트 띄우기?
+        [
+            ChatClientOpcode.CHANGE_ROOM_PROPERTY_RESULT,
+            ChatClientOpcode.LEAVE_ROOM_RESULT,
+            ChatClientOpcode.DESTROY_ROOM_RESULT,
+        ],
+        (opcode, buf) => {
+            switch (opcode) {
+                case ChatClientOpcode.CHANGE_ROOM_PROPERTY_RESULT: {
+                    const [errno, chatId] = handleChangeRoomPropertyResult(buf);
+                    if (errno !== ChatErrorNumber.SUCCESS) {
+                        handleChatError(errno);
+                    } else {
+                        alert("설정을 변경했습니다");
+                    }
+                    break;
+                }
+                case ChatClientOpcode.LEAVE_ROOM_RESULT: {
+                    const [errno, chatId] = handleLeaveRoomResult(buf);
+                    if (errno !== ChatErrorNumber.SUCCESS) {
+                        handleChatError(errno);
+                    } else {
+                        setCurrentChatRoomUUID("");
+                    }
+                    break;
+                }
+                case ChatClientOpcode.DESTROY_ROOM_RESULT: {
+                    const [errno, chatId] = handleDestroyRoomResult(buf);
+                    if (errno !== ChatErrorNumber.SUCCESS) {
+                        handleChatError(errno);
+                    } else {
+                        setCurrentChatRoomUUID("");
+                    }
+                    break;
+                }
             }
         },
     );
 
     const actions = {
         ["notification"]: () => {},
-        ["transfer"]: () => {},
-        ["grant"]: () => {},
-        ["delete"]: () => {},
+        ["transfer"]: () => {
+            // TODO: ChatRightSideBar.tsx 에서 처리하는걸로 옮기기
+            if (confirm("정말로 방을 양도하시겠습니까ㅏ?")) {
+                const targetAccountId = "asdf";
+                const buf = makeHandoverRoomOwnerRequest(
+                    currentChatRoomUUID,
+                    targetAccountId,
+                );
+                sendPayload(buf);
+            }
+        },
+        ["grant"]: () => {
+            // TODO: ChatRightSideBar.tsx 에서 처리하는걸로 옮기기
+            if (confirm("매니저 지정하시겠습니까?")) {
+                const targetAccountId = "asdf";
+                const targetRole = RoleNumber.MANAGER;
+                const buf = makeChangeMemberRoleRequest(
+                    currentChatRoomUUID,
+                    targetAccountId,
+                    targetRole,
+                );
+                sendPayload(buf);
+            }
+        },
+        ["delete"]: () => {
+            if (confirm("정말로 방을 삭제?")) {
+                const buf = makeDestroyRoomRequest(currentChatRoomUUID);
+                sendPayload(buf);
+            }
+        },
         ["leave"]: () => {
             if (confirm("정말로 나가시겠습니까?")) {
-                const buf = ByteBuffer.createWithOpcode(
-                    ChatServerOpcode.LEAVE_ROOM,
-                );
-                buf.writeUUID(currentChatRoomUUID);
+                const buf = makeLeaveRoomRequest(currentChatRoomUUID);
                 sendPayload(buf);
             }
         },
