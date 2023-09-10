@@ -2,6 +2,9 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { ProfileItemBase } from "@components/ProfileItem/ProfileItemBase";
 // import { TextField } from "@components/TextField";
 import { Icon } from "@components/ImageLibrary";
+import { useWebSocket } from "@akasha-utils/react/websocket-hook";
+import { makeKickMemberRequest } from "@akasha-utils/chat-payload-builder-client";
+import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 
 // const configMockup = {
 //     id: 123,
@@ -33,12 +36,15 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
     const submitTitle = "차단하기";
     const ref = useRef<HTMLFormElement>(null!);
     const type = "access";
+    const { sendPayload } = useWebSocket("chat", []);
+    const currentRoomUUID = useCurrentChatRoomUUID();
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
 
         const data = new FormData(ref.current);
-        const value = Object.fromEntries(data.entries());
+        console.log(data);
+        // sendPayload(makeKickMemberRequest(currentRoomUUID, accountUUID, ));
     };
 
     return (

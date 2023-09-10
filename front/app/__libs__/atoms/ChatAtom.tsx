@@ -1,9 +1,7 @@
 "use client";
 
-import type {
-    ChatDirectEntry,
-    ChatRoomEntry,
-} from "@common/chat-payloads";
+import type { ChatDirectEntry, ChatRoomEntry } from "@common/chat-payloads";
+import type { RightSideBarContents } from "@components/Chat/ChatRightSideBar";
 import { atom } from "jotai";
 
 export const CreateNewRoomCheckedAtom = atom(false);
@@ -26,3 +24,6 @@ export const LeftSideBarIsOpenAtom = atom(
 
 const _backing_LeftSideBarOpenInputAtom = atom(false);
 const _backing_LeftSideBarCloseInputAtom = atom(true);
+
+export const ChatRightSideBarCurrrentPage =
+    atom<RightSideBarContents>(undefined);

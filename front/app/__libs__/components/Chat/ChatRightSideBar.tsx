@@ -9,7 +9,7 @@ import { ButtonOnRight } from "../Button/ButtonOnRight";
 import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
 import { AccessBan } from "./NewBan";
-import { Provider, useAtomValue } from "jotai";
+import { Provider, useAtom, useAtomValue } from "jotai";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
@@ -20,6 +20,7 @@ import { useChatRoomMembers } from "@hooks/useChatRoom";
 import { useFzf } from "react-fzf";
 import { handleInviteRoomResult } from "@akasha-utils/chat-gateway-client";
 import { ChatErrorNumber } from "@common/chat-payloads";
+import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
 
 export type RightSideBarContents =
     | "report"
@@ -48,7 +49,7 @@ export default function ChatRightSideBar() {
     const [inviteToggle, setInviteToggle] = useState(false);
     // TODO: setAdmin logic
     const [admin, setAdmin] = useState(true);
-    const [currentPage, setCurrentPage] = useState<RightSideBarContents>();
+    const [currentPage, setCurrentPage] = useAtom(ChatRightSideBarCurrrentPage);
     const [memberListDropDown, setMemberListDropDown] = useState(false);
 
     const handleList = () => {

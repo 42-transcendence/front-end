@@ -1,7 +1,7 @@
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ContextMenuBase } from "./ContextMenuBase";
 import { ByteBuffer } from "@akasha-lib";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
 import { ChatServerOpcode } from "@common/chat-opcodes";
 import { usePublicProfile } from "@hooks/useProfile";
@@ -9,6 +9,7 @@ import { useEffect, useRef } from "react";
 import { ActiveStatus, getActiveStatusNumber } from "@common/generated/types";
 import { FriendModifyFlags } from "@common/chat-payloads";
 import { logoutAction } from "@/app/(main)/@home/(nav)/logoutAction";
+import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
 
 export type Relationship = "myself" | "friend" | "stranger";
 
@@ -22,8 +23,8 @@ type ProfileMenuActions =
     | "logout"
     | "deletefriend"
     | "gotoprofile"
-    | "addenemy";
-// | "reportuser";
+    | "addenemy"
+    | "reportuser";
 
 type ProfileMenu = {
     name: string;
@@ -91,13 +92,13 @@ const profileMenus: ProfileMenu[] = [
         isImportant: true,
         className: "hover:bg-red-500/30",
     },
-    // {
-    //     name: "사용자 신고",
-    //     action: "reportuser",
-    //     relation: ["friend", "stranger"],
-    //     isImportant: true,
-    //     className: "hover:bg-red-500/30",
-    // },
+    {
+        name: "사용자 신고",
+        action: "reportuser",
+        relation: ["friend", "stranger"],
+        isImportant: true,
+        className: "hover:bg-red-500/30",
+    },
     {
         name: "사용자 차단",
         action: "addenemy",
@@ -173,7 +174,7 @@ export function ContextMenu({ type }: { type: Relationship }) {
 
     //TODO: fetch score
     const score = 1321;
-
+    const setCurrentPage = useSetAtom(ChatRightSideBarCurrrentPage);
     const rating: ProfileMenu = {
         name: `rating: ${score}`,
         relation: ["myself", "friend", "stranger"],
@@ -248,7 +249,9 @@ export function ContextMenu({ type }: { type: Relationship }) {
                 sendPayload(buf);
             }
         },
-        // ["reportuser"]: () => {},
+        ["reportuser"]: () => {
+            setCurrentPage("report");
+        },
         ["deletefriend"]: () => {
             if (
                 confirm(
