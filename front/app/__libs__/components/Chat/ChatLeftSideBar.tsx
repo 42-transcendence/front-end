@@ -130,11 +130,11 @@ export default function ChatLeftSideBar() {
                         </Tab>
                     ))}
                 </Tab.List>
-                <Tab.Panels className="w-full">
-                    <ListQuaryTextField
-                        value={query}
-                        onChange={(event) => setQuery(event.target.value)}
-                    />
+                <ListQuaryTextField
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                />
+                <Tab.Panels className="h-full w-full overflow-auto">
                     {categories.map((category, idx) => (
                         <Tab.Panel key={idx}>{category.Component}</Tab.Panel>
                     ))}
@@ -244,7 +244,7 @@ function ListQuaryTextField({
     onChange: React.ChangeEventHandler<HTMLInputElement>;
 }) {
     return (
-        <div className="mb-2 flex w-full flex-col gap-2 overflow-auto peer-checked:hidden">
+        <div className="mb-2 flex w-full flex-col gap-2 peer-checked:hidden">
             <TextField
                 type="search"
                 icon={
