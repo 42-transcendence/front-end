@@ -1,6 +1,10 @@
 import { Icon } from "@components/ImageLibrary";
 import { Avatar } from "@components/Avatar";
-import type { ChatDirectEntry, ChatRoomViewEntry } from "@common/chat-payloads";
+import type {
+    ChatBanSummaryEntry,
+    ChatDirectEntry,
+    ChatRoomViewEntry,
+} from "@common/chat-payloads";
 import { ChatErrorNumber } from "@common/chat-payloads";
 import { ChatRoomModeFlags, type ChatRoomEntry } from "@common/chat-payloads";
 import { useSetAtom } from "jotai";
@@ -21,6 +25,7 @@ import { ChatClientOpcode } from "@common/chat-opcodes";
 import { handleEnterRoomResult } from "@akasha-utils/chat-gateway-client";
 import { makeEnterRoomRequest } from "@akasha-utils/chat-payload-builder-client";
 import { digestMessage, encodeUTF8 } from "@akasha-lib";
+import { handleChatError } from "./handleChatError";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -215,7 +220,16 @@ export function ChatDirectRoomBlock({
     );
 }
 
-// 1. confirm 들어갈래? 2. password 3. 이미 들어가있는방 목록에서 표시
+function prettifyBanSummaryEntries(bans: ChatBanSummaryEntry[]) {
+    return bans
+        .map((ban) => {
+            const reason = ban.reason;
+            const expire = ban.expireTimestamp?.toLocaleDateString() ?? null;
+
+            return `사유: ${reason}\n${expire !== null && "기한: " + expire}`;
+        })
+        .join("\n\n");
+}
 
 export function ChatPublicRoomBlock({
     children,
@@ -238,24 +252,23 @@ export function ChatPublicRoomBlock({
         (_, payload) => {
             const [errno, chatId, bans] = handleEnterRoomResult(payload);
             if (chatId === chatRoom.id) {
-                //FIXME: 더 정상적으로 처리
-                if (errno === ChatErrorNumber.SUCCESS) {
+                //FIXME: 정상 , 차단 두 경우 테스트해보기
+                if (errno !== ChatErrorNumber.SUCCESS) {
+                    handleChatError(errno);
+                    if (bans !== undefined) {
+                        alert(prettifyBanSummaryEntries(bans));
+                    }
+                } else {
                     setChatRoomUUID(chatRoom.id);
                     setLeftSideBar(false);
-                } else {
-                    alert(
-                        `입장 실패... ${errno}, ${chatId}, ${
-                            bans?.toString() ?? ""
-                        }`,
-                    );
                 }
             }
         },
     );
 
+    //FIXME: 이미 들어간 방 표시
     const isAlreadyChatPublicRoomMember =
         chatRoomList.find((e) => e.id === chatRoom.id) !== undefined;
-    //FIXME: 이미 들어간 방 표시
 
     return (
         <button

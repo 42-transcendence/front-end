@@ -16,6 +16,9 @@ import {
 } from "@atoms/ChatAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import { makeCreateRoomRequest } from "@akasha-utils/chat-payload-builder-client";
+import { handleCreateRoomResult } from "@akasha-utils/chat-gateway-client";
+import { handleChatError } from "./handleChatError";
+import { ChatErrorNumber } from "@common/chat-payloads";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
@@ -85,12 +88,11 @@ export function CreateNewRoom() {
         "chat",
         ChatClientOpcode.CREATE_ROOM_RESULT,
         (_, buf) => {
-            const errno = buf.read1();
-            if (errno === 0) {
-                const uuid = buf.readUUID();
-                setCurrentChatRoomUUID(uuid);
+            const [errno, chatId] = handleCreateRoomResult(buf);
+            if (errno !== ChatErrorNumber.SUCCESS) {
+                handleChatError(errno);
             } else {
-                // TODO: ㅇㅔ러 처리
+                setCurrentChatRoomUUID(chatId);
             }
         },
     );
