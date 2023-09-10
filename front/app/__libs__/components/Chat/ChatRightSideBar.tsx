@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
 import { TextField } from "@components/TextField";
 import { ProfileItem } from "@components/ProfileItem";
@@ -78,65 +78,24 @@ export default function ChatRightSideBar() {
         }
     };
 
-    function ListContent({
-        currentPage,
-    }: {
-        currentPage: RightSideBarContents;
-    }) {
-        switch (currentPage) {
-            case "accessBanMemberList":
-                return <ChatAccessBanList />;
-            case "sendBanMemberList":
-                return <ChatCommitBanList />;
-            case "newAccessBan":
-                return <AccessBan accountUUID={selectedUUID ?? ""} />;
-            case "newSendBan":
-                return <SendBan accountUUID={selectedUUID ?? ""} />;
-            case "report":
-                return <ReportUser accountUUID={selectedUUID ?? ""} />;
-            default:
-                return memberList;
-        }
-    }
-
-    const memberList = inviteToggle ? (
-        <Provider>
-            <InviteForm />
-        </Provider>
-    ) : (
-        <>
-            <TextField
-                type="search"
-                icon={
-                    <Icon.Search
-                        className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
-                        width={24}
-                        height={24}
-                    />
-                }
-                className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9"
-                value={query}
-                placeholder="Search..."
-                onChange={(event) => setQuery(event.target.value)}
-            />
-            <div className="h-fit w-full overflow-auto">
-                {foundCurrentChatMembers.map((item) => (
-                    <ProfileItem
-                        type="ChatRoom"
-                        key={item.accountId}
-                        accountUUID={item.accountId}
-                        selected={item.accountId === selectedUUID}
-                        onClick={() =>
-                            setSelectedUUID(
-                                item.accountId !== selectedUUID
-                                    ? item.accountId
-                                    : undefined,
-                            )
-                        }
-                    />
-                ))}
-            </div>
-        </>
+    const ListContent = useCallback(
+        ({ currentPage }: { currentPage: RightSideBarContents }) => {
+            switch (currentPage) {
+                case "accessBanMemberList":
+                    return <ChatAccessBanList />;
+                case "sendBanMemberList":
+                    return <ChatCommitBanList />;
+                case "newAccessBan":
+                    return <AccessBan accountUUID={selectedUUID ?? ""} />;
+                case "newSendBan":
+                    return <SendBan accountUUID={selectedUUID ?? ""} />;
+                case "report":
+                    return <ReportUser accountUUID={selectedUUID ?? ""} />;
+                default:
+                    return <></>;
+            }
+        },
+        [selectedUUID],
     );
 
     return (
@@ -219,6 +178,45 @@ export default function ChatRightSideBar() {
                 </div>
 
                 <ListContent currentPage={currentPage} />
+                {inviteToggle ? (
+                    <Provider>
+                        <InviteForm />
+                    </Provider>
+                ) : (
+                    <>
+                        <TextField
+                            type="search"
+                            icon={
+                                <Icon.Search
+                                    className="absolute left-1 right-1 top-1 select-none rounded-lg p-1 transition-all group-focus-within:left-[15.5rem] group-focus-within:bg-secondary group-focus-within:text-white"
+                                    width={24}
+                                    height={24}
+                                />
+                            }
+                            className="py-1 pl-7 pr-2 text-sm transition-all focus-within:pl-2 focus-within:pr-9"
+                            value={query}
+                            placeholder="Search..."
+                            onChange={(event) => setQuery(event.target.value)}
+                        />
+                        <div className="h-fit w-full overflow-auto">
+                            {foundCurrentChatMembers.map((item) => (
+                                <ProfileItem
+                                    type="ChatRoom"
+                                    key={item.accountId}
+                                    accountUUID={item.accountId}
+                                    selected={item.accountId === selectedUUID}
+                                    onClick={() =>
+                                        setSelectedUUID(
+                                            item.accountId !== selectedUUID
+                                                ? item.accountId
+                                                : undefined,
+                                        )
+                                    }
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
