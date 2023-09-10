@@ -2,7 +2,7 @@
 
 import { Fragment, useRef, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog } from "@headlessui/react";
 import { useChatRoomTotalUnreadCount } from "@hooks/useChatRoom";
 import { NotificationBadge } from "./NotificationBadge";
 import ChatLayout from "@components/Chat/ChatLayout";
@@ -11,10 +11,14 @@ import ChatMainPage from "@components/Chat/ChatMainPage";
 import ChatRightSideBar from "@components/Chat/ChatRightSideBar";
 import { ChatHeader } from "@components/Chat/ChatHeader";
 import { ChatDialog } from "@components/Chat/ChatDialog";
+import { AnimatePresence, motion } from "framer-motion";
+import { useSetAtom } from "jotai";
+import { CreateNewRoomCheckedAtom } from "@atoms/ChatAtom";
 
 export function ChatButton() {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLButtonElement>(null);
+    const setCreateNewRoom = useSetAtom(CreateNewRoomCheckedAtom);
     const totalUnreadCount = useChatRoomTotalUnreadCount();
 
     const iconClassName = [
@@ -32,29 +36,22 @@ export function ChatButton() {
 
     return (
         <>
-            <Transition show={isOpen}>
-                <Dialog initialFocus={ref} onClose={() => setIsOpen(false)}>
-                    <Transition.Child
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
+            <AnimatePresence>
+                {isOpen && (
+                    <Dialog
+                        key="ChatModal"
+                        open={isOpen}
+                        initialFocus={ref}
+                        onClose={() => {
+                            setIsOpen(false);
+                            setCreateNewRoom(false);
+                        }}
                     >
-                        <div
-                            className="fixed inset-0 bg-black/30"
-                            aria-hidden="true"
-                        />
-                    </Transition.Child>
-
-                    <Transition.Child
-                        enter="ease-in-out duration-300"
-                        enterFrom="scale-75"
-                        enterTo="scale-100"
-                        className="fixed inset-0 flex w-screen transform-gpu items-center justify-center"
-                    >
-                        <Dialog.Panel className="absolute inset-0 top-12 mx-auto max-w-7xl lg:inset-32">
+                        <div className="fixed inset-0" aria-hidden="true" />
+                        <Dialog.Panel
+                            as={motion.div}
+                            className="absolute inset-4 inset-y-8 mx-auto max-w-7xl lg:inset-32"
+                        >
                             <ChatLayout>
                                 <ChatLeftSideBar />
                                 <ChatMainPage>
@@ -71,9 +68,9 @@ export function ChatButton() {
                                 <ChatRightSideBar />
                             </ChatLayout>
                         </Dialog.Panel>
-                    </Transition.Child>
-                </Dialog>
-            </Transition>
+                    </Dialog>
+                )}
+            </AnimatePresence>
             <button
                 onClick={() => setIsOpen(true)}
                 ref={ref}
