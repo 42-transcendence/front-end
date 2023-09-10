@@ -6,6 +6,8 @@ import type {
     AccountProfilePublicPayload,
 } from "@common/profile-payloads";
 import { useCurrentAccountUUID } from "./useCurrent";
+import { useSWRConfig } from "swr";
+import { useCallback } from "react";
 
 export function usePublicProfile(accountUUID: string) {
     const { data } = useSWR(
@@ -32,6 +34,23 @@ export function usePrivateProfile() {
     return data;
 }
 
+export function useProfileMutation() {
+    const currentAccountUUID = useCurrentAccountUUID();
+    const { mutate } = useSWRConfig();
+
+    return useCallback(
+        (accountUUID: string) =>
+            void mutate(
+                (key) =>
+                    key === `/profile/public/${accountUUID}` ||
+                    key === `/profile/protected/${accountUUID}` ||
+                    (accountUUID === currentAccountUUID &&
+                        key === "/profile/private"),
+            ),
+        [currentAccountUUID, mutate],
+    );
+}
+
 export function useNickLookup(name: string, tag: number) {
     const params = new URLSearchParams({ name, tag: tag.toString() });
     const result = useSWR(
@@ -40,5 +59,9 @@ export function useNickLookup(name: string, tag: number) {
     );
     const notFound: boolean =
         result.error instanceof HTTPError && result.error.status === 404;
-    return { accountUUID: result.data ?? "", isLoading: result.isLoading, notFound };
+    return {
+        accountUUID: result.data ?? "",
+        isLoading: result.isLoading,
+        notFound,
+    };
 }

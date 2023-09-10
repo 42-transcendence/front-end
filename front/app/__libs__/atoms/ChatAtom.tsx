@@ -11,6 +11,7 @@ export const CreateNewRoomCheckedAtom = atom(false);
 export const ChatRoomListAtom = atom(Array<ChatRoomEntry>());
 export const DirectRoomListAtom = atom(Array<ChatDirectEntry>());
 
+export const CurrentChatRoomIsDirectAtom = atom(false);
 export const CurrentChatRoomUUIDAtom = atom("");
 
 export const LeftSideBarIsOpenAtom = atom(

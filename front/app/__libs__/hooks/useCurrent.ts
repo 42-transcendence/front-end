@@ -1,7 +1,11 @@
 import { CurrentAccountUUIDAtom } from "@atoms/AccountAtom";
-import { CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
+import {
+    CurrentChatRoomIsDirectAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@atoms/ChatAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback } from "react";
 
 export function useCurrentAccountUUID() {
     return useAtomValue(CurrentAccountUUIDAtom, { store: GlobalStore });
@@ -9,4 +13,13 @@ export function useCurrentAccountUUID() {
 
 export function useCurrentChatRoomUUID() {
     return useAtomValue(CurrentChatRoomUUIDAtom, { store: GlobalStore });
+}
+
+export function useResetCurrentChatRoomUUID() {
+    const set = useSetAtom(CurrentChatRoomUUIDAtom, { store: GlobalStore });
+    return useCallback(() => set(""), [set]);
+}
+
+export function useCurrentChatRoomIsDirect() {
+    return useAtomValue(CurrentChatRoomIsDirectAtom, { store: GlobalStore });
 }

@@ -4,6 +4,7 @@ import type { ChatDirectEntry, ChatRoomViewEntry } from "@common/chat-payloads";
 import { ChatRoomModeFlags, type ChatRoomEntry } from "@common/chat-payloads";
 import { useSetAtom } from "jotai";
 import {
+    CurrentChatRoomIsDirectAtom,
     CurrentChatRoomUUIDAtom,
     LeftSideBarIsOpenAtom,
 } from "@atoms/ChatAtom";
@@ -40,6 +41,7 @@ export function ChatRoomBlock({
     const latestMessage = useChatRoomLatestMessage(roomUUID);
     const modeFlagsRaw = useChatRoomModeFlags(roomUUID);
     const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
+    const setChatRoomIsDirect = useSetAtom(CurrentChatRoomIsDirectAtom);
     const lastMessageContent = latestMessage?.content ?? "채팅을 시작해보세요!";
     const modeFlags = modeFlagsRaw ?? 0;
     const setLeftSideBar = useSetAtom(LeftSideBarIsOpenAtom);
@@ -48,6 +50,7 @@ export function ChatRoomBlock({
         <button
             onClick={() => {
                 setChatRoomUUID(chatRoom.id);
+                setChatRoomIsDirect(false);
                 setLeftSideBar(false);
             }}
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
@@ -133,6 +136,7 @@ export function ChatDirectRoomBlock({
     const latestMessage = useChatRoomLatestMessage(roomUUID);
     const modeFlagsRaw = useChatRoomModeFlags(roomUUID);
     const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
+    const setChatRoomIsDirect = useSetAtom(CurrentChatRoomIsDirectAtom);
     const lastMessageContent = latestMessage?.content ?? "채팅을 시작해보세요!";
     const modeFlags = modeFlagsRaw ?? 0;
     const setLeftSideBar = useSetAtom(LeftSideBarIsOpenAtom);
@@ -141,6 +145,7 @@ export function ChatDirectRoomBlock({
         <button
             onClick={() => {
                 setChatRoomUUID(roomUUID);
+                setChatRoomIsDirect(true);
                 setLeftSideBar(false);
             }}
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"

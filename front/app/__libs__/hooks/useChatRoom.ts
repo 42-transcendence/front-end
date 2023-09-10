@@ -2,10 +2,11 @@ import { ChatStore } from "@akasha-utils/idb/chat-store";
 import { useSWR } from "./useSWR";
 import { useCallback } from "react";
 import { useSWRConfig } from "swr";
-import { ChatRoomListAtom } from "@atoms/ChatAtom";
+import { ChatRoomListAtom, DirectRoomListAtom } from "@atoms/ChatAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import { useAtomCallback } from "jotai/utils";
 import { MessageTypeNumber } from "@common/generated/types";
+import { useAtom } from "jotai";
 
 export function useChatRoomTitle(roomUUID: string) {
     const callback = useCallback(
@@ -116,11 +117,22 @@ export function useChatMember(roomUUID: string, memberUUID: string) {
 export function useChatRoomMutation() {
     const { mutate } = useSWRConfig();
 
-    return (roomUUID: string) =>
-        void mutate(
-            (key) =>
-                Array.isArray(key) &&
-                key[0] === "ChatStore" &&
-                key[1] === roomUUID,
-        );
+    return useCallback(
+        (roomUUID: string) =>
+            void mutate(
+                (key) =>
+                    Array.isArray(key) &&
+                    key[0] === "ChatStore" &&
+                    key[1] === roomUUID,
+            ),
+        [mutate],
+    );
+}
+
+export function useChatRoomListAtom() {
+    return useAtom(ChatRoomListAtom, { store: GlobalStore });
+}
+
+export function useDirectRoomListAtom() {
+    return useAtom(DirectRoomListAtom, { store: GlobalStore });
 }

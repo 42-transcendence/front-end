@@ -4,6 +4,7 @@ import { MenuItem } from "./MenuItem";
 import {
     useCurrentAccountUUID,
     useCurrentChatRoomUUID,
+    useResetCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
@@ -15,8 +16,6 @@ import {
     handleLeaveRoomResult,
 } from "@akasha-utils/chat-gateway-client";
 import { ChatErrorNumber, toChatRoomModeFlags } from "@common/chat-payloads";
-import { CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
-import { useSetAtom } from "jotai";
 import {
     makeChangeMemberRoleRequest,
     makeChangeRoomPropertyRequest,
@@ -98,7 +97,7 @@ const chatRoomHeaderMenus: ChatRoomHeaderMenu[] = [
 export function ChatRoomMenu({ className }: { className: string }) {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
+    const resetCurrentChatRoomUUID = useResetCurrentChatRoomUUID();
     const selfMember = useChatMember(currentChatRoomUUID, currentAccountUUID);
     const roleLevel = Number(selfMember?.role ?? 0);
 
@@ -125,7 +124,7 @@ export function ChatRoomMenu({ className }: { className: string }) {
                     if (errno !== ChatErrorNumber.SUCCESS) {
                         handleChatError(errno);
                     } else {
-                        setCurrentChatRoomUUID("");
+                        resetCurrentChatRoomUUID();
                     }
                     break;
                 }
@@ -134,7 +133,7 @@ export function ChatRoomMenu({ className }: { className: string }) {
                     if (errno !== ChatErrorNumber.SUCCESS) {
                         handleChatError(errno);
                     } else {
-                        setCurrentChatRoomUUID("");
+                        resetCurrentChatRoomUUID();
                     }
                     break;
                 }

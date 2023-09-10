@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
-import type { ChatRoomChatMessagePairEntry } from "@common/chat-payloads";
+import type {
+    ChatDirectEntry,
+    ChatRoomChatMessagePairEntry,
+    ChatRoomEntry,
+} from "@common/chat-payloads";
 import {
     SocialErrorNumber,
     readChatBanSummary,
@@ -20,15 +24,10 @@ import {
     useWebSocket,
     useWebSocketConnector,
 } from "@akasha-utils/react/websocket-hook";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
 import { ByteBuffer } from "@akasha-lib";
 import { ChatStore, makeDirectChatKey } from "@akasha-utils/idb/chat-store";
-import {
-    ChatRoomListAtom,
-    CurrentChatRoomUUIDAtom,
-    DirectRoomListAtom,
-} from "@atoms/ChatAtom";
 import {
     EnemyEntryListAtom,
     FriendEntryListAtom,
@@ -37,9 +36,15 @@ import {
 import {
     useCurrentAccountUUID,
     useCurrentChatRoomUUID,
+    useResetCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
-import { useChatRoomMutation } from "@hooks/useChatRoom";
+import {
+    useChatRoomListAtom,
+    useChatRoomMutation,
+    useDirectRoomListAtom,
+} from "@hooks/useChatRoom";
 import { ACCESS_TOKEN_KEY } from "@hooks/fetcher";
+import { useProfileMutation } from "@hooks/useProfile";
 
 function handleFriendSocialError(errno: SocialErrorNumber) {
     let message = "";
@@ -159,10 +164,11 @@ export function ChatSocketProcessor() {
     }, []);
     useWebSocketConnector("chat", getURL, props);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const [chatRoomList, setChatRoomList] = useAtom(ChatRoomListAtom);
-    const [directRoomList, setDirectRoomList] = useAtom(DirectRoomListAtom);
+    const [chatRoomList, setChatRoomList] = useChatRoomListAtom();
+    const [directRoomList, setDirectRoomList] = useDirectRoomListAtom();
     const mutateChatRoom = useChatRoomMutation();
-    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
+    const mutateProfile = useProfileMutation();
+    const resetCurrentChatRoomUUID = useResetCurrentChatRoomUUID();
     const [friendEntryList, setFriendEntryList] = useAtom(FriendEntryListAtom);
     const [enemyEntryList, setEnemyEntryList] = useAtom(EnemyEntryListAtom);
     const [friendRequestList, setFriendRequestList] = useAtom(
@@ -325,7 +331,8 @@ export function ChatSocketProcessor() {
 
             case ChatClientOpcode.UPDATE_FRIEND_ACTIVE_STATUS: {
                 const targetUUID = buffer.readUUID();
-                //FIXME: 해당 유저에 대한 activeStatus가 담긴 프로필 SWR revalidate
+
+                mutateProfile(targetUUID);
                 break;
             }
 
@@ -437,8 +444,7 @@ export function ChatSocketProcessor() {
             case ChatClientOpcode.REMOVE_ROOM: {
                 const roomUUID = buffer.readUUID();
                 if (currentChatRoomUUID === roomUUID) {
-                    //NOTE: 내가 선택한 방에서 나간거면 리셋해주기
-                    setCurrentChatRoomUUID("");
+                    resetCurrentChatRoomUUID();
                 }
                 setChatRoomList(chatRoomList.filter((e) => e.id !== roomUUID));
                 await ChatStore.deleteRoom(currentAccountUUID, roomUUID);
@@ -479,9 +485,9 @@ export function ChatSocketProcessor() {
             }
 
             case ChatClientOpcode.SYNC_CURSOR: {
-                //FIXME: 구현: 현재 채팅방 목록에서 lastReadMessage 바꿔주기. SWR도 mutate?
                 const pair = readChatRoomChatMessagePair(buffer);
-                void pair;
+
+                setChatRoomList(syncCursor(chatRoomList, pair));
 
                 mutateChatRoom(pair.chatId);
                 break;
@@ -510,16 +516,61 @@ export function ChatSocketProcessor() {
                 );
                 await ChatStore.addMessage(roomKey, message);
 
+                const existsDirect = directRoomList.find(
+                    (room) => room.targetAccountId === targetAccountId,
+                );
+
                 setDirectRoomList([
                     ...directRoomList.filter(
                         (e) => e.targetAccountId !== targetAccountId,
                     ),
-                    { targetAccountId, lastMessageId: message.id },
+                    {
+                        targetAccountId,
+                        lastMessageId: existsDirect?.lastMessageId ?? null,
+                    },
                 ]);
+
                 mutateChatRoom(roomKey);
+                break;
+            }
+
+            case ChatClientOpcode.SYNC_CURSOR_DIRECT: {
+                const pair = readChatRoomChatMessagePair(buffer);
+
+                setDirectRoomList(syncDirectCursor(directRoomList, pair));
+
+                mutateChatRoom(pair.chatId);
                 break;
             }
         }
     });
     return <></>;
+}
+
+//TODO: 이 함수가 왜 여기에 있나? ChatDialog에서 갖다 쓴다.
+export function syncCursor(
+    chatRoomList: ChatRoomEntry[],
+    pair: ChatRoomChatMessagePairEntry,
+) {
+    const existsRoom = chatRoomList.find((room) => room.id === pair.chatId);
+    if (existsRoom === undefined) {
+        throw new Error();
+    }
+    return [
+        ...chatRoomList.filter((e) => e.id !== pair.chatId),
+        { ...existsRoom, lastMessageId: pair.messageId },
+    ];
+}
+
+export function syncDirectCursor(
+    directRoomList: ChatDirectEntry[],
+    pair: ChatRoomChatMessagePairEntry,
+) {
+    return [
+        ...directRoomList.filter((e) => e.targetAccountId !== pair.chatId),
+        {
+            targetAccountId: pair.chatId,
+            lastMessageId: pair.messageId,
+        },
+    ];
 }

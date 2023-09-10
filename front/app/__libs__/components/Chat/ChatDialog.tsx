@@ -5,30 +5,45 @@ import { Game, Icon } from "@components/ImageLibrary";
 import { ChatBubbleWithProfile, NoticeBubble } from "./ChatBubble";
 import type { MessageSchema } from "@akasha-utils/idb/chat-store";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { ChatServerOpcode } from "@common/chat-opcodes";
-import { ByteBuffer } from "@akasha-lib";
+import type { ByteBuffer } from "@akasha-lib";
 import {
     useCurrentAccountUUID,
+    useCurrentChatRoomIsDirect,
     useCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
-import { useChatRoomMessages } from "@hooks/useChatRoom";
+import {
+    useChatRoomListAtom,
+    useChatRoomMessages,
+    useChatRoomMutation,
+    useDirectRoomListAtom,
+} from "@hooks/useChatRoom";
 import { MessageTypeNumber } from "@common/generated/types";
+import * as builder from "@akasha-utils/chat-payload-builder-client";
+import { syncCursor, syncDirectCursor } from "@/app/(main)/ChatSocketProcessor";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
 function ChatMessageInputArea() {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const currentChatRoomIsDirect = useCurrentChatRoomIsDirect();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
     const { sendPayload } = useWebSocket("chat", []);
 
     const sendMessage = () => {
         if (value !== "") {
-            const buf = ByteBuffer.createWithOpcode(
-                ChatServerOpcode.SEND_MESSAGE,
-            );
-            buf.writeUUID(currentChatRoomUUID);
-            buf.writeString(value);
+            let buf: ByteBuffer;
+            if (currentChatRoomIsDirect) {
+                buf = builder.makeSendDirectRequest(
+                    currentChatRoomUUID.split("_")[1],
+                    value,
+                );
+            } else {
+                buf = builder.makeSendMessageRequest(
+                    currentChatRoomUUID,
+                    value,
+                );
+            }
 
             sendPayload(buf);
             setValue("");
@@ -115,25 +130,75 @@ export function ChatDialog({
 }) {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const chatMessages = useChatRoomMessages(currentChatRoomUUID) ?? [];
+    const currentChatRoomIsDirect = useCurrentChatRoomIsDirect();
+    const chatMessages = useChatRoomMessages(currentChatRoomUUID);
     const chatDialogRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const { sendPayload } = useWebSocket("chat", []);
+    const [, setChatRoomList] = useChatRoomListAtom();
+    const [, setDirectRoomList] = useDirectRoomListAtom();
+    const mutateChatRoom = useChatRoomMutation();
+    const [lastMessage, setLastMessage] = useState<MessageSchema>();
+    useEffect(() => {
+        if (chatMessages !== undefined && chatMessages.length > 0) {
+            const newLastMessage = chatMessages[chatMessages.length - 1];
+            if (lastMessage?.id !== newLastMessage.id) {
+                setLastMessage(newLastMessage);
+            }
+        }
+    }, [chatMessages, lastMessage]);
+    useEffect(() => {
+        if (lastMessage !== undefined) {
+            if (lastMessage.accountId === currentAccountUUID) {
+                scrollToBottom();
+            }
+
+            let buf: ByteBuffer;
+            if (currentChatRoomIsDirect) {
+                setDirectRoomList((directRoomList) =>
+                    syncDirectCursor(directRoomList, {
+                        chatId: currentChatRoomUUID.split("_")[1],
+                        messageId: lastMessage.id,
+                    }),
+                );
+                buf = builder.makeSyncCursorDirect(
+                    currentChatRoomUUID.split("_")[1],
+                    lastMessage.id,
+                );
+            } else {
+                setChatRoomList((chatRoomList) =>
+                    syncCursor(chatRoomList, {
+                        chatId: currentChatRoomUUID,
+                        messageId: lastMessage.id,
+                    }),
+                );
+                buf = builder.makeSyncCursor(
+                    currentChatRoomUUID,
+                    lastMessage.id,
+                );
+            }
+
+            sendPayload(buf);
+
+            mutateChatRoom(currentChatRoomUUID);
+        }
+    }, [
+        currentAccountUUID,
+        currentChatRoomIsDirect,
+        currentChatRoomUUID,
+        lastMessage,
+        mutateChatRoom,
+        sendPayload,
+        setChatRoomList,
+        setDirectRoomList,
+    ]);
+
     const scrollToBottom = () => {
         if (messagesEndRef.current === null) {
             throw new Error();
         }
         messagesEndRef.current.scrollIntoView({});
     };
-
-    useEffect(() => {
-        if (
-            chatMessages.length > 0 &&
-            chatMessages[chatMessages.length - 1].accountId ===
-                currentAccountUUID
-        ) {
-            scrollToBottom();
-        }
-    }, [chatMessages, currentAccountUUID]);
 
     return currentChatRoomUUID !== "" ? (
         <div
@@ -146,7 +211,7 @@ export function ChatDialog({
                     ref={chatDialogRef}
                     className="flex flex-col gap-1 self-stretch overflow-auto"
                 >
-                    {chatMessages.map((msg, idx, arr) => {
+                    {chatMessages?.map((msg, idx, arr) => {
                         if (
                             (msg.messageType as MessageTypeNumber) ===
                             MessageTypeNumber.NOTICE
