@@ -102,6 +102,7 @@ export function CreateNewRoom() {
             ...new Set([currentAccountUUID, ...selectedAccountUUIDs]),
         ];
 
+        // TODO: makeCreateRoomRequest 로 바뀍
         const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CREATE_ROOM);
         buf.writeString(title);
         buf.write1(

@@ -20,6 +20,8 @@ import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
 import { handleEnterRoomResult } from "@akasha-utils/chat-gateway-client";
 import { makeEnterRoomRequest } from "@akasha-utils/chat-payload-builder-client";
+import bcrypt from "bcrypt";
+import { CHAT_PASSWORD_BCRYPT_LOG_ROUNDS } from "@common/chat-constants";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -214,6 +216,8 @@ export function ChatDirectRoomBlock({
     );
 }
 
+// 1. confirm 들어갈래? 2. password 3. 이미 들어가있는방 목록에서 표시
+
 export function ChatPublicRoomBlock({
     children,
     chatRoom,
@@ -241,30 +245,43 @@ export function ChatPublicRoomBlock({
                     setLeftSideBar(false);
                 } else {
                     alert(
-                        "입장 실패... " +
-                            errno +
-                            ", " +
-                            chatId +
-                            ", " +
-                            bans?.toString(),
+                        `입장 실패... ${errno}, ${chatId}, ${
+                            bans?.toString() ?? ""
+                        }`,
                     );
                 }
             }
         },
     );
+
+    const isAlreadyChatPublicRoomMember =
+        chatRoomList.find((e) => e.id === chatRoom.id) !== undefined;
     //FIXME: 이미 들어간 방 표시
 
     return (
         <button
             onClick={() => {
-                if (
-                    chatRoomList.find((e) => e.id === chatRoom.id) !== undefined
-                ) {
+                if (isAlreadyChatPublicRoomMember) {
                     setChatRoomUUID(chatRoom.id);
                 } else {
-                    //FIXME: 진짜 들어갈거냐고 물어보기?
-                    //FIXME: 비밀번호 물어보고 bcrypt
-                    sendPayload(makeEnterRoomRequest(chatRoom.id, ""));
+                    if (confirm(`${chatRoom.title} 에 입장하시겠습니까?`)) {
+                        let password: string | null = "";
+                        if (chatRoom.isSecret) {
+                            password = prompt(
+                                "비밀 방입니다. 비밀번호를 입력해주세요",
+                            );
+                            if (password === null) {
+                                return;
+                            }
+                            password = bcrypt.hashSync(
+                                password,
+                                CHAT_PASSWORD_BCRYPT_LOG_ROUNDS,
+                            );
+                        }
+                        sendPayload(
+                            makeEnterRoomRequest(chatRoom.id, password),
+                        );
+                    }
                 }
             }}
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
