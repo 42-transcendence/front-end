@@ -55,7 +55,7 @@ function useImageAsFormData(): [
     setImage: (image: HTMLImageElement) => void,
     sendForm: () => void,
 ] {
-    const url = "https://back.stri.dev/profile/avatar";
+    const url = "https://back.stri.dev/profile/private/avatar";
     const [setForm, sendForm, clearForm] = useFormData(url);
     const [image, setImage] = useState<HTMLImageElement | null>(null);
     const formDataKey = "avatar";

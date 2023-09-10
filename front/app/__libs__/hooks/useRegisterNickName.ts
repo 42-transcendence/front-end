@@ -16,10 +16,11 @@ export function useRegisterNickName() {
         },
         [mutate],
     );
-    const result = useSWRMutation("/profile/nick", callback);
+    const result = useSWRMutation("/profile/private/nick", callback);
     const error = result.error !== undefined;
     const conflict =
-        result.error instanceof HTTPError && result.error.status === HTTP_RESPONSE_CONFLICT;
+        result.error instanceof HTTPError &&
+        result.error.status === HTTP_RESPONSE_CONFLICT;
 
     return { register: result.trigger, error, conflict };
 }
