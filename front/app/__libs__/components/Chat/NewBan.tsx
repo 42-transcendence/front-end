@@ -9,6 +9,9 @@ import {
     makeReportUser,
 } from "@akasha-utils/chat-payload-builder-client";
 import { useSetChatRightSideBarCurrrentPageAtom } from "@hooks/useChatRoom";
+import { ChatClientOpcode } from "@common/chat-opcodes";
+import { handleReportResult } from "@akasha-utils/chat-gateway-client";
+import { ReportErrorNumber } from "@common/chat-payloads";
 
 type ExpireDate = {
     key: string;
@@ -53,7 +56,18 @@ export function ReportUser({ accountUUID }: { accountUUID: string }) {
     const ref = useRef<HTMLFormElement>(null!);
     const type = "report";
     const submitTitle = "신고하기";
-    const { sendPayload } = useWebSocket("chat", []);
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.REPORT_USER_RESULT,
+        (_, payload) => {
+            const [errno] = handleReportResult(payload);
+            if (errno === ReportErrorNumber.SUCCESS) {
+                alert("신고가 접수되었습니다.");
+            } else {
+                alert("오류가 발생했습니다.");
+            }
+        },
+    );
     const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
@@ -66,7 +80,6 @@ export function ReportUser({ accountUUID }: { accountUUID: string }) {
             return;
         }
         sendPayload(makeReportUser(accountUUID, reason as string));
-        alert("신고가 접수되었습니다.");
         setCurrentPage(undefined);
     };
 
@@ -93,7 +106,7 @@ export function ReportUser({ accountUUID }: { accountUUID: string }) {
 }
 
 export function SendBan({ accountUUID }: { accountUUID: string }) {
-    const summary = "다음 유저의 메세지 전송을 지정된 기간 동안 제한합니다.";
+    const summary = "다음 유저의 메시지 전송을 지정된 기간 동안 제한합니다.";
     const expireDateTitle = "기간";
     const reasonTitle = "채팅 금지 사유";
     const memoTitle = "메모";

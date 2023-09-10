@@ -2,6 +2,7 @@ import type {
     ChatBanSummaryEntry,
     ChatMessageEntry,
     ChatRoomViewEntry,
+    ReportErrorNumber,
 } from "@common/chat-payloads";
 import {
     ChatErrorNumber,
