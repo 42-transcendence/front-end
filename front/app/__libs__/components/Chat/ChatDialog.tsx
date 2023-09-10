@@ -120,7 +120,15 @@ const isContinuedMessage = (arr: MessageSchema[], idx: number) => {
     return (
         idx > 0 &&
         arr[idx].accountId === arr[idx - 1].accountId &&
+        arr[idx - 1].messageType === (MessageTypeNumber.REGULAR as number) &&
         isSameMinute(arr[idx].timestamp, arr[idx - 1].timestamp)
+    );
+};
+
+const isLastContinuedMessage = (arr: MessageSchema[], idx: number) => {
+    return (
+        idx === arr.length - 1 ||
+        (idx < arr.length - 1 && !isContinuedMessage(arr, idx + 1))
     );
 };
 
@@ -219,8 +227,8 @@ export function ChatDialog({
                 >
                     {chatMessages?.map((msg, idx, arr) => {
                         if (
-                            (msg.messageType as MessageTypeNumber) ===
-                            MessageTypeNumber.NOTICE
+                            msg.messageType ===
+                            (MessageTypeNumber.NOTICE as number)
                         ) {
                             return (
                                 <NoticeBubble key={msg.id} chatMessage={msg} />
@@ -232,6 +240,10 @@ export function ChatDialog({
                                 key={msg.id}
                                 chatMessage={msg}
                                 isContinued={isContinuedMessage(arr, idx)}
+                                isLastContinuedMessage={isLastContinuedMessage(
+                                    arr,
+                                    idx,
+                                )}
                                 dir={
                                     msg.accountId === currentAccountUUID
                                         ? "right"

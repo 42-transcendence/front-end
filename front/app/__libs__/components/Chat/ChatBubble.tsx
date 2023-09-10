@@ -6,10 +6,12 @@ import { usePublicProfile } from "@hooks/useProfile";
 export function ChatBubbleWithProfile({
     chatMessage,
     isContinued = false,
+    isLastContinuedMessage = false,
     dir = "left",
 }: {
     chatMessage: MessageSchema;
     isContinued: boolean;
+    isLastContinuedMessage: boolean;
     dir: "left" | "right";
 }) {
     //TODO: apply direction
@@ -42,6 +44,7 @@ export function ChatBubbleWithProfile({
             <ChatBubble
                 chatMessage={chatMessage}
                 isContinued={isContinued}
+                isLastContinuedMessage={isLastContinuedMessage}
                 dir={dir}
             />
         </div>
@@ -51,10 +54,12 @@ export function ChatBubbleWithProfile({
 function ChatBubble({
     chatMessage,
     isContinued,
+    isLastContinuedMessage,
     dir,
 }: {
     chatMessage: MessageSchema;
     isContinued: boolean;
+    isLastContinuedMessage: boolean;
     dir: "left" | "right";
 }) {
     const styleOption =
@@ -94,13 +99,15 @@ function ChatBubble({
             >
                 {chatMessage.content}
             </span>
-            <p className="static self-end p-3 py-1 font-sans text-sm font-normal text-gray-100/90">
-                {chatMessage.timestamp.toLocaleString(undefined, {
-                    hour12: false,
-                    hour: "2-digit",
-                    minute: "2-digit",
-                })}
-            </p>
+            {isLastContinuedMessage && (
+                <p className="static self-end p-3 py-1 font-sans text-sm font-normal text-gray-100/90">
+                    {chatMessage.timestamp.toLocaleString(undefined, {
+                        hour12: false,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })}
+                </p>
+            )}
         </div>
     );
 }
