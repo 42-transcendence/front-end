@@ -39,7 +39,6 @@ export function ChatButton() {
             <AnimatePresence>
                 {isOpen && (
                     <Dialog
-                        as={motion.div}
                         key="ChatModal"
                         open={isOpen}
                         initialFocus={ref}
@@ -48,11 +47,7 @@ export function ChatButton() {
                             setCreateNewRoom(false);
                         }}
                     >
-                        <motion.div
-                            className="fixed inset-0"
-                            aria-hidden="true"
-                        />
-
+                        <div className="fixed inset-0" aria-hidden="true" />
                         <Dialog.Panel
                             as={motion.div}
                             className="absolute inset-4 inset-y-8 mx-auto max-w-7xl lg:inset-32"
