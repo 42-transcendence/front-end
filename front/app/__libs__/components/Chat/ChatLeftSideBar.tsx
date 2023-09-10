@@ -70,7 +70,7 @@ export default function ChatLeftSideBar() {
             ),
         },
     ];
-    const [selectedIndex, setSelectedIndex] = useState(1);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
         CreateNewRoomCheckedAtom,
     );
@@ -110,8 +110,8 @@ export default function ChatLeftSideBar() {
                 className="peer hidden"
             />
 
-            {!createNewRoomChecked && (
-                <AnimatePresence>
+            <AnimatePresence>
+                {!createNewRoomChecked ? (
                     <Tab.Group
                         as={motion.div}
                         className="h-full w-full flex-col gap-2 overflow-hidden"
@@ -131,9 +131,7 @@ export default function ChatLeftSideBar() {
                                         : { x: [null, 0, 90 * selectedIndex] }
                                 }
                                 transition={{ type: "spring", duration: 0.3 }}
-                                className={classNames(
-                                    "absolute flex h-8 w-full pb-1",
-                                )}
+                                className="absolute flex h-8 w-full pb-1"
                             >
                                 <div className="h-full w-[90px] rounded-lg bg-secondary/80" />
                             </motion.div>
@@ -165,11 +163,7 @@ export default function ChatLeftSideBar() {
                             ))}
                         </Tab.Panels>
                     </Tab.Group>
-                </AnimatePresence>
-            )}
-
-            <AnimatePresence>
-                {createNewRoomChecked && (
+                ) : (
                     <motion.div
                         initial={{ y: "100%", opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
