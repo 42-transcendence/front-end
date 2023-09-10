@@ -5,8 +5,8 @@ import { InviteList } from "@components/Service/InviteList";
 import { TextField } from "@components/TextField";
 import { ToggleButton } from "@components/Button/ToggleButton";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
-import { ByteBuffer } from "@akasha-lib";
+import { ChatClientOpcode } from "@common/chat-opcodes";
+import { digestMessage, encodeUTF8 } from "@akasha-lib";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
@@ -15,7 +15,7 @@ import {
     CurrentChatRoomUUIDAtom,
 } from "@atoms/ChatAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
-import { ChatRoomModeFlags } from "@common/chat-payloads";
+import { makeCreateRoomRequest } from "@akasha-utils/chat-payload-builder-client";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
@@ -102,29 +102,41 @@ export function CreateNewRoom() {
             ...new Set([currentAccountUUID, ...selectedAccountUUIDs]),
         ];
 
-        // TODO: makeCreateRoomRequest 로 바뀍
-        const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.CREATE_ROOM);
-        buf.writeString(title);
-        buf.write1(
-            (privateChecked ? ChatRoomModeFlags.PRIVATE : 0) |
-                (secretChecked ? ChatRoomModeFlags.SECRET : 0),
-        );
-        if (secretChecked) {
-            buf.writeString(password);
-        }
-        buf.write2Unsigned(limit);
-        buf.writeArray(inviteAccountUUIDs, (x, buf) => buf.writeUUID(x));
-        sendPayload(buf);
-
-        //TODO: 조금 더 아름답게 reset
-        setTitle("");
-        setPassword("");
-        setLimit(42);
-        setPrivateChecked(false);
-        setSecretChecked(false);
-        setLimitChecked(false);
-        setInviteChecked(false);
-        setCreateNewRoomChecked(false);
+        const sendCreateRoomRequestAsync = async () => {
+            let passwordHash = "";
+            if (secretChecked) {
+                passwordHash = btoa(
+                    String.fromCharCode(
+                        ...(await digestMessage(
+                            "SHA-256",
+                            encodeUTF8(password),
+                        )),
+                    ),
+                );
+            }
+            sendPayload(
+                makeCreateRoomRequest(
+                    title,
+                    privateChecked,
+                    passwordHash,
+                    limit,
+                    inviteAccountUUIDs,
+                ),
+            );
+        };
+        sendCreateRoomRequestAsync()
+            .then(() => {
+                //TODO: 조금 더 아름답게 reset
+                setTitle("");
+                setPassword("");
+                setLimit(42);
+                setPrivateChecked(false);
+                setSecretChecked(false);
+                setLimitChecked(false);
+                setInviteChecked(false);
+                setCreateNewRoomChecked(false);
+            })
+            .catch(() => {});
     };
 
     return (

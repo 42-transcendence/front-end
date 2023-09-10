@@ -17,14 +17,13 @@ import {
 } from "@akasha-utils/chat-gateway-client";
 import { ChatErrorNumber, toChatRoomModeFlags } from "@common/chat-payloads";
 import {
-    makeChangeMemberRoleRequest,
     makeChangeRoomPropertyRequest,
     makeDestroyRoomRequest,
-    makeHandoverRoomOwnerRequest,
     makeLeaveRoomRequest,
 } from "@akasha-utils/chat-payload-builder-client";
 import { handleChatError } from "./handleChatError";
 import { MAX_CHAT_MEMBER_CAPACITY } from "@common/chat-constants";
+import { digestMessage, encodeUTF8 } from "@akasha-lib";
 
 type ChatRoomActions =
     | "notification"
@@ -143,30 +142,45 @@ export function ChatRoomMenu({ className }: { className: string }) {
             }
         },
         ["changeChatRoomMode"]: () => {
-            const isPrivate = confirm("private?");
-            const isSecret = confirm("secret?");
-            const password = isSecret
-                ? prompt("new password?") ?? undefined
-                : undefined;
-            const modeFlags = toChatRoomModeFlags({
-                isPrivate: isPrivate,
-                isSecret: isSecret,
-            });
-            const buf = makeChangeRoomPropertyRequest(
-                currentChatRoomUUID,
-                undefined,
-                modeFlags,
-                password,
-                undefined,
-            );
-            sendPayload(buf);
+            const sendChangeRoomRequestAsync = async () => {
+                const isPrivate = confirm("비공개 방으로 만드실건가요?");
+                const isSecret = confirm("비밀번호를 설정하실건가요?");
+                let password = "";
+                if (isSecret) {
+                    const passwordRaw =
+                        prompt("사용할 비밀번호를 입력해주세요");
+                    if (passwordRaw === null) {
+                        return;
+                    }
+                    password = btoa(
+                        String.fromCharCode(
+                            ...(await digestMessage(
+                                "SHA-256",
+                                encodeUTF8(passwordRaw),
+                            )),
+                        ),
+                    );
+                }
+                const modeFlags = toChatRoomModeFlags({ isPrivate, isSecret });
+                const buf = makeChangeRoomPropertyRequest(
+                    currentChatRoomUUID,
+                    undefined,
+                    modeFlags,
+                    isSecret ? password : undefined,
+                    undefined,
+                );
+                sendPayload(buf);
+            };
+            sendChangeRoomRequestAsync().catch(() => {});
         },
         ["changeChatRoomLimit"]: () => {
-            const newLimit = Number(
-                prompt(
-                    `새 인원제한을 입력해주세요 1 ~ ${MAX_CHAT_MEMBER_CAPACITY}`,
-                ),
+            const newLimitStr = prompt(
+                `새 인원제한을 입력해주세요 1 ~ ${MAX_CHAT_MEMBER_CAPACITY}`,
             );
+            if (newLimitStr === null) {
+                return;
+            }
+            const newLimit = Number(newLimitStr);
             if (
                 Number.isSafeInteger(newLimit) &&
                 newLimit > 0 &&

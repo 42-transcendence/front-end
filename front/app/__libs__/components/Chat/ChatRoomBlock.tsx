@@ -20,8 +20,7 @@ import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
 import { handleEnterRoomResult } from "@akasha-utils/chat-gateway-client";
 import { makeEnterRoomRequest } from "@akasha-utils/chat-payload-builder-client";
-import bcrypt from "bcrypt";
-import { CHAT_PASSWORD_BCRYPT_LOG_ROUNDS } from "@common/chat-constants";
+import { digestMessage, encodeUTF8 } from "@akasha-lib";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -264,24 +263,31 @@ export function ChatPublicRoomBlock({
                 if (isAlreadyChatPublicRoomMember) {
                     setChatRoomUUID(chatRoom.id);
                 } else {
-                    if (confirm(`${chatRoom.title} 에 입장하시겠습니까?`)) {
-                        let password: string | null = "";
-                        if (chatRoom.isSecret) {
-                            password = prompt(
-                                "비밀 방입니다. 비밀번호를 입력해주세요",
-                            );
-                            if (password === null) {
-                                return;
+                    const sendEnterRoomRequestAsync = async () => {
+                        if (confirm(`${chatRoom.title} 에 입장하시겠습니까?`)) {
+                            let password = "";
+                            if (chatRoom.isSecret) {
+                                const passwordRaw = prompt(
+                                    "비밀 방입니다. 비밀번호를 입력해주세요",
+                                );
+                                if (passwordRaw === null) {
+                                    return;
+                                }
+                                password = btoa(
+                                    String.fromCharCode(
+                                        ...(await digestMessage(
+                                            "SHA-256",
+                                            encodeUTF8(passwordRaw),
+                                        )),
+                                    ),
+                                );
                             }
-                            password = bcrypt.hashSync(
-                                password,
-                                CHAT_PASSWORD_BCRYPT_LOG_ROUNDS,
+                            sendPayload(
+                                makeEnterRoomRequest(chatRoom.id, password),
                             );
                         }
-                        sendPayload(
-                            makeEnterRoomRequest(chatRoom.id, password),
-                        );
-                    }
+                    };
+                    sendEnterRoomRequestAsync().catch(() => {});
                 }
             }}
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
