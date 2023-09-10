@@ -23,6 +23,11 @@ import {
 import { MessageTypeNumber } from "@common/generated/types";
 import * as builder from "@akasha-utils/chat-payload-builder-client";
 import { syncCursor, syncDirectCursor } from "@/app/(main)/ChatSocketProcessor";
+import { ChatClientOpcode } from "@common/chat-opcodes";
+import { handleSendMessageResult } from "@akasha-utils/chat-gateway-client";
+import { ChatErrorNumber } from "@common/chat-payloads";
+import { prettifyBanSummaryEntries } from "./ChatRoomBlock";
+import { handleChatError } from "./handleChatError";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -31,7 +36,21 @@ function ChatMessageInputArea() {
     const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
-    const { sendPayload } = useWebSocket("chat", []);
+    const { sendPayload } = useWebSocket("chat", ChatClientOpcode.SEND_MESSAGE_RESULT, (_, payload) => {
+        const [errno, chatId, bans] = handleSendMessageResult(payload);
+        if (chatId === currentChatRoomUUID) {
+            if (errno !== ChatErrorNumber.SUCCESS) {
+                if (bans !== undefined) {
+                    alert(
+                        "채팅을 금지당했습니다.\n" +
+                            prettifyBanSummaryEntries(bans),
+                    );
+                } else {
+                    handleChatError(errno);
+                }
+            }
+        }
+    });
 
     const sendMessage = () => {
         if (value !== "") {

@@ -220,7 +220,7 @@ export function ChatDirectRoomBlock({
     );
 }
 
-function prettifyBanSummaryEntries(bans: ChatBanSummaryEntry[]) {
+export function prettifyBanSummaryEntries(bans: ChatBanSummaryEntry[]) {
     return bans
         .map((ban) => {
             const reason = ban.reason;
@@ -242,7 +242,6 @@ export function ChatPublicRoomBlock({
     //const latestMessage = useChatRoomLatestMessage(roomUUID);
     //const modeFlagsRaw = useChatRoomModeFlags(roomUUID);
     const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
-    const lastMessageContent = "새로운 채팅방에 참여해보세요!"; //latestMessage?.content ?? "채팅을 시작해보세요!";
     //const modeFlags = modeFlagsRaw ?? 0;
     const setLeftSideBar = useSetAtom(LeftSideBarIsOpenAtom);
     const [chatRoomList] = useChatRoomListAtom();
@@ -254,9 +253,13 @@ export function ChatPublicRoomBlock({
             if (chatId === chatRoom.id) {
                 //FIXME: 정상 , 차단 두 경우 테스트해보기
                 if (errno !== ChatErrorNumber.SUCCESS) {
-                    handleChatError(errno);
                     if (bans !== undefined) {
-                        alert(prettifyBanSummaryEntries(bans));
+                        alert(
+                            "해당 채팅방 입장을 정지당했습니다.\n" +
+                                prettifyBanSummaryEntries(bans),
+                        );
+                    } else {
+                        handleChatError(errno);
                     }
                 } else {
                     setChatRoomUUID(chatRoom.id);
@@ -269,6 +272,10 @@ export function ChatPublicRoomBlock({
     //FIXME: 이미 들어간 방 표시
     const isAlreadyChatPublicRoomMember =
         chatRoomList.find((e) => e.id === chatRoom.id) !== undefined;
+
+    const lastMessageContent = isAlreadyChatPublicRoomMember
+        ? ""
+        : "새로운 채팅방!!"; //latestMessage?.content ?? "채팅을 시작해보세요!";
 
     return (
         <button
