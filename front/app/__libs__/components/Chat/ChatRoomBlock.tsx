@@ -1,6 +1,7 @@
 import { Icon } from "@components/ImageLibrary";
 import { Avatar } from "@components/Avatar";
 import type { ChatDirectEntry, ChatRoomViewEntry } from "@common/chat-payloads";
+import { ChatErrorNumber } from "@common/chat-payloads";
 import { ChatRoomModeFlags, type ChatRoomEntry } from "@common/chat-payloads";
 import { useSetAtom } from "jotai";
 import {
@@ -9,11 +10,16 @@ import {
 } from "@atoms/ChatAtom";
 import {
     useChatRoomLatestMessage,
+    useChatRoomListAtom,
     useChatRoomModeFlags,
     useChatRoomUnreadCount,
 } from "@hooks/useChatRoom";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { makeDirectChatKey } from "@akasha-utils/idb/chat-store";
+import { useWebSocket } from "@akasha-utils/react/websocket-hook";
+import { ChatClientOpcode } from "@common/chat-opcodes";
+import { handleEnterRoomResult } from "@akasha-utils/chat-gateway-client";
+import { makeEnterRoomRequest } from "@akasha-utils/chat-payload-builder-client";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -218,16 +224,48 @@ export function ChatPublicRoomBlock({
     //const numberOfUnreadMessages = useChatRoomUnreadCount(roomUUID);
     //const latestMessage = useChatRoomLatestMessage(roomUUID);
     //const modeFlagsRaw = useChatRoomModeFlags(roomUUID);
-    const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom); //FIXME: 참여하기로 만들어야 함.
+    const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
     const lastMessageContent = "새로운 채팅방에 참여해보세요!"; //latestMessage?.content ?? "채팅을 시작해보세요!";
     //const modeFlags = modeFlagsRaw ?? 0;
     const setLeftSideBar = useSetAtom(LeftSideBarIsOpenAtom);
+    const [chatRoomList] = useChatRoomListAtom();
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.ENTER_ROOM_RESULT,
+        (_, payload) => {
+            const [errno, chatId, bans] = handleEnterRoomResult(payload);
+            if (chatId === chatRoom.id) {
+                //FIXME: 더 정상적으로 처리
+                if (errno === ChatErrorNumber.SUCCESS) {
+                    setChatRoomUUID(chatRoom.id);
+                    setLeftSideBar(false);
+                } else {
+                    alert(
+                        "입장 실패... " +
+                            errno +
+                            ", " +
+                            chatId +
+                            ", " +
+                            bans?.toString(),
+                    );
+                }
+            }
+        },
+    );
+    //FIXME: 이미 들어간 방 표시
 
     return (
         <button
             onClick={() => {
-                setChatRoomUUID(chatRoom.id);
-                setLeftSideBar(false);
+                if (
+                    chatRoomList.find((e) => e.id === chatRoom.id) !== undefined
+                ) {
+                    setChatRoomUUID(chatRoom.id);
+                } else {
+                    //FIXME: 진짜 들어갈거냐고 물어보기?
+                    //FIXME: 비밀번호 물어보고 bcrypt
+                    sendPayload(makeEnterRoomRequest(chatRoom.id, ""));
+                }
             }}
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
         >

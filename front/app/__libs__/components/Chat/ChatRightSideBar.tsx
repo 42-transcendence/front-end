@@ -18,6 +18,8 @@ import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 import { useChatRoomMembers } from "@hooks/useChatRoom";
 
 import { useFzf } from "react-fzf";
+import { handleInviteRoomResult } from "@akasha-utils/chat-gateway-client";
+import { ChatErrorNumber } from "@common/chat-payloads";
 
 export type RightSideBarContents =
     | "report"
@@ -219,10 +221,19 @@ function InviteForm() {
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.INVITE_USER_RESULT,
-        (_, buf) => {
-            const errno = buf.read1();
-            if (errno !== 0) {
-                alert("초대 실패...");
+        (_, payload) => {
+            const [errno, chatId, targetAccountId] =
+                handleInviteRoomResult(payload);
+            if (errno !== ChatErrorNumber.SUCCESS) {
+                //FIXME: 더 정상적으로 처리
+                alert(
+                    "초대 실패... " +
+                        errno +
+                        ", " +
+                        chatId +
+                        ", " +
+                        targetAccountId,
+                );
             }
         },
     );
