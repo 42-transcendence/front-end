@@ -1,17 +1,31 @@
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ContextMenuBase } from "./ContextMenuBase";
 import { ByteBuffer } from "@akasha-lib";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
 import { ChatServerOpcode } from "@common/chat-opcodes";
-import { usePublicProfile } from "@hooks/useProfile";
+import { useProtectedProfile } from "@hooks/useProfile";
 import { useEffect, useRef } from "react";
-import { ActiveStatus, getActiveStatusNumber } from "@common/generated/types";
+import {
+    ActiveStatus,
+    RoleNumber,
+    getActiveStatusNumber,
+} from "@common/generated/types";
 import { FriendModifyFlags } from "@common/chat-payloads";
 import { logoutAction } from "@/app/(main)/@home/(nav)/logoutAction";
-import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
+import { useSetChatRightSideBarCurrrentPageAtom } from "@hooks/useChatRoom";
+import {
+    useCurrentAccountUUID,
+    useCurrentChatRoomUUID,
+} from "@hooks/useCurrent";
+import {
+    makeChangeMemberRoleRequest,
+    makeHandoverRoomOwnerRequest,
+} from "@akasha-utils/chat-payload-builder-client";
 
 export type Relationship = "myself" | "friend" | "stranger";
+
+export type Scope = "ChatRoom" | "FriendModal" | "Navigation";
 
 // TODO: 이름 바꾸기
 type ProfileMenuActions =
@@ -24,7 +38,11 @@ type ProfileMenuActions =
     | "deletefriend"
     | "gotoprofile"
     | "addenemy"
-    | "reportuser";
+    | "accessban"
+    | "sendban"
+    | "reportuser"
+    | "transfer"
+    | "grant";
 
 type ProfileMenu = {
     name: string;
@@ -32,6 +50,8 @@ type ProfileMenu = {
     action?: ProfileMenuActions | undefined;
     relation: Relationship[];
     isImportant: boolean;
+    minRoleLevel?: number | undefined;
+    scope: Scope | undefined;
     className: string;
 };
 
@@ -41,6 +61,8 @@ const profileMenus: ProfileMenu[] = [
         action: "copytag",
         relation: ["myself", "friend", "stranger"],
         isImportant: false,
+        minRoleLevel: undefined,
+        scope: "ChatRoom",
         className: "",
     },
     {
@@ -48,20 +70,17 @@ const profileMenus: ProfileMenu[] = [
         action: "changeactivestatus",
         relation: ["myself"],
         isImportant: false,
+        minRoleLevel: undefined,
+        scope: "Navigation",
         className: "",
     },
-    // {
-    //     name: "내 정보 수정",
-    //     action: "editmyprofile",
-    //     relation: ["myself"],
-    //     isImportant: false,
-    //     className: "",
-    // },
     {
         name: "로그아웃",
         action: "logout",
         relation: ["myself"],
         isImportant: false,
+        minRoleLevel: undefined,
+        scope: "Navigation",
         className: "",
     },
     {
@@ -69,6 +88,8 @@ const profileMenus: ProfileMenu[] = [
         action: "gotoprofile",
         relation: ["myself", "friend", "stranger"],
         isImportant: false,
+        minRoleLevel: undefined,
+        scope: undefined,
         className: "",
     },
     {
@@ -76,6 +97,8 @@ const profileMenus: ProfileMenu[] = [
         action: "addfriend",
         relation: ["stranger"],
         isImportant: false,
+        minRoleLevel: undefined,
+        scope: "ChatRoom",
         className: "",
     },
     {
@@ -83,6 +106,8 @@ const profileMenus: ProfileMenu[] = [
         action: "modifyfriend",
         relation: ["friend"],
         isImportant: false,
+        minRoleLevel: undefined,
+        scope: "FriendModal",
         className: "",
     },
     {
@@ -90,20 +115,62 @@ const profileMenus: ProfileMenu[] = [
         action: "deletefriend",
         relation: ["friend"],
         isImportant: true,
+        minRoleLevel: undefined,
+        scope: undefined,
         className: "hover:bg-red-500/30",
     },
     {
-        name: "사용자 신고",
+        name: "신고",
         action: "reportuser",
         relation: ["friend", "stranger"],
         isImportant: true,
+        minRoleLevel: undefined,
+        scope: undefined,
         className: "hover:bg-red-500/30",
     },
     {
-        name: "사용자 차단",
+        name: "차단",
         action: "addenemy",
         relation: ["friend", "stranger"],
+        isImportant: false,
+        minRoleLevel: undefined,
+        scope: undefined,
+        className: "hover:bg-tertiary/30",
+    },
+    {
+        name: "채팅 금지",
+        action: "sendban",
+        relation: ["friend", "stranger"],
         isImportant: true,
+        minRoleLevel: RoleNumber.MANAGER,
+        scope: "ChatRoom",
+        className: "hover:bg-tertiary/30",
+    },
+    {
+        name: "추방",
+        action: "accessban",
+        relation: ["friend", "stranger"],
+        isImportant: true,
+        minRoleLevel: RoleNumber.MANAGER,
+        scope: "ChatRoom",
+        className: "hover:bg-tertiary/30",
+    },
+    {
+        name: "소유권 양도",
+        action: "transfer",
+        relation: ["friend", "stranger"],
+        minRoleLevel: RoleNumber.ADMINISTRATOR,
+        isImportant: true,
+        scope: "ChatRoom",
+        className: "hover:bg-red-500/30",
+    },
+    {
+        name: "매니저 지정",
+        action: "grant",
+        relation: ["friend", "stranger"],
+        minRoleLevel: RoleNumber.ADMINISTRATOR,
+        isImportant: true,
+        scope: "ChatRoom",
         className: "hover:bg-red-500/30",
     },
 ];
@@ -143,7 +210,7 @@ function ContextMenuItem({
             disabled={disabled}
             className={`relative flex h-fit w-full items-center rounded py-3 ${
                 menuInfo.isImportant
-                    ? "hover:bg-red-500/30"
+                    ? menuInfo.className
                     : "hover:bg-primary/30"
             } ${!disabled && "active:bg-secondary/80"}`}
         >
@@ -161,10 +228,20 @@ function ContextMenuItem({
     );
 }
 
-export function ContextMenu({ type }: { type: Relationship }) {
+export function ContextMenu({ type }: { type: Scope }) {
     const accountUUID = useAtomValue(TargetedAccountUUIDAtom);
+    const currentId = useCurrentAccountUUID();
+    const profile = useProtectedProfile(accountUUID);
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
+
+    const relationship =
+        accountUUID === currentId
+            ? "myself"
+            : profile !== undefined
+            ? "friend"
+            : "stranger";
+
     // TODO: profile undefined 면 뭘 어떻게 해야??
-    const profile = usePublicProfile(accountUUID);
     const { sendPayload } = useWebSocket("chat", []);
 
     // TODO: 이거 fallback 처리를 여기서 하는게 맞는가,
@@ -174,7 +251,7 @@ export function ContextMenu({ type }: { type: Relationship }) {
 
     //TODO: fetch score
     const score = 1321;
-    const setCurrentPage = useSetAtom(ChatRightSideBarCurrrentPage);
+    const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
     const rating: ProfileMenu = {
         name: `rating: ${score}`,
         relation: ["myself", "friend", "stranger"],
@@ -252,6 +329,34 @@ export function ContextMenu({ type }: { type: Relationship }) {
         ["reportuser"]: () => {
             setCurrentPage("report");
         },
+        ["accessban"]: () => {
+            setCurrentPage("newAccessBan");
+        },
+        ["sendban"]: () => {
+            setCurrentPage("newSendBan");
+        },
+        ["transfer"]: () => {
+            if (confirm("정말로 방을 양도하시겠습니까ㅏ?")) {
+                const targetAccountId = "asdf";
+                const buf = makeHandoverRoomOwnerRequest(
+                    currentChatRoomUUID,
+                    targetAccountId,
+                );
+                sendPayload(buf);
+            }
+        },
+        ["grant"]: () => {
+            if (confirm("매니저 지정하시겠습니까?")) {
+                const targetAccountId = "asdf";
+                const targetRole = RoleNumber.MANAGER;
+                const buf = makeChangeMemberRoleRequest(
+                    currentChatRoomUUID,
+                    targetAccountId,
+                    targetRole,
+                );
+                sendPayload(buf);
+            }
+        },
         ["deletefriend"]: () => {
             if (
                 confirm(
@@ -270,7 +375,12 @@ export function ContextMenu({ type }: { type: Relationship }) {
     return (
         <ContextMenuBase className="w-full">
             {[rating, ...profileMenus]
-                .filter((menu) => menu.relation.includes(type))
+                .filter((menu) => {
+                    if (menu.scope !== undefined && menu.scope !== type) {
+                        return;
+                    }
+                    return menu.relation.includes(relationship);
+                })
                 .map((menu) => {
                     return (
                         <ContextMenuItem

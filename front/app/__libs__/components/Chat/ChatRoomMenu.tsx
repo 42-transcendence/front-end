@@ -31,8 +31,6 @@ type ChatRoomActions =
     | "changeChatRoomTitle"
     | "changeChatRoomMode"
     | "changeChatRoomLimit"
-    | "transfer"
-    | "grant"
     | "delete"
     | "leave";
 
@@ -66,18 +64,6 @@ const chatRoomHeaderMenus: ChatRoomHeaderMenu[] = [
         name: "방 인원제한 변경",
         action: "changeChatRoomLimit",
         minRoleLevel: RoleNumber.MANAGER,
-        isImportant: false,
-    },
-    {
-        name: "소유권 양도",
-        action: "transfer",
-        minRoleLevel: RoleNumber.ADMINISTRATOR,
-        isImportant: false,
-    },
-    {
-        name: "매니저 지정",
-        action: "grant",
-        minRoleLevel: RoleNumber.ADMINISTRATOR,
         isImportant: false,
     },
     {
@@ -143,30 +129,6 @@ export function ChatRoomMenu({ className }: { className: string }) {
 
     const actions = {
         ["notification"]: () => {},
-        ["transfer"]: () => {
-            // TODO: ChatRightSideBar.tsx 에서 처리하는걸로 옮기기
-            if (confirm("정말로 방을 양도하시겠습니까ㅏ?")) {
-                const targetAccountId = "asdf";
-                const buf = makeHandoverRoomOwnerRequest(
-                    currentChatRoomUUID,
-                    targetAccountId,
-                );
-                sendPayload(buf);
-            }
-        },
-        ["grant"]: () => {
-            // TODO: ChatRightSideBar.tsx 에서 처리하는걸로 옮기기
-            if (confirm("매니저 지정하시겠습니까?")) {
-                const targetAccountId = "asdf";
-                const targetRole = RoleNumber.MANAGER;
-                const buf = makeChangeMemberRoleRequest(
-                    currentChatRoomUUID,
-                    targetAccountId,
-                    targetRole,
-                );
-                sendPayload(buf);
-            }
-        },
         ["changeChatRoomTitle"]: () => {
             const newTitle = prompt("새 채팅방 이름을 입력해주세요");
             if (newTitle !== null) {

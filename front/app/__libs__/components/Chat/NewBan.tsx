@@ -1,41 +1,46 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { ProfileItemBase } from "@components/ProfileItem/ProfileItemBase";
-// import { TextField } from "@components/TextField";
 import { Icon } from "@components/ImageLibrary";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { makeKickMemberRequest } from "@akasha-utils/chat-payload-builder-client";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
+import {
+    makeKickMemberRequest,
+    makeMuteMemberRequest,
+} from "@akasha-utils/chat-payload-builder-client";
 
-// const configMockup = {
-//     id: 123,
-//     uuid: "123",
-//     tag: "#123",
-//     name: "hdoo",
-//     statusMessage: "nothion",
-// };
+type ExpireDate = {
+    key: string;
+    value: number;
+};
 
-const expireDate = [
-    "0분",
-    "1분",
-    "5분",
-    "10분",
-    "1시간",
-    "1일",
-    "1주",
-    "1달",
-    "1년",
-    "1세기",
+const expireDate: ExpireDate[] = [
+    { key: "0분", value: 0 },
+    { key: "1분", value: 60 },
+    { key: "5분", value: 300 },
+    { key: "10분", value: 600 },
+    { key: "1시간", value: 3600 },
+    { key: "1일", value: 86400 },
+    { key: "1주", value: 604800 },
+    { key: "1달", value: 2419200 },
+    { key: "1년", value: 29030400 },
+    { key: "1세기", value: 2903040000 },
 ];
 
-export function AccessBan({ accountUUID }: { accountUUID: string }) {
+function BanFormItem({ children }: React.PropsWithChildren) {
+    return (
+        <div className="flex w-full flex-col gap-2 text-sm font-bold text-gray-100">
+            {children}
+        </div>
+    );
+}
+
+export function ReportUser({ accountUUID }: { accountUUID: string }) {
     //TODO; fetch from accountUUID
-    const summary = "다음 유저를 현재 채팅방에서 내보냅니다.";
-    const expireDateTitle = "기간";
-    const reasonTitle = "차단 사유";
-    const memoTitle = "메모";
-    const submitTitle = "차단하기";
+    const summary = "다음 유저를 신고합니다";
+    const reasonTitle = "신고 사유";
     const ref = useRef<HTMLFormElement>(null!);
-    const type = "access";
+    const type = "report";
+    const submitTitle = "신고하기";
     const { sendPayload } = useWebSocket("chat", []);
     const currentRoomUUID = useCurrentChatRoomUUID();
 
@@ -55,11 +60,69 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
             className="relative flex h-full w-full flex-col gap-4 overflow-hidden"
         >
             <div className="flex h-full w-full flex-col justify-start gap-4 overflow-auto">
-                <div className="w-full text-sm font-bold text-gray-100">
+                <BanFormItem>
                     {summary}
                     <ProfileItemBase accountUUID={accountUUID} />
-                </div>
-                <div className="w-full text-sm font-bold text-gray-100">
+                </BanFormItem>
+                <BanFormItem>
+                    {reasonTitle}
+                    <MessageInputArea name="reason" form={type} />
+                </BanFormItem>
+            </div>
+            <button className="h-8 w-full rounded bg-red-500 text-gray-50">
+                {submitTitle}
+            </button>
+        </form>
+    );
+}
+
+export function SendBan({ accountUUID }: { accountUUID: string }) {
+    //TODO; fetch from accountUUID
+    const summary = "다음 유저를 현재 채팅방에서 내보냅니다.";
+    const expireDateTitle = "기간";
+    const reasonTitle = "채팅 금지 사유";
+    const memoTitle = "메모";
+    const submitTitle = "채팅 금지하기";
+    const ref = useRef<HTMLFormElement>(null!);
+    const type = "send";
+    const { sendPayload } = useWebSocket("chat", []);
+    const currentRoomUUID = useCurrentChatRoomUUID();
+
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+        event.preventDefault();
+
+        const data = new FormData(ref.current);
+        const expireDate = data.get("expireDate");
+        const reason = data.get("reason");
+        if (reason === null) {
+            alert("금지 사유를 입력해주세요.");
+            return;
+        }
+        const memo = data.get("memo");
+        sendPayload(
+            makeMuteMemberRequest(
+                currentRoomUUID,
+                accountUUID,
+                reason as string,
+                memo as string,
+                parseInt(expireDate as string),
+            ),
+        );
+    };
+
+    return (
+        <form
+            ref={ref}
+            id={type}
+            onSubmit={handleSubmit}
+            className="relative flex h-full w-full flex-col gap-4 overflow-hidden"
+        >
+            <div className="flex h-full w-full flex-col justify-start gap-4 overflow-auto">
+                <BanFormItem>
+                    {summary}
+                    <ProfileItemBase accountUUID={accountUUID} />
+                </BanFormItem>
+                <BanFormItem>
                     {expireDateTitle}
                     <div className="flex h-fit w-full flex-col justify-start">
                         {expireDate.map((period, index) => {
@@ -72,15 +135,91 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
                             );
                         })}
                     </div>
-                </div>
-                <div className="flex w-full flex-col gap-2 text-sm font-bold text-gray-100">
+                </BanFormItem>
+                <BanFormItem>
                     {reasonTitle}
-                    <MessageInputArea name="reason" form={type} />
-                </div>
-                <div className="flex w-full flex-col gap-2 text-sm font-bold text-gray-100">
+                    <MessageInputArea name="reason" form={type} required />
+                </BanFormItem>
+                <BanFormItem>
                     {memoTitle}
                     <MessageInputArea name="memo" form={type} />
-                </div>
+                </BanFormItem>
+            </div>
+            <button className="h-8 w-full rounded bg-red-500 text-gray-50">
+                {submitTitle}
+            </button>
+        </form>
+    );
+}
+
+export function AccessBan({ accountUUID }: { accountUUID: string }) {
+    //TODO; fetch from accountUUID
+    const summary = "다음 유저를 채팅 금지 시킵니다";
+    const expireDateTitle = "기간";
+    const reasonTitle = "차단 사유";
+    const memoTitle = "메모";
+    const submitTitle = "차단하기";
+    const ref = useRef<HTMLFormElement>(null!);
+    const type = "access";
+    const { sendPayload } = useWebSocket("chat", []);
+    const currentRoomUUID = useCurrentChatRoomUUID();
+
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+        event.preventDefault();
+
+        const data = new FormData(ref.current);
+        const expireDate = data.get("expireDate");
+        const reason = data.get("reason");
+        if (reason === null) {
+            alert("금지 사유를 입력해주세요.");
+            return;
+        }
+        const memo = data.get("memo");
+        sendPayload(
+            makeKickMemberRequest(
+                currentRoomUUID,
+                accountUUID,
+                reason as string,
+                memo as string,
+                parseInt(expireDate as string),
+            ),
+        );
+    };
+
+    return (
+        <form
+            ref={ref}
+            id={type}
+            onSubmit={handleSubmit}
+            className="relative flex h-full w-full flex-col gap-4 overflow-hidden"
+        >
+            <div className="flex h-full w-full flex-col justify-start gap-4 overflow-auto">
+                <BanFormItem>
+                    {summary}
+                    <ProfileItemBase accountUUID={accountUUID} />
+                </BanFormItem>
+                <BanFormItem>
+                    {expireDateTitle}
+                    <div className="flex h-fit w-full flex-col justify-start">
+                        {expireDate.map((period, index) => {
+                            return (
+                                <ExpireDateItem
+                                    key={index}
+                                    id={index.toString()}
+                                    content={period}
+                                />
+                            );
+                        })}
+                    </div>
+                </BanFormItem>
+                <BanFormItem>
+                    {reasonTitle}
+                    <MessageInputArea name="reason" form={type} />
+                </BanFormItem>
+                <BanFormItem>
+                    {memoTitle}
+                    <MessageInputArea name="memo" form={type} />
+                </BanFormItem>
             </div>
             <button className="h-8 w-full rounded bg-red-500 text-gray-50">
                 {submitTitle}
@@ -129,7 +268,7 @@ function MessageInputArea(
     );
 }
 
-function ExpireDateItem({ id, content }: { id: string; content: string }) {
+function ExpireDateItem({ id, content }: { id: string; content: ExpireDate }) {
     return (
         <label className="flex flex-row gap-2 p-1" htmlFor={id}>
             <input
@@ -137,13 +276,13 @@ function ExpireDateItem({ id, content }: { id: string; content: string }) {
                 className="peer hidden"
                 name="expireDate"
                 type="radio"
-                value={content}
+                value={content.value}
             />
             <div className="hidden h-5 w-5 rounded-full bg-secondary/80 outline outline-1 outline-secondary peer-checked:flex">
                 <Icon.Check className="h-5 w-5 p-1" />
             </div>
             <div className="h-5 w-5 rounded-full outline outline-1 outline-gray-300/50 peer-checked:hidden" />
-            <span>{content}</span>
+            <span>{content.key}</span>
         </label>
     );
 }

@@ -8,7 +8,7 @@ import { InviteList } from "@components/Service/InviteList";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
 import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
-import { AccessBan, ReportUser } from "./NewBan";
+import { AccessBan, ReportUser, SendBan } from "./NewBan";
 import { Provider, useAtom, useAtomValue } from "jotai";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
@@ -24,9 +24,9 @@ import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
 
 export type RightSideBarContents =
     | "report"
-    | "newCommitBan"
+    | "newSendBan"
     | "newAccessBan"
-    | "commitBanMemberList"
+    | "sendBanMemberList"
     | "accessBanMemberList"
     | undefined;
 
@@ -65,9 +65,9 @@ export default function ChatRightSideBar() {
         switch (currentPage) {
             case "accessBanMemberList":
                 return "차단 유저 목록";
-            case "commitBanMemberList":
+            case "sendBanMemberList":
                 return "채팅금지 유저 목록";
-            case "newCommitBan":
+            case "newSendBan":
                 return "채팅 금지";
             case "newAccessBan":
                 return "내보내기";
@@ -78,14 +78,20 @@ export default function ChatRightSideBar() {
         }
     };
 
-    function ListContent({ currentPage }: { currentPage: RightSideBarContents }) {
+    function ListContent({
+        currentPage,
+    }: {
+        currentPage: RightSideBarContents;
+    }) {
         switch (currentPage) {
             case "accessBanMemberList":
                 return <ChatAccessBanList />;
-            case "commitBanMemberList":
+            case "sendBanMemberList":
                 return <ChatCommitBanList />;
-            // case "newCommitBan":
-            //     return <CommitBan accountUUID={selectedUUID ?? ""} />;
+            case "newAccessBan":
+                return <AccessBan accountUUID={selectedUUID ?? ""} />;
+            case "newSendBan":
+                return <SendBan accountUUID={selectedUUID ?? ""} />;
             case "report":
                 return <ReportUser accountUUID={selectedUUID ?? ""} />;
             default:
@@ -116,7 +122,7 @@ export default function ChatRightSideBar() {
             <div className="h-fit w-full overflow-auto">
                 {foundCurrentChatMembers.map((item) => (
                     <ProfileItem
-                        type="friend"
+                        type="ChatRoom"
                         key={item.accountId}
                         accountUUID={item.accountId}
                         selected={item.accountId === selectedUUID}
@@ -165,7 +171,7 @@ export default function ChatRightSideBar() {
                             <div className="hidden flex-col items-center text-base font-bold text-gray-100/80 group-data-[checked=true]:flex">
                                 <MenuItem
                                     onClick={() => {
-                                        setCurrentPage("commitBanMemberList");
+                                        setCurrentPage("sendBanMemberList");
                                         setMemberListDropDown(false);
                                     }}
                                     className="active:bg-secondary/80"
@@ -212,7 +218,7 @@ export default function ChatRightSideBar() {
                     </div>
                 </div>
 
-                <ListContent currentPage={currentPage}/>
+                <ListContent currentPage={currentPage} />
             </div>
         </div>
     );

@@ -2,8 +2,8 @@ import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
 import { Avatar } from "@components/Avatar";
 import { useProtectedProfile, usePublicProfile } from "@hooks/useProfile";
 import { Provider, createStore } from "jotai";
-import type { Relationship } from "@components/ContextMenu";
 import { ContextMenu } from "@components/ContextMenu";
+import type { Scope } from "@components/ContextMenu/ContextMenu";
 
 export function ProfileItem({
     className,
@@ -16,7 +16,7 @@ export function ProfileItem({
     accountUUID: string;
     selected: boolean;
     onClick?: React.MouseEventHandler | undefined;
-    type: Relationship;
+    type: Scope;
 }) {
     const profile = usePublicProfile(accountUUID);
     const protectedProfile = useProtectedProfile(accountUUID);

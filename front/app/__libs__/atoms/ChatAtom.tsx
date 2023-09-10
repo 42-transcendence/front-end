@@ -22,8 +22,8 @@ export const LeftSideBarIsOpenAtom = atom(
     },
 );
 
-const _backing_LeftSideBarOpenInputAtom = atom(false);
-const _backing_LeftSideBarCloseInputAtom = atom(true);
-
 export const ChatRightSideBarCurrrentPage =
     atom<RightSideBarContents>(undefined);
+
+const _backing_LeftSideBarOpenInputAtom = atom(false);
+const _backing_LeftSideBarCloseInputAtom = atom(true);

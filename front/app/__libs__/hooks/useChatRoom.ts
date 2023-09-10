@@ -7,11 +7,15 @@ import {
 import { useSWR } from "./useSWR";
 import { useCallback } from "react";
 import { useSWRConfig } from "swr";
-import { ChatRoomListAtom, DirectRoomListAtom } from "@atoms/ChatAtom";
+import {
+    ChatRightSideBarCurrrentPage,
+    ChatRoomListAtom,
+    DirectRoomListAtom,
+} from "@atoms/ChatAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import { useAtomCallback } from "jotai/utils";
 import { MessageTypeNumber } from "@common/generated/types";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { ChatRoomModeFlags } from "@common/chat-payloads";
 import { useCurrentAccountUUID } from "./useCurrent";
 import { NULL_UUID } from "@akasha-lib";
@@ -205,4 +209,12 @@ export function useChatRoomListAtom() {
 
 export function useDirectRoomListAtom() {
     return useAtom(DirectRoomListAtom, { store: GlobalStore });
+}
+
+export function useChatRightSideBarCurrrentPageAtom() {
+    return useAtom(ChatRightSideBarCurrrentPage, { store: GlobalStore });
+}
+
+export function useSetChatRightSideBarCurrrentPageAtom() {
+    return useSetAtom(ChatRightSideBarCurrrentPage, { store: GlobalStore });
 }
