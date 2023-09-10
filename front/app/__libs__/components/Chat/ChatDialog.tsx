@@ -72,7 +72,7 @@ function ChatMessageInputArea() {
         event,
     ) => {
         if (event.key === "Enter") {
-            if (event.shiftKey) {
+            if (event.shiftKey || event.nativeEvent.isComposing) {
                 return;
             }
             event.preventDefault();
@@ -160,7 +160,9 @@ export function ChatDialog({
             if (currentChatRoomIsDirect) {
                 setDirectRoomList((directRoomList) =>
                     syncDirectCursor(directRoomList, {
-                        chatId: extractTargetFromDirectChatKey(currentChatRoomUUID),
+                        chatId: extractTargetFromDirectChatKey(
+                            currentChatRoomUUID,
+                        ),
                         messageId: lastMessage.id,
                     }),
                 );
