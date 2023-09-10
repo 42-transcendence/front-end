@@ -14,6 +14,7 @@ import { MessageTypeNumber } from "@common/generated/types";
 import { useAtom } from "jotai";
 import { ChatRoomModeFlags } from "@common/chat-payloads";
 import { useCurrentAccountUUID } from "./useCurrent";
+import { NULL_UUID } from "@akasha-lib";
 
 export function useChatRoomTitle(roomUUID: string) {
     const callback = useCallback(
@@ -94,7 +95,7 @@ export function useChatRoomTotalUnreadCount() {
         ),
         { store: GlobalStore },
     );
-    const { data } = useSWR(["ChatStore", "TotalUnreadCount"], callback);
+    const { data } = useSWR(["ChatStore", NULL_UUID, "UnreadCount"], callback);
     return data;
 }
 
@@ -168,8 +169,7 @@ export function useChatMember(roomUUID: string, memberUUID: string) {
 
 export function useChatRoomMutation() {
     const { mutate } = useSWRConfig();
-
-    return useCallback(
+    const mutateOne = useCallback(
         (roomUUID: string) =>
             void mutate(
                 (key) =>
@@ -178,6 +178,24 @@ export function useChatRoomMutation() {
                     key[1] === roomUUID,
             ),
         [mutate],
+    );
+    const mutateGlobal = useCallback(
+        () =>
+            void mutate(
+                (key) =>
+                    Array.isArray(key) &&
+                    key[0] === "ChatStore" &&
+                    key[1] === NULL_UUID,
+            ),
+        [mutate],
+    );
+
+    return useCallback(
+        (roomUUID: string) => {
+            mutateOne(roomUUID);
+            mutateGlobal();
+        },
+        [mutateOne, mutateGlobal],
     );
 }
 
