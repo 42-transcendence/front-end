@@ -1,4 +1,9 @@
-import { ChatStore } from "@akasha-utils/idb/chat-store";
+import {
+    ChatStore,
+    extractTargetFromDirectChatKey,
+    isDirectChatKey,
+    makeDirectChatKey,
+} from "@akasha-utils/idb/chat-store";
 import { useSWR } from "./useSWR";
 import { useCallback } from "react";
 import { useSWRConfig } from "swr";
@@ -7,11 +12,17 @@ import { GlobalStore } from "@atoms/GlobalStore";
 import { useAtomCallback } from "jotai/utils";
 import { MessageTypeNumber } from "@common/generated/types";
 import { useAtom } from "jotai";
+import { ChatRoomModeFlags } from "@common/chat-payloads";
+import { useCurrentAccountUUID } from "./useCurrent";
 
 export function useChatRoomTitle(roomUUID: string) {
     const callback = useCallback(
         async ([, roomUUID]: [string, string, string]) =>
-            ChatStore.getTitle(roomUUID),
+            roomUUID === ""
+                ? ""
+                : isDirectChatKey(roomUUID)
+                ? "1:1 채팅방"
+                : ChatStore.getTitle(roomUUID),
         [],
     );
     const { data } = useSWR(["ChatStore", roomUUID, "Title"], callback);
@@ -21,7 +32,11 @@ export function useChatRoomTitle(roomUUID: string) {
 export function useChatRoomModeFlags(roomUUID: string) {
     const callback = useCallback(
         async ([, roomUUID]: [string, string, string]) =>
-            ChatStore.getModeFlags(roomUUID),
+            roomUUID === ""
+                ? 0
+                : isDirectChatKey(roomUUID)
+                ? ChatRoomModeFlags.PRIVATE | ChatRoomModeFlags.SECRET
+                : ChatStore.getModeFlags(roomUUID),
         [],
     );
     const { data } = useSWR(["ChatStore", roomUUID, "ModeFlags"], callback);
@@ -39,21 +54,44 @@ export function useChatRoomLatestMessage(roomUUID: string) {
 }
 
 export function useChatRoomTotalUnreadCount() {
+    const currentAccountUUID = useCurrentAccountUUID();
     const callback = useAtomCallback(
-        useCallback(async (get, _set) => {
-            const roomList = get(ChatRoomListAtom);
-            const promises = roomList.map((room) => {
-                const lastMessageId = room.lastMessageId;
-                return ChatStore.countAfterMessage(room.id, lastMessageId);
-            });
+        useCallback(
+            async (get, _set) => {
+                const roomList = get(ChatRoomListAtom);
+                const promises = roomList.map((room) => {
+                    const lastMessageId = room.lastMessageId;
+                    return ChatStore.countAfterMessage(room.id, lastMessageId);
+                });
 
-            const unreadCounts = await Promise.all(promises);
-            const totalUnreadCount = unreadCounts.reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0,
-            );
-            return totalUnreadCount;
-        }, []),
+                const unreadCounts = await Promise.all(promises);
+                const totalUnreadCount = unreadCounts.reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
+
+                const directList = get(DirectRoomListAtom);
+                const promisesDirect = directList.map((room) => {
+                    const lastMessageId = room.lastMessageId;
+                    return ChatStore.countAfterMessage(
+                        makeDirectChatKey(
+                            currentAccountUUID,
+                            room.targetAccountId,
+                        ),
+                        lastMessageId,
+                    );
+                });
+
+                const unreadCountsDirect = await Promise.all(promisesDirect);
+                const totalUnreadCountDirect = unreadCountsDirect.reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
+
+                return totalUnreadCount + totalUnreadCountDirect;
+            },
+            [currentAccountUUID],
+        ),
         { store: GlobalStore },
     );
     const { data } = useSWR(["ChatStore", "TotalUnreadCount"], callback);
@@ -64,10 +102,24 @@ export function useChatRoomUnreadCount(roomUUID: string) {
     const callback = useAtomCallback(
         useCallback(
             async (get, _set, [, roomUUID]: [string, string, string]) => {
-                const roomList = get(ChatRoomListAtom);
-                const lastReadMessageUUID =
-                    roomList.find((e) => e.id === roomUUID)?.lastMessageId ??
-                    null;
+                if (roomUUID === "") {
+                    return 0;
+                }
+                let lastReadMessageUUID: string | null;
+                if (isDirectChatKey(roomUUID)) {
+                    const directList = get(DirectRoomListAtom);
+                    lastReadMessageUUID =
+                        directList.find(
+                            (e) =>
+                                e.targetAccountId ===
+                                extractTargetFromDirectChatKey(roomUUID),
+                        )?.lastMessageId ?? null;
+                } else {
+                    const roomList = get(ChatRoomListAtom);
+                    lastReadMessageUUID =
+                        roomList.find((e) => e.id === roomUUID)
+                            ?.lastMessageId ?? null;
+                }
                 return await ChatStore.countAfterMessage(
                     roomUUID,
                     lastReadMessageUUID,

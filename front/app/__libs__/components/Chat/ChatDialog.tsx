@@ -3,12 +3,15 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Game, Icon } from "@components/ImageLibrary";
 import { ChatBubbleWithProfile, NoticeBubble } from "./ChatBubble";
-import type { MessageSchema } from "@akasha-utils/idb/chat-store";
+import {
+    extractTargetFromDirectChatKey,
+    isDirectChatKey,
+    type MessageSchema,
+} from "@akasha-utils/idb/chat-store";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import type { ByteBuffer } from "@akasha-lib";
 import {
     useCurrentAccountUUID,
-    useCurrentChatRoomIsDirect,
     useCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
 import {
@@ -25,7 +28,7 @@ const MIN_TEXTAREA_HEIGHT = 24;
 
 function ChatMessageInputArea() {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const currentChatRoomIsDirect = useCurrentChatRoomIsDirect();
+    const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
     const { sendPayload } = useWebSocket("chat", []);
@@ -35,7 +38,7 @@ function ChatMessageInputArea() {
             let buf: ByteBuffer;
             if (currentChatRoomIsDirect) {
                 buf = builder.makeSendDirectRequest(
-                    currentChatRoomUUID.split("_")[1],
+                    extractTargetFromDirectChatKey(currentChatRoomUUID),
                     value,
                 );
             } else {
@@ -130,7 +133,7 @@ export function ChatDialog({
 }) {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const currentChatRoomIsDirect = useCurrentChatRoomIsDirect();
+    const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const chatMessages = useChatRoomMessages(currentChatRoomUUID);
     const chatDialogRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -157,12 +160,12 @@ export function ChatDialog({
             if (currentChatRoomIsDirect) {
                 setDirectRoomList((directRoomList) =>
                     syncDirectCursor(directRoomList, {
-                        chatId: currentChatRoomUUID.split("_")[1],
+                        chatId: extractTargetFromDirectChatKey(currentChatRoomUUID),
                         messageId: lastMessage.id,
                     }),
                 );
                 buf = builder.makeSyncCursorDirect(
-                    currentChatRoomUUID.split("_")[1],
+                    extractTargetFromDirectChatKey(currentChatRoomUUID),
                     lastMessage.id,
                 );
             } else {
