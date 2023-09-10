@@ -1,17 +1,13 @@
 "use client";
 
 import { AuthLevel } from "@common/auth-payloads";
-import {
-    AccessTokenAtom,
-    AuthAtom,
-    RefreshTokenAtom,
-} from "@atoms/AccountAtom";
-import { useAtomValue, useSetAtom } from "jotai";
+import { AuthAtom } from "@atoms/AccountAtom";
+import { useAtomValue } from "jotai";
 import { ChatSocketProcessor } from "./ChatSocketProcessor";
 import { usePrivateProfile } from "@hooks/useProfile";
-import React, { useEffect, useState } from "react";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@hooks/fetcher";
+import { useEffect, useState } from "react";
 import { DoubleSharp } from "@components/ImageLibrary";
+import { useToken } from "@hooks/useToken";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -50,39 +46,7 @@ export default function MainLayout({
         setHydrated(true);
     }, []);
 
-    const setAccessToken = useSetAtom(AccessTokenAtom);
-    useEffect(() => {
-        setAccessToken(window.localStorage.getItem(ACCESS_TOKEN_KEY));
-        const handleAccessTokenEvent = (ev: StorageEvent) => {
-            if (ev.storageArea === window.localStorage) {
-                if (ev.key === null || ev.key === ACCESS_TOKEN_KEY) {
-                    if (ev.oldValue !== ev.newValue) {
-                        setAccessToken(ev.newValue);
-                    }
-                }
-            }
-        };
-        window.addEventListener("storage", handleAccessTokenEvent);
-        return () =>
-            window.removeEventListener("storage", handleAccessTokenEvent);
-    }, [setAccessToken]);
-
-    const setRefreshToken = useSetAtom(RefreshTokenAtom);
-    useEffect(() => {
-        setRefreshToken(window.localStorage.getItem(REFRESH_TOKEN_KEY));
-        const handleRefreshTokenEvent = (ev: StorageEvent) => {
-            if (ev.storageArea === window.localStorage) {
-                if (ev.key === null || ev.key === REFRESH_TOKEN_KEY) {
-                    if (ev.oldValue !== ev.newValue) {
-                        setRefreshToken(ev.newValue);
-                    }
-                }
-            }
-        };
-        window.addEventListener("storage", handleRefreshTokenEvent);
-        return () =>
-            window.removeEventListener("storage", handleRefreshTokenEvent);
-    }, [setRefreshToken]);
+    useToken();
     const auth = useAtomValue(AuthAtom);
     const profile = usePrivateProfile();
 

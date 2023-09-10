@@ -11,6 +11,7 @@ import { NICK_NAME_REGEX } from "@common/profile-constants";
 import type { AccountProfileProtectedPayload } from "@common/profile-payloads";
 import { useAtomValue } from "jotai";
 import Link from "next/link";
+import { useToken } from "@hooks/useToken";
 
 function ErrorPage() {
     return (
@@ -59,7 +60,13 @@ export default function ProfilePage({
 }: {
     params: { id?: string[] | undefined };
 }) {
+    useToken();
     const profile = usePrivateProfile();
+    if (params.id !== undefined) {
+        for (let i = 0; i < params.id.length; i++) {
+            params.id[i] = decodeURIComponent(params.id[i]);
+        }
+    }
     const [nick, tag, isValid] = parseNickAndTag(params, profile);
     const { accountUUID, isLoading, notFound } = useNickLookup(nick, tag);
     const editPanelVisibility = useAtomValue(EditPanelVisibilityAtom);
