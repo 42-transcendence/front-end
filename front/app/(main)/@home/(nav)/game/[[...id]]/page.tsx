@@ -1,11 +1,8 @@
-"use client";
-
 import { GameChipProfile } from "@components/Game/GameUserProfile";
 import CharacterSelector from "@components/Game/GameCharacterSelector";
 import GameStartButton from "@components/Game/GameStartButton";
 import Link from "next/link";
 import { ChatDialog } from "@components/Chat/ChatDialog";
-import { useParams } from "next/navigation";
 
 function InvalidGameIdPage() {
     return (
@@ -95,11 +92,12 @@ function isValidGameId(id: string | string[]) {
     return id.length === 1 && Number.isInteger(Number(id));
 }
 
-export default function GamePage() {
-    const params = useParams();
-
-    const paramKeys = Object.keys(params);
-    if (paramKeys.length !== 1 || paramKeys[0] !== "id") {
+export default function GamePage({
+    params,
+}: {
+    params: { id?: string[] | undefined };
+}) {
+    if (params["id"] === undefined) {
         return <InputGameIdPage />;
     }
 
