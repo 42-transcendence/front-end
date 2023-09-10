@@ -8,7 +8,7 @@ import { InviteList } from "@components/Service/InviteList";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
 import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
-import { AccessBan } from "./NewBan";
+import { AccessBan, ReportUser } from "./NewBan";
 import { Provider, useAtom, useAtomValue } from "jotai";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
@@ -61,8 +61,8 @@ export default function ChatRightSideBar() {
         }
     };
 
-    const pageTitle = (currentContent: RightSideBarContents) => {
-        switch (currentContent) {
+    const pageTitle = (currentPage: RightSideBarContents) => {
+        switch (currentPage) {
             case "accessBanMemberList":
                 return "차단 유저 목록";
             case "commitBanMemberList":
@@ -71,10 +71,27 @@ export default function ChatRightSideBar() {
                 return "채팅 금지";
             case "newAccessBan":
                 return "내보내기";
+            case "report":
+                return "신고하기";
             default:
                 return "멤버 목록";
         }
     };
+
+    function ListContent({ currentPage }: { currentPage: RightSideBarContents }) {
+        switch (currentPage) {
+            case "accessBanMemberList":
+                return <ChatAccessBanList />;
+            case "commitBanMemberList":
+                return <ChatCommitBanList />;
+            // case "newCommitBan":
+            //     return <CommitBan accountUUID={selectedUUID ?? ""} />;
+            case "report":
+                return <ReportUser accountUUID={selectedUUID ?? ""} />;
+            default:
+                return memberList;
+        }
+    }
 
     const memberList = inviteToggle ? (
         <Provider>
@@ -115,21 +132,6 @@ export default function ChatRightSideBar() {
             </div>
         </>
     );
-
-    const listContent = (currentList: RightSideBarContents) => {
-        switch (currentList) {
-            case "accessBanMemberList":
-                return <ChatAccessBanList />;
-            case "commitBanMemberList":
-                return <ChatCommitBanList />;
-            case "newAccessBan":
-                return <AccessBan accountUUID={selectedUUID ?? ""} />;
-            // case "newCommitBan":
-            //     return <CommitBan accountUUID={selectedUUID ?? ""} />;
-            default:
-                return memberList;
-        }
-    };
 
     return (
         <div className="absolute right-0 top-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-hidden rounded-[0px_28px_28px_0px] bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px] 2xl:bg-black/30">
@@ -210,7 +212,7 @@ export default function ChatRightSideBar() {
                     </div>
                 </div>
 
-                {listContent(currentPage)}
+                <ListContent currentPage={currentPage}/>
             </div>
         </div>
     );
