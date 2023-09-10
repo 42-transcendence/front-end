@@ -1,7 +1,6 @@
 import type {
     ChatBanSummaryEntry,
     ChatMessageEntry,
-    ChatRoomMemberEntry,
     ChatRoomViewEntry,
 } from "@common/chat-payloads";
 import {
@@ -9,7 +8,6 @@ import {
     readChatBanDetail,
     readChatBanSummary,
     readChatMessage,
-    readChatRoomMember,
     readChatRoomView,
 } from "@common/chat-payloads";
 import type { ByteBuffer } from "@akasha-lib";
@@ -276,6 +274,14 @@ export function handleSendDirectResult(
     payload: ByteBuffer,
 ): [errno: ChatErrorNumber, targetAccountId: string] {
     const errno: ChatErrorNumber = payload.read1();
+    const targetAccountId = payload.readUUID();
+    return [errno, targetAccountId];
+}
+
+export function handleReportResult(
+    payload: ByteBuffer,
+): [errno: ReportErrorNumber, targetAccountId: string] {
+    const errno: ReportErrorNumber = payload.read1();
     const targetAccountId = payload.readUUID();
     return [errno, targetAccountId];
 }

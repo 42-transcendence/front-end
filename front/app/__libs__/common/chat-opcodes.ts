@@ -25,6 +25,7 @@ export const enum ChatServerOpcode {
   DESTROY_ROOM,
   SYNC_CURSOR_DIRECT,
   SEND_DIRECT,
+  REPORT_USER,
 }
 
 export const enum ChatClientOpcode {
