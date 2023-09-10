@@ -6,7 +6,9 @@ import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 import {
     makeKickMemberRequest,
     makeMuteMemberRequest,
+    makeReportUser,
 } from "@akasha-utils/chat-payload-builder-client";
+import { useSetChatRightSideBarCurrrentPageAtom } from "@hooks/useChatRoom";
 
 type ExpireDate = {
     key: string;
@@ -26,6 +28,17 @@ const expireDate: ExpireDate[] = [
     { key: "1세기", value: 2903040000 },
 ];
 
+function SubmitButton({ children }: React.PropsWithChildren) {
+    return (
+        <button
+            type="submit"
+            className="h-fit w-full rounded bg-red-500 p-2 text-gray-50"
+        >
+            {children}
+        </button>
+    );
+}
+
 function BanFormItem({ children }: React.PropsWithChildren) {
     return (
         <div className="flex w-full flex-col gap-2 text-sm font-bold text-gray-100">
@@ -35,21 +48,26 @@ function BanFormItem({ children }: React.PropsWithChildren) {
 }
 
 export function ReportUser({ accountUUID }: { accountUUID: string }) {
-    //TODO; fetch from accountUUID
     const summary = "다음 유저를 신고합니다";
     const reasonTitle = "신고 사유";
     const ref = useRef<HTMLFormElement>(null!);
     const type = "report";
     const submitTitle = "신고하기";
     const { sendPayload } = useWebSocket("chat", []);
-    const currentRoomUUID = useCurrentChatRoomUUID();
+    const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
 
         const data = new FormData(ref.current);
-        console.log(data);
-        // sendPayload(makeKickMemberRequest(currentRoomUUID, accountUUID, ));
+        const reason = data.get("reason");
+        if (reason === null) {
+            alert("금지 사유를 입력해주세요.");
+            return;
+        }
+        sendPayload(makeReportUser(accountUUID, reason as string));
+        alert("신고가 접수되었습니다.");
+        setCurrentPage(undefined);
     };
 
     return (
@@ -57,7 +75,7 @@ export function ReportUser({ accountUUID }: { accountUUID: string }) {
             ref={ref}
             id={type}
             onSubmit={handleSubmit}
-            className="relative flex h-full w-full flex-col gap-4 overflow-hidden"
+            className="relative flex h-full w-full flex-col gap-4 overflow-hidden p-2"
         >
             <div className="flex h-full w-full flex-col justify-start gap-4 overflow-auto">
                 <BanFormItem>
@@ -69,24 +87,22 @@ export function ReportUser({ accountUUID }: { accountUUID: string }) {
                     <MessageInputArea name="reason" form={type} />
                 </BanFormItem>
             </div>
-            <button className="h-8 w-full rounded bg-red-500 text-gray-50">
-                {submitTitle}
-            </button>
+            <SubmitButton>{submitTitle}</SubmitButton>
         </form>
     );
 }
 
 export function SendBan({ accountUUID }: { accountUUID: string }) {
-    //TODO; fetch from accountUUID
-    const summary = "다음 유저를 현재 채팅방에서 내보냅니다.";
+    const summary = "다음 유저의 메세지 전송을 지정된 기간 동안 제한합니다.";
     const expireDateTitle = "기간";
     const reasonTitle = "채팅 금지 사유";
     const memoTitle = "메모";
-    const submitTitle = "채팅 금지하기";
+    const submitTitle = "채팅 금지시키기";
     const ref = useRef<HTMLFormElement>(null!);
     const type = "send";
     const { sendPayload } = useWebSocket("chat", []);
     const currentRoomUUID = useCurrentChatRoomUUID();
+    const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
@@ -108,6 +124,8 @@ export function SendBan({ accountUUID }: { accountUUID: string }) {
                 parseInt(expireDate as string),
             ),
         );
+        alert("채팅 금지 되었습니다.");
+        setCurrentPage(undefined);
     };
 
     return (
@@ -145,16 +163,13 @@ export function SendBan({ accountUUID }: { accountUUID: string }) {
                     <MessageInputArea name="memo" form={type} />
                 </BanFormItem>
             </div>
-            <button className="h-8 w-full rounded bg-red-500 text-gray-50">
-                {submitTitle}
-            </button>
+            <SubmitButton>{submitTitle}</SubmitButton>
         </form>
     );
 }
 
 export function AccessBan({ accountUUID }: { accountUUID: string }) {
-    //TODO; fetch from accountUUID
-    const summary = "다음 유저를 채팅 금지 시킵니다";
+    const summary = "다음 유저를 채팅방에서 내보냅니다.";
     const expireDateTitle = "기간";
     const reasonTitle = "차단 사유";
     const memoTitle = "메모";
@@ -163,6 +178,7 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
     const type = "access";
     const { sendPayload } = useWebSocket("chat", []);
     const currentRoomUUID = useCurrentChatRoomUUID();
+    const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
@@ -184,6 +200,8 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
                 parseInt(expireDate as string),
             ),
         );
+        alert("유저를 내보냈습니다.");
+        setCurrentPage(undefined);
     };
 
     return (
@@ -221,9 +239,7 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
                     <MessageInputArea name="memo" form={type} />
                 </BanFormItem>
             </div>
-            <button className="h-8 w-full rounded bg-red-500 text-gray-50">
-                {submitTitle}
-            </button>
+            <SubmitButton>{submitTitle}</SubmitButton>
         </form>
     );
 }

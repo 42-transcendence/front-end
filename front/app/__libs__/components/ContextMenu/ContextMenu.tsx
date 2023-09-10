@@ -5,15 +5,17 @@ import { useAtomValue } from "jotai";
 import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
 import { ChatServerOpcode } from "@common/chat-opcodes";
 import { useProtectedProfile } from "@hooks/useProfile";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     ActiveStatus,
     RoleNumber,
     getActiveStatusNumber,
 } from "@common/generated/types";
-import { FriendModifyFlags } from "@common/chat-payloads";
 import { logoutAction } from "@/app/(main)/@home/(nav)/logoutAction";
-import { useSetChatRightSideBarCurrrentPageAtom } from "@hooks/useChatRoom";
+import {
+    useChatMember,
+    useSetChatRightSideBarCurrrentPageAtom,
+} from "@hooks/useChatRoom";
 import {
     useCurrentAccountUUID,
     useCurrentChatRoomUUID,
@@ -21,6 +23,7 @@ import {
 import {
     makeChangeMemberRoleRequest,
     makeHandoverRoomOwnerRequest,
+    makeModifyFriendRequest,
 } from "@akasha-utils/chat-payload-builder-client";
 
 export type Relationship = "myself" | "friend" | "stranger";
@@ -53,6 +56,7 @@ type ProfileMenu = {
     minRoleLevel?: number | undefined;
     scope: Scope | undefined;
     className: string;
+    UI?: React.ReactNode | undefined;
 };
 
 const profileMenus: ProfileMenu[] = [
@@ -175,6 +179,10 @@ const profileMenus: ProfileMenu[] = [
     },
 ];
 
+function FriendGroupForm() {
+    return;
+}
+
 function ContextMenuItem({
     menuInfo,
     action,
@@ -184,6 +192,7 @@ function ContextMenuItem({
 }) {
     const ref = useRef<HTMLButtonElement>(null);
     const disabled = action === undefined;
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const elem = ref.current;
@@ -204,27 +213,31 @@ function ContextMenuItem({
     }, [action]);
 
     return (
-        <button
-            type="button"
-            ref={ref}
-            disabled={disabled}
-            className={`relative flex h-fit w-full items-center rounded py-3 ${
-                menuInfo.isImportant
-                    ? menuInfo.className
-                    : "hover:bg-primary/30"
-            } ${!disabled && "active:bg-secondary/80"}`}
-        >
-            <div className="relative flex w-full flex-col justify-center px-4 py-1">
-                <div className="flex select-none justify-start">
-                    {menuInfo.name}
-                </div>
-                {menuInfo.description !== undefined && (
-                    <div className="select-none text-base text-purple-900">
-                        {menuInfo.description}
+        <>
+            <button
+                type="button"
+                onClick={() => setOpen(!open)}
+                ref={ref}
+                disabled={disabled}
+                className={`relative flex h-fit w-full items-center rounded py-3 ${
+                    menuInfo.isImportant
+                        ? menuInfo.className
+                        : "hover:bg-primary/30"
+                } ${!disabled && "active:bg-secondary/80"}`}
+            >
+                <div className="relative flex w-full flex-col justify-center px-4 py-1">
+                    <div className="flex select-none justify-start">
+                        {menuInfo.name}
                     </div>
-                )}
-            </div>
-        </button>
+                    {menuInfo.description !== undefined && (
+                        <div className="select-none text-base text-purple-900">
+                            {menuInfo.description}
+                        </div>
+                    )}
+                </div>
+            </button>
+            {menuInfo.UI ?? (open && menuInfo.UI)}
+        </>
     );
 }
 
@@ -233,6 +246,8 @@ export function ContextMenu({ type }: { type: Scope }) {
     const currentId = useCurrentAccountUUID();
     const profile = useProtectedProfile(accountUUID);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const targetMember = useChatMember(currentChatRoomUUID, accountUUID);
+    const roleLevel = Number(targetMember?.role ?? 0);
 
     const relationship =
         accountUUID === currentId
@@ -255,6 +270,7 @@ export function ContextMenu({ type }: { type: Scope }) {
     const rating: ProfileMenu = {
         name: `rating: ${score}`,
         relation: ["myself", "friend", "stranger"],
+        scope: "ChatRoom",
         isImportant: false,
         className: "hover:bg-transparent active:bg-transparent",
     };
@@ -293,22 +309,7 @@ export function ContextMenu({ type }: { type: Scope }) {
         // ["editmyprofile"]: () => {
         // },
         ["modifyfriend"]: () => {
-            const modifyFlags = 1; // TODO: 이거 값 받기
-            const buf = ByteBuffer.createWithOpcode(
-                ChatServerOpcode.MODIFY_FRIEND,
-            );
-            buf.writeUUID(accountUUID);
-            buf.write1(modifyFlags);
-            if ((modifyFlags & FriendModifyFlags.MODIFY_GROUP_NAME) !== 0) {
-                const groupName = "새 그룹 1";
-                buf.writeString(groupName);
-            }
-            if ((modifyFlags & FriendModifyFlags.MODIFY_ACTIVE_FLAGS) !== 0) {
-                const activeFlags = 1; // TODO: 값 받기
-                buf.write1(activeFlags);
-            }
-
-            sendPayload(buf);
+            sendPayload(makeModifyFriendRequest(accountUUID));
         },
         ["logout"]: () => {
             // TODO: 현재 이 함수 (nav)폴더에 있는데 어디로 옮기지? util? 아니면 여기 이 폴더?
@@ -379,7 +380,10 @@ export function ContextMenu({ type }: { type: Scope }) {
                     if (menu.scope !== undefined && menu.scope !== type) {
                         return;
                     }
-                    return menu.relation.includes(relationship);
+                    return (
+                        roleLevel >= (menu.minRoleLevel ?? 0) &&
+                        menu.relation.includes(relationship)
+                    );
                 })
                 .map((menu) => {
                     return (
