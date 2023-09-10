@@ -145,13 +145,15 @@ export function ChatDialog({
     useEffect(() => {
         if (chatMessages !== undefined && chatMessages.length > 0) {
             const newLastMessage = chatMessages[chatMessages.length - 1];
-            if (lastMessage?.id !== newLastMessage.id) {
-                setLastMessage(newLastMessage);
-            }
+            setLastMessage((lastMessage) =>
+                lastMessage?.id !== newLastMessage.id
+                    ? newLastMessage
+                    : lastMessage,
+            );
         }
-    }, [chatMessages, lastMessage]);
+    }, [chatMessages]);
     useEffect(() => {
-        if (lastMessage !== undefined) {
+        if (lastMessage !== undefined && currentChatRoomUUID !== "") {
             if (lastMessage.accountId === currentAccountUUID) {
                 scrollToBottom();
             }
@@ -184,7 +186,6 @@ export function ChatDialog({
             }
 
             sendPayload(buf);
-
             mutateChatRoom(currentChatRoomUUID);
         }
     }, [
@@ -202,7 +203,7 @@ export function ChatDialog({
         if (messagesEndRef.current === null) {
             throw new Error();
         }
-        messagesEndRef.current.scrollIntoView({});
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     };
 
     return currentChatRoomUUID !== "" ? (

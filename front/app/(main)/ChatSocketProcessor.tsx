@@ -418,7 +418,7 @@ export function ChatSocketProcessor() {
                 for (const member of chatRoom.members) {
                     await ChatStore.putMember(chatRoom.id, member);
                 }
-                setChatRoomList([...chatRoomList, chatRoom]);
+                setChatRoomList((chatRoomList) => [...chatRoomList, chatRoom]);
                 break;
             }
             case ChatClientOpcode.UPDATE_ROOM: {
@@ -554,7 +554,7 @@ export function syncCursor(
 ) {
     const existsRoom = chatRoomList.find((room) => room.id === pair.chatId);
     if (existsRoom === undefined) {
-        throw new Error();
+        return chatRoomList;
     }
     return [
         ...chatRoomList.filter((e) => e.id !== pair.chatId),
