@@ -9,14 +9,13 @@ import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
 import { ByteBuffer } from "@akasha-lib";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { useAtomValue, useSetAtom } from "jotai";
+import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import {
     CreateNewRoomCheckedAtom,
     CurrentChatRoomUUIDAtom,
-} from "@/atom/ChatAtom";
-import { ChatRoomModeFlags } from "@/library/payload/chat-payloads";
-import { GlobalStore } from "@/atom/GlobalStore";
-import { useCurrentAccountUUID } from "@/hooks/useCurrent";
-import { AnimatePresence, motion } from "framer-motion";
+} from "@atoms/ChatAtom";
+import { GlobalStore } from "@atoms/GlobalStore";
+import { ChatRoomModeFlags } from "@common/chat-payloads";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;

@@ -9,7 +9,7 @@ import {
 } from "./ChatRoomBlock";
 import { TextField } from "@components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
-import { Provider, useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
     ChatRoomListAtom,
     CreateNewRoomCheckedAtom,
@@ -114,10 +114,9 @@ export default function ChatLeftSideBar() {
                 <AnimatePresence>
                     <Tab.Group
                         as={motion.div}
-                        className="h-full w-full flex-col gap-2"
+                        className="h-full w-full flex-col gap-2 overflow-hidden"
                         animate={{ opacity: 1, display: "flex" }}
                         exit={{ opacity: 0 }}
-                        transition={{ delay: 0.2 }}
                     >
                         <Tab.List
                             onClick={() => {
@@ -131,20 +130,20 @@ export default function ChatLeftSideBar() {
                             <motion.div
                                 animate={
                                     tab === 0
-                                        ? { x: [null, 135, 0] }
-                                        : { x: [null, 0, 135] }
+                                        ? { x: [null, 90 * tab, 0] }
+                                        : { x: [null, 0, 90 * tab] }
                                 }
                                 transition={{ type: "spring", duration: 0.3 }}
                                 className={classNames(
                                     "absolute flex h-8 w-full pb-1",
                                 )}
                             >
-                                <div className="h-full w-[135px] rounded-lg bg-secondary/80" />
+                                <div className="h-full w-[90px] rounded-lg bg-secondary/80" />
                             </motion.div>
-                            {Object.keys(categories).map((category) => (
+                            {categories.map((category) => (
                                 <Tab
                                     as={motion.div}
-                                    key={category}
+                                    key={category.name}
                                     className={({ selected }) =>
                                         classNames(
                                             "z-[1] flex w-full items-center justify-center rounded-lg py-1 text-sm font-medium leading-5 text-gray-50/70",
@@ -155,21 +154,18 @@ export default function ChatLeftSideBar() {
                                         )
                                     }
                                 >
-                                    {category}
+                                    {category.name}
                                 </Tab>
                             ))}
                         </Tab.List>
-                        <Tab.Panels className="w-full">
-                            <ListQuaryTextField
-                                value={query}
-                                onChange={(event) =>
-                                    setQuery(event.target.value)
-                                }
-                            />
-
-                            {Object.values(categories).map((rooms, idx) => (
+                        <ListQuaryTextField
+                            value={query}
+                            onChange={(event) => setQuery(event.target.value)}
+                        />
+                        <Tab.Panels className="h-full w-full overflow-auto">
+                            {categories.map((category, idx) => (
                                 <Tab.Panel key={idx}>
-                                    <RoomPanel rooms={rooms} query={query} />
+                                    {category.Component}
                                 </Tab.Panel>
                             ))}
                         </Tab.Panels>
