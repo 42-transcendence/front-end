@@ -70,7 +70,7 @@ export default function ChatLeftSideBar() {
             ),
         },
     ];
-    const [tab, setTab] = useState(1);
+    const [selectedIndex, setSelectedIndex] = useState(1);
     const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
         CreateNewRoomCheckedAtom,
     );
@@ -117,21 +117,18 @@ export default function ChatLeftSideBar() {
                         className="h-full w-full flex-col gap-2 overflow-hidden"
                         animate={{ opacity: 1, display: "flex" }}
                         exit={{ opacity: 0 }}
+                        selectedIndex={selectedIndex}
+                        onChange={(index) => setSelectedIndex(index)}
                     >
                         <Tab.List
-                            onClick={() => {
-                                setQuery("");
-                            }}
-                            className={({ selectedIndex }) => {
-                                setTab(selectedIndex);
-                                return "flex w-full rounded-lg bg-black/30 p-1";
-                            }}
+                            onClick={() => setQuery("")}
+                            className="flex w-full rounded-lg bg-black/30 p-1"
                         >
                             <motion.div
                                 animate={
-                                    tab === 0
-                                        ? { x: [null, 90 * tab, 0] }
-                                        : { x: [null, 0, 90 * tab] }
+                                    selectedIndex === 0
+                                        ? { x: [null, 90 * selectedIndex, 0] }
+                                        : { x: [null, 0, 90 * selectedIndex] }
                                 }
                                 transition={{ type: "spring", duration: 0.3 }}
                                 className={classNames(
@@ -144,15 +141,13 @@ export default function ChatLeftSideBar() {
                                 <Tab
                                     as={motion.div}
                                     key={category.name}
-                                    className={({ selected }) =>
-                                        classNames(
-                                            "z-[1] flex w-full items-center justify-center rounded-lg py-1 text-sm font-medium leading-5 text-gray-50/70",
-                                            "outline-none focus-within:outline-primary/70",
-                                            selected
-                                                ? ""
-                                                : "hover:bg-primary/10 hover:text-white",
-                                        )
-                                    }
+                                    className={classNames(
+                                        "flex items-center justify-center",
+                                        "z-[1] w-full rounded-lg py-1",
+                                        "text-sm font-medium leading-5 text-gray-50/70",
+                                        "outline-none focus-within:outline-primary/70",
+                                        "ui-not-selected:hover:bg-primary/10 ui-not-selected:hover:text-white",
+                                    )}
                                 >
                                     {category.name}
                                 </Tab>
