@@ -193,7 +193,17 @@ export function ChatDialog({
     }, [currentChatRoomUUID]);
     useEffect(() => {
         if (lastMessage !== undefined && lastChatRoomUUID !== "") {
-            if (lastMessage.accountId === currentAccountUUID) {
+            if (chatDialogRef.current === null) {
+                throw new Error();
+            }
+
+            const isAtBottom =
+                chatDialogRef.current.scrollTop +
+                    chatDialogRef.current.clientHeight >=
+                chatDialogRef.current.scrollHeight -
+                    (chatDialogRef.current.lastElementChild
+                        ?.previousElementSibling?.clientHeight ?? 0) - 10; //TODO: 10은 매직넘버입니다.
+            if (lastMessage.accountId === currentAccountUUID || isAtBottom) {
                 scrollToBottom();
             }
 
