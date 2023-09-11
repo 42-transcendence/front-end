@@ -2,6 +2,7 @@ import { Avatar } from "../Avatar";
 import { Chat } from "@components/ImageLibrary";
 import type { MessageSchema } from "@akasha-utils/idb/chat-store";
 import { usePublicProfile } from "@hooks/useProfile";
+import { NickBlock } from "@components/ProfileItem/ProfileItem";
 
 export function ChatBubbleWithProfile({
     chatMessage,
@@ -18,16 +19,11 @@ export function ChatBubbleWithProfile({
     //TODO: hide username, tail, profile when message is continued
     const profile = usePublicProfile(chatMessage.accountId);
 
-    const nick =
-        profile !== undefined
-            ? `${profile.nickName}#${profile.nickTag}`
-            : "불러오는 중...";
-
     const hidden = dir === "right" || isContinued ? "hidden" : "";
     return (
         <div
             className={`relative flex shrink flex-row pl-16 ${
-                isContinued ? "pt-0" : "pt-6"
+                isContinued ? "pt-0" : "pt-8"
             }`}
         >
             {/* TODO: get avatar from sender info */}
@@ -37,9 +33,9 @@ export function ChatBubbleWithProfile({
                 privileged={false}
             />
             <div
-                className={`${hidden} absolute -top-1 left-16 font-sans text-lg font-normal text-white `}
+                className={`${hidden} absolute left-16 top-2 font-sans text-lg font-normal text-white `}
             >
-                {nick}
+                <NickBlock profile={profile} />
             </div>
             <ChatBubble
                 chatMessage={chatMessage}

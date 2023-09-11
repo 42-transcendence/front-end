@@ -4,6 +4,7 @@ import { useProtectedProfile, usePublicProfile } from "@hooks/useProfile";
 import { Provider, createStore } from "jotai";
 import { ContextMenu } from "@components/ContextMenu";
 import type { Scope } from "@components/ContextMenu/ContextMenu";
+import { AccountProfilePublicPayload } from "@common/profile-payloads";
 
 export function ProfileItem({
     className,
@@ -45,20 +46,7 @@ export function ProfileItem({
                             />
                         </div>
                         <div className="relative flex w-fit flex-col items-start gap-1">
-                            {profile !== undefined ? (
-                                <div className="flex flex-row items-center gap-2">
-                                    <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                                        {profile.nickName}
-                                    </span>
-                                    <span className="relative w-fit whitespace-nowrap font-sans text-sm font-bold leading-none tracking-normal text-gray-300/70">
-                                        #{profile.nickTag}
-                                    </span>
-                                </div>
-                            ) : (
-                                <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                                    불러오는 중...
-                                </span>
-                            )}
+                            <NickBlock profile={profile} />
                             <div className="text-normal font-sans text-sm text-gray-50">
                                 {statusMessage}
                             </div>
@@ -68,5 +56,26 @@ export function ProfileItem({
                 {selected && <ContextMenu type={type} />}
             </div>
         </Provider>
+    );
+}
+
+export function NickBlock({
+    profile,
+}: {
+    profile: AccountProfilePublicPayload | undefined;
+}) {
+    return profile !== undefined ? (
+        <div className="flex flex-row items-center gap-2">
+            <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
+                {profile.nickName}
+            </span>
+            <span className="relative w-fit whitespace-nowrap font-sans text-sm font-bold leading-none tracking-normal text-gray-300/70">
+                #{profile.nickTag}
+            </span>
+        </div>
+    ) : (
+        <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
+            불러오는 중...
+        </span>
     );
 }
