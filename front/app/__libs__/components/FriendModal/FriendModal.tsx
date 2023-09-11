@@ -75,7 +75,7 @@ function FriendList() {
 
     return friendEntrySet.map((friend) => (
         <ProfileItem
-            type="friend"
+            type="FriendModal"
             key={friend.friendAccountId}
             accountUUID={friend.friendAccountId}
             selected={friend.friendAccountId === selectedUUID}

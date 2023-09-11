@@ -4,7 +4,7 @@ import { useProtectedProfile, usePublicProfile } from "@hooks/useProfile";
 import { Provider, createStore } from "jotai";
 import { ContextMenu } from "@components/ContextMenu";
 import type { Scope } from "@components/ContextMenu/ContextMenu";
-import { AccountProfilePublicPayload } from "@common/profile-payloads";
+import type { AccountProfilePublicPayload } from "@common/profile-payloads";
 import { Icon } from "@components/ImageLibrary";
 import { useChatMember } from "@hooks/useChatRoom";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
@@ -57,14 +57,15 @@ export function ProfileItem({
                         <div className="relative flex w-fit flex-col items-start gap-1">
                             <div className="flex flex-row gap-2">
                                 <NickBlock profile={profile} />
-                                {roleLevel >= managerRoleLevel && (
-                                    <Icon.CrownFilled
-                                        className={
-                                            roleLevel === adminRoleLevel &&
-                                            "text-tertiary"
-                                        }
-                                    />
-                                )}
+                                {type === "ChatRoom" &&
+                                    roleLevel >= managerRoleLevel && (
+                                        <Icon.CrownFilled
+                                            className={
+                                                roleLevel === adminRoleLevel &&
+                                                "text-tertiary"
+                                            }
+                                        />
+                                    )}
                             </div>
                             <div className="text-normal font-sans text-sm text-gray-50">
                                 {statusMessage}

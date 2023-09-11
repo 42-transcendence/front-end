@@ -1,7 +1,7 @@
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ContextMenuBase } from "./ContextMenuBase";
 import { ByteBuffer } from "@akasha-lib";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
 import { ChatServerOpcode } from "@common/chat-opcodes";
 import { useProtectedProfile } from "@hooks/useProfile";
@@ -30,6 +30,9 @@ import {
     makeHandoverRoomOwnerRequest,
     makeModifyFriendRequest,
 } from "@akasha-utils/chat-payload-builder-client";
+import { CurrentChatRoomUUIDAtom } from "@atoms/ChatAtom";
+import { GlobalStore } from "@atoms/GlobalStore";
+import { makeDirectChatKey } from "@akasha-utils/idb/chat-store";
 
 export type Relationship = "myself" | "friend" | "stranger";
 
@@ -40,6 +43,7 @@ type ProfileMenuActions =
     | "copytag"
     | "changeactivestatus"
     | "addfriend"
+    | "directmessage"
     // | "editmyprofile"
     | "modifyfriend"
     | "logout"
@@ -59,7 +63,7 @@ type ProfileMenu = {
     relation: Relationship[];
     isImportant: boolean;
     minRoleLevel?: number | undefined;
-    scope: Scope | undefined;
+    scope: Scope | Scope[] | undefined;
     className: string;
     UI?: React.ReactNode | undefined;
 };
@@ -102,21 +106,21 @@ const profileMenus: ProfileMenu[] = [
         className: "",
     },
     {
+        name: "다이렉트 메시지",
+        action: "directmessage",
+        relation: ["friend"],
+        isImportant: false,
+        minRoleLevel: undefined,
+        scope: ["ChatRoom", "FriendModal"],
+        className: "",
+    },
+    {
         name: "친구 추가",
         action: "addfriend",
         relation: ["stranger"],
         isImportant: false,
         minRoleLevel: undefined,
         scope: "ChatRoom",
-        className: "",
-    },
-    {
-        name: "친구 그룹 변경",
-        action: "modifyfriend",
-        relation: ["friend"],
-        isImportant: false,
-        minRoleLevel: undefined,
-        scope: "FriendModal",
         className: "",
     },
     {
@@ -247,12 +251,15 @@ export function ContextMenu({ type }: { type: Scope }) {
     const targetAccountUUID = useAtomValue(TargetedAccountUUIDAtom);
     const profile = useProtectedProfile(targetAccountUUID);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const currentId = useCurrentAccountUUID();
-    const currentUser = useChatMember(currentChatRoomUUID, currentId);
+    const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom, {
+        store: GlobalStore,
+    });
+    const currentAccountUUID = useCurrentAccountUUID();
+    const currentUser = useChatMember(currentChatRoomUUID, currentAccountUUID);
     const roleLevel = Number(currentUser?.role ?? 0);
 
     const relationship =
-        targetAccountUUID === currentId
+        targetAccountUUID === currentAccountUUID
             ? "myself"
             : profile !== undefined
             ? "friend"
@@ -298,8 +305,6 @@ export function ContextMenu({ type }: { type: Scope }) {
             const buf = makeAddFriendRequest(targetAccountUUID, "", 0b11111111);
             sendPayload(buf);
         },
-        // ["editmyprofile"]: () => {
-        // },
         ["modifyfriend"]: () => {},
         ["logout"]: () => {
             // TODO: 현재 이 함수 (nav)폴더에 있는데 어디로 옮기지? util? 아니면 여기 이 폴더?
@@ -317,6 +322,11 @@ export function ContextMenu({ type }: { type: Scope }) {
         },
         ["reportuser"]: () => {
             setCurrentPage("report");
+        },
+        ["directmessage"]: () => {
+            setCurrentChatRoomUUID(
+                makeDirectChatKey(currentAccountUUID, targetAccountUUID),
+            );
         },
         ["accessban"]: () => {
             setCurrentPage("newAccessBan");
@@ -362,7 +372,10 @@ export function ContextMenu({ type }: { type: Scope }) {
         <ContextMenuBase className="w-full">
             {[rating, ...profileMenus]
                 .filter((menu) => {
-                    if (menu.scope !== undefined && menu.scope !== type) {
+                    if (
+                        menu.scope !== undefined &&
+                        !menu.scope.includes(type)
+                    ) {
                         return;
                     }
                     return (
