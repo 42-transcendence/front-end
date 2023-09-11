@@ -55,14 +55,14 @@ export default function ChatLeftSideBar() {
     const [query, setQuery] = useState("");
     const categories = [
         {
-            name: "그룹",
-            Component: <RoomPanel rooms={chatJoinRoomList} query={query} />,
-        },
-        {
             name: "1:1",
             Component: (
                 <DirectRoomPanel rooms={chatDirectRoomList} query={query} />
             ),
+        },
+        {
+            name: "그룹",
+            Component: <RoomPanel rooms={chatJoinRoomList} query={query} />,
         },
         {
             name: "찾기",
