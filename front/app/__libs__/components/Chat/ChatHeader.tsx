@@ -3,10 +3,11 @@
 import { Icon } from "@components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
-import { useChatRoomTitle } from "@hooks/useChatRoom";
+import { useChatRoomTitle, useDirectRoomListAtom } from "@hooks/useChatRoom";
 import { useAtom } from "jotai";
 import { LeftSideBarIsOpenAtom } from "@atoms/ChatAtom";
 import { useEffect } from "react";
+import { isDirectChatKey } from "@akasha-utils/idb/chat-store";
 
 export function RightSideBarInput() {
     return (
@@ -105,6 +106,7 @@ function RightSidebarButton() {
 export function ChatHeader() {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentChatRoomTitle = useChatRoomTitle(currentChatRoomUUID);
+    const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
 
     const title = currentChatRoomTitle ?? "채팅방을 선택하세요";
     const desc = "채팅을 채팅채팅~"; // TODO: 이거 설정 가능하게 하나요?
@@ -115,7 +117,11 @@ export function ChatHeader() {
             <div className="overflow-hidden">
                 <label
                     htmlFor="headerDropDown"
-                    className="flex h-fit w-fit shrink-0 list-none flex-col justify-center rounded-md p-2 hover:bg-primary/30 active:bg-secondary/80"
+                    className={[
+                        "flex h-fit w-fit shrink-0 list-none flex-col justify-center rounded-md p-2",
+                        !currentChatRoomIsDirect &&
+                            "hover:bg-primary/30 active:bg-secondary/80",
+                    ].join(" ")}
                 >
                     <div className=" relative flex flex-col items-center justify-center px-4 py-0 text-base">
                         <h1 className="line-clamp-1 max-w-[16rem] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70 sm:max-w-full">
@@ -131,9 +137,11 @@ export function ChatHeader() {
                     className="peer hidden"
                     type="checkbox"
                 />
-                <ChatRoomMenu className="hidden peer-checked:flex" />
+                {!currentChatRoomIsDirect && (
+                    <ChatRoomMenu className="hidden peer-checked:flex" />
+                )}
             </div>
-            <RightSidebarButton />
+            {!currentChatRoomIsDirect && <RightSidebarButton />}
         </div>
     );
 }
