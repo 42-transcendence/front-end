@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef } from "react";
 import { Icon } from "@components/ImageLibrary";
 import { Dialog } from "@headlessui/react";
 import { useChatRoomTotalUnreadCount } from "@hooks/useChatRoom";

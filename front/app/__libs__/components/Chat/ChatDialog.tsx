@@ -310,6 +310,12 @@ export function ChatDialog() {
             </div>
         </div>
     ) : (
+        <NoChatRoomSelected />
+    );
+}
+
+function NoChatRoomSelected() {
+    return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4">
             <span className="text-4xl text-gray-50/80">
                 선택된 채팅창이 없습니다.
