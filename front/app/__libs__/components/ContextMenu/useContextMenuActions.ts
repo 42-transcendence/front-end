@@ -13,6 +13,7 @@ import {
     ChatModalOpenAtom,
     ChatTabIndexAtom,
     CurrentChatRoomUUIDAtom,
+    RightSideBarIsOpenAtom,
 } from "@atoms/ChatAtom";
 import { FriendModalIsOpen } from "@atoms/FriendAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
@@ -51,6 +52,9 @@ export function useContextMenuActions(
         store: GlobalStore,
     });
     const setFriendModalIsOpen = useSetAtom(FriendModalIsOpen, {
+        store: GlobalStore,
+    });
+    const setRightsideBarIsOpen = useSetAtom(RightSideBarIsOpenAtom, {
         store: GlobalStore,
     });
 
@@ -105,6 +109,7 @@ export function useContextMenuActions(
                 setCurrentPage("report");
             },
             ["directmessage"]: () => {
+                setRightsideBarIsOpen(false);
                 setFriendModalIsOpen(false);
                 setChatModalIsOpen(true);
                 setChatTabIndex(1);
