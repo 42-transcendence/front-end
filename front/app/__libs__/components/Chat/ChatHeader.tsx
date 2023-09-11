@@ -11,7 +11,7 @@ import {
     extractTargetFromDirectChatKey,
     isDirectChatKey,
 } from "@akasha-utils/idb/chat-store";
-import { usePrivateProfile, useProtectedProfile } from "@hooks/useProfile";
+import { useProtectedProfile } from "@hooks/useProfile";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
 
 export function RightSideBarInput() {

@@ -103,7 +103,6 @@ export function CreateNewRoom() {
                 setInviteChecked(false);
                 setCreateNewRoomChecked(false);
                 setSelectedAccountUUIDs([]);
-
                 setCurrentChatRoomUUID(chatId);
             }
         },

@@ -166,6 +166,8 @@ export function useContextMenuActions(
             setChatTabIndex,
             setCurrentChatRoomUUID,
             setCurrentPage,
+            setFriendModalIsOpen,
+            setRightsideBarIsOpen,
             targetAccountUUID,
         ],
     );

@@ -19,7 +19,10 @@ import {
     useChatRoomUnreadCount,
 } from "@hooks/useChatRoom";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
-import { makeDirectChatKey } from "@akasha-utils/idb/chat-store";
+import {
+    isDirectChatKey,
+    makeDirectChatKey,
+} from "@akasha-utils/idb/chat-store";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
 import { handleEnterRoomResult } from "@akasha-utils/chat-gateway-client";
@@ -105,6 +108,7 @@ export function ChatRoomBlock({
                         membersCount: chatRoom.members.length,
                         numberOfUnreadMessages: numberOfUnreadMessages,
                     }}
+                    chatRoomId={chatRoom.id}
                 >
                     {children}
                 </ChatRoomInfo>
@@ -146,6 +150,7 @@ export function ChatDirectRoomBlock({
             <div className="flex h-fit flex-row items-center gap-4 self-stretch">
                 <RoomBlockThumbnail accountUUID={chatRoom.targetAccountId} />
                 <ChatRoomInfo
+                    chatRoomId={roomUUID}
                     modeFlags={modeFlags}
                     lastMessageContent={lastMessageContent}
                     optionalInfo={{
@@ -244,6 +249,7 @@ export function ChatPublicRoomBlock({
                 {/*//FIXME: id 알 수가 없음.. .*/}
                 <RoomBlockThumbnail accountUUID={chatRoom.id} />
                 <ChatRoomInfo
+                    chatRoomId={chatRoom.id}
                     lastMessageContent={lastMessageContent}
                     modeFlags={modeFlags}
                     optionalInfo={{ membersCount: chatRoom.memberCount }}
@@ -256,11 +262,13 @@ export function ChatPublicRoomBlock({
 }
 
 function ChatRoomInfo({
+    chatRoomId,
     children,
     modeFlags,
     lastMessageContent,
     optionalInfo,
 }: React.PropsWithChildren<{
+    chatRoomId: string;
     modeFlags: number;
     lastMessageContent: string;
     optionalInfo: {
@@ -268,6 +276,7 @@ function ChatRoomInfo({
         numberOfUnreadMessages?: number | undefined;
     };
 }>) {
+    const isDMRoom = isDirectChatKey(chatRoomId);
     return (
         <div className="flex h-fit w-full gap-4 py-2">
             <div className="flex h-16 w-full flex-col p-0">
@@ -302,11 +311,13 @@ function ChatRoomInfo({
 
             <div className="relative flex flex-col items-end gap-4 text-xs leading-3">
                 <div className="flex shrink-0 flex-row gap-1">
-                    <Icon.Person
-                        width={12}
-                        height={12}
-                        className="text-gray-200/70"
-                    />
+                    {!isDMRoom && (
+                        <Icon.Person
+                            width={12}
+                            height={12}
+                            className="text-gray-200/70"
+                        />
+                    )}
                     {optionalInfo.membersCount !== undefined && (
                         <span className=" text-[12px] leading-3 text-gray-50/50">
                             {optionalInfo.membersCount}
