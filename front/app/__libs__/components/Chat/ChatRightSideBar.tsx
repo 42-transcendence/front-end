@@ -14,12 +14,16 @@ import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
 import { ByteBuffer } from "@akasha-lib";
-import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
-import { useChatRoomMembers } from "@hooks/useChatRoom";
+import {
+    useCurrentAccountUUID,
+    useCurrentChatRoomUUID,
+} from "@hooks/useCurrent";
+import { useChatMember, useChatRoomMembers } from "@hooks/useChatRoom";
 import { useFzf } from "react-fzf";
 import { handleInviteRoomResult } from "@akasha-utils/chat-gateway-client";
 import { ChatErrorNumber } from "@common/chat-payloads";
 import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
+import { RoleNumber } from "@common/generated/types";
 
 export type RightSideBarContents =
     | "report"
@@ -46,8 +50,11 @@ export default function ChatRightSideBar() {
         query,
     });
     const [inviteToggle, setInviteToggle] = useState(false);
-    // TODO: setAdmin logic
-    const [admin, setAdmin] = useState(true);
+    const currentId = useCurrentAccountUUID();
+    const currentUser = useChatMember(currentChatRoomUUID, currentId);
+    const roleLevel = Number(currentUser?.role ?? 0);
+    const adminRoleLevel: number = RoleNumber.MANAGER;
+
     const [currentPage, setCurrentPage] = useAtom(ChatRightSideBarCurrrentPage);
     const [memberListDropDown, setMemberListDropDown] = useState(false);
 
@@ -117,7 +124,7 @@ export default function ChatRightSideBar() {
                             htmlFor="memberListDropDown"
                             data-current-list={currentPage}
                             className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[current-list]:scale-105 data-[current-list]:bg-primary/80 data-[current-list]:text-white data-[current-list]:transition-all ${
-                                admin &&
+                                roleLevel >= adminRoleLevel &&
                                 "hover:bg-primary/30 hover:text-white active:bg-secondary/80"
                             }`}
                         >
@@ -125,7 +132,7 @@ export default function ChatRightSideBar() {
                                 {pageTitle(currentPage)}
                             </p>
                         </label>
-                        {admin && (
+                        {roleLevel >= adminRoleLevel && (
                             <div className="hidden flex-col items-center text-base font-bold text-gray-100/80 group-data-[checked=true]:flex">
                                 <MenuItem
                                     onClick={() => {

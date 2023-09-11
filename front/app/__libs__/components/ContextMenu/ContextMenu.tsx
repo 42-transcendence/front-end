@@ -238,15 +238,15 @@ function ContextMenuItem({
 }
 
 export function ContextMenu({ type }: { type: Scope }) {
-    const accountUUID = useAtomValue(TargetedAccountUUIDAtom);
-    const currentId = useCurrentAccountUUID();
-    const profile = useProtectedProfile(accountUUID);
+    const targetAccountUUID = useAtomValue(TargetedAccountUUIDAtom);
+    const profile = useProtectedProfile(targetAccountUUID);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const currentId = useCurrentAccountUUID();
     const currentUser = useChatMember(currentChatRoomUUID, currentId);
     const roleLevel = Number(currentUser?.role ?? 0);
 
     const relationship =
-        accountUUID === currentId
+        targetAccountUUID === currentId
             ? "myself"
             : profile !== undefined
             ? "friend"
@@ -298,7 +298,7 @@ export function ContextMenu({ type }: { type: Scope }) {
             // lookup 필요하게 nick + tag로 보내줄 필요 없음
             const lookup = false;
             buf.writeBoolean(lookup);
-            buf.writeUUID(accountUUID);
+            buf.writeUUID(targetAccountUUID);
 
             sendPayload(buf);
         },
@@ -317,7 +317,7 @@ export function ContextMenu({ type }: { type: Scope }) {
                 const buf = ByteBuffer.createWithOpcode(
                     ChatServerOpcode.ADD_ENEMY,
                 );
-                buf.writeUUID(accountUUID);
+                buf.writeUUID(targetAccountUUID);
                 sendPayload(buf);
             }
         },
@@ -331,25 +331,25 @@ export function ContextMenu({ type }: { type: Scope }) {
             setCurrentPage("newSendBan");
         },
         ["transfer"]: () => {
-            if (confirm("정말로 방을 양도하시겠습니까ㅏ?")) {
-                const targetAccountId = "asdf";
-                const buf = makeHandoverRoomOwnerRequest(
-                    currentChatRoomUUID,
-                    targetAccountId,
+            if (confirm("정말로 방을 양도하시겠습니까?")) {
+                sendPayload(
+                    makeHandoverRoomOwnerRequest(
+                        currentChatRoomUUID,
+                        targetAccountUUID,
+                    ),
                 );
-                sendPayload(buf);
             }
         },
         ["grant"]: () => {
             if (confirm("매니저 지정하시겠습니까?")) {
-                const targetAccountId = "asdf";
                 const targetRole = RoleNumber.MANAGER;
-                const buf = makeChangeMemberRoleRequest(
-                    currentChatRoomUUID,
-                    targetAccountId,
-                    targetRole,
+                sendPayload(
+                    makeChangeMemberRoleRequest(
+                        currentChatRoomUUID,
+                        targetAccountUUID,
+                        targetRole,
+                    ),
                 );
-                sendPayload(buf);
             }
         },
         ["deletefriend"]: () => {
@@ -361,7 +361,7 @@ export function ContextMenu({ type }: { type: Scope }) {
                 const buf = ByteBuffer.createWithOpcode(
                     ChatServerOpcode.DELETE_FRIEND,
                 );
-                buf.writeUUID(accountUUID);
+                buf.writeUUID(targetAccountUUID);
                 sendPayload(buf);
             }
         },

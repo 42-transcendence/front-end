@@ -153,7 +153,6 @@ export function SendBan({ accountUUID }: { accountUUID: string }) {
                 parseInt(expireDate as string),
             ),
         );
-        alert("채팅 금지 되었습니다.");
         setCurrentPage(undefined);
     };
 
