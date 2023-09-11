@@ -26,9 +26,6 @@ dependencies:
   autoprefixer:
     specifier: 10.4.15
     version: 10.4.15(postcss@8.4.28)
-  bcryptjs:
-    specifier: ^2.4.3
-    version: 2.4.3
   framer-motion:
     specifier: ^10.16.4
     version: 10.16.4(react-dom@18.2.0)(react@18.2.0)
@@ -73,12 +70,6 @@ devDependencies:
   '@swc-jotai/react-refresh':
     specifier: ^0.1.0
     version: 0.1.0
-  '@types/bcrypt':
-    specifier: ^5.0.0
-    version: 5.0.0
-  '@types/bcryptjs':
-    specifier: ^2.4.3
-    version: 2.4.3
   '@types/qrcode':
     specifier: ^1.5.2
     version: 1.5.2
@@ -1809,16 +1800,6 @@ packages:
     engines: {node: '>=10.13.0'}
     dev: true
 
-  /@types/bcrypt@5.0.0:
-    resolution: {integrity: sha512-agtcFKaruL8TmcvqbndlqHPSJgsolhf/qPWchFlgnW1gECTN/nKbFcoFnvKAQRFfKbh+BO6A3SWdJu9t+xF3Lw==}
-    dependencies:
-      '@types/node': 20.5.7
-    dev: true
-
-  /@types/bcryptjs@2.4.3:
-    resolution: {integrity: sha512-XTnH9E/rp51aKGsiMtQCHV/owDLW2E9QAxI7ItpWWm6Gi6XO1e4o3VuEYDma0lbitj1vNOBj05Qk8l2BYoiN4A==}
-    dev: true
-
   /@types/json-schema@7.0.12:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
     dev: true
@@ -2197,10 +2178,6 @@ packages:
 
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
-
-  /bcryptjs@2.4.3:
-    resolution: {integrity: sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ==}
-    dev: false
 
   /big-integer@1.6.51:
     resolution: {integrity: sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==}

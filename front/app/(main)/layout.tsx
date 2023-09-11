@@ -90,7 +90,7 @@ export default function MainLayout({
         );
     }
 
-    //TODO: 탈퇴 유예기간인 경우
+    //TODO: JKONG: 탈퇴 유예기간인 경우
     // if (auth?.auth_level === AuthLevel.UNREGISTERING) {
     //     return <DefaultLayout>{???}</DefaultLayout>
     // }

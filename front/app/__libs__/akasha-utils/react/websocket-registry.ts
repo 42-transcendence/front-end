@@ -132,7 +132,7 @@ export class WebSocketRegistry {
                 }
 
                 if (!ignore) {
-                    //TODO: 지수 백오프, AbortSignal
+                    //XXX: JKONG: 지수 백오프, AbortSignal
                     connect();
                 }
             });

@@ -601,7 +601,7 @@ export class ChatStore {
                                 // Prevent indirect exclusion checks from being invalidated by exceeding limit at the same timestamp.
                                 targetTimestamp.valueOf() !==
                                     message["timestamp"].valueOf())
-                            //TODO: 특수한 정지 표지 메시지로 fetch가 필요함을 나타내고, 표지가 관측될 때 서버로 요청을 보내면, lazy load를 만들 수 있을 것이다.
+                            //XXX: JKONG: 특수한 정지 표지 메시지로 fetch가 필요함을 나타내고, 표지가 관측될 때 서버로 요청을 보내면, lazy load를 만들 수 있을 것이다.
                         ) {
                             cursor.continue();
                             return;

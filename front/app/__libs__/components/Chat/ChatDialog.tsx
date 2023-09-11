@@ -216,7 +216,7 @@ export function ChatDialog() {
                 chatDialogRef.current.scrollHeight -
                     (chatDialogRef.current.lastElementChild
                         ?.previousElementSibling?.clientHeight ?? 0) -
-                    10; //TODO: 10은 매직넘버입니다.
+                    10; //XXX: 10은 매직넘버입니다.
             if (lastMessage.accountId === currentAccountUUID || isAtBottom) {
                 scrollToBottom();
             }

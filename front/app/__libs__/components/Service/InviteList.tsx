@@ -11,18 +11,28 @@ import type { FriendEntry } from "@common/chat-payloads";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 import { useChatRoomMembers } from "@hooks/useChatRoom";
 
-export function InviteList({ className, filterUnjoined }: { className?: string | undefined, filterUnjoined: boolean }) {
+export function InviteList({
+    className,
+    filterUnjoined,
+}: {
+    className?: string | undefined;
+    filterUnjoined: boolean;
+}) {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentChatMembers = useChatRoomMembers(currentChatRoomUUID);
     const [query, setQuery] = useState("");
     const friendEntrySet = useAtomValue(FriendEntryListAtom, {
         store: GlobalStore,
     });
-    const friendEntrySetUnjoinedOnly = friendEntrySet.filter(e => currentChatMembers !== undefined && !currentChatMembers.has(e.friendAccountId));
+    const friendEntrySetUnjoinedOnly = friendEntrySet.filter(
+        (e) =>
+            currentChatMembers !== undefined &&
+            !currentChatMembers.has(e.friendAccountId),
+    );
     const { results: foundFriendEntrySet } = useFzf({
         items: filterUnjoined ? friendEntrySetUnjoinedOnly : friendEntrySet,
         itemToString(item) {
-            //TODO: fetch...? Fzf 지우기가 먼저인가?
+            //TODO: JKONG: useProfiles로 가져와서 이름 띄워주기.
             return item.friendAccountId;
         },
         query,

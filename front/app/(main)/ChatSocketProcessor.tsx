@@ -307,7 +307,7 @@ export function ChatSocketProcessor() {
             case ChatClientOpcode.FRIEND_REQUEST: {
                 const targetUUID = buffer.readUUID();
                 setFriendRequestList([...friendRequestList, targetUUID]);
-                //TODO: 알림?
+                //TODO: JKONG: 알림?
                 break;
             }
 
@@ -494,13 +494,13 @@ export function ChatSocketProcessor() {
             }
 
             case ChatClientOpcode.KICK_NOTIFY: {
-                //FIXME: 구현
+                //FIXME: JKONG: 구현
                 const chatId = buffer.readUUID();
                 const ban = readChatBanSummary(buffer);
                 break;
             }
             case ChatClientOpcode.MUTE_NOTIFY: {
-                //FIXME: 구현
+                //FIXME: JKONG: 구현
                 const chatId = buffer.readUUID();
                 const ban = readChatBanSummary(buffer);
                 break;
@@ -547,7 +547,7 @@ export function ChatSocketProcessor() {
     return <></>;
 }
 
-//TODO: 이 함수가 왜 여기에 있나? ChatDialog에서 갖다 쓴다.
+//TODO: JKONG: 이 함수가 왜 여기에 있나? ChatDialog에서 갖다 쓴다.
 export function syncCursor(
     chatRoomList: ChatRoomEntry[],
     pair: ChatRoomChatMessagePairEntry,
