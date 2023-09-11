@@ -5,15 +5,21 @@ import { ChatRoomMenu } from "./ChatRoomMenu";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 import { useChatRoomTitle } from "@hooks/useChatRoom";
 import { useAtom } from "jotai";
-import { LeftSideBarIsOpenAtom } from "@atoms/ChatAtom";
+import { LeftSideBarIsOpenAtom, RightSideBarIsOpenAtom } from "@atoms/ChatAtom";
 import { useEffect } from "react";
 import { isDirectChatKey } from "@akasha-utils/idb/chat-store";
 
 export function RightSideBarInput() {
+    const [{ close }, setToOpen] = useAtom(RightSideBarIsOpenAtom);
+
     return (
         <input
-            className="peer/right hidden"
+            className="peer/right invisible absolute"
             type="radio"
+            onClick={() => {
+                setToOpen(false);
+            }}
+            checked={close}
             name="rightRadio"
             id="rightSideBarIcon"
             defaultChecked
@@ -81,10 +87,14 @@ function LeftSidebarButton() {
 }
 
 function RightSidebarButton() {
+    const [{ open }, setToOpen] = useAtom(RightSideBarIsOpenAtom);
+
     return (
         <>
             <input
                 className="peer/headerright hidden"
+                checked={open}
+                onClick={() => setToOpen(true)}
                 type="radio"
                 name="rightRadio"
                 id="rightHeaderIcon"
