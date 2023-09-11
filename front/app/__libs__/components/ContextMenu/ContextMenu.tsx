@@ -9,7 +9,7 @@ import {
     useCurrentAccountUUID,
     useCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
-import { useContextMenuActions } from "./useContextMenuActions.1";
+import { useContextMenuActions } from "./useContextMenuActions";
 
 export type Relationship = "myself" | "friend" | "stranger";
 
