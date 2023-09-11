@@ -39,7 +39,7 @@ export function FriendButton() {
                 className="relative flex h-fit w-fit rounded outline-none focus-visible:outline-primary/70"
             >
                 {MemberIcon}
-                {accountUUIDs.length !== 0 && <NotificationBadge />}
+                <NotificationBadge totalUnreadCount={accountUUIDs.length} />
             </button>
         </>
     );
