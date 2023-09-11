@@ -36,21 +36,25 @@ function ChatMessageInputArea() {
     const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
-    const { sendPayload } = useWebSocket("chat", ChatClientOpcode.SEND_MESSAGE_RESULT, (_, payload) => {
-        const [errno, chatId, bans] = handleSendMessageResult(payload);
-        if (chatId === currentChatRoomUUID) {
-            if (errno !== ChatErrorNumber.SUCCESS) {
-                if (bans !== undefined) {
-                    alert(
-                        "채팅을 금지당했습니다.\n" +
-                            prettifyBanSummaryEntries(bans),
-                    );
-                } else {
-                    handleChatError(errno);
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.SEND_MESSAGE_RESULT,
+        (_, payload) => {
+            const [errno, chatId, bans] = handleSendMessageResult(payload);
+            if (chatId === currentChatRoomUUID) {
+                if (errno !== ChatErrorNumber.SUCCESS) {
+                    if (bans !== undefined) {
+                        alert(
+                            "채팅을 금지당했습니다.\n" +
+                                prettifyBanSummaryEntries(bans),
+                        );
+                    } else {
+                        handleChatError(errno);
+                    }
                 }
             }
-        }
-    });
+        },
+    );
 
     const sendMessage = () => {
         if (value !== "") {
@@ -160,7 +164,6 @@ export function ChatDialog({
 }) {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const chatMessages = useChatRoomMessages(currentChatRoomUUID);
     const chatDialogRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -168,8 +171,10 @@ export function ChatDialog({
     const [, setChatRoomList] = useChatRoomListAtom();
     const [, setDirectRoomList] = useDirectRoomListAtom();
     const mutateChatRoom = useChatRoomMutation();
+    const [lastChatRoomUUID, setLastChatRoomUUID] = useState("");
     const [lastMessage, setLastMessage] = useState<MessageSchema>();
     useEffect(() => {
+        setLastChatRoomUUID(currentChatRoomUUID);
         if (chatMessages !== undefined && chatMessages.length > 0) {
             const newLastMessage = chatMessages[chatMessages.length - 1];
             setLastMessage((lastMessage) =>
@@ -177,48 +182,52 @@ export function ChatDialog({
                     ? newLastMessage
                     : lastMessage,
             );
+        } else {
+            setLastMessage(undefined);
         }
-    }, [chatMessages]);
+    }, [currentChatRoomUUID, chatMessages]);
     useEffect(() => {
-        if (lastMessage !== undefined && currentChatRoomUUID !== "") {
+        if (currentChatRoomUUID !== "") {
+            scrollToBottom();
+        }
+    }, [currentChatRoomUUID]);
+    useEffect(() => {
+        if (lastMessage !== undefined && lastChatRoomUUID !== "") {
             if (lastMessage.accountId === currentAccountUUID) {
                 scrollToBottom();
             }
 
+            const lastChatRoomIsDirect = isDirectChatKey(lastChatRoomUUID);
             let buf: ByteBuffer;
-            if (currentChatRoomIsDirect) {
+            if (lastChatRoomIsDirect) {
                 setDirectRoomList((directRoomList) =>
                     syncDirectCursor(directRoomList, {
                         chatId: extractTargetFromDirectChatKey(
-                            currentChatRoomUUID,
+                            lastChatRoomUUID,
                         ),
                         messageId: lastMessage.id,
                     }),
                 );
                 buf = builder.makeSyncCursorDirect(
-                    extractTargetFromDirectChatKey(currentChatRoomUUID),
+                    extractTargetFromDirectChatKey(lastChatRoomUUID),
                     lastMessage.id,
                 );
             } else {
                 setChatRoomList((chatRoomList) =>
                     syncCursor(chatRoomList, {
-                        chatId: currentChatRoomUUID,
+                        chatId: lastChatRoomUUID,
                         messageId: lastMessage.id,
                     }),
                 );
-                buf = builder.makeSyncCursor(
-                    currentChatRoomUUID,
-                    lastMessage.id,
-                );
+                buf = builder.makeSyncCursor(lastChatRoomUUID, lastMessage.id);
             }
 
             sendPayload(buf);
-            mutateChatRoom(currentChatRoomUUID);
+            mutateChatRoom(lastChatRoomUUID);
         }
     }, [
         currentAccountUUID,
-        currentChatRoomIsDirect,
-        currentChatRoomUUID,
+        lastChatRoomUUID,
         lastMessage,
         mutateChatRoom,
         sendPayload,
@@ -230,7 +239,10 @@ export function ChatDialog({
         if (messagesEndRef.current === null) {
             throw new Error();
         }
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current.scrollIntoView({
+            block: "end",
+            behavior: "smooth",
+        });
     };
 
     return currentChatRoomUUID !== "" ? (
