@@ -93,13 +93,11 @@ export function ChatRoomBlock({
             onClick={handleClick}
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
         >
-            {/* chatrooms - image */}
             <div className="flex h-fit flex-row items-center gap-4 self-stretch">
                 <RoomBlockThumbnail
                     accountUUID={chatRoom.members[0].accountId}
                 />
 
-                {/* chatrooms - info */}
                 <ChatRoomInfo
                     lastMessageContent={lastMessageContent}
                     modeFlags={modeFlags}
@@ -145,11 +143,8 @@ export function ChatDirectRoomBlock({
             onClick={handleClick}
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
         >
-            {/* chatrooms - image */}
             <div className="flex h-fit flex-row items-center gap-4 self-stretch">
                 <RoomBlockThumbnail accountUUID={chatRoom.targetAccountId} />
-
-                {/* chatrooms - info */}
                 <ChatRoomInfo
                     modeFlags={modeFlags}
                     lastMessageContent={lastMessageContent}
@@ -201,13 +196,12 @@ export function ChatPublicRoomBlock({
         },
     );
 
-    //FIXME: 이미 들어간 방 표시
     const isAlreadyChatPublicRoomMember =
         chatRoomList.find((e) => e.id === chatRoom.id) !== undefined;
 
     const lastMessageContent = isAlreadyChatPublicRoomMember
-        ? ""
-        : "새로운 채팅방!!"; //latestMessage?.content ?? "채팅을 시작해보세요!";
+        ? "참여중인 채팅방입니다"
+        : "새로운 채팅에 참여해 보세요!";
 
     const sendEnterRoomRequestAsync = useCallback(async () => {
         if (confirm(`${chatRoom.title} 에 입장하시겠습니까?`)) {
@@ -246,7 +240,6 @@ export function ChatPublicRoomBlock({
             onClick={handleClick}
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
         >
-            {/* chatrooms - image */}
             <div className="flex h-fit flex-row items-center gap-4 self-stretch">
                 {/*//FIXME: id 알 수가 없음.. .*/}
                 <RoomBlockThumbnail accountUUID={chatRoom.id} />
