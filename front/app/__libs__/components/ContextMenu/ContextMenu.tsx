@@ -23,7 +23,10 @@ import {
 } from "@hooks/useCurrent";
 import {
     makeActiveStatusManualRequest,
+    makeAddEnemyRequest,
+    makeAddFriendRequest,
     makeChangeMemberRoleRequest,
+    makeDeleteFriendRequest,
     makeHandoverRoomOwnerRequest,
     makeModifyFriendRequest,
 } from "@akasha-utils/chat-payload-builder-client";
@@ -214,6 +217,7 @@ function ContextMenuItem({
         <>
             <button
                 type="button"
+                // TODO: onClick 어떻게 하지...?
                 onClick={() => setOpen(!open)}
                 ref={ref}
                 disabled={disabled}
@@ -291,16 +295,7 @@ export function ContextMenu({ type }: { type: Scope }) {
         },
         ["addfriend"]: () => {
             // TODO: true: add friend by nick + tag, false: by id
-            const buf = ByteBuffer.createWithOpcode(
-                ChatServerOpcode.ADD_FRIEND,
-            );
-
-            // 어차피 해당 컴포넌트 내에서 TargetedAccountUUIDAtom 있으므로
-            // lookup 필요하게 nick + tag로 보내줄 필요 없음
-            const lookup = false;
-            buf.writeBoolean(lookup);
-            buf.writeUUID(targetAccountUUID);
-
+            const buf = makeAddFriendRequest(targetAccountUUID, "", 0b11111111);
             sendPayload(buf);
         },
         // ["editmyprofile"]: () => {
@@ -315,10 +310,8 @@ export function ContextMenu({ type }: { type: Scope }) {
         },
         ["addenemy"]: () => {
             if (confirm(`진짜로 정말로 [${nickName}]님을 차단하실건가요...?`)) {
-                const buf = ByteBuffer.createWithOpcode(
-                    ChatServerOpcode.ADD_ENEMY,
-                );
-                buf.writeUUID(targetAccountUUID);
+                const reason = prompt("왜요...?") ?? "그냥";
+                const buf = makeAddEnemyRequest(targetAccountUUID, reason);
                 sendPayload(buf);
             }
         },
@@ -359,10 +352,7 @@ export function ContextMenu({ type }: { type: Scope }) {
                     `진짜로 정말로 [${nickName}]님을 친구 목록에서 삭제하실건가요...?`,
                 )
             ) {
-                const buf = ByteBuffer.createWithOpcode(
-                    ChatServerOpcode.DELETE_FRIEND,
-                );
-                buf.writeUUID(targetAccountUUID);
+                const buf = makeDeleteFriendRequest(targetAccountUUID);
                 sendPayload(buf);
             }
         },
