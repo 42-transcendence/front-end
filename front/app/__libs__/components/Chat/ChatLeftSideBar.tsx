@@ -195,7 +195,7 @@ export default function ChatLeftSideBar() {
                         />
                         <Tab.Panels className="h-full w-full overflow-auto p-1">
                             {categories.map((category, idx) => (
-                                <Tab.Panel key={idx}>
+                                <Tab.Panel tabIndex={-1} key={idx}>
                                     {category.Component}
                                 </Tab.Panel>
                             ))}
