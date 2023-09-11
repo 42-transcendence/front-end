@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
 import { TextField } from "@components/TextField";
 import { ProfileItem } from "@components/ProfileItem";
@@ -12,8 +12,7 @@ import { AccessBan, ReportUser, SendBan } from "./NewBan";
 import { Provider, useAtom } from "jotai";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
-import { ByteBuffer } from "@akasha-lib";
+import { ChatClientOpcode } from "@common/chat-opcodes";
 import {
     useCurrentAccountUUID,
     useCurrentChatRoomUUID,

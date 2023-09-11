@@ -34,13 +34,14 @@ import { makePublicRoomListRequest } from "@akasha-utils/chat-payload-builder-cl
 import { AnimatePresence, motion } from "framer-motion";
 import { usePublicProfiles } from "@hooks/useProfile";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
-import { NULL_UUID } from "../../akasha-lib/library/uuid";
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
 export default function ChatLeftSideBar() {
+    const [selectedIndex, setSelectedIndex] = useAtom(ChatTabIndexAtom);
+    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.PUBLIC_ROOM_LIST,
@@ -51,7 +52,7 @@ export default function ChatLeftSideBar() {
     );
     useEffect(() => {
         sendPayload(makePublicRoomListRequest());
-    }, [sendPayload]);
+    }, [sendPayload, selectedIndex, currentChatRoomUUID]);
     const chatJoinRoomList = useAtomValue(ChatRoomListAtom);
     const chatDirectRoomList = useAtomValue(DirectRoomListAtom);
     const [chatPublicRoomList, setChatPublicRoomList] = useState(
@@ -76,7 +77,6 @@ export default function ChatLeftSideBar() {
             ),
         },
     ];
-    const [selectedIndex, setSelectedIndex] = useAtom(ChatTabIndexAtom);
     const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
         CreateNewRoomCheckedAtom,
     );
@@ -93,7 +93,6 @@ export default function ChatLeftSideBar() {
         },
         [],
     );
-    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
     const setSelectedAccountID = useSetAtom(SelectedAccountUUIDsAtom);
     useEffect(() => {
         setSelectedAccountID([]);
