@@ -6,7 +6,7 @@ import { TextField } from "@components/TextField";
 import { ProfileItem } from "@components/ProfileItem";
 import { InviteList } from "@components/Service/InviteList";
 import { ButtonOnRight } from "../Button/ButtonOnRight";
-import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
+import { ChatBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
 import { AccessBan, ReportUser, SendBan } from "./NewBan";
 import { Provider, useAtom } from "jotai";
@@ -23,7 +23,7 @@ import { useFzf } from "react-fzf";
 import { handleInviteRoomResult } from "@akasha-utils/chat-gateway-client";
 import { ChatErrorNumber } from "@common/chat-payloads";
 import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
-import { RoleNumber } from "@common/generated/types";
+import { BanCategoryNumber, RoleNumber } from "@common/generated/types";
 import { handleChatError } from "./handleChatError";
 
 export type RightSideBarContents =
@@ -89,9 +89,13 @@ export default function ChatRightSideBar() {
         ({ currentPage }: { currentPage: RightSideBarContents }) => {
             switch (currentPage) {
                 case "accessBanMemberList":
-                    return <ChatAccessBanList />;
+                    return (
+                        <ChatBanList banCategory={BanCategoryNumber.ACCESS} />
+                    );
                 case "sendBanMemberList":
-                    return <ChatCommitBanList />;
+                    return (
+                        <ChatBanList banCategory={BanCategoryNumber.COMMIT} />
+                    );
                 case "newAccessBan":
                     return <AccessBan accountUUID={selectedUUID ?? ""} />;
                 case "newSendBan":
