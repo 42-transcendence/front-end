@@ -24,7 +24,10 @@ import { MessageTypeNumber } from "@common/generated/types";
 import * as builder from "@akasha-utils/chat-payload-builder-client";
 import { syncCursor, syncDirectCursor } from "@/app/(main)/ChatSocketProcessor";
 import { ChatClientOpcode } from "@common/chat-opcodes";
-import { handleSendMessageResult } from "@akasha-utils/chat-gateway-client";
+import {
+    handleSendDirectResult,
+    handleSendMessageResult,
+} from "@akasha-utils/chat-gateway-client";
 import { ChatErrorNumber } from "@common/chat-payloads";
 import { prettifyBanSummaryEntries } from "./ChatRoomBlock";
 import { handleChatError } from "./handleChatError";
@@ -38,19 +41,36 @@ function ChatMessageInputArea() {
     const [value, setValue] = useState("");
     const { sendPayload } = useWebSocket(
         "chat",
-        ChatClientOpcode.SEND_MESSAGE_RESULT,
-        (_, payload) => {
-            const [errno, chatId, bans] = handleSendMessageResult(payload);
-            if (chatId === currentChatRoomUUID) {
-                if (errno !== ChatErrorNumber.SUCCESS) {
-                    if (bans !== undefined) {
-                        alert(
-                            "채팅을 금지당했습니다.\n" +
-                                prettifyBanSummaryEntries(bans),
-                        );
-                    } else {
+        [
+            ChatClientOpcode.SEND_MESSAGE_RESULT,
+            ChatClientOpcode.SEND_DIRECT_RESULT,
+        ],
+        (opcode, payload) => {
+            switch (opcode) {
+                case ChatClientOpcode.SEND_MESSAGE_RESULT: {
+                    const [errno, chatId, bans] =
+                        handleSendMessageResult(payload);
+                    if (chatId === currentChatRoomUUID) {
+                        if (errno !== ChatErrorNumber.SUCCESS) {
+                            if (bans !== undefined) {
+                                alert(
+                                    "채팅을 금지당했습니다.\n" +
+                                        prettifyBanSummaryEntries(bans),
+                                );
+                            } else {
+                                handleChatError(errno);
+                            }
+                        }
+                    }
+                    break;
+                }
+                case ChatClientOpcode.SEND_DIRECT_RESULT: {
+                    const [errno, targetAccountId] =
+                        handleSendDirectResult(payload);
+                    if (errno !== ChatErrorNumber.SUCCESS) {
                         handleChatError(errno);
                     }
+                    break;
                 }
             }
         },
@@ -202,7 +222,8 @@ export function ChatDialog({
                     chatDialogRef.current.clientHeight >=
                 chatDialogRef.current.scrollHeight -
                     (chatDialogRef.current.lastElementChild
-                        ?.previousElementSibling?.clientHeight ?? 0) - 10; //TODO: 10은 매직넘버입니다.
+                        ?.previousElementSibling?.clientHeight ?? 0) -
+                    10; //TODO: 10은 매직넘버입니다.
             if (lastMessage.accountId === currentAccountUUID || isAtBottom) {
                 scrollToBottom();
             }
