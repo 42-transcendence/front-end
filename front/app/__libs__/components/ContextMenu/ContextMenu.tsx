@@ -8,6 +8,7 @@ import { useProtectedProfile } from "@hooks/useProfile";
 import { useEffect, useRef, useState } from "react";
 import {
     ActiveStatus,
+    ActiveStatusNumber,
     RoleNumber,
     getActiveStatusNumber,
 } from "@common/generated/types";
@@ -21,6 +22,7 @@ import {
     useCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
 import {
+    makeActiveStatusManualRequest,
     makeChangeMemberRoleRequest,
     makeHandoverRoomOwnerRequest,
     makeModifyFriendRequest,
@@ -281,11 +283,10 @@ export function ContextMenu({ type }: { type: Scope }) {
         },
         ["changeactivestatus"]: () => {
             // TODO: 입력으로 받기
-            const newActiveStatus = ActiveStatus.ONLINE;
-            const buf = ByteBuffer.createWithOpcode(
-                ChatServerOpcode.ACTIVE_STATUS_MANUAL,
+            const newActiveStatus = ActiveStatus.INVISIBLE;
+            const buf = makeActiveStatusManualRequest(
+                getActiveStatusNumber(newActiveStatus),
             );
-            buf.write1(getActiveStatusNumber(newActiveStatus));
             sendPayload(buf);
         },
         ["addfriend"]: () => {
