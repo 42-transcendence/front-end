@@ -3,7 +3,7 @@
 import { Icon } from "@components/ImageLibrary";
 import { ChatRoomMenu } from "./ChatRoomMenu";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
-import { useChatRoomTitle, useDirectRoomListAtom } from "@hooks/useChatRoom";
+import { useChatRoomTitle } from "@hooks/useChatRoom";
 import { useAtom } from "jotai";
 import { LeftSideBarIsOpenAtom } from "@atoms/ChatAtom";
 import { useEffect } from "react";

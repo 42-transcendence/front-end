@@ -45,7 +45,7 @@ export function handleChatError(errno: ChatErrorNumber) {
             message = "알 수 없는 오류로 실패했습니다.";
             break;
         case ChatErrorNumber.ERROR_ACCOUNT_BAN:
-            message = "당신은 아무튼 할 수 없습니다";
+            message = "정지된 계정입니다";
             break;
         default:
             break;
