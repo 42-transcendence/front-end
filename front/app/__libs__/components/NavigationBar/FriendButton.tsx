@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Icon } from "../ImageLibrary";
 import { FriendModal } from "../FriendModal/FriendModal";
 import { useAtom, useAtomValue } from "jotai";
