@@ -2,6 +2,7 @@ import { Avatar } from "@components/Avatar";
 import { Icon } from "@components/ImageLibrary";
 import { usePublicProfile } from "@hooks/useProfile";
 import { useId } from "react";
+import { NickBlock } from "./ProfileItem";
 
 export function ProfileItemSelectable({
     className,
@@ -16,10 +17,6 @@ export function ProfileItemSelectable({
 }) {
     const profile = usePublicProfile(accountUUID);
     const profileItemId = useId();
-    const nick =
-        profile !== undefined
-            ? `${profile.nickName}#${profile.nickTag}` // TODO: nickTag 는 약간 색깔 다르게?
-            : "불러오는 중...";
 
     // TODO: div를 label로 바꾸고 useId 섰는데, 추후확인 필요
     return (
@@ -40,7 +37,7 @@ export function ProfileItemSelectable({
                     </div>
                     <div className="w-full overflow-hidden">
                         <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-[150%] group-hover/profile:overflow-visible group-hover/profile:delay-300 group-hover/profile:duration-[5000ms]">
-                            {nick}
+                            <NickBlock profile={profile} />
                         </div>
                     </div>
                     <input
