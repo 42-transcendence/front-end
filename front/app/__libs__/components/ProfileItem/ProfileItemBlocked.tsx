@@ -1,5 +1,5 @@
 import { handleUnbanMemberResult } from "@akasha-utils/chat-gateway-client";
-import { makeUnbanMemberRequest } from "@akasha-utils/chat-payload-builder-client";
+import { makeBanListRequest, makeUnbanMemberRequest } from "@akasha-utils/chat-payload-builder-client";
 import { ChatErrorNumber } from "@common/chat-payloads";
 import type { ChatBanDetailEntry } from "@common/chat-payloads";
 import { Avatar } from "@components/Avatar";
@@ -8,6 +8,7 @@ import { NickBlock } from "./ProfileItem";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
 import { handleChatError } from "@components/Chat/handleChatError";
+import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 
 export function ProfileItemBlocked({
     className,
@@ -21,6 +22,7 @@ export function ProfileItemBlocked({
     onClick: React.MouseEventHandler;
 }>) {
     const profile = usePublicProfile(entry.accountId);
+    const currentChatRoomId = useCurrentChatRoomUUID();
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.UNBAN_MEMBER_RESULT,
@@ -28,9 +30,11 @@ export function ProfileItemBlocked({
             const [errno] = handleUnbanMemberResult(buf);
             if (errno === ChatErrorNumber.SUCCESS) {
                 alert("차단을 해제했습니다.");
+                return makeBanListRequest(currentChatRoomId);
             } else {
                 handleChatError(errno);
             }
+            return undefined;
         },
     );
 
