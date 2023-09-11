@@ -19,7 +19,12 @@ export default function Welcome() {
             <Card>
                 <div className="flex w-fit flex-col items-center gap-8">
                     <DoubleSharp width="24" height="24" />
-                    <p>사용할 닉네임을 입력해주세요.</p>
+                    {/* FIXME: css */}
+                    <p className="text-center">
+                        사용할 닉네임을 입력해주세요.
+                        <br />
+                        한글, 영어 대소문자, 숫자 사용 가능. 2 ~ 8 글자
+                    </p>
                 </div>
                 <form
                     onSubmit={() => void register(value)}
@@ -44,7 +49,7 @@ export default function Welcome() {
                         )}
                         {conflict && (
                             <span className="p-2 text-sm text-red-500/90">
-                                더이상 사용할 수 없는 닉네임입니다. 다른
+                                더 이상 사용할 수 없는 닉네임입니다. 다른
                                 닉네임을 입력해주세요.
                             </span>
                         )}
