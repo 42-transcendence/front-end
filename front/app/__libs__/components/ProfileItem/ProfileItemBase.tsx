@@ -24,12 +24,12 @@ export function ProfileItemBase({
                         />
                     </div>
                     <div className="relative flex w-fit flex-row items-center justify-center gap-3">
-                        <p className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
+                        <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
                             {profile?.nickName}
-                        </p>
-                        <p className="relative w-fit whitespace-nowrap font-sans text-xs font-normal leading-none tracking-normal text-gray-300/60">
+                        </span>
+                        <span className="relative w-fit whitespace-nowrap font-sans text-xs font-normal leading-none tracking-normal text-gray-300/60">
                             #{profile?.nickTag}
-                        </p>
+                        </span>
                     </div>
                 </div>
             </div>
