@@ -14,6 +14,7 @@ import {
     ChatRoomListAtom,
     ChatTabIndexAtom,
     CreateNewRoomCheckedAtom,
+    CurrentChatRoomUUIDAtom,
     DirectRoomListAtom,
     LeftSideBarIsOpenAtom,
 } from "@atoms/ChatAtom";
@@ -32,6 +33,8 @@ import { handlePublicRoomList } from "@akasha-utils/chat-gateway-client";
 import { makePublicRoomListRequest } from "@akasha-utils/chat-payload-builder-client";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePublicProfiles } from "@hooks/useProfile";
+import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
+import { NULL_UUID } from "../../akasha-lib/library/uuid";
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
@@ -90,6 +93,11 @@ export default function ChatLeftSideBar() {
         },
         [],
     );
+    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
+    const setSelectedAccountID = useSetAtom(SelectedAccountUUIDsAtom);
+    useEffect(() => {
+        setSelectedAccountID([]);
+    }, [setSelectedAccountID, currentChatRoomUUID]);
 
     return (
         <ChatLeftSideBarLayout>
