@@ -16,7 +16,9 @@ export function useRegisterNickName() {
         },
         [mutate],
     );
-    const result = useSWRMutation("/profile/private/nick", callback);
+    const result = useSWRMutation("/profile/private/nick", callback, {
+        throwOnError: false,
+    });
     const error = result.error !== undefined;
     const conflict =
         result.error instanceof HTTPError &&
