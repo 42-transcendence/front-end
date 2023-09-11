@@ -32,7 +32,7 @@ export function useChatRoomMenuActions(currentChatRoomUUID: string) {
         (opcode, buf) => {
             switch (opcode) {
                 case ChatClientOpcode.CHANGE_ROOM_PROPERTY_RESULT: {
-                    const [errno, chatId] = handleChangeRoomPropertyResult(buf);
+                    const [errno] = handleChangeRoomPropertyResult(buf);
                     if (errno !== ChatErrorNumber.SUCCESS) {
                         handleChatError(errno);
                     } else {
@@ -41,7 +41,7 @@ export function useChatRoomMenuActions(currentChatRoomUUID: string) {
                     break;
                 }
                 case ChatClientOpcode.LEAVE_ROOM_RESULT: {
-                    const [errno, chatId] = handleLeaveRoomResult(buf);
+                    const [errno] = handleLeaveRoomResult(buf);
                     if (errno !== ChatErrorNumber.SUCCESS) {
                         handleChatError(errno);
                     } else {
@@ -50,7 +50,7 @@ export function useChatRoomMenuActions(currentChatRoomUUID: string) {
                     break;
                 }
                 case ChatClientOpcode.DESTROY_ROOM_RESULT: {
-                    const [errno, chatId] = handleDestroyRoomResult(buf);
+                    const [errno] = handleDestroyRoomResult(buf);
                     if (errno !== ChatErrorNumber.SUCCESS) {
                         handleChatError(errno);
                     } else {

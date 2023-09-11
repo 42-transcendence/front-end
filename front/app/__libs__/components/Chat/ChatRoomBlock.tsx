@@ -364,7 +364,7 @@ export function ChatPublicRoomBlock({
                                 height={12}
                                 className="text-gray-200/70"
                             />
-                            <span className=" text-[12px] leading-3 text-gray-50/50">
+                            <span className="text-[12px] leading-3 text-gray-50/50">
                                 {chatRoom.memberCount}
                             </span>
                         </div>

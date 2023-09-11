@@ -15,8 +15,6 @@ export function ChatBubbleWithProfile({
     isLastContinuedMessage: boolean;
     dir: "left" | "right";
 }) {
-    //TODO: apply direction
-    //TODO: hide username, tail, profile when message is continued
     const profile = usePublicProfile(chatMessage.accountId);
 
     const hidden = dir === "right" || isContinued ? "hidden" : "";
@@ -26,7 +24,6 @@ export function ChatBubbleWithProfile({
                 isContinued ? "pt-0" : "pt-8"
             }`}
         >
-            {/* TODO: get avatar from sender info */}
             <Avatar
                 className={`${hidden} absolute left-0 top-0 h-12 w-12`}
                 accountUUID={chatMessage.accountId}

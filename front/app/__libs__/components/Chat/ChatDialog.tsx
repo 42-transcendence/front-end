@@ -65,8 +65,7 @@ function ChatMessageInputArea() {
                     break;
                 }
                 case ChatClientOpcode.SEND_DIRECT_RESULT: {
-                    const [errno, targetAccountId] =
-                        handleSendDirectResult(payload);
+                    const [errno] = handleSendDirectResult(payload);
                     if (errno !== ChatErrorNumber.SUCCESS) {
                         handleChatError(errno);
                     }
