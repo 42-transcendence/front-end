@@ -119,7 +119,7 @@ export default function ChatRightSideBar() {
 
     return (
         <div className="absolute right-0 top-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-hidden rounded-[0px_28px_28px_0px] bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px] 2xl:bg-black/30">
-            <div className="flex h-full w-full shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:py-4">
+            <div className="flex h-full w-[310px] shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:py-4">
                 <div className="flex h-fit shrink-0 flex-row items-start justify-between gap-2 self-stretch py-2 ">
                     <label htmlFor="rightSideBarIcon">
                         <Icon.MembersFilled
