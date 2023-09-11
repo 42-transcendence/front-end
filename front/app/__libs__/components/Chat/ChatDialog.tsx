@@ -175,13 +175,7 @@ const isLastContinuedMessage = (arr: MessageSchema[], idx: number) => {
     );
 };
 
-export function ChatDialog({
-    outerFrame,
-    innerFrame,
-}: {
-    outerFrame: string;
-    innerFrame: string;
-}) {
+export function ChatDialog() {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const chatMessages = useChatRoomMessages(currentChatRoomUUID);
@@ -277,12 +271,8 @@ export function ChatDialog({
     };
 
     return currentChatRoomUUID !== "" ? (
-        <div
-            className={`${outerFrame} flex h-full shrink items-start justify-end gap-4 overflow-auto`}
-        >
-            <div
-                className={`${innerFrame} flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4`}
-            >
+        <div className="flex h-full w-full shrink items-start justify-end gap-4 overflow-auto">
+            <div className="flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4 2xl:rounded-lg">
                 <div
                     ref={chatDialogRef}
                     className="flex flex-col gap-1 self-stretch overflow-auto"

@@ -2,7 +2,6 @@ import { GameChipProfile } from "@components/Game/GameUserProfile";
 import CharacterSelector from "@components/Game/GameCharacterSelector";
 import GameStartButton from "@components/Game/GameStartButton";
 import Link from "next/link";
-import { ChatDialog } from "@components/Chat/ChatDialog";
 
 function InvalidGameIdPage() {
     return (
@@ -74,10 +73,6 @@ function GameWaitingPage() {
                     {/* game main bar - for operation */}
                     <div className="relative flex flex-col items-center justify-center gap-10 self-stretch lg:flex-row">
                         {/* TODO: selectable chatting room / if selected, shurink other one (chat / character select)*/}
-                        <ChatDialog
-                            outerFrame="rounded-[32px] min-h-[200px]"
-                            innerFrame="max-w-[600px]"
-                        />
                         <CharacterSelector />
                         <GameStartButton />
                     </div>
