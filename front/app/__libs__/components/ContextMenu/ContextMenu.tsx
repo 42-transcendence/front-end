@@ -40,7 +40,7 @@ type ProfileMenu = {
     relation: Relationship[];
     isImportant: boolean;
     minRoleLevel?: number | undefined;
-    scope: Scope | Scope[] | undefined;
+    scope?: Scope | Scope[] | undefined;
     className: string;
     UI?: React.ReactNode | undefined;
 };
@@ -263,7 +263,7 @@ export function ContextMenu({ type }: { type: Scope }) {
                         menu.scope !== undefined &&
                         !menu.scope.includes(type)
                     ) {
-                        return;
+                        return false;
                     }
                     return (
                         roleLevel >= (menu.minRoleLevel ?? 0) &&

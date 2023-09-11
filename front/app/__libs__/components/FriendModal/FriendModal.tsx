@@ -7,61 +7,57 @@ import { Icon } from "../ImageLibrary";
 import { Provider, createStore, useAtomValue } from "jotai";
 import { FriendEntryListAtom, FriendRequestListAtom } from "@atoms/FriendAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { ByteBuffer } from "@akasha-lib";
-import { ChatServerOpcode } from "@common/chat-opcodes";
 import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
 import { usePublicProfile } from "@hooks/useProfile";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { NICK_NAME_REGEX } from "@common/profile-constants";
+import {
+    makeAddFriendRequest,
+    makeDeleteFriendRequest,
+} from "@akasha-utils/chat-payload-builder-client";
 
 export function FriendModal() {
     //TODO: fetch profile datas
     const { sendPayload } = useWebSocket("chat", []);
+    const sendFriendRequest = () => {
+        const nickName = prompt("닉네임?을 입력하시오?");
+        if (nickName === null) {
+            return;
+        }
+        if (!NICK_NAME_REGEX.test(nickName)) {
+            alert("올바른 이름을 입력하십시오.");
+            return;
+        }
+        const nickTagStr = prompt("태그?를 입력하시오?");
+        if (nickTagStr === null) {
+            return;
+        }
+        const nickTag = Number(nickTagStr);
+        if (Number.isNaN(nickTag)) {
+            alert("올바른 태그를 입력하십시오.");
+            return;
+        }
+
+        const buf = makeAddFriendRequest(
+            { nickName: nickName, nickTag: nickTag },
+            "",
+            0b11111111,
+        );
+        sendPayload(buf);
+    };
 
     return (
         <GlassWindow>
             <div className="w-full overflow-clip rounded-[28px] ">
-                <InviteList />
+                <FriendRequestList />
                 <FriendList />
-                <div
-                    className={
-                        "relative flex h-fit w-full shrink-0 flex-col items-start"
-                    }
-                >
+                <div className="relative flex h-fit w-full shrink-0 flex-col items-start">
                     <div
                         className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 text-gray-300 hover:bg-primary/30"
-                        onClick={() => {
-                            const nickName = prompt("닉네임?을 입력하시오?");
-                            if (nickName === null) {
-                                return;
-                            }
-                            if (!NICK_NAME_REGEX.test(nickName)) {
-                                alert("올바른 이름을 입력하십시오.");
-                                return;
-                            }
-                            const nickTagStr = prompt("태그?를 입력하시오?");
-                            if (nickTagStr === null) {
-                                return;
-                            }
-                            const nickTag = Number(nickTagStr);
-                            if (Number.isNaN(nickTag)) {
-                                alert("올바른 태그를 입력하십시오.");
-                                return;
-                            }
-
-                            const buf = ByteBuffer.createWithOpcode(
-                                ChatServerOpcode.ADD_FRIEND,
-                            );
-                            buf.writeBoolean(true);
-                            buf.writeString(nickName);
-                            buf.write4Unsigned(nickTag);
-                            buf.writeString("기본 그룹"); //TODO: 으악
-                            buf.write1(0b111); //TODO: activeFlags
-                            sendPayload(buf);
-                        }}
+                        onClick={sendFriendRequest}
                     >
                         <Icon.Plus />
-                        <p className="text-normal text-xs">친구 추가하기?</p>
+                        <p className="text-normal text-xs">친구 추가하기</p>
                     </div>
                 </div>
             </div>
@@ -90,16 +86,18 @@ function FriendList() {
     ));
 }
 
-// TODO: @/components/Service/InviteList 와 이름 겹침
-function InviteList() {
+function FriendRequestList() {
     const friendRequestUUIDs = useAtomValue(FriendRequestListAtom);
 
     return (
         friendRequestUUIDs.length !== 0 && (
             <div className="flex flex-col gap-2 py-2">
-                <InviteHeader />
+                <FriendRequestListHeader />
                 {friendRequestUUIDs.map((accountUUID) => (
-                    <InviteItem key={accountUUID} accountUUID={accountUUID} />
+                    <FriendRequestItem
+                        key={accountUUID}
+                        accountUUID={accountUUID}
+                    />
                 ))}
                 <div className="mx-4 h-[1px] bg-white/30" />
             </div>
@@ -107,7 +105,7 @@ function InviteList() {
     );
 }
 
-function InviteItem({ accountUUID }: { accountUUID: string }) {
+function FriendRequestItem({ accountUUID }: { accountUUID: string }) {
     const store = createStore();
     store.set(TargetedAccountUUIDAtom, accountUUID);
 
@@ -139,14 +137,9 @@ function InviteItem({ accountUUID }: { accountUUID: string }) {
                 <div className="flex gap-2 px-4">
                     <button
                         onClick={() => {
-                            const response = ByteBuffer.createWithOpcode(
-                                ChatServerOpcode.ADD_FRIEND,
+                            sendPayload(
+                                makeAddFriendRequest(accountUUID, "", 255),
                             );
-                            response.writeBoolean(false);
-                            response.writeUUID(accountUUID);
-                            response.writeString("기본 그룹"); //TODO: 으악
-                            response.write1(0b111); //TODO: activeFlags
-                            sendPayload(response);
                         }}
                     >
                         <Icon.Check
@@ -157,11 +150,7 @@ function InviteItem({ accountUUID }: { accountUUID: string }) {
                     </button>
                     <button
                         onClick={() => {
-                            const response = ByteBuffer.createWithOpcode(
-                                ChatServerOpcode.DELETE_FRIEND,
-                            );
-                            response.writeUUID(accountUUID);
-                            sendPayload(response);
+                            sendPayload(makeDeleteFriendRequest(accountUUID));
                         }}
                     >
                         <Icon.X
@@ -176,7 +165,7 @@ function InviteItem({ accountUUID }: { accountUUID: string }) {
     );
 }
 
-function InviteHeader() {
+function FriendRequestListHeader() {
     return (
         <div className="flex flex-col justify-start">
             <span className="p-4 text-base font-extrabold  text-white/90">

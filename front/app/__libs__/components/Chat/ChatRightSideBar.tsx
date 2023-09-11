@@ -25,6 +25,7 @@ import { ChatErrorNumber } from "@common/chat-payloads";
 import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
 import { BanCategoryNumber, RoleNumber } from "@common/generated/types";
 import { handleChatError } from "./handleChatError";
+import { makeInviteUserRequest } from "@akasha-utils/chat-payload-builder-client";
 
 export type RightSideBarContents =
     | "report"
@@ -35,6 +36,50 @@ export type RightSideBarContents =
     | undefined;
 
 // TODO: refactoring 하고 어떻게 잘 함수 분리해보기
+
+function PageTitle({ currentPage }: { currentPage: RightSideBarContents }) {
+    const title = (() => {
+        switch (currentPage) {
+            case "accessBanMemberList":
+                return "차단 유저 목록";
+            case "sendBanMemberList":
+                return "채팅금지 유저 목록";
+            case "newSendBan":
+                return "채팅 금지";
+            case "newAccessBan":
+                return "내보내기";
+            case "report":
+                return "신고하기";
+            default:
+                return "멤버 목록";
+        }
+    })();
+
+    return <p className="w-fit font-sans text-base leading-4 ">{title}</p>;
+}
+
+function ListContent({
+    currentPage,
+    selectedUUID,
+}: {
+    currentPage: RightSideBarContents;
+    selectedUUID: string | undefined;
+}) {
+    switch (currentPage) {
+        case "accessBanMemberList":
+            return <ChatBanList banCategory={BanCategoryNumber.ACCESS} />;
+        case "sendBanMemberList":
+            return <ChatBanList banCategory={BanCategoryNumber.COMMIT} />;
+        case "newAccessBan":
+            return <AccessBan accountUUID={selectedUUID ?? ""} />;
+        case "newSendBan":
+            return <SendBan accountUUID={selectedUUID ?? ""} />;
+        case "report":
+            return <ReportUser accountUUID={selectedUUID ?? ""} />;
+        default:
+            return <></>;
+    }
+}
 
 export default function ChatRightSideBar() {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
@@ -68,47 +113,6 @@ export default function ChatRightSideBar() {
         }
     };
 
-    const pageTitle = (currentPage: RightSideBarContents) => {
-        switch (currentPage) {
-            case "accessBanMemberList":
-                return "차단 유저 목록";
-            case "sendBanMemberList":
-                return "채팅금지 유저 목록";
-            case "newSendBan":
-                return "채팅 금지";
-            case "newAccessBan":
-                return "내보내기";
-            case "report":
-                return "신고하기";
-            default:
-                return "멤버 목록";
-        }
-    };
-
-    const ListContent = useCallback(
-        ({ currentPage }: { currentPage: RightSideBarContents }) => {
-            switch (currentPage) {
-                case "accessBanMemberList":
-                    return (
-                        <ChatBanList banCategory={BanCategoryNumber.ACCESS} />
-                    );
-                case "sendBanMemberList":
-                    return (
-                        <ChatBanList banCategory={BanCategoryNumber.COMMIT} />
-                    );
-                case "newAccessBan":
-                    return <AccessBan accountUUID={selectedUUID ?? ""} />;
-                case "newSendBan":
-                    return <SendBan accountUUID={selectedUUID ?? ""} />;
-                case "report":
-                    return <ReportUser accountUUID={selectedUUID ?? ""} />;
-                default:
-                    return <></>;
-            }
-        },
-        [selectedUUID],
-    );
-
     return (
         <div className="absolute right-0 top-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-hidden rounded-[0px_28px_28px_0px] bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px] 2xl:bg-black/30">
             <div className="flex h-full w-full shrink-0 flex-col items-start gap-2 px-4 py-2 2xl:py-4">
@@ -133,9 +137,7 @@ export default function ChatRightSideBar() {
                                 "hover:bg-primary/30 hover:text-white active:bg-secondary/80"
                             }`}
                         >
-                            <p className="w-fit font-sans text-base leading-4 ">
-                                {pageTitle(currentPage)}
-                            </p>
+                            <PageTitle currentPage={currentPage} />
                         </label>
                         {roleLevel >= adminRoleLevel && (
                             <div className="hidden flex-col items-center text-base font-bold text-gray-100/80 group-data-[checked=true]:flex">
@@ -190,7 +192,10 @@ export default function ChatRightSideBar() {
 
                 {currentPage !== undefined && (
                     <div className="fixed inset-4 top-32 z-50 rounded-[12px] bg-gray-800 p-4">
-                        <ListContent currentPage={currentPage} />
+                        <ListContent
+                            currentPage={currentPage}
+                            selectedUUID={selectedUUID}
+                        />
                     </div>
                 )}
                 {inviteToggle ? (
@@ -261,11 +266,7 @@ function InviteForm() {
         const inviteAccountUUIDs = [...new Set([...selectedAccountUUIDs])];
 
         for (const accountUUID of inviteAccountUUIDs) {
-            const buf = ByteBuffer.createWithOpcode(
-                ChatServerOpcode.INVITE_USER,
-            );
-            buf.writeUUID(currentChatRoomUUID);
-            buf.writeUUID(accountUUID);
+            const buf = makeInviteUserRequest(currentChatRoomUUID, accountUUID);
             sendPayload(buf);
         }
     };
