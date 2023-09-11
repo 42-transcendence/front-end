@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
 import {
     ChatDirectRoomBlock,
@@ -29,6 +29,7 @@ import { ChatClientOpcode } from "@common/chat-opcodes";
 import { handlePublicRoomList } from "@akasha-utils/chat-gateway-client";
 import { makePublicRoomListRequest } from "@akasha-utils/chat-payload-builder-client";
 import { AnimatePresence, motion } from "framer-motion";
+import { usePublicProfiles } from "@hooks/useProfile";
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
@@ -222,9 +223,20 @@ function DirectRoomPanel({
     rooms: ChatDirectEntry[];
     query: string;
 }) {
+    const profiles = usePublicProfiles(
+        useId(),
+        rooms,
+        useCallback((e: ChatDirectEntry) => e.targetAccountId, []),
+    );
     const { results, getFzfHighlightProps } = useFzf({
-        items: rooms,
-        itemToString: (item) => item.targetAccountId, //FIXME: 여기서 이름을 알 수가 없는데?
+        items: profiles ?? [],
+        itemToString: (item) => {
+            const profile = item._profile;
+            if (profile !== undefined) {
+                return `${profile.nickName}#${profile.nickTag}`;
+            }
+            return "";
+        },
         query,
     });
 

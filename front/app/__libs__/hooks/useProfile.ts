@@ -25,6 +25,80 @@ export function useProtectedProfile(accountUUID: string) {
     return data;
 }
 
+export function usePublicProfiles<T>(
+    id: string,
+    accountObjects: T[],
+    accountUUIDSelector: (arg: T) => string,
+) {
+    const { data } = useSWR(
+        () => ["Profiles", "Public", id],
+        useCallback(async () => {
+            const promises = Array<
+                Promise<
+                    T & {
+                        _profile?: AccountProfilePublicPayload | undefined;
+                    }
+                >
+            >();
+            for (const obj of accountObjects) {
+                const fetchPayload = async () => {
+                    try {
+                        const profile =
+                            await fetcher<AccountProfilePublicPayload>(
+                                `/profile/public/${accountUUIDSelector(obj)}`,
+                            );
+                        return { ...obj, _profile: profile };
+                    } catch {
+                        return { ...obj, _profile: undefined };
+                    }
+                };
+                promises.push(fetchPayload());
+            }
+            return await Promise.all(promises);
+        }, [accountObjects, accountUUIDSelector]),
+        { refreshInterval: 0, revalidateOnFocus: false },
+    );
+    return data;
+}
+
+export function useProtectedProfiles<T>(
+    id: string,
+    accountObjects: T[],
+    accountUUIDSelector: (arg: T) => string,
+) {
+    const { data } = useSWR(
+        () => ["Profiles", "Protected", id],
+        useCallback(async () => {
+            const promises = Array<
+                Promise<
+                    T & {
+                        _profile?: AccountProfileProtectedPayload | undefined;
+                    }
+                >
+            >();
+            for (const obj of accountObjects) {
+                const fetchPayload = async () => {
+                    try {
+                        const profile =
+                            await fetcher<AccountProfileProtectedPayload>(
+                                `/profile/protected/${accountUUIDSelector(
+                                    obj,
+                                )}`,
+                            );
+                        return { ...obj, _profile: profile };
+                    } catch {
+                        return { ...obj, _profile: undefined };
+                    }
+                };
+                promises.push(fetchPayload());
+            }
+            return await Promise.all(promises);
+        }, [accountObjects, accountUUIDSelector]),
+        { refreshInterval: 0, revalidateOnFocus: false },
+    );
+    return data;
+}
+
 export function usePrivateProfile() {
     const currentAccountUUID = useCurrentAccountUUID();
     const { data } = useSWR(
