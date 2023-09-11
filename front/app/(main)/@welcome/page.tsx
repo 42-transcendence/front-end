@@ -22,7 +22,7 @@ export default function Welcome() {
                     <p>사용할 닉네임을 입력해주세요.</p>
                 </div>
                 <form
-                    onClick={(e) => e.preventDefault()}
+                    onSubmit={() => void register(value)}
                     className="group relative flex flex-row gap-2"
                 >
                     <div className="flex min-w-[12rem] max-w-xs flex-col">
@@ -44,19 +44,18 @@ export default function Welcome() {
                         )}
                         {conflict && (
                             <span className="p-2 text-sm text-red-500/90">
-                                이미 9000명이 쓰는 흔해빠진 닉네임인데, 다른걸로
-                                하시는게 어떤지..? 감히? 고견? 드립? 니다?
+                                더이상 사용할 수 없는 닉네임입니다. 다른
+                                닉네임을 입력해주세요.
                             </span>
                         )}
                     </div>
                     <button
                         className="z-10 h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-500/80 p-2 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white group-valid:bg-green-500/50 group-valid:text-white"
-                        onClick={() => void register(value)}
+                        type="submit"
                     >
-                        <Icon.Arrow3 className="" />
+                        <Icon.Arrow3 />
                     </button>
                 </form>
-                {/* TODO : 서버에서 닉네임이 중복되었는지, 가능한 닉네임인지 확인 */}
             </Card>
         </main>
     );
