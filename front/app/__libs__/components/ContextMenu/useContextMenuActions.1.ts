@@ -14,7 +14,6 @@ import {
     ChatTabIndexAtom,
     CurrentChatRoomUUIDAtom,
 } from "@atoms/ChatAtom";
-import { FriendModalIsOpen } from "@atoms/FriendAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import {
     ActiveStatus,
@@ -44,15 +43,8 @@ export function useContextMenuActions(
     // 아니면 각각 action 함수 내부마다 따로 하나씩 해주는게 맞는가
     const nickName = profile?.nickName ?? "fallback";
     const nickTag = profile?.nickTag ?? 0;
-    const setChatModalIsOpen = useSetAtom(ChatModalOpenAtom, {
-        store: GlobalStore,
-    });
-    const setChatTabIndex = useSetAtom(ChatTabIndexAtom, {
-        store: GlobalStore,
-    });
-    const setFriendModalIsOpen = useSetAtom(FriendModalIsOpen, {
-        store: GlobalStore,
-    });
+    const setChatModalIsOpen = useSetAtom(ChatModalOpenAtom);
+    const setChatTabIndex = useSetAtom(ChatTabIndexAtom);
 
     const actions = useMemo(
         () => ({
@@ -73,11 +65,7 @@ export function useContextMenuActions(
             },
             ["addfriend"]: () => {
                 // TODO: true: add friend by nick + tag, false: by id
-                const buf = makeAddFriendRequest(
-                    targetAccountUUID,
-                    "",
-                    0b11111111,
-                );
+                const buf = makeAddFriendRequest(targetAccountUUID, "", 255);
                 sendPayload(buf);
             },
             // ["editmyprofile"]: () => {
@@ -105,7 +93,6 @@ export function useContextMenuActions(
                 setCurrentPage("report");
             },
             ["directmessage"]: () => {
-                setFriendModalIsOpen(false);
                 setChatModalIsOpen(true);
                 setChatTabIndex(1);
                 setCurrentChatRoomUUID(
@@ -157,8 +144,6 @@ export function useContextMenuActions(
             nickName,
             nickTag,
             sendPayload,
-            setChatModalIsOpen,
-            setChatTabIndex,
             setCurrentChatRoomUUID,
             setCurrentPage,
             targetAccountUUID,

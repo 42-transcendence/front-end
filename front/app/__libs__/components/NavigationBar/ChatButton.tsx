@@ -12,11 +12,11 @@ import ChatRightSideBar from "@components/Chat/ChatRightSideBar";
 import { ChatHeader } from "@components/Chat/ChatHeader";
 import { ChatDialog } from "@components/Chat/ChatDialog";
 import { AnimatePresence, motion } from "framer-motion";
-import { useSetAtom } from "jotai";
-import { CreateNewRoomCheckedAtom } from "@atoms/ChatAtom";
+import { useAtom, useSetAtom } from "jotai";
+import { ChatModalOpenAtom, CreateNewRoomCheckedAtom } from "@atoms/ChatAtom";
 
 export function ChatButton() {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useAtom(ChatModalOpenAtom);
     const ref = useRef<HTMLButtonElement>(null);
     const setCreateNewRoom = useSetAtom(CreateNewRoomCheckedAtom);
     const totalUnreadCount = useChatRoomTotalUnreadCount();

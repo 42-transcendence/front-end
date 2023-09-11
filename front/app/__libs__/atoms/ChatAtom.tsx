@@ -22,6 +22,9 @@ export const LeftSideBarIsOpenAtom = atom(
     },
 );
 
+export const ChatModalOpenAtom = atom(false);
+export const ChatTabIndexAtom = atom(1);
+
 export const ChatRightSideBarCurrrentPage =
     atom<RightSideBarContents>(undefined);
 

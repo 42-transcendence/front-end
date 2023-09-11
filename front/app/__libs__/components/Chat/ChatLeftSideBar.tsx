@@ -12,6 +12,7 @@ import { CreateNewRoom } from "./CreateNewRoom";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
     ChatRoomListAtom,
+    ChatTabIndexAtom,
     CreateNewRoomCheckedAtom,
     DirectRoomListAtom,
     LeftSideBarIsOpenAtom,
@@ -72,7 +73,7 @@ export default function ChatLeftSideBar() {
             ),
         },
     ];
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useAtom(ChatTabIndexAtom);
     const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
         CreateNewRoomCheckedAtom,
     );
