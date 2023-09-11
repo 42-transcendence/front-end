@@ -38,7 +38,7 @@ export function InviteList({ className }: { className?: string | undefined }) {
     };
 
     return (
-        <div className={`flex flex-col gap-2 ${className}`}>
+        <form className={`group flex flex-col gap-2 ${className}`}>
             <TextField
                 type="text"
                 className="px-3"
@@ -58,6 +58,6 @@ export function InviteList({ className }: { className?: string | undefined }) {
                     />
                 ))}
             </div>
-        </div>
+        </form>
     );
 }

@@ -9,11 +9,12 @@ import {
 } from "./ChatRoomBlock";
 import { TextField } from "@components/TextField";
 import { CreateNewRoom } from "./CreateNewRoom";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
     ChatRoomListAtom,
     CreateNewRoomCheckedAtom,
     DirectRoomListAtom,
+    LeftSideBarIsOpenAtom,
 } from "@atoms/ChatAtom";
 
 import { FzfHighlight, useFzf } from "react-fzf";
@@ -75,6 +76,19 @@ export default function ChatLeftSideBar() {
     const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
         CreateNewRoomCheckedAtom,
     );
+    const setSideBarOpen = useSetAtom(LeftSideBarIsOpenAtom);
+    const selectLabel = useCallback(
+        (
+            e: React.KeyboardEvent<HTMLLabelElement>,
+            callback: (args_0: React.SetStateAction<boolean>) => void,
+            value: boolean,
+        ) => {
+            if (e.key === " " || e.key === "Enter") {
+                callback(!value);
+            }
+        },
+        [],
+    );
 
     return (
         <ChatLeftSideBarLayout>
@@ -82,6 +96,13 @@ export default function ChatLeftSideBar() {
                 <label
                     data-checked={createNewRoomChecked}
                     tabIndex={0}
+                    onKeyDown={(e) =>
+                        selectLabel(
+                            e,
+                            setCreateNewRoomChecked,
+                            createNewRoomChecked,
+                        )
+                    }
                     htmlFor="CreateNewRoom"
                     className="relative flex h-12 items-center gap-2 rounded-md p-4 outline-none hover:bg-primary/30 hover:transition-all focus-visible:outline-primary/70 data-[checked=true]:scale-105 data-[checked=true]:bg-secondary/70"
                 >
@@ -89,7 +110,14 @@ export default function ChatLeftSideBar() {
                     <p className="font-sans text-base leading-4">방 만들기</p>
                 </label>
 
-                <label tabIndex={0} htmlFor="forCloseLeftSideBar">
+                <label
+                    onKeyDown={(e) =>
+                        (e.key === " " || e.key === "Enter") &&
+                        setSideBarOpen(true)
+                    }
+                    tabIndex={0}
+                    htmlFor="forCloseLeftSideBar"
+                >
                     <Icon.Sidebar
                         className="hidden rounded-md p-3 text-gray-200/80 hover:bg-primary/30 hover:text-white active:bg-secondary/80 2xl:block"
                         width={48}

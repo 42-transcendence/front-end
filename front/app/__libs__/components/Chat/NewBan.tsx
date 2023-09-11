@@ -10,8 +10,13 @@ import {
 } from "@akasha-utils/chat-payload-builder-client";
 import { useSetChatRightSideBarCurrrentPageAtom } from "@hooks/useChatRoom";
 import { ChatClientOpcode } from "@common/chat-opcodes";
-import { handleReportResult } from "@akasha-utils/chat-gateway-client";
-import { ReportErrorNumber } from "@common/chat-payloads";
+import {
+    handleMuteMemberResult,
+    handleReportResult,
+} from "@akasha-utils/chat-gateway-client";
+import { ChatErrorNumber, ReportErrorNumber } from "@common/chat-payloads";
+import { handleKickMemberResult } from "@akasha-utils/chat-gateway-client";
+import { handleChatError } from "./handleChatError";
 
 type ExpireDate = {
     key: string;
@@ -113,7 +118,18 @@ export function SendBan({ accountUUID }: { accountUUID: string }) {
     const submitTitle = "채팅 금지시키기";
     const ref = useRef<HTMLFormElement>(null!);
     const type = "send";
-    const { sendPayload } = useWebSocket("chat", []);
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.MUTE_MEMBER_RESULT,
+        (_, payload) => {
+            const [errno] = handleMuteMemberResult(payload);
+            if (errno === ChatErrorNumber.SUCCESS) {
+                alert("유저의 메시지 전송을 제한합니다.");
+            } else {
+                handleChatError(errno);
+            }
+        },
+    );
     const currentRoomUUID = useCurrentChatRoomUUID();
     const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
 
@@ -189,10 +205,20 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
     const submitTitle = "차단하기";
     const ref = useRef<HTMLFormElement>(null!);
     const type = "access";
-    const { sendPayload } = useWebSocket("chat", []);
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.KICK_MEMBER_RESULT,
+        (_, payload) => {
+            const [errno] = handleKickMemberResult(payload);
+            if (errno === ChatErrorNumber.SUCCESS) {
+                alert("유저를 내보냈습니다. ");
+            } else {
+                handleChatError(errno);
+            }
+        },
+    );
     const currentRoomUUID = useCurrentChatRoomUUID();
     const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
-
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
 
@@ -213,7 +239,6 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
                 parseInt(expireDate as string),
             ),
         );
-        alert("유저를 내보냈습니다.");
         setCurrentPage(undefined);
     };
 

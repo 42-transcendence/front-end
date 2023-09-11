@@ -179,10 +179,6 @@ const profileMenus: ProfileMenu[] = [
     },
 ];
 
-function FriendGroupForm() {
-    return;
-}
-
 function ContextMenuItem({
     menuInfo,
     action,
@@ -246,8 +242,8 @@ export function ContextMenu({ type }: { type: Scope }) {
     const currentId = useCurrentAccountUUID();
     const profile = useProtectedProfile(accountUUID);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const targetMember = useChatMember(currentChatRoomUUID, accountUUID);
-    const roleLevel = Number(targetMember?.role ?? 0);
+    const currentUser = useChatMember(currentChatRoomUUID, currentId);
+    const roleLevel = Number(currentUser?.role ?? 0);
 
     const relationship =
         accountUUID === currentId
@@ -308,9 +304,7 @@ export function ContextMenu({ type }: { type: Scope }) {
         },
         // ["editmyprofile"]: () => {
         // },
-        ["modifyfriend"]: () => {
-            sendPayload(makeModifyFriendRequest(accountUUID));
-        },
+        ["modifyfriend"]: () => {},
         ["logout"]: () => {
             // TODO: 현재 이 함수 (nav)폴더에 있는데 어디로 옮기지? util? 아니면 여기 이 폴더?
             logoutAction();

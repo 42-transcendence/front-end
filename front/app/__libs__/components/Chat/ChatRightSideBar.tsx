@@ -16,7 +16,6 @@ import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
 import { ByteBuffer } from "@akasha-lib";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 import { useChatRoomMembers } from "@hooks/useChatRoom";
-
 import { useFzf } from "react-fzf";
 import { handleInviteRoomResult } from "@akasha-utils/chat-gateway-client";
 import { ChatErrorNumber } from "@common/chat-payloads";
@@ -177,7 +176,11 @@ export default function ChatRightSideBar() {
                     </div>
                 </div>
 
-                <ListContent currentPage={currentPage} />
+                {currentPage !== undefined && (
+                    <div className="fixed inset-4 top-32 z-50 rounded-[12px] bg-gray-800 p-4">
+                        <ListContent currentPage={currentPage} />
+                    </div>
+                )}
                 {inviteToggle ? (
                     <Provider>
                         <InviteForm />
@@ -267,7 +270,7 @@ function InviteForm() {
                 <InviteList className="overflow-auto" />
                 <ButtonOnRight
                     buttonText="초대하기"
-                    className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
+                    className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg hover:bg-green-500/50 hover:text-white active:bg-green-300/50 active:text-white group-valid:bg-green-700/80"
                 />
             </div>
         </form>

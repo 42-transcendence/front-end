@@ -147,7 +147,7 @@ export function CreateNewRoom() {
             onSubmit={handleSubmit}
             className="group h-full w-full overflow-auto"
         >
-            <div className="flex h-full w-full flex-col justify-between gap-4">
+            <div className="flex h-full w-full flex-col justify-between gap-4 p-1">
                 <div className="flex flex-col gap-2 self-stretch overflow-auto">
                     <div className="relative flex h-fit w-full flex-col gap-2 py-2">
                         <TextField
@@ -267,7 +267,7 @@ export function CreateNewRoom() {
 
                 <ButtonOnRight
                     buttonText="만들기"
-                    className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg group-valid:bg-green-700/80"
+                    className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg outline-none  focus-within:outline-primary/70 group-valid:bg-green-500/50 hover:group-valid:bg-green-400/50 hover:group-valid:text-white active:group-valid:bg-green-300/50 active:group-valid:text-white"
                 />
             </div>
         </form>
