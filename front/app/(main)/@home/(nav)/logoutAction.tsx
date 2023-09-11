@@ -10,5 +10,6 @@ export function logoutAction() {
     setLocalStorageItem(REFRESH_TOKEN_KEY, null);
 
     // Invalidate All SWR Cache
+    // TODO: mutate throwOnError?
     void mutate(() => true, undefined, { revalidate: false });
 }

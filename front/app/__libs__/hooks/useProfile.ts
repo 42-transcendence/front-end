@@ -110,6 +110,7 @@ export function usePrivateProfile() {
 
 export function useProfileMutation() {
     const currentAccountUUID = useCurrentAccountUUID();
+    // TODO: mutate throwOnError?
     const { mutate } = useSWRConfig();
 
     return useCallback(
