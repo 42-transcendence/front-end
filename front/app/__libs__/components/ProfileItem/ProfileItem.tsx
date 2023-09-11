@@ -24,10 +24,6 @@ export function ProfileItem({
     const store = createStore();
     store.set(TargetedAccountUUIDAtom, accountUUID);
 
-    const nick =
-        profile !== undefined
-            ? `${profile.nickName}#${profile.nickTag}`
-            : "불러오는 중...";
     const statusMessage =
         protectedProfile?.statusMessage ?? "상태 메시지를 볼 수 없습니다.";
 
@@ -49,10 +45,21 @@ export function ProfileItem({
                             />
                         </div>
                         <div className="relative flex w-fit flex-col items-start gap-1">
-                            <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                                {nick}
-                            </div>
-                            <div className="text-normal text-xs text-gray-300">
+                            {profile !== undefined ? (
+                                <div className="flex flex-row items-center gap-2">
+                                    <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
+                                        {profile.nickName}
+                                    </span>
+                                    <span className="relative w-fit whitespace-nowrap font-sans text-sm font-bold leading-none tracking-normal text-gray-300/70">
+                                        #{profile.nickTag}
+                                    </span>
+                                </div>
+                            ) : (
+                                <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
+                                    불러오는 중...
+                                </span>
+                            )}
+                            <div className="text-normal font-sans text-sm text-gray-50">
                                 {statusMessage}
                             </div>
                         </div>
