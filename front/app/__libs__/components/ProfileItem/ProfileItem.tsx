@@ -61,8 +61,9 @@ export function ProfileItem({
                                     roleLevel >= managerRoleLevel && (
                                         <Icon.CrownFilled
                                             className={
-                                                roleLevel === adminRoleLevel &&
-                                                "text-tertiary"
+                                                roleLevel === adminRoleLevel
+                                                    ? "text-tertiary"
+                                                    : ""
                                             }
                                         />
                                     )}
