@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
 import { TextField } from "@components/TextField";
 import { ProfileItem } from "@components/ProfileItem";
@@ -112,6 +112,10 @@ export default function ChatRightSideBar() {
             setMemberListDropDown(false);
         }
     };
+
+    useEffect(() => {
+        setCurrentPage(undefined);
+    }, [setCurrentPage, currentChatRoomUUID]);
 
     return (
         <div className="absolute right-0 top-0 z-10 h-full w-[310px] min-w-[310px] select-none overflow-hidden rounded-[0px_28px_28px_0px] bg-black/30 text-gray-200/80 backdrop-blur-[50px] transition-all duration-100 peer-checked/right:w-0 peer-checked/right:min-w-0 2xl:relative 2xl:flex 2xl:rounded-[28px] 2xl:bg-black/30">
