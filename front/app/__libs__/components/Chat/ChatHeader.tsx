@@ -7,7 +7,12 @@ import { useChatRoomTitle } from "@hooks/useChatRoom";
 import { useAtom } from "jotai";
 import { LeftSideBarIsOpenAtom, RightSideBarIsOpenAtom } from "@atoms/ChatAtom";
 import { useEffect } from "react";
-import { isDirectChatKey } from "@akasha-utils/idb/chat-store";
+import {
+    extractTargetFromDirectChatKey,
+    isDirectChatKey,
+} from "@akasha-utils/idb/chat-store";
+import { usePrivateProfile, useProtectedProfile } from "@hooks/useProfile";
+import { NickBlock } from "@components/ProfileItem/ProfileItem";
 
 export function RightSideBarInput() {
     const [{ close }, setToOpen] = useAtom(RightSideBarIsOpenAtom);
@@ -117,9 +122,16 @@ export function ChatHeader() {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentChatRoomTitle = useChatRoomTitle(currentChatRoomUUID);
     const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
+    const roomType = currentChatRoomIsDirect ? "다이렉트 메세지" : "그룹 채팅";
+    const targetProfile = useProtectedProfile(
+        extractTargetFromDirectChatKey(currentChatRoomUUID),
+    );
 
-    const title = currentChatRoomTitle ?? "채팅방을 선택하세요";
-    const desc = "채팅을 채팅채팅~"; // TODO: 이거 설정 가능하게 하나요?
+    const title = currentChatRoomIsDirect ? (
+        <NickBlock profile={targetProfile} />
+    ) : (
+        currentChatRoomTitle ?? "채팅방을 선택하세요"
+    );
 
     return (
         <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch bg-transparent py-4">
@@ -130,17 +142,21 @@ export function ChatHeader() {
                     className={[
                         "flex h-fit w-fit shrink-0 list-none flex-col justify-center rounded-md p-2",
                         !currentChatRoomIsDirect &&
-                            "hover:bg-primary/30 active:bg-secondary/80",
+                            "active:bg-secondary/8 hover:bg-primary/30",
                     ].join(" ")}
                 >
-                    <div className=" relative flex flex-col items-center justify-center px-4 py-0 text-base">
-                        <h1 className="line-clamp-1 max-w-[16rem] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70 sm:max-w-full">
-                            {title}
-                        </h1>
-                        <h2 className="line-clamp-1 overflow-hidden text-ellipsis text-center text-xs font-medium not-italic leading-[normal] text-white/50">
-                            {desc}
-                        </h2>
-                    </div>
+                    {currentChatRoomUUID !== "" && (
+                        <div className=" relative flex flex-col items-center justify-center px-4 py-0 text-base">
+                            <h1 className="line-clamp-1 max-w-[16rem] overflow-ellipsis text-center text-[17px] font-bold not-italic leading-[18px] text-white/70 sm:max-w-full">
+                                {title}
+                            </h1>
+                            <div className="flex flex-row gap-2">
+                                <h2 className="line-clamp-1 overflow-hidden text-ellipsis text-center text-xs font-medium not-italic leading-[normal] text-white/50">
+                                    {roomType}
+                                </h2>
+                            </div>
+                        </div>
+                    )}
                 </label>
                 <input
                     id="headerDropDown"
