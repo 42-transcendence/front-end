@@ -156,7 +156,7 @@ export default function ChatLeftSideBar() {
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
                         />
-                        <Tab.Panels className="h-full w-full overflow-auto">
+                        <Tab.Panels className="h-full w-full overflow-auto p-1">
                             {categories.map((category, idx) => (
                                 <Tab.Panel key={idx}>
                                     {category.Component}
