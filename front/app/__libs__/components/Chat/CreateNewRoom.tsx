@@ -8,7 +8,7 @@ import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
 import { digestMessage, encodeUTF8 } from "@akasha-lib";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import {
     CreateNewRoomCheckedAtom,
@@ -83,7 +83,9 @@ export function CreateNewRoom() {
     const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom, {
         store: GlobalStore,
     });
-    const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
+    const [selectedAccountUUIDs, setSelectedAccountUUIDs] = useAtom(
+        SelectedAccountUUIDsAtom,
+    );
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.CREATE_ROOM_RESULT,
@@ -92,6 +94,16 @@ export function CreateNewRoom() {
             if (errno !== ChatErrorNumber.SUCCESS) {
                 handleChatError(errno);
             } else {
+                setTitle("");
+                setPassword("");
+                setLimit(42);
+                setPrivateChecked(false);
+                setSecretChecked(false);
+                setLimitChecked(false);
+                setInviteChecked(false);
+                setCreateNewRoomChecked(false);
+                setSelectedAccountUUIDs([]);
+
                 setCurrentChatRoomUUID(chatId);
             }
         },
@@ -126,19 +138,7 @@ export function CreateNewRoom() {
                 ),
             );
         };
-        sendCreateRoomRequestAsync()
-            .then(() => {
-                //TODO: 조금 더 아름답게 reset
-                setTitle("");
-                setPassword("");
-                setLimit(42);
-                setPrivateChecked(false);
-                setSecretChecked(false);
-                setLimitChecked(false);
-                setInviteChecked(false);
-                setCreateNewRoomChecked(false);
-            })
-            .catch(() => {});
+        sendCreateRoomRequestAsync().catch(() => {});
     };
 
     return (
@@ -308,7 +308,7 @@ function InviteFriendToggle({
                     초대 상대 선택
                 </p>
             </label>
-            {checked && <InviteList />}
+            {checked && <InviteList filterUnjoined={false} />}
         </div>
     );
 }

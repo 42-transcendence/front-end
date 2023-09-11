@@ -9,7 +9,7 @@ import { ButtonOnRight } from "../Button/ButtonOnRight";
 import { ChatAccessBanList, ChatCommitBanList } from "./ChatBanList";
 import { MenuItem } from "./MenuItem";
 import { AccessBan, ReportUser, SendBan } from "./NewBan";
-import { Provider, useAtom, useAtomValue } from "jotai";
+import { Provider, useAtom } from "jotai";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode, ChatServerOpcode } from "@common/chat-opcodes";
@@ -24,6 +24,7 @@ import { handleInviteRoomResult } from "@akasha-utils/chat-gateway-client";
 import { ChatErrorNumber } from "@common/chat-payloads";
 import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
 import { RoleNumber } from "@common/generated/types";
+import { handleChatError } from "./handleChatError";
 
 export type RightSideBarContents =
     | "report"
@@ -234,23 +235,18 @@ export default function ChatRightSideBar() {
 
 function InviteForm() {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const selectedAccountUUIDs = useAtomValue(SelectedAccountUUIDsAtom);
+    const [selectedAccountUUIDs, setSelectedAccountUUIDs] = useAtom(
+        SelectedAccountUUIDsAtom,
+    );
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.INVITE_USER_RESULT,
         (_, payload) => {
-            const [errno, chatId, targetAccountId] =
-                handleInviteRoomResult(payload);
+            const [errno] = handleInviteRoomResult(payload);
             if (errno !== ChatErrorNumber.SUCCESS) {
-                //FIXME: 더 정상적으로 처리
-                alert(
-                    "초대 실패... " +
-                        errno +
-                        ", " +
-                        chatId +
-                        ", " +
-                        targetAccountId,
-                );
+                handleChatError(errno);
+            } else {
+                setSelectedAccountUUIDs([]);
             }
         },
     );
@@ -274,7 +270,7 @@ function InviteForm() {
     return (
         <form className="h-full w-full overflow-auto" onSubmit={handleSubmit}>
             <div className="flex h-full w-full flex-col justify-between gap-4">
-                <InviteList className="overflow-auto" />
+                <InviteList className="overflow-auto" filterUnjoined={true} />
                 <ButtonOnRight
                     buttonText="초대하기"
                     className="relative flex rounded-lg bg-gray-700/80 p-3 text-lg hover:bg-green-500/50 hover:text-white active:bg-green-300/50 active:text-white group-valid:bg-green-700/80"
