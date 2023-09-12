@@ -16,34 +16,38 @@ import {
     makeDeleteFriendRequest,
 } from "@akasha-utils/chat-payload-builder-client";
 
+const nickTagSeparator = "#";
+
 export function FriendModal() {
-    //TODO: fetch profile datas
     const { sendPayload } = useWebSocket("chat", []);
     const sendFriendRequest = () => {
-        const nickName = prompt("닉네임?을 입력하시오?");
-        if (nickName === null) {
+        const input = prompt("[닉네임#태그]를 입력해주세요");
+        if (input === null) {
             return;
         }
+
+        const separator = input.indexOf(nickTagSeparator);
+        if (separator === -1) {
+            alert("입력 형식을 확인해주세요");
+            return;
+        }
+
+        const nickName = input.slice(0, separator - 1);
+        const nickTagStr = input.slice(separator + 1);
+
         if (!NICK_NAME_REGEX.test(nickName)) {
-            alert("올바른 이름을 입력하십시오.");
-            return;
-        }
-        const nickTagStr = prompt("태그?를 입력하시오?");
-        if (nickTagStr === null) {
+            alert("입력 형식을 확인해주세요");
             return;
         }
         const nickTag = Number(nickTagStr);
         if (Number.isNaN(nickTag)) {
-            alert("올바른 태그를 입력하십시오.");
+            alert("입력 형식을 확인해주세요");
             return;
         }
 
-        const buf = makeAddFriendRequest(
-            { nickName: nickName, nickTag: nickTag },
-            "",
-            0b11111111,
+        sendPayload(
+            makeAddFriendRequest({ nickName, nickTag }, "", 0b11111111),
         );
-        sendPayload(buf);
     };
 
     return (
