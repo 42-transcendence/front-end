@@ -157,3 +157,18 @@ export async function fetcherPOST<T>(key: string, body: object): Promise<T> {
         body: JSON.stringify(body),
     });
 }
+
+export async function fetcherDELETE<T>(key: string, body: object): Promise<T> {
+    const url = new URL(key, URL_BASE);
+    return fetchBase(url, {
+        method: "DELETE",
+        headers: {
+            ["Content-Type"]: "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+}
+
+export async function fetcherOTP() {
+    return fetcher<JSON>("/profile/private/otp");
+}
