@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
 import { TextField } from "@components/TextField";
 import { ProfileItem } from "@components/ProfileItem";
@@ -86,10 +86,13 @@ export default function ChatRightSideBar() {
     const currentChatMembers = useChatRoomMembers(currentChatRoomUUID);
     const [selectedUUID, setSelectedUUID] = useState<string>();
     const [query, setQuery] = useState("");
-    const memberArray =
-        currentChatMembers !== undefined
-            ? [...currentChatMembers.values()]
-            : [];
+    const memberArray = useMemo(
+        () =>
+            currentChatMembers !== undefined
+                ? [...currentChatMembers.values()]
+                : [],
+        [currentChatMembers],
+    );
     const profiles = usePublicProfiles(
         useId(),
         memberArray,
