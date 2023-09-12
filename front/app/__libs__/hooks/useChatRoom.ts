@@ -154,8 +154,11 @@ export function useChatRoomMessages(roomUUID: string) {
             ChatStore.getAllMessages(roomUUID),
         [],
     );
-    const { data } = useSWR(["ChatStore", roomUUID, "Messages"], callback);
-    return data;
+    const { data, isLoading } = useSWR(
+        ["ChatStore", roomUUID, "Messages"],
+        callback,
+    );
+    return [data, !isLoading] as const;
 }
 
 export function useChatMember(roomUUID: string, memberUUID: string) {

@@ -177,7 +177,8 @@ const isLastContinuedMessage = (arr: MessageSchema[], idx: number) => {
 export function ChatDialog() {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const chatMessages = useChatRoomMessages(currentChatRoomUUID);
+    const [chatMessages, isChatMessagesLoaded] =
+        useChatRoomMessages(currentChatRoomUUID);
     const chatDialogRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { sendPayload } = useWebSocket("chat", []);
@@ -200,10 +201,10 @@ export function ChatDialog() {
         }
     }, [currentChatRoomUUID, chatMessages]);
     useEffect(() => {
-        if (currentChatRoomUUID !== "") {
+        if (lastChatRoomUUID !== "" && isChatMessagesLoaded) {
             scrollToBottom();
         }
-    }, [currentChatRoomUUID]);
+    }, [lastChatRoomUUID, isChatMessagesLoaded]);
     useEffect(() => {
         if (lastMessage !== undefined && lastChatRoomUUID !== "") {
             if (chatDialogRef.current === null) {
