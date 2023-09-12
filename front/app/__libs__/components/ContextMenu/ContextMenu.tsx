@@ -15,13 +15,11 @@ export type Relationship = "myself" | "friend" | "stranger";
 
 export type Scope = "ChatRoom" | "FriendModal" | "Navigation";
 
-// TODO: 이름 바꾸기
 type ProfileMenuActions =
     | "copytag"
     | "changeactivestatus"
     | "addfriend"
     | "directmessage"
-    // | "editmyprofile"
     | "modifyfriend"
     | "logout"
     | "deletefriend"
@@ -40,7 +38,7 @@ type ProfileMenu = {
     relation: Relationship[];
     isImportant: boolean;
     minRoleLevel?: number | undefined;
-    scope?: Scope | Scope[] | undefined;
+    scope: Scope[];
     className: string;
     UI?: React.ReactNode | undefined;
 };
@@ -52,7 +50,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["myself", "friend", "stranger"],
         isImportant: false,
         minRoleLevel: undefined,
-        scope: "ChatRoom",
+        scope: ["ChatRoom"],
         className: "",
     },
     {
@@ -61,7 +59,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["myself"],
         isImportant: false,
         minRoleLevel: undefined,
-        scope: "Navigation",
+        scope: ["Navigation"],
         className: "",
     },
     {
@@ -70,7 +68,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["myself"],
         isImportant: false,
         minRoleLevel: undefined,
-        scope: "Navigation",
+        scope: ["Navigation"],
         className: "",
     },
     {
@@ -79,7 +77,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["myself", "friend", "stranger"],
         isImportant: false,
         minRoleLevel: undefined,
-        scope: undefined,
+        scope: ["ChatRoom", "FriendModal", "Navigation"],
         className: "",
     },
     {
@@ -97,7 +95,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["stranger"],
         isImportant: false,
         minRoleLevel: undefined,
-        scope: "ChatRoom",
+        scope: ["ChatRoom"],
         className: "",
     },
     {
@@ -106,7 +104,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["friend"],
         isImportant: true,
         minRoleLevel: undefined,
-        scope: undefined,
+        scope: ["ChatRoom", "FriendModal", "Navigation"],
         className: "hover:bg-red-500/30",
     },
     {
@@ -115,7 +113,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["friend", "stranger"],
         isImportant: true,
         minRoleLevel: undefined,
-        scope: undefined,
+        scope: ["ChatRoom", "FriendModal", "Navigation"],
         className: "hover:bg-red-500/30",
     },
     {
@@ -124,7 +122,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["friend", "stranger"],
         isImportant: false,
         minRoleLevel: undefined,
-        scope: undefined,
+        scope: ["ChatRoom", "FriendModal", "Navigation"],
         className: "hover:bg-tertiary/30",
     },
     {
@@ -133,7 +131,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["friend", "stranger"],
         isImportant: true,
         minRoleLevel: RoleNumber.MANAGER,
-        scope: "ChatRoom",
+        scope: ["ChatRoom"],
         className: "hover:bg-tertiary/30",
     },
     {
@@ -142,7 +140,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["friend", "stranger"],
         isImportant: true,
         minRoleLevel: RoleNumber.MANAGER,
-        scope: "ChatRoom",
+        scope: ["ChatRoom"],
         className: "hover:bg-tertiary/30",
     },
     {
@@ -151,7 +149,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["friend", "stranger"],
         minRoleLevel: RoleNumber.ADMINISTRATOR,
         isImportant: true,
-        scope: "ChatRoom",
+        scope: ["ChatRoom"],
         className: "hover:bg-red-500/30",
     },
     {
@@ -160,7 +158,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["friend", "stranger"],
         minRoleLevel: RoleNumber.ADMINISTRATOR,
         isImportant: true,
-        scope: "ChatRoom",
+        scope: ["ChatRoom"],
         className: "hover:bg-red-500/30",
     },
 ];
@@ -250,7 +248,7 @@ export function ContextMenu({ type }: { type: Scope }) {
     const rating: ProfileMenu = {
         name: `rating: ${score}`,
         relation: ["myself", "friend", "stranger"],
-        scope: "ChatRoom",
+        scope: ["ChatRoom"],
         isImportant: false,
         className: "hover:bg-transparent active:bg-transparent",
     };
@@ -259,13 +257,8 @@ export function ContextMenu({ type }: { type: Scope }) {
         <ContextMenuBase className="w-full">
             {[rating, ...profileMenus]
                 .filter((menu) => {
-                    if (
-                        menu.scope !== undefined &&
-                        !menu.scope.includes(type)
-                    ) {
-                        return false;
-                    }
                     return (
+                        menu.scope.includes(type) &&
                         roleLevel >= (menu.minRoleLevel ?? 0) &&
                         menu.relation.includes(relationship)
                     );
