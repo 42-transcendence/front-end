@@ -242,11 +242,10 @@ function RoomPanel({
 
     return results
         .toSorted((e1, e2) => compareRoomItem(e1, e2))
-        .map((item, index) => (
+        .map((item) => (
             <ChatRoomBlock key={item.id} chatRoom={item}>
                 <FzfHighlight
                     {...getFzfHighlightProps({
-                        index,
                         item,
                         className: "text-yellow-500",
                     })}
@@ -281,11 +280,10 @@ function DirectRoomPanel({
 
     return results
         .toSorted((e1, e2) => compareDirectRoomItem(e1, e2))
-        .map((item, index) => (
+        .map((item) => (
             <ChatDirectRoomBlock key={item.targetAccountId} chatRoom={item}>
                 <FzfHighlight
                     {...getFzfHighlightProps({
-                        index,
                         item,
                         className: "text-yellow-500",
                     })}
@@ -309,11 +307,10 @@ function PublicRoomPanel({
 
     return results
         .toSorted((e1, e2) => compareRoomItem(e1, e2))
-        .map((item, index) => (
+        .map((item) => (
             <ChatPublicRoomBlock key={item.id} chatRoom={item}>
                 <FzfHighlight
                     {...getFzfHighlightProps({
-                        index,
                         item,
                         className: "text-yellow-500",
                     })}
