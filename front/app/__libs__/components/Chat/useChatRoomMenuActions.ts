@@ -13,14 +13,20 @@ import {
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
 import { handleChatError } from "./handleChatError";
-import { ChatErrorNumber, toChatRoomModeFlags } from "@common/chat-payloads";
+import {
+    ChatErrorNumber,
+    ChatRoomModeFlags,
+    toChatRoomModeFlags,
+} from "@common/chat-payloads";
 import { digestMessage, encodeUTF8 } from "@akasha-lib";
 import { MAX_CHAT_MEMBER_CAPACITY } from "@common/chat-constants";
 import { useResetCurrentChatRoomUUID } from "@hooks/useCurrent";
 import { useMemo } from "react";
+import { useChatRoomModeFlags } from "@hooks/useChatRoom";
 
 export function useChatRoomMenuActions(currentChatRoomUUID: string) {
     const resetCurrentChatRoomUUID = useResetCurrentChatRoomUUID();
+    const currentModeFlags = useChatRoomModeFlags(currentChatRoomUUID);
 
     const { sendPayload } = useWebSocket(
         "chat",
@@ -77,15 +83,61 @@ export function useChatRoomMenuActions(currentChatRoomUUID: string) {
                     sendPayload(buf);
                 }
             },
-            ["changeChatRoomMode"]: () => {
+            ["changeChatRoomVisibility"]: () => {
+                const sendChangeRoomRequestAsync = () => {
+                    if (currentModeFlags === undefined) {
+                        return;
+                    }
+
+                    const isPrivate =
+                        (currentModeFlags & ChatRoomModeFlags.PRIVATE) !== 0;
+                    const isSecret =
+                        (currentModeFlags & ChatRoomModeFlags.SECRET) !== 0;
+                    const text = isPrivate
+                        ? "공개 방으로 전환하실건가요?"
+                        : "비공개 방으로 전환하실건가요?";
+                    if (!confirm(text)) {
+                        return;
+                    }
+
+                    const modeFlags = toChatRoomModeFlags({
+                        isPrivate: !isPrivate,
+                        isSecret: isSecret,
+                    });
+                    const buf = makeChangeRoomPropertyRequest(
+                        currentChatRoomUUID,
+                        undefined,
+                        modeFlags,
+                        undefined,
+                        undefined,
+                    );
+                    sendPayload(buf);
+                };
+                sendChangeRoomRequestAsync();
+            },
+            ["changeChatRoomPassword"]: () => {
                 const sendChangeRoomRequestAsync = async () => {
-                    const isPrivate = confirm("비공개 방으로 만드실건가요?");
-                    const isSecret = confirm("비밀번호를 설정하실건가요?");
+                    if (currentModeFlags === undefined) {
+                        return;
+                    }
+
+                    const isPrivate =
+                        (currentModeFlags & ChatRoomModeFlags.PRIVATE) !== 0;
+                    const isSecret =
+                        (currentModeFlags & ChatRoomModeFlags.SECRET) !== 0;
+
                     let password = "";
-                    if (isSecret) {
+                    const isSecretNew = confirm("비밀번호를 사용하실건가요?");
+
+                    if (!isSecret && !isSecretNew) {
+                        return;
+                    }
+
+                    if (isSecretNew) {
                         const passwordRaw =
                             prompt("사용할 비밀번호를 입력해주세요");
                         if (passwordRaw === null) {
+                            alert("원래 설정을 유지합니다");
                             return;
                         }
                         password = btoa(
@@ -98,14 +150,14 @@ export function useChatRoomMenuActions(currentChatRoomUUID: string) {
                         );
                     }
                     const modeFlags = toChatRoomModeFlags({
-                        isPrivate,
-                        isSecret,
+                        isPrivate: isPrivate,
+                        isSecret: isSecretNew,
                     });
                     const buf = makeChangeRoomPropertyRequest(
                         currentChatRoomUUID,
                         undefined,
                         modeFlags,
-                        isSecret ? password : undefined,
+                        isSecretNew ? password : undefined,
                         undefined,
                     );
                     sendPayload(buf);
@@ -117,6 +169,7 @@ export function useChatRoomMenuActions(currentChatRoomUUID: string) {
                     `새 인원제한을 입력해주세요: 1 ~ ${MAX_CHAT_MEMBER_CAPACITY}`,
                 );
                 if (newLimitStr === null) {
+                    alert("원래 설정을 유지합니다");
                     return;
                 }
                 const newLimit = Number(newLimitStr);
@@ -150,7 +203,7 @@ export function useChatRoomMenuActions(currentChatRoomUUID: string) {
                 }
             },
         }),
-        [currentChatRoomUUID, sendPayload],
+        [currentChatRoomUUID, currentModeFlags, sendPayload],
     );
 
     return actions;

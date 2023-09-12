@@ -11,7 +11,8 @@ import { useChatRoomMenuActions } from "./useChatRoomMenuActions";
 
 type ChatRoomActions =
     | "changeChatRoomTitle"
-    | "changeChatRoomMode"
+    | "changeChatRoomVisibility"
+    | "changeChatRoomPassword"
     | "changeChatRoomLimit"
     | "delete"
     | "leave";
@@ -25,19 +26,25 @@ type ChatRoomHeaderMenu = {
 
 const chatRoomHeaderMenus: ChatRoomHeaderMenu[] = [
     {
-        name: "방 제목 변경",
+        name: "제목 변경",
         action: "changeChatRoomTitle",
         minRoleLevel: RoleNumber.MANAGER,
         isImportant: false,
     },
     {
-        name: "방 설정 변경",
-        action: "changeChatRoomMode",
+        name: "공개 설정 변경",
+        action: "changeChatRoomVisibility",
         minRoleLevel: RoleNumber.ADMINISTRATOR,
         isImportant: false,
     },
     {
-        name: "방 인원제한 변경",
+        name: "비밀번호 변경",
+        action: "changeChatRoomPassword",
+        minRoleLevel: RoleNumber.ADMINISTRATOR,
+        isImportant: false,
+    },
+    {
+        name: "인원제한 변경",
         action: "changeChatRoomLimit",
         minRoleLevel: RoleNumber.MANAGER,
         isImportant: false,
