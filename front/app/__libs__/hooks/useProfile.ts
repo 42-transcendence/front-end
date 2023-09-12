@@ -18,6 +18,10 @@ export function usePublicProfile(accountUUID: string) {
     return data;
 }
 
+export type TypeWithProfile<T, TProfile> = T & {
+    _profile?: TProfile | undefined;
+};
+
 export function useProtectedProfile(accountUUID: string) {
     const { data } = useSWR(
         () => (accountUUID !== "" ? `/profile/protected/${accountUUID}` : null),
@@ -36,13 +40,10 @@ export function usePublicProfiles<T>(
         () => ["Profiles", "Public", id],
         useCallback(
             async (_key, { arg: accountObjects }: { arg: T[] }) => {
-                const promises = Array<
-                    Promise<
-                        T & {
-                            _profile?: AccountProfilePublicPayload | undefined;
-                        }
-                    >
-                >();
+                const promises =
+                    Array<
+                        Promise<TypeWithProfile<T, AccountProfilePublicPayload>>
+                    >();
                 for (const obj of accountObjects) {
                     const fetchPayload = async () => {
                         try {
@@ -80,15 +81,12 @@ export function useProtectedProfiles<T>(
         () => ["Profiles", "Protected", id],
         useCallback(
             async (_key, { arg: accountObjects }: { arg: T[] }) => {
-                const promises = Array<
-                    Promise<
-                        T & {
-                            _profile?:
-                                | AccountProfileProtectedPayload
-                                | undefined;
-                        }
-                    >
-                >();
+                const promises =
+                    Array<
+                        Promise<
+                            TypeWithProfile<T, AccountProfileProtectedPayload>
+                        >
+                    >();
                 for (const obj of accountObjects) {
                     const fetchPayload = async () => {
                         try {

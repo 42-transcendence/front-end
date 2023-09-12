@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useId, useState } from "react";
 import { ProfileItem } from "@components/ProfileItem";
 import { Avatar } from "../Avatar";
 import { Icon } from "../ImageLibrary";
@@ -8,13 +8,17 @@ import { Provider, createStore, useAtomValue } from "jotai";
 import { FriendEntryListAtom, FriendRequestListAtom } from "@atoms/FriendAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
-import { usePublicProfile } from "@hooks/useProfile";
+import type { TypeWithProfile } from "@hooks/useProfile";
+import { useProtectedProfiles, usePublicProfile } from "@hooks/useProfile";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { NICK_NAME_REGEX } from "@common/profile-constants";
 import {
     makeAddFriendRequest,
     makeDeleteFriendRequest,
 } from "@akasha-utils/chat-payload-builder-client";
+import type { FriendEntry } from "@common/chat-payloads";
+import type { AccountProfileProtectedPayload } from "@common/profile-payloads";
+import { getActiveStatusOrder } from "@common/auth-payloads";
 
 const nickTagSeparator = "#";
 
@@ -69,25 +73,65 @@ export function FriendModal() {
     );
 }
 
+type FriendCompareType = TypeWithProfile<
+    FriendEntry,
+    AccountProfileProtectedPayload
+>;
+
+function compareFriendEntry(e1: FriendCompareType, e2: FriendCompareType) {
+    const profile1 = e1._profile;
+    const profile2 = e2._profile;
+
+    if (profile1 === undefined) return -1;
+    if (profile2 === undefined) return 1;
+
+    if (profile1.activeStatus !== profile2.activeStatus) {
+        return getActiveStatusOrder(profile1.activeStatus) >
+            getActiveStatusOrder(profile2.activeStatus)
+            ? -1
+            : 1;
+    }
+
+    const nick1 = profile1.nickName ?? "";
+    const nick2 = profile2.nickName ?? "";
+
+    if (nick1 !== nick2) {
+        return nick1 > nick2 ? 1 : -1;
+    }
+
+    return profile1.nickTag > profile2.nickTag ? 1 : -1;
+}
+
 function FriendList() {
     const friendEntrySet = useAtomValue(FriendEntryListAtom);
     const [selectedUUID, setSelectedUUID] = useState<string>();
+    const friendProfiles = useProtectedProfiles(
+        useId(),
+        friendEntrySet,
+        useCallback((e: FriendEntry) => e.friendAccountId, []),
+    );
 
-    return friendEntrySet.map((friend) => (
-        <ProfileItem
-            type="FriendModal"
-            key={friend.friendAccountId}
-            accountUUID={friend.friendAccountId}
-            selected={friend.friendAccountId === selectedUUID}
-            onClick={() => {
-                setSelectedUUID(
-                    friend.friendAccountId !== selectedUUID
-                        ? friend.friendAccountId
-                        : undefined,
-                );
-            }}
-        />
-    ));
+    if (friendProfiles === undefined) {
+        return null;
+    }
+
+    return friendProfiles
+        .toSorted((e1, e2) => compareFriendEntry(e1, e2))
+        .map((friend) => (
+            <ProfileItem
+                type="FriendModal"
+                key={friend.friendAccountId}
+                accountUUID={friend.friendAccountId}
+                selected={friend.friendAccountId === selectedUUID}
+                onClick={() => {
+                    setSelectedUUID(
+                        friend.friendAccountId !== selectedUUID
+                            ? friend.friendAccountId
+                            : undefined,
+                    );
+                }}
+            />
+        ));
 }
 
 function FriendRequestList() {
