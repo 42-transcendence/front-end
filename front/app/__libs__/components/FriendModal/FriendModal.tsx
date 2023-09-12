@@ -32,7 +32,7 @@ export function FriendModal() {
             return;
         }
 
-        const nickName = input.slice(0, separator - 1);
+        const nickName = input.slice(0, separator);
         const nickTagStr = input.slice(separator + 1);
 
         if (!NICK_NAME_REGEX.test(nickName)) {
