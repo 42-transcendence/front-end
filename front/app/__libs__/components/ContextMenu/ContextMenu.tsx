@@ -1,7 +1,11 @@
 import { ContextMenuBase } from "./ContextMenuBase";
 import { useAtomValue } from "jotai";
 import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
-import { useProfileRecord, useProtectedProfile } from "@hooks/useProfile";
+import {
+    useProfileRecord,
+    useProtectedProfile,
+    usePublicProfile,
+} from "@hooks/useProfile";
 import { useEffect, useRef, useState } from "react";
 import { useChatMember } from "@hooks/useChatRoom";
 import {
@@ -73,7 +77,8 @@ function ContextMenuItem({
 
 export function ContextMenu({ type }: { type: Scope }) {
     const targetAccountUUID = useAtomValue(TargetedAccountUUIDAtom);
-    const profile = useProtectedProfile(targetAccountUUID);
+    const protectedProfile = useProtectedProfile(targetAccountUUID);
+    const publicProfile = usePublicProfile(targetAccountUUID);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentAccountUUID = useCurrentAccountUUID();
 
@@ -82,18 +87,18 @@ export function ContextMenu({ type }: { type: Scope }) {
 
     const record = useProfileRecord(targetAccountUUID);
 
-    const menus = useContextMenus();
+    const menus = useContextMenus(targetAccountUUID, currentChatRoomUUID);
     const actions = useContextMenuActions(
         targetAccountUUID,
         currentAccountUUID,
         currentChatRoomUUID,
-        profile,
+        publicProfile,
     );
 
     const relationship =
         targetAccountUUID === currentAccountUUID
             ? "myself"
-            : profile !== undefined
+            : protectedProfile !== undefined
             ? "friend"
             : "stranger";
 
@@ -102,7 +107,7 @@ export function ContextMenu({ type }: { type: Scope }) {
         name: `rating: ${skillRating}`,
         action: "noaction",
         relation: ["myself", "friend", "stranger"],
-        scope: ["ChatRoom"],
+        scope: ["ChatRoom", "FriendModal", "Navigation"],
         isImportant: false,
         className: "hover:bg-transparent active:bg-transparent",
     };

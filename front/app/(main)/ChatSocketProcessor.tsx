@@ -79,10 +79,10 @@ function handleEnemySocialError(errno: SocialErrorNumber) {
     let message = "";
     switch (errno) {
         case SocialErrorNumber.ERROR_ALREADY_EXISTS:
-            message = "이미 친구로 추가되어 있습니다.";
+            message = "이미 차단되어 있습니다.";
             break;
         case SocialErrorNumber.ERROR_NOT_FOUND:
-            message = "친구 목록에서 찾을 수 없습니다.";
+            message = "차단 목록에서 찾을 수 없습니다.";
             break;
         case SocialErrorNumber.ERROR_DENIED:
             message = "상대방에게 차단당했습니다.";

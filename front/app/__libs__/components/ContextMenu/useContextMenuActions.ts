@@ -21,7 +21,7 @@ import {
     RoleNumber,
     getActiveStatusNumber,
 } from "@common/generated/types";
-import type { AccountProfileProtectedPayload } from "@common/profile-payloads";
+import type { AccountProfilePublicPayload } from "@common/profile-payloads";
 import {
     useChatMember,
     useSetChatRightSideBarCurrrentPageAtom,
@@ -34,7 +34,7 @@ export function useContextMenuActions(
     targetAccountUUID: string,
     currentAccountUUID: string,
     currentChatRoomUUID: string,
-    profile: AccountProfileProtectedPayload | undefined,
+    profile: AccountProfilePublicPayload | undefined,
 ) {
     // TODO: profile undefined 면 뭘 어떻게 해야??
     const { sendPayload } = useWebSocket("chat", []);

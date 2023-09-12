@@ -1,4 +1,8 @@
+import { FriendEntryListAtom } from "@atoms/FriendAtom";
+import { GlobalStore } from "@atoms/GlobalStore";
 import { RoleNumber } from "@common/generated/types";
+import { useChatMember } from "@hooks/useChatRoom";
+import { useAtomValue } from "jotai";
 
 export type Relationship = "myself" | "friend" | "stranger";
 export type Scope = "ChatRoom" | "FriendModal" | "Navigation";
@@ -31,7 +35,40 @@ export type ProfileMenu = {
     UI?: React.ReactNode | undefined;
 };
 
-export function useContextMenus() {
+export function useContextMenus(
+    targetAccountUUID: string,
+    currentChatRoomUUID: string,
+) {
+    const targetUser = useChatMember(currentChatRoomUUID, targetAccountUUID);
+    const targetRoleLevel = Number(targetUser?.role ?? 0);
+    const friendEntryList = useAtomValue(FriendEntryListAtom, {
+        store: GlobalStore,
+    });
+
+    const isFriend =
+        friendEntryList.find((e) => e.friendAccountId === targetAccountUUID) !==
+        undefined;
+
+    const friendMenu: ProfileMenu = isFriend
+        ? {
+              name: "친구 삭제",
+              action: "deletefriend",
+              relation: ["friend", "stranger"],
+              isImportant: true,
+              minRoleLevel: undefined,
+              scope: ["ChatRoom", "FriendModal", "Navigation"],
+              className: "hover:bg-red-500/30",
+          }
+        : {
+              name: "친구 추가",
+              action: "addfriend",
+              relation: ["stranger"],
+              isImportant: false,
+              minRoleLevel: undefined,
+              scope: ["ChatRoom"],
+              className: "",
+          };
+
     const profileMenus: ProfileMenu[] = [
         {
             name: "태그 복사",
@@ -78,24 +115,7 @@ export function useContextMenus() {
             scope: ["ChatRoom", "FriendModal"],
             className: "",
         },
-        {
-            name: "친구 추가",
-            action: "addfriend",
-            relation: ["stranger"],
-            isImportant: false,
-            minRoleLevel: undefined,
-            scope: ["ChatRoom"],
-            className: "",
-        },
-        {
-            name: "친구 삭제",
-            action: "deletefriend",
-            relation: ["friend"],
-            isImportant: true,
-            minRoleLevel: undefined,
-            scope: ["ChatRoom", "FriendModal", "Navigation"],
-            className: "hover:bg-red-500/30",
-        },
+        friendMenu,
         {
             name: "신고",
             action: "reportuser",
@@ -142,7 +162,10 @@ export function useContextMenus() {
             className: "hover:bg-red-500/30",
         },
         {
-            name: "매니저 임명/해임",
+            name:
+                targetRoleLevel !== (RoleNumber.MANAGER as number)
+                    ? "매니저 임명"
+                    : "매니저 해임",
             action: "changerole",
             relation: ["friend", "stranger"],
             minRoleLevel: RoleNumber.ADMINISTRATOR,
@@ -151,5 +174,6 @@ export function useContextMenus() {
             className: "hover:bg-red-500/30",
         },
     ];
+
     return profileMenus;
 }
