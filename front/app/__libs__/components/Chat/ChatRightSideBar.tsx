@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Icon } from "@components/ImageLibrary";
 import { TextField } from "@components/TextField";
 import { ProfileItem } from "@components/ProfileItem";
@@ -25,6 +25,7 @@ import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
 import { BanCategoryNumber, RoleNumber } from "@common/generated/types";
 import { handleChatError } from "./handleChatError";
 import { makeInviteUserRequest } from "@akasha-utils/chat-payload-builder-client";
+import { usePublicProfiles } from "@hooks/useProfile";
 
 export type RightSideBarContents =
     | "report"
@@ -85,11 +86,23 @@ export default function ChatRightSideBar() {
     const currentChatMembers = useChatRoomMembers(currentChatRoomUUID);
     const [selectedUUID, setSelectedUUID] = useState<string>();
     const [query, setQuery] = useState("");
+    const memberArray =
+        currentChatMembers !== undefined
+            ? [...currentChatMembers.values()]
+            : [];
+    const profiles = usePublicProfiles(
+        useId(),
+        memberArray,
+        (e) => e.accountId,
+    );
     const { results: foundCurrentChatMembers } = useFzf({
-        items: [...(currentChatMembers?.values() ?? [])],
+        items: profiles ?? [],
         itemToString(item) {
-            //TODO: fetch...? Fzf 지우기가 먼저인가? (2) 같은 문제가 InviteList에도 있으니 반드시 참조 바람
-            return item.accountId;
+            const profile = item._profile;
+            if (profile !== undefined) {
+                return `${profile.nickName}#${profile.nickTag}`;
+            }
+            return "";
         },
         limit: 5,
         query,

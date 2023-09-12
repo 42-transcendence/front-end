@@ -307,7 +307,7 @@ export function ChatSocketProcessor() {
             case ChatClientOpcode.FRIEND_REQUEST: {
                 const targetUUID = buffer.readUUID();
                 setFriendRequestList([...friendRequestList, targetUUID]);
-                //TODO: JKONG: 알림?
+                //TODO: JKONG: 알림
                 break;
             }
 
@@ -480,6 +480,7 @@ export function ChatSocketProcessor() {
                 const message = readChatMessage(buffer);
                 await ChatStore.addMessage(message.chatId, message);
 
+                //TODO: JKONG: 알림
                 mutateChatRoom(message.chatId);
                 break;
             }
@@ -494,15 +495,19 @@ export function ChatSocketProcessor() {
             }
 
             case ChatClientOpcode.KICK_NOTIFY: {
-                //FIXME: JKONG: 구현
+                //TODO: JKONG: 알림
                 const chatId = buffer.readUUID();
                 const ban = readChatBanSummary(buffer);
+                void chatId;
+                void ban;
                 break;
             }
             case ChatClientOpcode.MUTE_NOTIFY: {
-                //FIXME: JKONG: 구현
+                //TODO: JKONG: 알림
                 const chatId = buffer.readUUID();
                 const ban = readChatBanSummary(buffer);
+                void chatId;
+                void ban;
                 break;
             }
 
@@ -530,6 +535,7 @@ export function ChatSocketProcessor() {
                     },
                 ]);
 
+                //TODO: JKONG: 알림
                 mutateChatRoom(roomKey);
                 break;
             }
@@ -547,7 +553,6 @@ export function ChatSocketProcessor() {
     return <></>;
 }
 
-//TODO: JKONG: 이 함수가 왜 여기에 있나? ChatDialog에서 갖다 쓴다.
 export function syncCursor(
     chatRoomList: ChatRoomEntry[],
     pair: ChatRoomChatMessagePairEntry,

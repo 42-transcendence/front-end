@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { TextField } from "@components/TextField";
 import { ProfileItemSelectable } from "@components/ProfileItem/ProfileItemSelectable";
 import { FriendEntryListAtom } from "@atoms/FriendAtom";
@@ -10,6 +10,7 @@ import { useFzf } from "react-fzf";
 import type { FriendEntry } from "@common/chat-payloads";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 import { useChatRoomMembers } from "@hooks/useChatRoom";
+import { usePublicProfiles } from "@hooks/useProfile";
 
 export function InviteList({
     className,
@@ -21,19 +22,29 @@ export function InviteList({
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentChatMembers = useChatRoomMembers(currentChatRoomUUID);
     const [query, setQuery] = useState("");
-    const friendEntrySet = useAtomValue(FriendEntryListAtom, {
+    let friendEntrySet = useAtomValue(FriendEntryListAtom, {
         store: GlobalStore,
     });
-    const friendEntrySetUnjoinedOnly = friendEntrySet.filter(
-        (e) =>
-            currentChatMembers !== undefined &&
-            !currentChatMembers.has(e.friendAccountId),
+    if (filterUnjoined) {
+        friendEntrySet = friendEntrySet.filter(
+            (e) =>
+                currentChatMembers !== undefined &&
+                !currentChatMembers.has(e.friendAccountId),
+        );
+    }
+    const profiles = usePublicProfiles(
+        useId(),
+        friendEntrySet,
+        (e) => e.friendAccountId,
     );
     const { results: foundFriendEntrySet } = useFzf({
-        items: filterUnjoined ? friendEntrySetUnjoinedOnly : friendEntrySet,
+        items: profiles ?? [],
         itemToString(item) {
-            //TODO: JKONG: useProfiles로 가져와서 이름 띄워주기.
-            return item.friendAccountId;
+            const profile = item._profile;
+            if (profile !== undefined) {
+                return `${profile.nickName}#${profile.nickTag}`;
+            }
+            return "";
         },
         query,
     });
