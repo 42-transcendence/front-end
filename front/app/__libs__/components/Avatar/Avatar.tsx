@@ -59,19 +59,30 @@ export function Avatar({
 }) {
     const profile = usePublicProfile(accountUUID);
 
-    if (profile === undefined || profile.avatarKey === null) {
+    if (profile === undefined) {
         return <DefaultAvatar className={className} uuid={accountUUID} />;
     }
     return (
         <AvatarBase className={className}>
-            <Image
-                className="relative rounded-full"
-                src={profile.avatarKey}
-                alt="Avatar"
-                sizes="100%"
-                fill={true}
-                loader={imageLoader}
-            />
+            {profile.avatarKey !== null ? (
+                <Image
+                    className="relative rounded-full"
+                    src={profile.avatarKey}
+                    alt="Avatar"
+                    sizes="100%"
+                    fill={true}
+                    loader={imageLoader}
+                />
+            ) : (
+                <Image
+                    className="relative rounded-full"
+                    src={accountUUID}
+                    alt="Avatar"
+                    sizes="100%"
+                    fill={true}
+                    loader={defaultImageLoader}
+                />
+            )}
             {privileged && <PrivilegedSection accountUUID={accountUUID} />}
         </AvatarBase>
     );
