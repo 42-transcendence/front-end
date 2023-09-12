@@ -113,7 +113,7 @@ const profileMenus: ProfileMenu[] = [
         relation: ["friend", "stranger"],
         isImportant: true,
         minRoleLevel: undefined,
-        scope: ["ChatRoom", "FriendModal", "Navigation"],
+        scope: ["ChatRoom"],
         className: "hover:bg-red-500/30",
     },
     {
