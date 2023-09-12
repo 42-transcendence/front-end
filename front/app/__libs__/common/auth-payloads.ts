@@ -25,18 +25,18 @@ export function getRoleLevel(role: Role) {
     return 0;
 }
 
+/// getActiveStatusOrder
 export function getActiveStatusOrder(e: ActiveStatusNumber) {
     switch (e) {
         case ActiveStatusNumber.OFFLINE:
-            return 0;
-        case ActiveStatusNumber.ONLINE:
-            return 50;
-        case ActiveStatusNumber.IDLE:
-            return 30;
         case ActiveStatusNumber.INVISIBLE:
-            return 0;
+            return 1;
         case ActiveStatusNumber.DO_NOT_DISTURB:
             return 20;
+        case ActiveStatusNumber.IDLE:
+            return 30;
+        case ActiveStatusNumber.ONLINE:
+            return 50;
         case ActiveStatusNumber.MATCHING:
             return 99;
         case ActiveStatusNumber.GAME:
