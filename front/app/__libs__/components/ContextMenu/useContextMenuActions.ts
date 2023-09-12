@@ -3,6 +3,7 @@ import {
     makeAddEnemyRequest,
     makeAddFriendRequest,
     makeChangeMemberRoleRequest,
+    makeDeleteEnemyRequest,
     makeDeleteFriendRequest,
     makeHandoverRoomOwnerRequest,
 } from "@akasha-utils/chat-payload-builder-client";
@@ -162,8 +163,12 @@ export function useContextMenuActions(
                         `진짜로 정말로 [${nickName}]님을 친구 목록에서 삭제하실건가요...?`,
                     )
                 ) {
-                    const buf = makeDeleteFriendRequest(targetAccountUUID);
-                    sendPayload(buf);
+                    sendPayload(makeDeleteFriendRequest(targetAccountUUID));
+                }
+            },
+            ["deleteenemy"]: () => {
+                if (confirm(`[${nickName}]님을 차단 해제하시겠습니까?`)) {
+                    sendPayload(makeDeleteEnemyRequest(targetAccountUUID));
                 }
             },
             ["noaction"]: undefined,

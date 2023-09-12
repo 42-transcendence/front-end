@@ -1,4 +1,4 @@
-import { FriendEntryListAtom } from "@atoms/FriendAtom";
+import { EnemyEntryListAtom, FriendEntryListAtom } from "@atoms/FriendAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import { RoleNumber } from "@common/generated/types";
 import { useChatMember } from "@hooks/useChatRoom";
@@ -11,11 +11,12 @@ type ProfileMenuActions =
     | "copytag"
     | "changeactivestatus"
     | "addfriend"
+    | "deletefriend"
     | "directmessage"
     | "logout"
-    | "deletefriend"
     | "gotoprofile"
     | "addenemy"
+    | "deleteenemy"
     | "accessban"
     | "sendban"
     | "reportuser"
@@ -45,8 +46,16 @@ export function useContextMenus(
         store: GlobalStore,
     });
 
+    const enemyEntryList = useAtomValue(EnemyEntryListAtom, {
+        store: GlobalStore,
+    });
+
     const isFriend =
         friendEntryList.find((e) => e.friendAccountId === targetAccountUUID) !==
+        undefined;
+
+    const isEnemy =
+        enemyEntryList.find((e) => e.enemyAccountId === targetAccountUUID) !==
         undefined;
 
     const friendMenu: ProfileMenu = isFriend
@@ -54,10 +63,10 @@ export function useContextMenus(
               name: "친구 삭제",
               action: "deletefriend",
               relation: ["friend", "stranger"],
-              isImportant: true,
+              isImportant: false,
               minRoleLevel: undefined,
               scope: ["ChatRoom", "FriendModal", "Navigation"],
-              className: "hover:bg-red-500/30",
+              className: "",
           }
         : {
               name: "친구 추가",
@@ -66,6 +75,26 @@ export function useContextMenus(
               isImportant: false,
               minRoleLevel: undefined,
               scope: ["ChatRoom"],
+              className: "",
+          };
+
+    const enemyMenu: ProfileMenu = isEnemy
+        ? {
+              name: "차단 해제",
+              action: "deleteenemy",
+              relation: ["friend", "stranger"],
+              isImportant: false,
+              minRoleLevel: undefined,
+              scope: ["ChatRoom", "FriendModal", "Navigation"],
+              className: "",
+          }
+        : {
+              name: "차단",
+              action: "addenemy",
+              relation: ["friend", "stranger"],
+              isImportant: false,
+              minRoleLevel: undefined,
+              scope: ["ChatRoom", "FriendModal", "Navigation"],
               className: "",
           };
 
@@ -120,20 +149,12 @@ export function useContextMenus(
             name: "신고",
             action: "reportuser",
             relation: ["friend", "stranger"],
-            isImportant: true,
-            minRoleLevel: undefined,
-            scope: ["ChatRoom"],
-            className: "hover:bg-red-500/30",
-        },
-        {
-            name: "차단",
-            action: "addenemy",
-            relation: ["friend", "stranger"],
             isImportant: false,
             minRoleLevel: undefined,
-            scope: ["ChatRoom", "FriendModal", "Navigation"],
-            className: "hover:bg-tertiary/30",
+            scope: ["ChatRoom"],
+            className: "",
         },
+        enemyMenu,
         {
             name: "채팅 금지",
             action: "sendban",
