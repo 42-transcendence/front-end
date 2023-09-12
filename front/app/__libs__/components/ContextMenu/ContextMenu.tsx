@@ -15,6 +15,7 @@ import {
 import { useContextMenuActions } from "./useContextMenuActions";
 import type { ProfileMenu, Scope } from "./useContextMenus";
 import { useContextMenus } from "./useContextMenus";
+import { ChangeVisibilityMenu } from "./ChangeVisibilityMenu";
 
 function ContextMenuItem({
     menuInfo,
@@ -114,6 +115,7 @@ export function ContextMenu({ type }: { type: Scope }) {
 
     return (
         <ContextMenuBase>
+            {type === "Navigation" && <ChangeVisibilityMenu />}
             {[rating, ...menus]
                 .filter((menu) => {
                     return (

@@ -1,5 +1,4 @@
 import {
-    makeActiveStatusManualRequest,
     makeAddEnemyRequest,
     makeAddFriendRequest,
     makeChangeMemberRoleRequest,
@@ -17,11 +16,7 @@ import {
 } from "@atoms/ChatAtom";
 import { FriendModalIsOpen } from "@atoms/FriendAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
-import {
-    ActiveStatus,
-    RoleNumber,
-    getActiveStatusNumber,
-} from "@common/generated/types";
+import { RoleNumber } from "@common/generated/types";
 import type { AccountProfilePublicPayload } from "@common/profile-payloads";
 import {
     useChatMember,
@@ -72,14 +67,6 @@ export function useContextMenuActions(
                     .writeText(`${nickName}#${nickTag}`)
                     .then(() => {})
                     .catch(() => {});
-            },
-            ["changeactivestatus"]: () => {
-                // TODO: 입력으로 받기
-                const newActiveStatus = ActiveStatus.INVISIBLE;
-                const buf = makeActiveStatusManualRequest(
-                    getActiveStatusNumber(newActiveStatus),
-                );
-                sendPayload(buf);
             },
             ["addfriend"]: () => {
                 const buf = makeAddFriendRequest(

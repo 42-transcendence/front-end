@@ -9,7 +9,6 @@ export type Scope = "ChatRoom" | "FriendModal" | "Navigation";
 
 type ProfileMenuActions =
     | "copytag"
-    | "changeactivestatus"
     | "addfriend"
     | "deletefriend"
     | "directmessage"
@@ -106,15 +105,6 @@ export function useContextMenus(
             isImportant: false,
             minRoleLevel: undefined,
             scope: ["ChatRoom", "FriendModal", "Navigation"],
-            className: "",
-        },
-        {
-            name: "내 상태 변경",
-            action: "changeactivestatus",
-            relation: ["myself"],
-            isImportant: false,
-            minRoleLevel: undefined,
-            scope: ["Navigation"],
             className: "",
         },
         {
