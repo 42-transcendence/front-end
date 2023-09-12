@@ -5,13 +5,15 @@ import { Separator } from "./GameHistoryPanel";
 import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { SelectAvatar } from "@/app/(main)/@home/welcome2/SelectAvatar";
-import { GenerateQRButton } from "@components/QRCodeCanvas";
+import type { OTPAuthInfo } from "@components/QRCodeCanvas";
+import { QRCodeCanvas } from "@components/QRCodeCanvas";
+import { fetcherOTP } from "@hooks/fetcher";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
     const profile = usePublicProfile(accountUUID);
     const [editAvatar, setEditAvatar] = useState(false);
-    const [otp, setOTP] = useState(false);
+    const [authInfo, setAuthInfo] = useState<OTPAuthInfo | null>(null);
 
     if (profile === undefined) {
         return <div>loading...</div>;
@@ -54,15 +56,22 @@ export function EditPanel() {
 
                 <EditPanelItemHeader>
                     <EditPanelItemHeaderTitle>
-                        <button type="button" onClick={() => setOTP(!otp)}>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                fetcherOTP()
+                                    .then((r) => {
+                                        setAuthInfo(r);
+                                    })
+                                    .catch(() => {});
+                            }}
+                        >
                             2차 인증 설정
                         </button>
                     </EditPanelItemHeaderTitle>
                     <EditPanelItemHeaderContent>
-                        {otp && (
-                            <>
-                                <GenerateQRButton />
-                            </>
+                        {authInfo !== null && (
+                            <QRCodeCanvas authInfo={authInfo} />
                         )}
                     </EditPanelItemHeaderContent>
                 </EditPanelItemHeader>
@@ -70,6 +79,14 @@ export function EditPanel() {
         </Panel>
     );
 }
+
+export const example = {
+    data: "sample-bas32-string",
+    enabled: false,
+    algorithm: "SHA-256",
+    codeDigits: 6,
+    movingPeriod: 30,
+};
 
 function EditPanelItem({ children }: PropsWithChildren) {
     return <div className="flex flex-col">{children}</div>;

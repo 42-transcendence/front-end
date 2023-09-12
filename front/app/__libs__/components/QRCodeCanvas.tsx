@@ -5,26 +5,28 @@ import QRCode from "qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
 // import { Dialog } from "@headlessui/react";
 
-type Base64String = string & { __base32__: never };
+type Base32String = string & { __base32__: never };
 
-type AuthInfo = {
-    secret: Base64String;
-    issuer: string;
-    subject: string;
+export type OTPAuthInfo = {
+    data: Base32String;
+    algorithm: "SHA256";
+    codeDigits: number;
+    movingPeriod: number;
 };
 
 const authInfo = {
-    secret: "ZGVlcF9kYXJrX3NlY3JldA==" as Base64String,
-    issuer: "doublesharp",
-    subject: "test-oauth",
+    data: "ZGVlcF9kYXJrX3NlY3JldA==" as Base32String,
+    algorithm: "SHA256" as const,
+    codeDigits: 6,
+    movingPeriod: 30,
 };
 
-export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
+export function QRCodeCanvas({ authInfo }: { authInfo: OTPAuthInfo }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const router = useRouter();
     const [uri, setURI] = useState("");
-    const digits = 6;
-    const period = 30;
+    const issuer = "doublesharp";
+    const subject = "2fa";
 
     // TODO: 이러면 되나...? nextjs문서에서 외부 링크는 router.push말고 그냥 window location쓰래서 이렇게 해놨습니다 일단
     const handleClick = useCallback(() => {
@@ -39,12 +41,12 @@ export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
 
         const uri = new URL("otpauth://");
         uri.hostname = "totp";
-        uri.pathname = `${authInfo.issuer}:${authInfo.subject}`;
-        uri.searchParams.set("secret", authInfo.secret);
-        uri.searchParams.set("issuer", authInfo.issuer);
-        uri.searchParams.set("algorithm", "SHA-512");
-        uri.searchParams.set("digits", digits.toString());
-        uri.searchParams.set("period", period.toString());
+        uri.pathname = `${issuer}:${subject}`;
+        uri.searchParams.set("secret", authInfo.data);
+        uri.searchParams.set("issuer", issuer);
+        uri.searchParams.set("algorithm", "SHA256");
+        uri.searchParams.set("digits", authInfo.codeDigits.toString());
+        uri.searchParams.set("period", authInfo.movingPeriod.toString());
 
         const errorCallback = (e: Error | null | undefined) => {
             if (e instanceof Error) {
@@ -54,7 +56,7 @@ export function QRCodeCanvas({ authInfo }: { authInfo: AuthInfo }) {
 
         QRCode.toCanvas(canvas, uri.toString(), errorCallback);
         setURI(uri.toString());
-    }, [authInfo.issuer, authInfo.secret, authInfo.subject]);
+    }, [authInfo.codeDigits, authInfo.data, authInfo.movingPeriod]);
 
     // TODO: add tailwind css
     // TODO: Add link!!
