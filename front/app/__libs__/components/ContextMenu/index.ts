@@ -1,2 +1,2 @@
-export type { Relationship } from "./ContextMenu";
+export type { Relationship, Scope, ProfileMenu } from "./useContextMenus";
 export { ContextMenu } from "./ContextMenu";

@@ -1,6 +1,5 @@
 import { Game } from "@components/ImageLibrary";
 import { CreateGameButton, QuickMatchButton } from "./GameButton";
-import { LogoutButton } from "./LogoutButton";
 
 function HelloWorldPaper() {
     return (

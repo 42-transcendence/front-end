@@ -1,4 +1,3 @@
-import { logoutAction } from "@/app/(main)/@home/(nav)/logoutAction";
 import {
     makeActiveStatusManualRequest,
     makeAddEnemyRequest,
@@ -29,6 +28,7 @@ import {
 } from "@hooks/useChatRoom";
 import { useSetAtom } from "jotai";
 import { useMemo } from "react";
+import { logoutAction } from "./logoutAction";
 
 export function useContextMenuActions(
     targetAccountUUID: string,
@@ -81,7 +81,6 @@ export function useContextMenuActions(
                 sendPayload(buf);
             },
             ["addfriend"]: () => {
-                // TODO: true: add friend by nick + tag, false: by id
                 const buf = makeAddFriendRequest(
                     targetAccountUUID,
                     "",
@@ -89,11 +88,7 @@ export function useContextMenuActions(
                 );
                 sendPayload(buf);
             },
-            // ["editmyprofile"]: () => {
-            // },
-            ["modifyfriend"]: () => {},
             ["logout"]: () => {
-                // TODO: 현재 이 함수 (nav)폴더에 있는데 어디로 옮기지? util? 아니면 여기 이 폴더?
                 logoutAction();
             },
             ["gotoprofile"]: () => {
@@ -105,9 +100,7 @@ export function useContextMenuActions(
                         `진짜로 정말로 [${nickName}]님을 차단하실건가요...?`,
                     )
                 ) {
-                    const reason = prompt("왜요...?") ?? "그냥";
-                    const buf = makeAddEnemyRequest(targetAccountUUID, reason);
-                    sendPayload(buf);
+                    sendPayload(makeAddEnemyRequest(targetAccountUUID, ""));
                 }
             },
             ["reportuser"]: () => {
@@ -173,6 +166,7 @@ export function useContextMenuActions(
                     sendPayload(buf);
                 }
             },
+            ["noaction"]: undefined,
         }),
         [
             currentAccountUUID,
