@@ -105,7 +105,7 @@ export function useContextMenus(
             relation: ["myself", "friend", "stranger"],
             isImportant: false,
             minRoleLevel: undefined,
-            scope: ["ChatRoom"],
+            scope: ["ChatRoom", "FriendModal", "Navigation"],
             className: "",
         },
         {
