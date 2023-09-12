@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { DigitBlock } from "./DigitBlock";
 import { useRefArray } from "@hooks/useRefArray";
 import { useStateArray } from "@hooks/useStateArray";
-import { usePromotionOTP } from "@hooks/usePromotionOTP";
+import { usePromotionOTP } from "@hooks/useOTP";
 
 export function OTPInputBlocks({ length }: { length: number }) {
     const [values, setValuesAt] = useStateArray(length, "");

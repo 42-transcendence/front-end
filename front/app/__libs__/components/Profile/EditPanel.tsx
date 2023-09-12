@@ -5,11 +5,13 @@ import { Separator } from "./GameHistoryPanel";
 import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { SelectAvatar } from "@/app/(main)/@home/welcome2/SelectAvatar";
+import { GenerateQRButton } from "@components/QRCodeCanvas";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
     const profile = usePublicProfile(accountUUID);
     const [editAvatar, setEditAvatar] = useState(false);
+    const [otp, setOTP] = useState(false);
 
     if (profile === undefined) {
         return <div>loading...</div>;
@@ -47,6 +49,21 @@ export function EditPanel() {
                     </EditPanelItemHeaderTitle>
                     <EditPanelItemHeaderContent>
                         {editAvatar && <SelectAvatar />}
+                    </EditPanelItemHeaderContent>
+                </EditPanelItemHeader>
+
+                <EditPanelItemHeader>
+                    <EditPanelItemHeaderTitle>
+                        <button type="button" onClick={() => setOTP(!otp)}>
+                            2차 인증 설정
+                        </button>
+                    </EditPanelItemHeaderTitle>
+                    <EditPanelItemHeaderContent>
+                        {otp && (
+                            <>
+                                <GenerateQRButton />
+                            </>
+                        )}
                     </EditPanelItemHeaderContent>
                 </EditPanelItemHeader>
             </EditPanelItem>
