@@ -8,7 +8,7 @@ import type {
 import { useCurrentAccountUUID } from "./useCurrent";
 import { useSWRConfig } from "swr";
 import { useCallback } from "react";
-import { RecordEntity } from "@common/generated/types";
+import type { RecordEntity } from "@common/generated/types";
 
 export function usePublicProfile(accountUUID: string) {
     const { data } = useSWR(

@@ -122,7 +122,7 @@ export function ChatHeader() {
     const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const roomType = currentChatRoomIsDirect ? "다이렉트 메시지" : "그룹 채팅";
     const targetProfile = useProtectedProfile(
-        extractTargetFromDirectChatKey(currentChatRoomUUID),
+        currentChatRoomIsDirect ? extractTargetFromDirectChatKey(currentChatRoomUUID) : "",
     );
 
     const title = currentChatRoomIsDirect ? (
