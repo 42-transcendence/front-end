@@ -10,7 +10,9 @@ import { useFzf } from "react-fzf";
 import type { FriendEntry } from "@common/chat-payloads";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 import { useChatRoomMembers } from "@hooks/useChatRoom";
+import type { TypeWithProfile } from "@hooks/useProfile";
 import { usePublicProfiles } from "@hooks/useProfile";
+import type { AccountProfilePublicPayload } from "@common/profile-payloads";
 
 export function InviteList({
     className,
@@ -73,17 +75,45 @@ export function InviteList({
                 onChange={(event) => setQuery(event.target.value)}
             />
             <div className="flex h-full flex-col items-center gap-1 self-stretch overflow-auto">
-                {foundFriendEntrySet.map((item) => (
-                    <ProfileItemSelectable
-                        key={item.friendAccountId}
-                        accountUUID={item.friendAccountId}
-                        selected={selectedAccountUUIDs.includes(
-                            item.friendAccountId,
-                        )}
-                        onClick={handleClick(item)}
-                    />
-                ))}
+                {foundFriendEntrySet
+                    .toSorted((e1, e2) => comparePublicFriendEntry(e1, e2))
+                    .map((item) => (
+                        <ProfileItemSelectable
+                            key={item.friendAccountId}
+                            accountUUID={item.friendAccountId}
+                            selected={selectedAccountUUIDs.includes(
+                                item.friendAccountId,
+                            )}
+                            onClick={handleClick(item)}
+                        />
+                    ))}
             </div>
         </form>
     );
+}
+
+// TODO: 파일로 옮길것
+type PublicFriendCompareType = TypeWithProfile<
+    FriendEntry,
+    AccountProfilePublicPayload
+>;
+
+function comparePublicFriendEntry(
+    e1: PublicFriendCompareType,
+    e2: PublicFriendCompareType,
+) {
+    const profile1 = e1._profile;
+    const profile2 = e2._profile;
+
+    if (profile1 === undefined) return -1;
+    if (profile2 === undefined) return 1;
+
+    const nick1 = profile1.nickName ?? "";
+    const nick2 = profile2.nickName ?? "";
+
+    if (nick1 !== nick2) {
+        return nick1 > nick2 ? 1 : -1;
+    }
+
+    return profile1.nickTag > profile2.nickTag ? 1 : -1;
 }

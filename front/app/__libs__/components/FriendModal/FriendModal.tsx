@@ -73,12 +73,16 @@ export function FriendModal() {
     );
 }
 
-type FriendCompareType = TypeWithProfile<
+// TODO: 파일로 옮길것
+type ProtectedFriendCompareType = TypeWithProfile<
     FriendEntry,
     AccountProfileProtectedPayload
 >;
 
-function compareFriendEntry(e1: FriendCompareType, e2: FriendCompareType) {
+function compareProtectedFriendEntry(
+    e1: ProtectedFriendCompareType,
+    e2: ProtectedFriendCompareType,
+) {
     const profile1 = e1._profile;
     const profile2 = e2._profile;
 
@@ -116,7 +120,7 @@ function FriendList() {
     }
 
     return friendProfiles
-        .toSorted((e1, e2) => compareFriendEntry(e1, e2))
+        .toSorted((e1, e2) => compareProtectedFriendEntry(e1, e2))
         .map((friend) => (
             <ProfileItem
                 type="FriendModal"

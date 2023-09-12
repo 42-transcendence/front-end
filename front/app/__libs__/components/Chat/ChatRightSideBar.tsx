@@ -25,7 +25,10 @@ import { ChatRightSideBarCurrrentPage } from "@atoms/ChatAtom";
 import { BanCategoryNumber, RoleNumber } from "@common/generated/types";
 import { handleChatError } from "./handleChatError";
 import { makeInviteUserRequest } from "@akasha-utils/chat-payload-builder-client";
+import type { TypeWithProfile } from "@hooks/useProfile";
 import { usePublicProfiles } from "@hooks/useProfile";
+import type { MemberSchema } from "@akasha-utils/idb/chat-store";
+import type { AccountProfilePublicPayload } from "@common/profile-payloads";
 
 export type RightSideBarContents =
     | "report"
@@ -34,6 +37,28 @@ export type RightSideBarContents =
     | "sendBanMemberList"
     | "accessBanMemberList"
     | undefined;
+
+type MemberCompareType = TypeWithProfile<
+    MemberSchema,
+    AccountProfilePublicPayload
+>;
+
+function compareMemberSchema(e1: MemberCompareType, e2: MemberCompareType) {
+    const profile1 = e1._profile;
+    const profile2 = e2._profile;
+
+    if (profile1 === undefined) return -1;
+    if (profile2 === undefined) return 1;
+
+    const nick1 = profile1.nickName ?? "";
+    const nick2 = profile2.nickName ?? "";
+
+    if (nick1 !== nick2) {
+        return nick1 > nick2 ? 1 : -1;
+    }
+
+    return profile1.nickTag > profile2.nickTag ? 1 : -1;
+}
 
 // TODO: refactoring 하고 어떻게 잘 함수 분리해보기
 
@@ -183,9 +208,7 @@ export default function ChatRightSideBar() {
                     </div>
 
                     <div
-                        className={`${
-                            currentPage !== undefined && "invisible"
-                        }`}
+                        className={currentPage !== undefined ? "invisible" : ""}
                     >
                         <input
                             onChange={() => setInviteToggle(!inviteToggle)}
@@ -238,21 +261,27 @@ export default function ChatRightSideBar() {
                             onChange={(event) => setQuery(event.target.value)}
                         />
                         <div className="h-fit w-full overflow-auto">
-                            {foundCurrentChatMembers.map((item) => (
-                                <ProfileItem
-                                    type="ChatRoom"
-                                    key={item.accountId}
-                                    accountUUID={item.accountId}
-                                    selected={item.accountId === selectedUUID}
-                                    onClick={() =>
-                                        setSelectedUUID(
-                                            item.accountId !== selectedUUID
-                                                ? item.accountId
-                                                : undefined,
-                                        )
-                                    }
-                                />
-                            ))}
+                            {foundCurrentChatMembers
+                                .toSorted((e1, e2) =>
+                                    compareMemberSchema(e1, e2),
+                                )
+                                .map((item) => (
+                                    <ProfileItem
+                                        type="ChatRoom"
+                                        key={item.accountId}
+                                        accountUUID={item.accountId}
+                                        selected={
+                                            item.accountId === selectedUUID
+                                        }
+                                        onClick={() =>
+                                            setSelectedUUID(
+                                                item.accountId !== selectedUUID
+                                                    ? item.accountId
+                                                    : undefined,
+                                            )
+                                        }
+                                    />
+                                ))}
                         </div>
                     </>
                 )}
