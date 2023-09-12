@@ -358,6 +358,7 @@ export function ChatSocketProcessor() {
                         ),
                     );
                 }
+                mutateProfile(friendUUID);
                 break;
             }
 
@@ -439,6 +440,7 @@ export function ChatSocketProcessor() {
                     ...chatRoomList.filter((e) => e.id !== chatRoom.id),
                     { ...existsRoom, ...chatRoom },
                 ]);
+                mutateChatRoom(chatRoom.id);
                 break;
             }
             case ChatClientOpcode.REMOVE_ROOM: {

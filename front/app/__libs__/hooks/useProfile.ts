@@ -14,6 +14,7 @@ export function usePublicProfile(accountUUID: string) {
     const { data } = useSWR(
         () => (accountUUID !== "" ? `/profile/public/${accountUUID}` : null),
         fetcher<AccountProfilePublicPayload>,
+        { errorRetryCount: 0 },
     );
     return data;
 }
@@ -22,6 +23,7 @@ export function useProtectedProfile(accountUUID: string) {
     const { data } = useSWR(
         () => (accountUUID !== "" ? `/profile/protected/${accountUUID}` : null),
         fetcher<AccountProfileProtectedPayload>,
+        { errorRetryCount: 0 },
     );
     return data;
 }
@@ -121,6 +123,7 @@ export function usePrivateProfile() {
     const { data } = useSWR(
         () => (currentAccountUUID !== "" ? "/profile/private" : null),
         fetcher<AccountProfilePrivatePayload>,
+        { errorRetryCount: 0 },
     );
     return data;
 }
