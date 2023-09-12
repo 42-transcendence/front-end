@@ -21,13 +21,12 @@ export function RightSideBarInput() {
         <input
             className="peer/right invisible absolute"
             type="radio"
-            onClick={() => {
+            onChange={() => {
                 setToOpen(false);
             }}
             checked={close}
             name="rightRadio"
             id="rightSideBarIcon"
-            defaultChecked
         />
     );
 }
@@ -39,10 +38,9 @@ export function LeftSideBarInput() {
         <input
             className="peer/left invisible absolute"
             type="radio"
-            onClick={() => {
+            onChange={() => {
                 setToOpen(false);
             }}
-            readOnly
             checked={close}
             name="leftRadio"
             id="forCloseLeftSideBar"
@@ -67,7 +65,7 @@ function LeftSidebarButton() {
                 readOnly
                 className="peer/headerleft hidden"
                 checked={open}
-                onClick={() => setToOpen(true)}
+                onChange={() => setToOpen(true)}
                 type="radio"
                 name="leftRadio"
                 id="forOpenLeftSideBar"
@@ -99,7 +97,7 @@ function RightSidebarButton() {
             <input
                 className="peer/headerright hidden"
                 checked={open}
-                onClick={() => setToOpen(true)}
+                onChange={() => setToOpen(true)}
                 type="radio"
                 name="rightRadio"
                 id="rightHeaderIcon"
