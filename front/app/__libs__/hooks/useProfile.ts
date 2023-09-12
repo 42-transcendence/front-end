@@ -1,5 +1,5 @@
 import { HTTPError, fetcher } from "./fetcher";
-import { useSWR } from "./useSWR";
+import { useSWR, useSWRMutation } from "./useSWR";
 import type {
     AccountProfilePrivatePayload,
     AccountProfileProtectedPayload,
@@ -7,7 +7,7 @@ import type {
 } from "@common/profile-payloads";
 import { useCurrentAccountUUID } from "./useCurrent";
 import { useSWRConfig } from "swr";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import type { RecordEntity } from "@common/generated/types";
 
 export function usePublicProfile(accountUUID: string) {
@@ -31,34 +31,42 @@ export function usePublicProfiles<T>(
     accountObjects: T[],
     accountUUIDSelector: (arg: T) => string,
 ) {
-    const { data } = useSWR(
+    const { trigger, data } = useSWRMutation(
         () => ["Profiles", "Public", id],
-        useCallback(async () => {
-            const promises = Array<
-                Promise<
-                    T & {
-                        _profile?: AccountProfilePublicPayload | undefined;
-                    }
-                >
-            >();
-            for (const obj of accountObjects) {
-                const fetchPayload = async () => {
-                    try {
-                        const profile =
-                            await fetcher<AccountProfilePublicPayload>(
-                                `/profile/public/${accountUUIDSelector(obj)}`,
-                            );
-                        return { ...obj, _profile: profile };
-                    } catch {
-                        return { ...obj, _profile: undefined };
-                    }
-                };
-                promises.push(fetchPayload());
-            }
-            return await Promise.all(promises);
-        }, [accountObjects, accountUUIDSelector]),
-        { refreshInterval: 0, revalidateOnFocus: false },
+        useCallback(
+            async (_key, { arg: accountObjects }: { arg: T[] }) => {
+                const promises = Array<
+                    Promise<
+                        T & {
+                            _profile?: AccountProfilePublicPayload | undefined;
+                        }
+                    >
+                >();
+                for (const obj of accountObjects) {
+                    const fetchPayload = async () => {
+                        try {
+                            const profile =
+                                await fetcher<AccountProfilePublicPayload>(
+                                    `/profile/public/${accountUUIDSelector(
+                                        obj,
+                                    )}`,
+                                );
+                            return { ...obj, _profile: profile };
+                        } catch {
+                            return { ...obj, _profile: undefined };
+                        }
+                    };
+                    promises.push(fetchPayload());
+                }
+                return await Promise.all(promises);
+            },
+            [accountUUIDSelector],
+        ),
+        { revalidate: false },
     );
+    useEffect(() => {
+        void trigger(accountObjects);
+    }, [trigger, accountObjects]);
     return data;
 }
 
@@ -67,36 +75,44 @@ export function useProtectedProfiles<T>(
     accountObjects: T[],
     accountUUIDSelector: (arg: T) => string,
 ) {
-    const { data } = useSWR(
+    const { trigger, data } = useSWRMutation(
         () => ["Profiles", "Protected", id],
-        useCallback(async () => {
-            const promises = Array<
-                Promise<
-                    T & {
-                        _profile?: AccountProfileProtectedPayload | undefined;
-                    }
-                >
-            >();
-            for (const obj of accountObjects) {
-                const fetchPayload = async () => {
-                    try {
-                        const profile =
-                            await fetcher<AccountProfileProtectedPayload>(
-                                `/profile/protected/${accountUUIDSelector(
-                                    obj,
-                                )}`,
-                            );
-                        return { ...obj, _profile: profile };
-                    } catch {
-                        return { ...obj, _profile: undefined };
-                    }
-                };
-                promises.push(fetchPayload());
-            }
-            return await Promise.all(promises);
-        }, [accountObjects, accountUUIDSelector]),
-        { refreshInterval: 0, revalidateOnFocus: false },
+        useCallback(
+            async (_key, { arg: accountObjects }: { arg: T[] }) => {
+                const promises = Array<
+                    Promise<
+                        T & {
+                            _profile?:
+                                | AccountProfileProtectedPayload
+                                | undefined;
+                        }
+                    >
+                >();
+                for (const obj of accountObjects) {
+                    const fetchPayload = async () => {
+                        try {
+                            const profile =
+                                await fetcher<AccountProfileProtectedPayload>(
+                                    `/profile/protected/${accountUUIDSelector(
+                                        obj,
+                                    )}`,
+                                );
+                            return { ...obj, _profile: profile };
+                        } catch {
+                            return { ...obj, _profile: undefined };
+                        }
+                    };
+                    promises.push(fetchPayload());
+                }
+                return await Promise.all(promises);
+            },
+            [accountUUIDSelector],
+        ),
+        { revalidate: false },
     );
+    useEffect(() => {
+        void trigger(accountObjects);
+    }, [trigger, accountObjects]);
     return data;
 }
 
