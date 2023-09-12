@@ -30,6 +30,7 @@ import { makeEnterRoomRequest } from "@akasha-utils/chat-payload-builder-client"
 import { digestMessage, encodeUTF8 } from "@akasha-lib";
 import { handleChatError } from "./handleChatError";
 import { useCallback } from "react";
+import Image from "next/image";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -56,15 +57,40 @@ export function prettifyBanSummaryEntries(bans: ChatBanSummaryEntry[]) {
         .join("\n\n");
 }
 
-function RoomBlockThumbnail({ accountUUID }: { accountUUID: string }) {
+function RoomBlockThumbnail({
+    isAccountUUID,
+    uuid,
+}: {
+    isAccountUUID: boolean;
+    uuid: string;
+}) {
     return (
         <div className="flex w-fit items-center justify-center gap-2.5">
             <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-slate-600">
-                <Avatar
-                    className="relative h-10 w-10"
-                    accountUUID={accountUUID}
-                    privileged={false}
-                />
+                {isAccountUUID ? (
+                    <Avatar
+                        className="relative h-10 w-10"
+                        accountUUID={uuid}
+                        privileged={false}
+                    />
+                ) : (
+                    <div className="relative flex aspect-square h-10 w-10 items-start gap-2.5 rounded-full">
+                        <Image
+                            className="relative rounded-full"
+                            src={uuid}
+                            alt="chatting room thumbnail"
+                            sizes="100%"
+                            fill={true}
+                            loader={({
+                                src,
+                                width: _width,
+                                quality: _quality,
+                            }) =>
+                                `https://www.gravatar.com/avatar/${src}?d=identicon`
+                            }
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -97,10 +123,7 @@ export function ChatRoomBlock({
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
         >
             <div className="flex h-fit flex-row items-center gap-4 self-stretch">
-                <RoomBlockThumbnail
-                    accountUUID={chatRoom.members[0].accountId}
-                />
-
+                <RoomBlockThumbnail isAccountUUID={false} uuid={roomUUID} />
                 <ChatRoomInfo
                     lastMessageContent={lastMessageContent}
                     modeFlags={modeFlags}
@@ -148,7 +171,10 @@ export function ChatDirectRoomBlock({
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
         >
             <div className="flex h-fit flex-row items-center gap-4 self-stretch">
-                <RoomBlockThumbnail accountUUID={chatRoom.targetAccountId} />
+                <RoomBlockThumbnail
+                    isAccountUUID={true}
+                    uuid={chatRoom.targetAccountId}
+                />
                 <ChatRoomInfo
                     chatRoomId={roomUUID}
                     modeFlags={modeFlags}
@@ -246,8 +272,7 @@ export function ChatPublicRoomBlock({
             className="relative w-full rounded-lg px-2 outline-none focus-within:outline-primary/70 hover:bg-primary/30 active:bg-secondary/80"
         >
             <div className="flex h-fit flex-row items-center gap-4 self-stretch">
-                {/*//FIXME: id 알 수가 없음.. .*/}
-                <RoomBlockThumbnail accountUUID={chatRoom.id} />
+                <RoomBlockThumbnail isAccountUUID={false} uuid={chatRoom.id} />
                 <ChatRoomInfo
                     chatRoomId={chatRoom.id}
                     lastMessageContent={lastMessageContent}
