@@ -40,7 +40,7 @@ function parseNickAndTag(
 ): [nick: string, tag: number, isValid: boolean] {
     const paramKeys = Object.keys(params);
     const isValid =
-        profile !== undefined &&
+        profile !== undefined && // TODO: 맞나? 확인하기
         paramKeys.length === 1 &&
         isValidProfileId(params.id);
 

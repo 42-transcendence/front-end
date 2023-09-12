@@ -1,15 +1,19 @@
-import type { PropsWithChildren } from "react";
+import { useState, type PropsWithChildren } from "react";
 import { Panel } from "./Panel";
 import { Avatar } from "../Avatar";
 import { Separator } from "./GameHistoryPanel";
 import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
+import { SelectAvatar } from "@/app/(main)/@home/welcome2/SelectAvatar";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
-    console.log(accountUUID);
-
     const profile = usePublicProfile(accountUUID);
+    const [editAvatar, setEditAvatar] = useState(false);
+
+    if (profile === undefined) {
+        return <div>loading...</div>;
+    }
 
     return (
         <Panel className="flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1">
@@ -26,15 +30,24 @@ export function EditPanel() {
                     <Separator />
                     <EditPanelItemHeaderContent>
                         <div className="flex flex-col">
-                            <span>{profile?.nickName}</span>
-                            <span>{profile?.nickTag}</span>
+                            <span>{profile.nickName}</span>
+                            <span>{profile.nickTag}</span>
                         </div>
                     </EditPanelItemHeaderContent>
                 </EditPanelItemHeader>
 
                 <EditPanelItemHeader>
-                    <EditPanelItemHeaderTitle></EditPanelItemHeaderTitle>
-                    <EditPanelItemHeaderContent></EditPanelItemHeaderContent>
+                    <EditPanelItemHeaderTitle>
+                        <button
+                            type="button"
+                            onClick={() => setEditAvatar(!editAvatar)}
+                        >
+                            아바타 변경
+                        </button>
+                    </EditPanelItemHeaderTitle>
+                    <EditPanelItemHeaderContent>
+                        {editAvatar && <SelectAvatar />}
+                    </EditPanelItemHeaderContent>
                 </EditPanelItemHeader>
             </EditPanelItem>
         </Panel>
