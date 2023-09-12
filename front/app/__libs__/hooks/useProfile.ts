@@ -8,6 +8,7 @@ import type {
 import { useCurrentAccountUUID } from "./useCurrent";
 import { useSWRConfig } from "swr";
 import { useCallback } from "react";
+import { RecordEntity } from "@common/generated/types";
 
 export function usePublicProfile(accountUUID: string) {
     const { data } = useSWR(
@@ -139,4 +140,13 @@ export function useNickLookup(name: string, tag: number) {
         isLoading: result.isLoading,
         notFound,
     };
+}
+
+export function useProfileRecord(accountUUID: string) {
+    const { data } = useSWR(
+        () =>
+            accountUUID !== "" ? `/profile/public/${accountUUID}/record` : null,
+        fetcher<RecordEntity>,
+    );
+    return data;
 }

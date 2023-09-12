@@ -6,7 +6,7 @@ import { setLocalStorageItem } from "./storage";
 
 export const ACCESS_TOKEN_KEY = "access_token";
 export const REFRESH_TOKEN_KEY = "refresh_token";
-export const URL_BASE = "https://back.stri.dev";
+export const URL_BASE = "https://back.stri.dev"; // TODO: 나중에 변수 파일로 빼기
 
 const LAST_REFRESH_TIMESTAMP = "_refresh";
 
