@@ -23,7 +23,10 @@ import {
     getActiveStatusNumber,
 } from "@common/generated/types";
 import type { AccountProfileProtectedPayload } from "@common/profile-payloads";
-import { useSetChatRightSideBarCurrrentPageAtom } from "@hooks/useChatRoom";
+import {
+    useChatMember,
+    useSetChatRightSideBarCurrrentPageAtom,
+} from "@hooks/useChatRoom";
 import { useSetAtom } from "jotai";
 import { useMemo } from "react";
 
@@ -36,6 +39,8 @@ export function useContextMenuActions(
     // TODO: profile undefined 면 뭘 어떻게 해야??
     const { sendPayload } = useWebSocket("chat", []);
     const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
+    const targetUser = useChatMember(currentChatRoomUUID, targetAccountUUID);
+    const targetRoleLevel = Number(targetUser?.role ?? 0);
 
     const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom, {
         store: GlobalStore,
@@ -133,16 +138,29 @@ export function useContextMenuActions(
                     );
                 }
             },
-            ["grant"]: () => {
-                if (confirm("매니저 지정하시겠습니까?")) {
-                    const targetRole = RoleNumber.MANAGER;
-                    sendPayload(
-                        makeChangeMemberRoleRequest(
-                            currentChatRoomUUID,
-                            targetAccountUUID,
-                            targetRole,
-                        ),
-                    );
+            ["changerole"]: () => {
+                if (targetRoleLevel === (RoleNumber.USER as number)) {
+                    if (confirm("매니저로 임명하시겠습니까?")) {
+                        const targetRole = RoleNumber.MANAGER;
+                        sendPayload(
+                            makeChangeMemberRoleRequest(
+                                currentChatRoomUUID,
+                                targetAccountUUID,
+                                targetRole,
+                            ),
+                        );
+                    }
+                } else if (targetRoleLevel === (RoleNumber.MANAGER as number)) {
+                    if (confirm("매니저를 해임하시겠습니까?")) {
+                        const targetRole = RoleNumber.USER;
+                        sendPayload(
+                            makeChangeMemberRoleRequest(
+                                currentChatRoomUUID,
+                                targetAccountUUID,
+                                targetRole,
+                            ),
+                        );
+                    }
                 }
             },
             ["deletefriend"]: () => {
@@ -169,6 +187,7 @@ export function useContextMenuActions(
             setFriendModalIsOpen,
             setRightsideBarIsOpen,
             targetAccountUUID,
+            targetRoleLevel,
         ],
     );
     return actions;

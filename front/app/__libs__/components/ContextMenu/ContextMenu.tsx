@@ -29,7 +29,7 @@ type ProfileMenuActions =
     | "sendban"
     | "reportuser"
     | "transfer"
-    | "grant";
+    | "changerole";
 
 type ProfileMenu = {
     name: string;
@@ -153,8 +153,8 @@ const profileMenus: ProfileMenu[] = [
         className: "hover:bg-red-500/30",
     },
     {
-        name: "매니저 지정",
-        action: "grant",
+        name: "매니저 임명/해임",
+        action: "changerole",
         relation: ["friend", "stranger"],
         minRoleLevel: RoleNumber.ADMINISTRATOR,
         isImportant: true,
