@@ -43,7 +43,7 @@ import {
     useChatRoomMutation,
     useDirectRoomListAtom,
 } from "@hooks/useChatRoom";
-import { ACCESS_TOKEN_KEY } from "@hooks/fetcher";
+import { ACCESS_TOKEN_KEY, HOST } from "@hooks/fetcher";
 import { useProfileMutation } from "@hooks/useProfile";
 
 function handleFriendSocialError(errno: SocialErrorNumber) {
@@ -160,7 +160,7 @@ export function ChatSocketProcessor() {
         if (accessToken === null) {
             return "";
         }
-        return `wss://back.stri.dev/chat?token=${accessToken}`;
+        return `wss://${HOST}/chat?token=${accessToken}`;
     }, []);
     useWebSocketConnector("chat", getURL, props);
     const currentChatRoomUUID = useCurrentChatRoomUUID();

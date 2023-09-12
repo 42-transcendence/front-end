@@ -55,6 +55,7 @@ function useImageAsFormData(): [
     setImage: (image: HTMLImageElement) => void,
     sendForm: () => void,
 ] {
+    //FIXME: 긴급, HOST 갖다 쓰기 SWR에서 fetcher 쓰면 알아서 해결 될 문제니까 사실 SWR 적용이 긴급이라는 뜻
     const url = "https://back.stri.dev/profile/private/avatar";
     const [setForm, sendForm, clearForm] = useFormData(url);
     const [image, setImage] = useState<HTMLImageElement | null>(null);

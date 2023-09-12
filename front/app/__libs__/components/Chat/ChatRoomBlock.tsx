@@ -30,7 +30,7 @@ import { makeEnterRoomRequest } from "@akasha-utils/chat-payload-builder-client"
 import { digestMessage, encodeUTF8 } from "@akasha-lib";
 import { handleChatError } from "./handleChatError";
 import { useCallback } from "react";
-import Image from "next/image";
+import { DefaultAvatar } from "@components/Avatar/Avatar";
 
 function UnreadMessageBadge({ count }: { count: number }) {
     if (count === 0) {
@@ -74,22 +74,7 @@ function RoomBlockThumbnail({
                         privileged={false}
                     />
                 ) : (
-                    <div className="relative flex aspect-square h-10 w-10 items-start gap-2.5 rounded-full">
-                        <Image
-                            className="relative rounded-full"
-                            src={uuid}
-                            alt="chatting room thumbnail"
-                            sizes="100%"
-                            fill={true}
-                            loader={({
-                                src,
-                                width: _width,
-                                quality: _quality,
-                            }) =>
-                                `https://www.gravatar.com/avatar/${src}?d=identicon`
-                            }
-                        />
-                    </div>
+                    <DefaultAvatar className="relative h-10 w-10" uuid={uuid} />
                 )}
             </div>
         </div>
