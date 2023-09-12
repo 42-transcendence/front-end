@@ -23,17 +23,6 @@ import { ChatErrorNumber } from "@common/chat-payloads";
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
 
-//TODO: 네이밍 다시 하기. 필요하면 나중에 쓰기
-// export type CreateNewRoomParams = {
-//     title: string;
-//     password: string;
-//     limit: number;
-//     privateChecked: boolean;
-//     secretChecked: boolean;
-//     limitChecked: boolean;
-//     inviteChecked: boolean;
-// };
-
 //TODO: 조금 더 잘 정리해서 hooks 폴더로 빼버리기
 function useDetectSticky(): [
     isSticky: boolean,

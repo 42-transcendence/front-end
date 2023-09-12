@@ -114,14 +114,14 @@ export default function ChatLeftSideBar() {
                     htmlFor="CreateNewRoom"
                     className="relative flex h-12 items-center gap-2 rounded-md p-4 outline-none hover:bg-primary/30 hover:transition-all focus-visible:outline-primary/70 data-[checked=true]:scale-105 data-[checked=true]:bg-secondary/70"
                 >
-                    <Icon.Edit className="" width={17} height={17} />
+                    <Icon.Edit width={17} height={17} />
                     <p className="font-sans text-base leading-4">방 만들기</p>
                 </label>
 
                 <label
                     onKeyDown={(e) =>
                         (e.key === " " || e.key === "Enter") &&
-                        setSideBarOpen(true)
+                        setSideBarOpen(false)
                     }
                     tabIndex={0}
                     htmlFor="forCloseLeftSideBar"
