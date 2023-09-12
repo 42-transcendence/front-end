@@ -34,6 +34,7 @@ import { makePublicRoomListRequest } from "@akasha-utils/chat-payload-builder-cl
 import { AnimatePresence, motion } from "framer-motion";
 import { usePublicProfiles } from "@hooks/useProfile";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
+import type { AccountProfilePublicPayload } from "@common/profile-payloads";
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
@@ -239,17 +240,19 @@ function RoomPanel({
         query,
     });
 
-    return results.map((item, index) => (
-        <ChatRoomBlock key={item.id} chatRoom={item}>
-            <FzfHighlight
-                {...getFzfHighlightProps({
-                    index,
-                    item,
-                    className: "text-yellow-500",
-                })}
-            />
-        </ChatRoomBlock>
-    ));
+    return results
+        .toSorted((e1, e2) => compareRoomItem(e1, e2))
+        .map((item, index) => (
+            <ChatRoomBlock key={item.id} chatRoom={item}>
+                <FzfHighlight
+                    {...getFzfHighlightProps({
+                        index,
+                        item,
+                        className: "text-yellow-500",
+                    })}
+                />
+            </ChatRoomBlock>
+        ));
 }
 
 function DirectRoomPanel({
@@ -276,17 +279,19 @@ function DirectRoomPanel({
         query,
     });
 
-    return results.map((item, index) => (
-        <ChatDirectRoomBlock key={item.targetAccountId} chatRoom={item}>
-            <FzfHighlight
-                {...getFzfHighlightProps({
-                    index,
-                    item,
-                    className: "text-yellow-500",
-                })}
-            />
-        </ChatDirectRoomBlock>
-    ));
+    return results
+        .toSorted((e1, e2) => compareDirectRoomItem(e1, e2))
+        .map((item, index) => (
+            <ChatDirectRoomBlock key={item.targetAccountId} chatRoom={item}>
+                <FzfHighlight
+                    {...getFzfHighlightProps({
+                        index,
+                        item,
+                        className: "text-yellow-500",
+                    })}
+                />
+            </ChatDirectRoomBlock>
+        ));
 }
 
 function PublicRoomPanel({
@@ -302,17 +307,19 @@ function PublicRoomPanel({
         query,
     });
 
-    return results.map((item, index) => (
-        <ChatPublicRoomBlock key={item.id} chatRoom={item}>
-            <FzfHighlight
-                {...getFzfHighlightProps({
-                    index,
-                    item,
-                    className: "text-yellow-500",
-                })}
-            />
-        </ChatPublicRoomBlock>
-    ));
+    return results
+        .toSorted((e1, e2) => compareRoomItem(e1, e2))
+        .map((item, index) => (
+            <ChatPublicRoomBlock key={item.id} chatRoom={item}>
+                <FzfHighlight
+                    {...getFzfHighlightProps({
+                        index,
+                        item,
+                        className: "text-yellow-500",
+                    })}
+                />
+            </ChatPublicRoomBlock>
+        ));
 }
 
 function ListQuaryTextField({
@@ -341,4 +348,21 @@ function ListQuaryTextField({
             />
         </div>
     );
+}
+
+function compareRoomItem<T extends Record<"title", string>>(e1: T, e2: T) {
+    return e1.title > e2.title ? 1 : -1;
+}
+
+function compareDirectRoomItem(
+    e1: ChatDirectEntry & {
+        _profile?: AccountProfilePublicPayload | undefined;
+    },
+    e2: ChatDirectEntry & {
+        _profile?: AccountProfilePublicPayload | undefined;
+    },
+) {
+    return (e1._profile?.nickName ?? "") > (e2._profile?.nickName ?? "")
+        ? 1
+        : -1;
 }
