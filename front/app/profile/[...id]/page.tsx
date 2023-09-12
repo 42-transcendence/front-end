@@ -35,37 +35,29 @@ function isValidProfileId(params: string[] | undefined) {
 }
 
 function parseNickAndTag(
-    params: { id?: string[] | undefined },
+    params: { id: string[] },
     profile: AccountProfileProtectedPayload | undefined,
 ): [nick: string, tag: number, isValid: boolean] {
     const paramKeys = Object.keys(params);
     const isValid =
         profile !== undefined &&
         paramKeys.length === 1 &&
-        paramKeys[0] === "id" &&
         isValidProfileId(params.id);
 
-    const [nick, tag] =
-        params.id !== undefined
-            ? [params.id[0], Number(params.id[1])]
-            : profile !== undefined
-            ? [profile.nickName ?? "", profile.nickTag]
-            : ["", 0];
+    const [nick, tag] = isValid
+        ? [params.id[0], Number(params.id[1])]
+        : profile !== undefined
+        ? [profile.nickName ?? "", profile.nickTag]
+        : ["", 0];
 
     return [nick, tag, isValid];
 }
 
-export default function ProfilePage({
-    params,
-}: {
-    params: { id?: string[] | undefined };
-}) {
+export default function ProfilePage({ params }: { params: { id: string[] } }) {
     useToken();
     const profile = usePrivateProfile();
-    if (params.id !== undefined) {
-        for (let i = 0; i < params.id.length; i++) {
-            params.id[i] = decodeURIComponent(params.id[i]);
-        }
+    for (let i = 0; i < params.id.length; i++) {
+        params.id[i] = decodeURIComponent(params.id[i]);
     }
     const [nick, tag, isValid] = parseNickAndTag(params, profile);
     const { accountUUID, isLoading, notFound } = useNickLookup(nick, tag);
