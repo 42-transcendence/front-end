@@ -118,15 +118,6 @@ export function useContextMenus(
             className: "",
         },
         {
-            name: "로그아웃",
-            action: "logout",
-            relation: ["myself"],
-            isImportant: false,
-            minRoleLevel: undefined,
-            scope: ["Navigation"],
-            className: "",
-        },
-        {
             name: "상세 프로필",
             action: "gotoprofile",
             relation: ["myself", "friend", "stranger"],
@@ -145,6 +136,7 @@ export function useContextMenus(
             className: "",
         },
         friendMenu,
+        enemyMenu,
         {
             name: "신고",
             action: "reportuser",
@@ -154,7 +146,6 @@ export function useContextMenus(
             scope: ["ChatRoom"],
             className: "",
         },
-        enemyMenu,
         {
             name: "채팅 금지",
             action: "sendban",
@@ -174,15 +165,6 @@ export function useContextMenus(
             className: "hover:bg-tertiary/30",
         },
         {
-            name: "소유권 양도",
-            action: "transfer",
-            relation: ["friend", "stranger"],
-            minRoleLevel: RoleNumber.ADMINISTRATOR,
-            isImportant: true,
-            scope: ["ChatRoom"],
-            className: "hover:bg-red-500/30",
-        },
-        {
             name:
                 targetRoleLevel !== (RoleNumber.MANAGER as number)
                     ? "매니저 임명"
@@ -193,6 +175,24 @@ export function useContextMenus(
             isImportant: true,
             scope: ["ChatRoom"],
             className: "hover:bg-red-500/30",
+        },
+        {
+            name: "소유권 양도",
+            action: "transfer",
+            relation: ["friend", "stranger"],
+            minRoleLevel: RoleNumber.ADMINISTRATOR,
+            isImportant: true,
+            scope: ["ChatRoom"],
+            className: "hover:bg-red-500/30",
+        },
+        {
+            name: "로그아웃",
+            action: "logout",
+            relation: ["myself"],
+            isImportant: false,
+            minRoleLevel: undefined,
+            scope: ["Navigation"],
+            className: "",
         },
     ];
 
