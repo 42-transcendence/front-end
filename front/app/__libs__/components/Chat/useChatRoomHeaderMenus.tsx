@@ -43,7 +43,7 @@ export function useChatRoomHeaderMenus(currentChatRoomUUID: string) {
         {
             name: "비밀번호 설정",
             action: "changeChatRoomPassword",
-            minRoleLevel: RoleNumber.ADMINISTRATOR,
+            minRoleLevel: RoleNumber.MANAGER,
             isImportant: false,
         },
         {
