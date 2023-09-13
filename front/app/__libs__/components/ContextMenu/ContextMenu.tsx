@@ -16,6 +16,7 @@ import { useContextMenuActions } from "./useContextMenuActions";
 import type { ProfileMenu, Scope } from "./useContextMenus";
 import { useContextMenus } from "./useContextMenus";
 import { ChangeVisibilityMenu } from "./ChangeVisibilityMenu";
+import { ChangeStatusMessageMenu } from "./ChangeStatusMessageMenu";
 
 function ContextMenuItem({
     menuInfo,
@@ -115,7 +116,14 @@ export function ContextMenu({ type }: { type: Scope }) {
 
     return (
         <ContextMenuBase>
-            {type === "Navigation" && <ChangeVisibilityMenu />}
+            {type === "Navigation" && (
+                <>
+                    <ChangeVisibilityMenu />
+                    <ChangeStatusMessageMenu
+                        targetAccountUUID={targetAccountUUID}
+                    />
+                </>
+            )}
             {[rating, ...menus]
                 .filter((menu) => {
                     return (

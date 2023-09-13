@@ -10,17 +10,8 @@ import { useAtom } from "jotai";
 import { ProfileModal } from "./ProfileModal";
 
 export function ProfileButton() {
-    // TODO: remove comments
     const currentAccountUUID = useCurrentAccountUUID();
-    // const router = useRouter();
-    // const profile = usePrivateProfile();
     const [isOpen, setIsOpen] = useAtom(ProfileModalIsOpen);
-
-    // const gotoMyProfile = () => {
-    //     if (profile !== undefined) {
-    //         router.push(`/profile/${profile.nickName}/${profile.nickTag}`);
-    //     }
-    // };
 
     return (
         <>
