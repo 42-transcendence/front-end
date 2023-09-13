@@ -60,8 +60,6 @@ function compareMemberSchema(e1: MemberCompareType, e2: MemberCompareType) {
     return profile1.nickTag > profile2.nickTag ? 1 : -1;
 }
 
-// TODO: refactoring 하고 어떻게 잘 함수 분리해보기
-
 function PageTitle({ currentPage }: { currentPage: RightSideBarContents }) {
     const title = (() => {
         switch (currentPage) {

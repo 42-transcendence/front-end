@@ -20,9 +20,10 @@ import { handleCreateRoomResult } from "@akasha-utils/chat-gateway-client";
 import { handleChatError } from "./handleChatError";
 import { ChatErrorNumber } from "@common/chat-payloads";
 import { useDetectSticky } from "@hooks/useDetectSticky";
-
-const TITLE_PATTERN = ".{4,32}";
-const MAX_MEMBER_LIMIT = 1500;
+import {
+    CHAT_ROOM_TITLE_PATTERN,
+    MAX_CHAT_MEMBER_CAPACITY,
+} from "@common/chat-constants";
 
 const defaultValue = {
     title: "",
@@ -124,7 +125,7 @@ export function CreateNewRoom() {
                             type="text"
                             className="relative min-h-[3rem] bg-black/30 px-4 py-1 text-xl"
                             placeholder="Title..."
-                            pattern={TITLE_PATTERN}
+                            pattern={CHAT_ROOM_TITLE_PATTERN}
                             name="chatRoomTitle"
                             required
                             value={title}
@@ -213,7 +214,7 @@ export function CreateNewRoom() {
                                             name="limit"
                                             disabled={!limitChecked}
                                             min={1}
-                                            max={MAX_MEMBER_LIMIT}
+                                            max={MAX_CHAT_MEMBER_CAPACITY}
                                             placeholder="최대인원 입력"
                                             className="bg-black/30 px-3 py-1 placeholder-gray-500/30"
                                             value={limit}
