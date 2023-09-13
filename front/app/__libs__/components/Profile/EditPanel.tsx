@@ -17,7 +17,6 @@ export function EditPanel() {
     const [authInfo, setAuthInfo] = useState<OTPSecret | null>(null);
     const [showOTP, setShowOTP] = useState(false);
     const { data, conflict } = useGetOTP();
-    console.log(data, conflict);
 
     if (profile === undefined) {
         return <div>loading...</div>;
@@ -28,6 +27,8 @@ export function EditPanel() {
             if (!conflict) {
                 setAuthInfo(data ?? null);
             }
+        } else {
+            setAuthInfo(null);
         }
         setShowOTP(!showOTP);
     };

@@ -28,10 +28,13 @@ export function useToggleOTP(enable: boolean) {
     const callback = async (key: string, { arg }: { arg: string }) => {
         const params = new URLSearchParams();
         params.set("otp", arg);
-        await fetchToggle(key, params, enable);
+        return await fetchToggle(key, params, enable);
     };
-    const { trigger } = useSWRMutation("/profile/private/otp", callback, {
+    const result = useSWRMutation("/profile/private/otp", callback, {
         throwOnError: false,
     });
-    return trigger;
+
+    const error = result.error !== undefined;
+
+    return { trigger: result.trigger, error, reset: result.reset };
 }

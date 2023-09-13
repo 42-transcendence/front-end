@@ -11,8 +11,8 @@ export function QuickMatchButton() {
     const router = useRouter();
 
     // FIXME: 실제로 fetch 하면 시간 걸리니까 일단 편의상 만들어둔 dummy async 함수
-    const asyncRoute = async () => {
-        await new Promise((res) => setTimeout(res, 0));
+    const asyncRoute = () => {
+        new Promise((res) => setTimeout(res, 0)).catch(() => {});
         router.push("/game/4242");
     };
 
