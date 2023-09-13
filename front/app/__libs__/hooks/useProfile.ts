@@ -1,4 +1,4 @@
-import { HTTPError, fetcher } from "./fetcher";
+import { HTTPError, URL_BASE, fetchBase, fetcher } from "./fetcher";
 import { useSWR, useSWRMutation } from "./useSWR";
 import type {
     AccountProfilePrivatePayload,
@@ -164,4 +164,26 @@ export function useProfileRecord(accountUUID: string) {
         fetcher<RecordEntity>,
     );
     return data;
+}
+
+export function useAvatarMutation() {
+    const { mutate } = useSWRConfig();
+    const accountUUID = useCurrentAccountUUID();
+    const callback = async (key: string, { arg }: { arg: FormData }) => {
+        const url = new URL(key, URL_BASE);
+        await fetchBase(url, {
+            method: "POST",
+            body: arg,
+        });
+        await mutate(() =>
+            accountUUID !== "" ? `/profile/public/${accountUUID}` : null,
+        );
+    };
+
+    const result = useSWRMutation("/profile/private/avatar", callback, {
+        throwOnError: false,
+    });
+
+    const error = result.error !== undefined;
+    return { trigger: result.trigger, error };
 }

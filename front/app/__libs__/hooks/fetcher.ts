@@ -100,7 +100,7 @@ export async function fetchRefreshAuth() {
 // TODO: 나중에 http response constansts 파일로 빼기?
 const HTTP_RESPONSE_UNAUTHORIZED = 401 as const;
 
-async function fetchBase<T>(
+export async function fetchBase<T>(
     url: URL,
     init?: RequestInit | undefined,
 ): Promise<T> {
