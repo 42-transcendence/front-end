@@ -8,7 +8,13 @@ import type {
 import { useCurrentAccountUUID } from "./useCurrent";
 import { useSWRConfig } from "swr";
 import { useCallback, useEffect } from "react";
-import type { RecordEntity } from "@common/generated/types";
+import {
+    getActiveStatusNumber,
+    type ActiveStatus,
+    type RecordEntity,
+} from "@common/generated/types";
+import type { ByteBuffer } from "@akasha-lib";
+import { makeActiveStatusManualRequest } from "@akasha-utils/chat-payload-builder-client";
 
 export function usePublicProfile(accountUUID: string) {
     const { data } = useSWR(
@@ -187,4 +193,31 @@ export function useAvatarMutation() {
 
     const error = result.error !== undefined;
     return { trigger: result.trigger, error };
+}
+
+export function useActiveStatusMutation(
+    sendPayload: (value: ByteBuffer) => void,
+) {
+    const accountUUID = useCurrentAccountUUID();
+    const mutateProfile = useProfileMutation();
+    const callback = useCallback(
+        (_key: string, { arg }: { arg: ActiveStatus }) => {
+            const buf = makeActiveStatusManualRequest(
+                getActiveStatusNumber(arg),
+            );
+            sendPayload(buf);
+            mutateProfile(accountUUID);
+            return arg;
+        },
+        [accountUUID, mutateProfile, sendPayload],
+    );
+
+    const { trigger, data } = useSWRMutation(
+        () => (accountUUID !== "" ? "/profile/protected" : null),
+        callback,
+        {
+            throwOnError: false,
+        },
+    );
+    return { trigger, data };
 }

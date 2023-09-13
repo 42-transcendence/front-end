@@ -1,15 +1,10 @@
-import { atom, useAtom } from "jotai";
-import { ActiveStatus, getActiveStatusNumber } from "@common/generated/types";
-import { makeActiveStatusManualRequest } from "@akasha-utils/chat-payload-builder-client";
+import { ActiveStatus } from "@common/generated/types";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-
-export const SelectedVisibilityAtom = atom<ActiveStatus>(ActiveStatus.ONLINE);
+import { useActiveStatusMutation } from "@hooks/useProfile";
 
 export function ChangeVisibilityMenu() {
     const { sendPayload } = useWebSocket("chat", []);
-    const [currentVisibility, setCurrentVisibility] = useAtom(
-        SelectedVisibilityAtom,
-    );
+    const { trigger, data } = useActiveStatusMutation(sendPayload);
 
     const visibilityStates = [
         { text: "온라인", value: ActiveStatus.ONLINE },
@@ -20,11 +15,7 @@ export function ChangeVisibilityMenu() {
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const newActiveStatus = e.target.value as ActiveStatus;
-        const buf = makeActiveStatusManualRequest(
-            getActiveStatusNumber(newActiveStatus),
-        );
-        sendPayload(buf);
-        setCurrentVisibility(newActiveStatus);
+        void trigger(newActiveStatus);
     };
     return (
         <div className="relative flex h-fit w-full items-center rounded py-3">
@@ -39,9 +30,7 @@ export function ChangeVisibilityMenu() {
                                 value={state.value}
                                 className="hidden"
                                 title={state.text}
-                                defaultChecked={
-                                    state.value === currentVisibility
-                                }
+                                defaultChecked={state.value === data}
                                 onChange={handleChange}
                             />
                             {state.text}
