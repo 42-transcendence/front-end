@@ -24,19 +24,19 @@ export function InviteList({
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentChatMembers = useChatRoomMembers(currentChatRoomUUID);
     const [query, setQuery] = useState("");
-    let friendEntrySet = useAtomValue(FriendEntryListAtom, {
+    const friendEntrySet = useAtomValue(FriendEntryListAtom, {
         store: GlobalStore,
     });
-    if (filterUnjoined) {
-        friendEntrySet = friendEntrySet.filter(
-            (e) =>
-                currentChatMembers !== undefined &&
-                !currentChatMembers.has(e.friendAccountId),
-        );
-    }
+    const filteredEntrySet =
+        filterUnjoined && currentChatMembers !== undefined
+            ? friendEntrySet.filter(
+                  (e) => !currentChatMembers.has(e.friendAccountId),
+              )
+            : [...friendEntrySet];
+
     const profiles = usePublicProfiles(
         useId(),
-        friendEntrySet,
+        filteredEntrySet,
         (e) => e.friendAccountId,
     );
     const { results: foundFriendEntrySet } = useFzf({
@@ -92,7 +92,6 @@ export function InviteList({
     );
 }
 
-// TODO: 파일로 옮길것
 type PublicFriendCompareType = TypeWithProfile<
     FriendEntry,
     AccountProfilePublicPayload

@@ -24,42 +24,35 @@ function ErrorPage() {
     );
 }
 
-function isValidProfileId(params: string[] | undefined) {
-    if (!Array.isArray(params)) return false;
+function isValidProfileId(params: string[]) {
     const regexp = NICK_NAME_REGEX;
     return (
         params.length === 2 &&
         regexp.test(params[0]) &&
-        Number.isInteger(Number(params[1]))
+        Number.isSafeInteger(Number(params[1]))
     );
 }
 
 function parseNickAndTag(
-    params: { id: string[] },
+    params: string[],
     profile: AccountProfileProtectedPayload | undefined,
 ): [nick: string, tag: number, isValid: boolean] {
-    const paramKeys = Object.keys(params);
-    const isValid =
-        profile !== undefined && // TODO: 맞나? 확인하기
-        paramKeys.length === 1 &&
-        isValidProfileId(params.id);
+    const isValid = isValidProfileId(params);
 
     const [nick, tag] = isValid
-        ? [params.id[0], Number(params.id[1])]
+        ? [params[0], Number(params[1])]
         : profile !== undefined
         ? [profile.nickName ?? "", profile.nickTag]
         : ["", 0];
 
-    return [nick, tag, isValid];
+    return [nick, tag, isValid || profile !== undefined];
 }
 
 export default function ProfilePage({ params }: { params: { id: string[] } }) {
     useToken();
     const profile = usePrivateProfile();
-    for (let i = 0; i < params.id.length; i++) {
-        params.id[i] = decodeURIComponent(params.id[i]);
-    }
-    const [nick, tag, isValid] = parseNickAndTag(params, profile);
+    const decodedParams = params.id.map((e) => decodeURIComponent(e));
+    const [nick, tag, isValid] = parseNickAndTag(decodedParams, profile);
     const { accountUUID, isLoading, notFound } = useNickLookup(nick, tag);
     const editPanelVisibility = useAtomValue(EditPanelVisibilityAtom);
 

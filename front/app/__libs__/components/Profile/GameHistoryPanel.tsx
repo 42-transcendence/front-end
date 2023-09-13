@@ -38,7 +38,7 @@ type GameHistory = {
     rating: number;
 };
 
-const GameHistoryMockup: GameHistory[] = [
+const gameHistoryMockup: GameHistory[] = [
     {
         gameUUID: "1",
         rating: 1231,
@@ -267,6 +267,7 @@ const GameHistoryMockup: GameHistory[] = [
 ];
 
 export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
+    const gameHistory = gameHistoryMockup;
     return (
         <>
             <input
@@ -284,9 +285,11 @@ export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
                     </span>
                 </label>
                 <div className="flex w-full flex-col gap-2 overflow-auto">
-                    {/* TODO: key 를 gameUUID 로? */}
-                    {GameHistoryMockup.map((gameHistory, index) => (
-                        <GameHistoryItem key={index} history={gameHistory} />
+                    {gameHistory.map((gameHistory) => (
+                        <GameHistoryItem
+                            key={gameHistory.gameUUID}
+                            history={gameHistory}
+                        />
                     ))}
                 </div>
             </Panel>
@@ -297,7 +300,6 @@ export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
 function GameHistoryItem({ history }: { history: GameHistory }) {
     const [opened, setOpened] = useState(false);
     //TODO: get state from server
-
     return (
         <div className="group relative flex w-full shrink-0 flex-col items-center overflow-clip rounded-xl bg-black/30 @container">
             <GameHistorySummary
@@ -517,8 +519,8 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
             </div>
 
             <div className="flex w-full flex-col">
-                {history.set.map((oneSet, index) => (
-                    <SetScore setData={oneSet} key={index} />
+                {history.set.map((oneSet) => (
+                    <SetScore setData={oneSet} key={oneSet.set} />
                 ))}
             </div>
 

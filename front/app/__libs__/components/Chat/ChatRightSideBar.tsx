@@ -138,8 +138,8 @@ export default function ChatRightSideBar() {
     const [inviteToggle, setInviteToggle] = useState(false);
     const currentId = useCurrentAccountUUID();
     const currentUser = useChatMember(currentChatRoomUUID, currentId);
-    const roleLevel = Number(currentUser?.role ?? 0);
-    const adminRoleLevel: number = RoleNumber.MANAGER;
+    const roleLevel: RoleNumber = currentUser?.role ?? RoleNumber.USER;
+    const isAdmin = roleLevel >= RoleNumber.MANAGER;
 
     const [currentPage, setCurrentPage] = useAtom(ChatRightSideBarCurrrentPage);
     const [memberListDropDown, setMemberListDropDown] = useState(false);
@@ -177,13 +177,13 @@ export default function ChatRightSideBar() {
                             htmlFor="memberListDropDown"
                             data-current-list={currentPage}
                             className={`group flex h-12 w-full items-center justify-center gap-2 rounded-md p-4 data-[current-list]:scale-105 data-[current-list]:bg-primary/80 data-[current-list]:text-white data-[current-list]:transition-all ${
-                                roleLevel >= adminRoleLevel &&
+                                isAdmin &&
                                 "hover:bg-primary/30 hover:text-white active:bg-secondary/80"
                             }`}
                         >
                             <PageTitle currentPage={currentPage} />
                         </label>
-                        {roleLevel >= adminRoleLevel && (
+                        {isAdmin && (
                             <div className="hidden flex-col items-center text-base font-bold text-gray-100/80 group-data-[checked=true]:flex">
                                 <MenuItem
                                     onClick={() => {
@@ -319,7 +319,6 @@ function InviteForm() {
         }
     };
 
-    // TODO: complete form!! & add invite button
     return (
         <form className="h-full w-full overflow-auto" onSubmit={handleSubmit}>
             <div className="flex h-full w-full flex-col justify-between gap-4">
