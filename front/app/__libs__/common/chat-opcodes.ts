@@ -2,6 +2,7 @@ export const enum ChatServerOpcode {
     HANDSHAKE,
     ACTIVE_STATUS_MANUAL,
     IDLE_AUTO,
+    STATUS_MESSAGE,
     ADD_FRIEND,
     MODIFY_FRIEND,
     DELETE_FRIEND,
@@ -26,9 +27,9 @@ export const enum ChatServerOpcode {
     SYNC_CURSOR_DIRECT,
     SEND_DIRECT,
     REPORT_USER,
-}
-
-export const enum ChatClientOpcode {
+  }
+  
+  export const enum ChatClientOpcode {
     INITIALIZE,
     ADD_FRIEND_RESULT,
     FRIEND_REQUEST,
@@ -66,4 +67,5 @@ export const enum ChatClientOpcode {
     SYNC_CURSOR_DIRECT,
     SEND_DIRECT_RESULT,
     REPORT_USER_RESULT,
-}
+  }
+  

@@ -34,6 +34,12 @@ export function makeIdleAutoRequest(idle: boolean) {
     return buf;
 }
 
+export function makeStatusMessageRequest(statusMessage: string) {
+    const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.STATUS_MESSAGE);
+    buf.writeString(statusMessage);
+    return buf;
+}
+
 type TargetAccount = string | { nickName: string; nickTag: number };
 
 export function makeAddFriendRequest(
@@ -313,8 +319,8 @@ export function makeSendDirectRequest(
 }
 
 export function makeReportUser(targetAccountId: string, reason: string) {
-  const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.REPORT_USER);
-  buf.writeUUID(targetAccountId);
-  buf.writeString(reason);
-  return buf;
+    const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.REPORT_USER);
+    buf.writeUUID(targetAccountId);
+    buf.writeString(reason);
+    return buf;
 }
