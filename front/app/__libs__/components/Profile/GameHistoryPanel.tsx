@@ -274,9 +274,7 @@ export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
                 className="peer hidden"
                 id="GameHistoryPanel"
             />
-            <Panel
-                className={`flex h-full flex-col items-start justify-start overflow-clip peer-checked:h-fit md:col-span-2 md:row-span-1`}
-            >
+            <Panel className="flex h-full flex-col items-start justify-start overflow-clip peer-checked:h-fit md:col-span-2 md:row-span-1">
                 <label
                     htmlFor="GameHistoryPanel"
                     className="z-10 flex w-full flex-row items-center justify-between p-4"

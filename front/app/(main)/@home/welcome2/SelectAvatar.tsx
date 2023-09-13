@@ -121,9 +121,6 @@ export function SelectAvatar() {
         HTMLImageElement
     >();
 
-    // TODO: appropriate file size limit?
-    const maxFileSize = 4096576;
-
     const observerOptions = useMemo(() => {
         return {
             root: rootRef.current,
@@ -162,10 +159,7 @@ export function SelectAvatar() {
                             />
                         </div>
                     ))}
-                    <ImageUploadBox
-                        setImage={setImage}
-                        maxFileSize={maxFileSize}
-                    />
+                    <ImageUploadBox setImage={setImage} />
                 </ScrollBox>
             </div>
             <p>현재 아바타: {image !== null && image.dataset["name"]}</p>

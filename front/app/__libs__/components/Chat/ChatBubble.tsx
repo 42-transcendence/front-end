@@ -170,7 +170,7 @@ export function NoticeBubble({ chatMessage }: { chatMessage: MessageSchema }) {
             break;
         }
         case "": {
-            //TODO: 사실 데이터가 잘못되지 않는 이상 이럴 일은 없다.
+            //NOTE: 사실 데이터가 잘못되지 않는 이상 이럴 일은 없다.
             content = chatMessage.content;
             break;
         }

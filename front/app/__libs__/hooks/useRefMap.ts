@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useRef } from "react";
 
-// TODO: need test. 안써봄 아직
 export function useRefMap<T, V>(): [
     refMap: Map<T, V>,
     refCallback: (key: T) => (node: V | null) => void,

@@ -8,11 +8,7 @@ import { useRegisterNickName } from "@hooks/useRegisterNickName";
 
 export default function Welcome() {
     const [value, setValue] = useState("");
-    const {
-        register,
-        error, //FIXME: 오류
-        conflict, //FIXME: 더 이상 사용할 수 없는 닉네임
-    } = useRegisterNickName();
+    const { register, error, conflict } = useRegisterNickName();
 
     return (
         <main className="relative flex h-full flex-col items-center justify-center gap-1 justify-self-stretch overflow-auto">
