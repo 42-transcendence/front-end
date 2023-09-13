@@ -88,7 +88,7 @@ function ListContent({
     selectedUUID,
 }: {
     currentPage: RightSideBarContents;
-    selectedUUID: string | undefined;
+    selectedUUID: string;
 }) {
     switch (currentPage) {
         case "accessBanMemberList":
@@ -96,11 +96,11 @@ function ListContent({
         case "sendBanMemberList":
             return <ChatBanList banCategory={BanCategoryNumber.COMMIT} />;
         case "newAccessBan":
-            return <AccessBan accountUUID={selectedUUID ?? ""} />;
+            return <AccessBan accountUUID={selectedUUID} />;
         case "newSendBan":
-            return <SendBan accountUUID={selectedUUID ?? ""} />;
+            return <SendBan accountUUID={selectedUUID} />;
         case "report":
-            return <ReportUser accountUUID={selectedUUID ?? ""} />;
+            return <ReportUser accountUUID={selectedUUID} />;
         default:
             return <></>;
     }
@@ -142,14 +142,14 @@ export default function ChatRightSideBar() {
     const isAdmin = roleLevel >= RoleNumber.MANAGER;
 
     const [currentPage, setCurrentPage] = useAtom(ChatRightSideBarCurrrentPage);
-    const [memberListDropDown, setMemberListDropDown] = useState(false);
+    const [isMemberListOpen, setIsMemberListOpen] = useState(false);
 
     const handleList = () => {
-        setMemberListDropDown(!memberListDropDown);
+        setIsMemberListOpen(!isMemberListOpen);
         if (currentPage !== undefined) {
             setInviteToggle(false);
             setCurrentPage(undefined);
-            setMemberListDropDown(false);
+            setIsMemberListOpen(false);
         }
     };
 
@@ -169,7 +169,7 @@ export default function ChatRightSideBar() {
                         />
                     </label>
                     <div
-                        data-checked={memberListDropDown}
+                        data-checked={isMemberListOpen}
                         className="group w-full"
                     >
                         <label
@@ -188,7 +188,7 @@ export default function ChatRightSideBar() {
                                 <MenuItem
                                     onClick={() => {
                                         setCurrentPage("sendBanMemberList");
-                                        setMemberListDropDown(false);
+                                        setIsMemberListOpen(false);
                                     }}
                                     className="active:bg-secondary/80"
                                 >
@@ -197,7 +197,7 @@ export default function ChatRightSideBar() {
                                 <MenuItem
                                     onClick={() => {
                                         setCurrentPage("accessBanMemberList");
-                                        setMemberListDropDown(false);
+                                        setIsMemberListOpen(false);
                                     }}
                                     className="active:bg-secondary/80"
                                 >
@@ -236,7 +236,7 @@ export default function ChatRightSideBar() {
                     <div className="fixed inset-4 top-32 z-50 rounded-[12px] bg-gray-800 p-4">
                         <ListContent
                             currentPage={currentPage}
-                            selectedUUID={selectedUUID}
+                            selectedUUID={selectedUUID ?? ""}
                         />
                     </div>
                 )}
