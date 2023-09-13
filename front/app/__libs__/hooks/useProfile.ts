@@ -167,18 +167,19 @@ export function useProfileRecord(accountUUID: string) {
 }
 
 export function useAvatarMutation() {
-    const { mutate } = useSWRConfig();
     const accountUUID = useCurrentAccountUUID();
-    const callback = async (key: string, { arg }: { arg: FormData }) => {
-        const url = new URL(key, URL_BASE);
-        await fetchBase(url, {
-            method: "POST",
-            body: arg,
-        });
-        await mutate(() =>
-            accountUUID !== "" ? `/profile/public/${accountUUID}` : null,
-        );
-    };
+    const mutateProfile = useProfileMutation();
+    const callback = useCallback(
+        async (key: string, { arg }: { arg: FormData }) => {
+            const url = new URL(key, URL_BASE);
+            await fetchBase(url, {
+                method: "POST",
+                body: arg,
+            });
+            mutateProfile(accountUUID);
+        },
+        [accountUUID, mutateProfile],
+    );
 
     const result = useSWRMutation("/profile/private/avatar", callback, {
         throwOnError: false,
