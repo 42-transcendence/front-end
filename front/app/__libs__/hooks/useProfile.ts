@@ -199,17 +199,15 @@ export function useActiveStatusMutation(
     sendPayload: (value: ByteBuffer) => void,
 ) {
     const accountUUID = useCurrentAccountUUID();
-    const mutateProfile = useProfileMutation();
     const callback = useCallback(
         (_key: string, { arg }: { arg: ActiveStatus }) => {
             const buf = makeActiveStatusManualRequest(
                 getActiveStatusNumber(arg),
             );
             sendPayload(buf);
-            mutateProfile(accountUUID);
             return arg;
         },
-        [accountUUID, mutateProfile, sendPayload],
+        [sendPayload],
     );
 
     const { trigger, data } = useSWRMutation(
