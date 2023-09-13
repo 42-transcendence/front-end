@@ -23,16 +23,16 @@ export default function Welcome() {
                     </p>
                 </div>
                 <form
-                    onSubmit={() => void register(value)}
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        void register(value);
+                    }}
                     className="group relative flex flex-row gap-2"
                 >
                     <div className="flex min-w-[12rem] max-w-xs flex-col">
                         <TextField
                             className="peer p-3"
                             value={value}
-                            onKeyDown={(e) =>
-                                e.key === "Enter" && void register(value)
-                            }
                             pattern="[a-zA-Z0-9가-힣]{2,8}"
                             placeholder="닉네임을 입력해주세요!"
                             required
@@ -52,7 +52,7 @@ export default function Welcome() {
                     </div>
                     <button
                         className="z-10 h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-500/80 p-2 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white group-valid:bg-green-500/50 group-valid:text-white"
-                        type="submit"
+                        type="button"
                     >
                         <Icon.Arrow3 />
                     </button>
