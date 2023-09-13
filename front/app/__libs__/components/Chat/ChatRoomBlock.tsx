@@ -15,6 +15,7 @@ import {
 import {
     useChatRoomLatestMessage,
     useChatRoomListAtom,
+    useChatRoomMembers,
     useChatRoomModeFlags,
     useChatRoomUnreadCount,
 } from "@hooks/useChatRoom";
@@ -91,6 +92,7 @@ export function ChatRoomBlock({
     const numberOfUnreadMessages = useChatRoomUnreadCount(roomUUID);
     const latestMessage = useChatRoomLatestMessage(roomUUID);
     const modeFlagsRaw = useChatRoomModeFlags(roomUUID);
+    const chatRoomMembers = useChatRoomMembers(roomUUID);
     const setChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom);
     const lastMessageContent = latestMessage?.content ?? "채팅을 시작해보세요!";
     const modeFlags = modeFlagsRaw ?? 0;
@@ -113,7 +115,7 @@ export function ChatRoomBlock({
                     lastMessageContent={lastMessageContent}
                     modeFlags={modeFlags}
                     optionalInfo={{
-                        membersCount: chatRoom.members.length,
+                        membersCount: chatRoomMembers?.size ?? 0,
                         numberOfUnreadMessages: numberOfUnreadMessages,
                     }}
                     chatRoomId={chatRoom.id}
