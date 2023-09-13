@@ -1,5 +1,5 @@
 import { Icon } from "@components/ImageLibrary";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { ButtonOnRight } from "@components/Button/ButtonOnRight";
 import { InviteList } from "@components/Service/InviteList";
 import { TextField } from "@components/TextField";
@@ -19,53 +19,34 @@ import { makeCreateRoomRequest } from "@akasha-utils/chat-payload-builder-client
 import { handleCreateRoomResult } from "@akasha-utils/chat-gateway-client";
 import { handleChatError } from "./handleChatError";
 import { ChatErrorNumber } from "@common/chat-payloads";
+import { useDetectSticky } from "@hooks/useDetectSticky";
 
 const TITLE_PATTERN = ".{4,32}";
 const MAX_MEMBER_LIMIT = 1500;
 
-//TODO: 조금 더 잘 정리해서 hooks 폴더로 빼버리기
-function useDetectSticky(): [
-    isSticky: boolean,
-    observeTarget: React.RefObject<HTMLLabelElement>,
-    setIsSticky: React.Dispatch<React.SetStateAction<boolean>>,
-] {
-    const [isSticky, setIsSticky] = useState(false);
-    const ref = useRef<HTMLLabelElement>(null);
+const defaultValue = {
+    title: "",
+    password: "",
+    limit: 42,
+    isPrivate: false,
+    isSecret: false,
+    isLimited: false,
+    inviteChecked: false,
+};
 
-    // mount
-    useEffect(() => {
-        if (ref.current === null) {
-            throw new Error();
-        }
-        const cachedRef = ref.current;
-        const observer = new IntersectionObserver(
-            ([e]) => {
-                setIsSticky(e.intersectionRatio > 0 && e.intersectionRatio < 1);
-            },
-            { threshold: [1] },
-        );
-
-        observer.observe(cachedRef);
-
-        // unmount
-        return () => {
-            observer.unobserve(cachedRef);
-        };
-    }, [ref]);
-
-    return [isSticky, ref, setIsSticky];
-}
-
-// TODO: refactoring 하고 어떻게 잘 함수 분리해보기
 export function CreateNewRoom() {
     const currentAccountUUID = useCurrentAccountUUID();
-    const [title, setTitle] = useState("");
-    const [password, setPassword] = useState("");
-    const [limit, setLimit] = useState(42);
-    const [privateChecked, setPrivateChecked] = useState(false);
-    const [secretChecked, setSecretChecked] = useState(false);
-    const [limitChecked, setLimitChecked] = useState(false);
-    const [inviteChecked, setInviteChecked] = useState(false);
+    const [title, setTitle] = useState(defaultValue.title);
+    const [password, setPassword] = useState(defaultValue.password);
+    const [limit, setLimit] = useState(defaultValue.limit);
+    const [privateChecked, setPrivateChecked] = useState(
+        defaultValue.isPrivate,
+    );
+    const [secretChecked, setSecretChecked] = useState(defaultValue.isSecret);
+    const [limitChecked, setLimitChecked] = useState(defaultValue.isLimited);
+    const [inviteChecked, setInviteChecked] = useState(
+        defaultValue.inviteChecked,
+    );
     const setCreateNewRoomChecked = useSetAtom(CreateNewRoomCheckedAtom, {
         store: GlobalStore,
     });
@@ -83,13 +64,14 @@ export function CreateNewRoom() {
             if (errno !== ChatErrorNumber.SUCCESS) {
                 handleChatError(errno);
             } else {
-                setTitle("");
-                setPassword("");
-                setLimit(42);
-                setPrivateChecked(false);
-                setSecretChecked(false);
-                setLimitChecked(false);
-                setInviteChecked(false);
+                setTitle(defaultValue.title);
+                setPassword(defaultValue.password);
+                setLimit(defaultValue.limit);
+                setPrivateChecked(defaultValue.isPrivate);
+                setSecretChecked(defaultValue.isSecret);
+                setLimitChecked(defaultValue.isLimited);
+                setInviteChecked(defaultValue.inviteChecked);
+
                 setCreateNewRoomChecked(false);
                 setSelectedAccountUUIDs([]);
                 setCurrentChatRoomUUID(chatId);
@@ -269,7 +251,7 @@ function InviteFriendToggle({
     checked: boolean;
     setChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const [isSticky, ref] = useDetectSticky();
+    const [isSticky, ref] = useDetectSticky<HTMLLabelElement>();
 
     return (
         <div className="flex flex-col gap-2">
