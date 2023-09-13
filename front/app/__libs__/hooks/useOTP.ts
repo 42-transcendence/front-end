@@ -1,7 +1,8 @@
-import { useSWRMutation } from "./useSWR";
+import { useSWR, useSWRMutation } from "./useSWR";
 import { useCallback } from "react";
-import { HTTPError, fetchPromotionAuth, fetcherPOST } from "./fetcher";
-import { useSWRConfig } from "swr";
+import { HTTPError, fetchPromotionAuth, fetchToggle, fetcher } from "./fetcher";
+import { HTTP_RESPONSE_CONFLICT } from "./useRegisterNickName";
+import type { OTPSecret } from "@common/auth-payloads";
 
 export function usePromotionOTP() {
     const callback = useCallback(
@@ -14,19 +15,23 @@ export function usePromotionOTP() {
     return trigger;
 }
 
-const HTTP_RESPONSE_CONFLICT = 409 as const;
+export function useGetOTP() {
+    const result = useSWR("/profile/private/otp", fetcher<OTPSecret>);
 
-export function useRegisterOTP() {
-    const callback = async (key: string, { arg }: { arg: string }) => {
-        void (await fetcherPOST(key, { otp: arg }));
-    };
-    const result = useSWRMutation("/profile/private/otp", callback, {
-        throwOnError: false,
-    });
-    const error = result.error !== undefined;
     const conflict =
         result.error instanceof HTTPError &&
         result.error.status === HTTP_RESPONSE_CONFLICT;
+    return { data: result.data, conflict };
+}
 
-    return { register: result.trigger, error, conflict };
+export function useToggleOTP(enable: boolean) {
+    const callback = async (key: string, { arg }: { arg: string }) => {
+        const params = new URLSearchParams();
+        params.set("otp", arg);
+        await fetchToggle(key, params, enable);
+    };
+    const { trigger } = useSWRMutation("/profile/private/otp", callback, {
+        throwOnError: false,
+    });
+    return trigger;
 }

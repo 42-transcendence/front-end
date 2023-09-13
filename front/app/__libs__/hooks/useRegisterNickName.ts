@@ -5,7 +5,7 @@ import { useSWRConfig } from "swr";
 
 // TODO: 나중에 http response constansts 파일로 빼기?
 // 사실 제가 아직 status code 다 못외워서...
-const HTTP_RESPONSE_CONFLICT = 409 as const;
+export const HTTP_RESPONSE_CONFLICT = 409 as const;
 
 export function useRegisterNickName() {
     const { mutate } = useSWRConfig();

@@ -158,17 +158,16 @@ export async function fetcherPOST<T>(key: string, body: object): Promise<T> {
     });
 }
 
-export async function fetcherDELETE<T>(key: string, body: object): Promise<T> {
+export async function fetchToggle(
+    key: string,
+    searchParams: URLSearchParams,
+    enable: boolean,
+) {
     const url = new URL(key, URL_BASE);
-    return fetchBase(url, {
-        method: "DELETE",
-        headers: {
-            ["Content-Type"]: "application/json",
-        },
-        body: JSON.stringify(body),
+    for (const [key, value] of searchParams) {
+        url.searchParams.set(key, value);
+    }
+    return await fetchBase(url, {
+        method: enable ? "POST" : "DELETE",
     });
-}
-
-export async function fetcherOTP() {
-    return fetcher<JSON>("/profile/private/otp");
 }

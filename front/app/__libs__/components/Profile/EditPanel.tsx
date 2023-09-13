@@ -5,19 +5,32 @@ import { Separator } from "./GameHistoryPanel";
 import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { SelectAvatar } from "@/app/(main)/@home/welcome2/SelectAvatar";
-import type { OTPAuthInfo } from "@components/QRCodeCanvas";
 import { QRCodeCanvas } from "@components/QRCodeCanvas";
-import { fetcherOTP } from "@hooks/fetcher";
+import { OTPToggleBlocks } from "@/app/(main)/@otp/OTPInputBlocks";
+import { useGetOTP } from "@hooks/useOTP";
+import type { OTPSecret } from "@common/auth-payloads";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
     const profile = usePublicProfile(accountUUID);
     const [editAvatar, setEditAvatar] = useState(false);
-    const [authInfo, setAuthInfo] = useState<OTPAuthInfo | null>(null);
+    const [authInfo, setAuthInfo] = useState<OTPSecret | null>(null);
+    const [showOTP, setShowOTP] = useState(false);
+    const { data, conflict } = useGetOTP();
+    console.log(data, conflict);
 
     if (profile === undefined) {
         return <div>loading...</div>;
     }
+
+    const handleClick = () => {
+        if (!showOTP) {
+            if (!conflict) {
+                setAuthInfo(data ?? null);
+            }
+        }
+        setShowOTP(!showOTP);
+    };
 
     return (
         <Panel className="flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1">
@@ -56,16 +69,7 @@ export function EditPanel() {
 
                 <EditPanelItemHeader>
                     <EditPanelItemHeaderTitle>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                fetcherOTP()
-                                    .then((r) => {
-                                        setAuthInfo(r);
-                                    })
-                                    .catch(() => {});
-                            }}
-                        >
+                        <button type="button" onClick={handleClick}>
                             2차 인증 설정
                         </button>
                     </EditPanelItemHeaderTitle>
@@ -73,20 +77,27 @@ export function EditPanel() {
                         {authInfo !== null && (
                             <QRCodeCanvas authInfo={authInfo} />
                         )}
+                        {showOTP &&
+                            (!conflict ? (
+                                <>
+                                    <div>OTP를 등록하려면 입력하세요</div>
+                                    <OTPToggleBlocks length={6} enable={true} />
+                                </>
+                            ) : (
+                                <>
+                                    <div>OTP를 해제하려면 입력하세요 </div>
+                                    <OTPToggleBlocks
+                                        length={6}
+                                        enable={false}
+                                    />
+                                </>
+                            ))}
                     </EditPanelItemHeaderContent>
                 </EditPanelItemHeader>
             </EditPanelItem>
         </Panel>
     );
 }
-
-export const example = {
-    data: "sample-bas32-string",
-    enabled: false,
-    algorithm: "SHA-256",
-    codeDigits: 6,
-    movingPeriod: 30,
-};
 
 function EditPanelItem({ children }: PropsWithChildren) {
     return <div className="flex flex-col">{children}</div>;
