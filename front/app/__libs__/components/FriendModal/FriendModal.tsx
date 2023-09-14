@@ -22,6 +22,28 @@ import { getActiveStatusOrder } from "@common/auth-payloads";
 
 const nickTagSeparator = "#";
 
+export function parseNickTag(
+    input: string,
+): { nickName: string; nickTag: number } | null {
+    const separator = input.indexOf(nickTagSeparator);
+    if (separator === -1) {
+        return null;
+    }
+
+    const nickName = input.slice(0, separator);
+    const nickTagStr = input.slice(separator + 1);
+
+    if (!NICK_NAME_REGEX.test(nickName)) {
+        return null;
+    }
+    const nickTag = Number(nickTagStr);
+    if (Number.isNaN(nickTag)) {
+        return null;
+    }
+
+    return { nickName, nickTag };
+}
+
 export function FriendModal() {
     const { sendPayload } = useWebSocket("chat", []);
     const sendFriendRequest = () => {
@@ -30,28 +52,13 @@ export function FriendModal() {
             return;
         }
 
-        const separator = input.indexOf(nickTagSeparator);
-        if (separator === -1) {
+        const result = parseNickTag(input);
+        if (result === null) {
             alert("입력 형식을 확인해주세요");
             return;
         }
 
-        const nickName = input.slice(0, separator);
-        const nickTagStr = input.slice(separator + 1);
-
-        if (!NICK_NAME_REGEX.test(nickName)) {
-            alert("입력 형식을 확인해주세요");
-            return;
-        }
-        const nickTag = Number(nickTagStr);
-        if (Number.isNaN(nickTag)) {
-            alert("입력 형식을 확인해주세요");
-            return;
-        }
-
-        sendPayload(
-            makeAddFriendRequest({ nickName, nickTag }, "", 0b11111111),
-        );
+        sendPayload(makeAddFriendRequest(result, "", 0b11111111));
     };
 
     return (
