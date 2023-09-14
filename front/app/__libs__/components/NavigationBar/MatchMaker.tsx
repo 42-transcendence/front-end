@@ -6,7 +6,7 @@ import { useTimer } from "@hooks/useTimer";
 import { useMemo, useState } from "react";
 import { makeMatchmakeHandshakeQueue } from "@common/game-payload-builder-client";
 import {
-    handleEnqueueAlert,
+    handleEnqueuedAlert,
     handleMatchmakeFailed,
 } from "@common/game-gateway-helper-client";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -35,7 +35,7 @@ function MatchMakerPanel() {
             switch (opcode) {
                 case GameClientOpcode.ENQUEUED: {
                     const [battleField, gameMode, limit] =
-                        handleEnqueueAlert(buffer);
+                        handleEnqueuedAlert(buffer);
                     setBattleField(battleField);
                     setGameMode(gameMode);
                     setLimit(limit);

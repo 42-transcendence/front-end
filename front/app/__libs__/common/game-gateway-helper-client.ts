@@ -5,7 +5,7 @@ import type {
     MatchmakeFailedReason,
 } from "./game-payloads";
 
-export function handleEnqueueAlert(
+export function handleEnqueuedAlert(
     payload: ByteBuffer,
 ): [
     battleField: BattleField,
