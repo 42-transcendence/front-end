@@ -8,6 +8,7 @@ import { usePrivateProfile } from "@hooks/useProfile";
 import { useEffect, useState } from "react";
 import { DoubleSharp } from "@components/ImageLibrary";
 import { useToken } from "@hooks/useToken";
+import { logoutAction } from "@components/ContextMenu/logoutAction";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -72,12 +73,17 @@ export default function MainLayout({
         return (
             <DefaultLayout>
                 <p>정지당했습니다... 심장이 뛰질 않아요.</p>
-                {auth.bans.map((e) => (
-                    <>
-                        <p>{e.reason}</p>
-                        <p>{e.expireTimestamp?.toString() ?? "영구"}</p>
-                    </>
-                ))}
+                <div className="flex flex-col">
+                    {auth.bans.map((e) => (
+                        <>
+                            <p>{e.reason}</p>
+                            <p>{e.expireTimestamp?.toString() ?? "영구"}</p>
+                        </>
+                    ))}
+                </div>
+                <button type="button" onClick={() => logoutAction()}>
+                    로그아웃
+                </button>
             </DefaultLayout>
         );
     }
