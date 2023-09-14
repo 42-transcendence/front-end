@@ -302,7 +302,7 @@ export function ChatDialog() {
                             messages={messages}
                         />
                     )}
-                    <div ref={messagesEndRef}>asdf</div>
+                    <div ref={messagesEndRef}></div>
                 </div>
                 <ChatMessageInputArea />
             </div>
