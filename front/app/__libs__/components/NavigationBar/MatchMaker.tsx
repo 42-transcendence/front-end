@@ -4,15 +4,9 @@ import {
     useWebSocket,
     useWebSocketConnector,
 } from "@akasha-utils/react/websocket-hook";
-import { GameClientOpcode, GameServerOpcode } from "@common/game-opcodes";
+import { GameClientOpcode } from "@common/game-opcodes";
 import { useTimer } from "@hooks/useTimer";
 import { useCallback, useMemo, useState } from "react";
-import {
-    BattleField,
-    GameMatchmakeType,
-    GameMode,
-    MatchmakeFailedReason,
-} from "@common/game-payloads";
 import { makeMatchmakeHandshakeQueue } from "@common/game-payload-builder-client";
 import {
     handleEnqueueAlert,
@@ -20,11 +14,18 @@ import {
     handleMatchmakeFailed,
 } from "@common/game-gateway-helper-client";
 import { useRouter } from "next/navigation";
-import { useAtom } from "jotai";
-import { InvitationAtom } from "@atoms/GameAtom";
+import { useAtomValue, useSetAtom } from "jotai";
+import { InvitationAtom, MatchMakingAtom } from "@atoms/GameAtom";
 import { ACCESS_TOKEN_KEY, HOST } from "@utils/constants";
+import { BattleField, GameMode } from "@common/game-payloads";
 
-export function MatchMakerPanel() {
+export function MatchMakerWrapper() {
+    const isMatchMaking = useAtomValue(MatchMakingAtom);
+
+    return <>{isMatchMaking ? <MatchMakerPanel /> : null}</>;
+}
+
+function MatchMakerPanel() {
     const props = useMemo(
         () => ({
             handshake: () => makeMatchmakeHandshakeQueue().toArray(),
@@ -40,15 +41,15 @@ export function MatchMakerPanel() {
         }
         return `wss://${HOST}/game?token=${accessToken}`;
     }, []);
-    const [invitation, setInvitation] = useAtom(InvitationAtom);
+    const setInvitation = useSetAtom(InvitationAtom);
+    const setMatchMaking = useSetAtom(MatchMakingAtom);
     const [battleField, setBattleField] = useState<BattleField>();
     const [gameMode, setGameMode] = useState<GameMode>();
     const [limit, setLimit] = useState(0);
-    const [reason, setReason] = useState<MatchmakeFailedReason>();
 
     useWebSocketConnector("game", getURL, props);
 
-    const { sendPayload } = useWebSocket(
+    useWebSocket(
         "game",
         [
             GameClientOpcode.INVITATION,
@@ -80,6 +81,8 @@ export function MatchMakerPanel() {
             }
         },
     );
+
+    const cancelMatchMaking = () => setMatchMaking(false);
 
     const timer = useTimer();
     const second = (timer % 60).toString().padStart(2, "0");
@@ -115,6 +118,9 @@ export function MatchMakerPanel() {
             <span className="relative flex w-full justify-center rounded-lg px-1 py-0.5 text-base text-gray-100/80">
                 {min}:{second}
             </span>
+            <button type="button" onClick={cancelMatchMaking}>
+                매칭취소
+            </button>
         </div>
     );
 }

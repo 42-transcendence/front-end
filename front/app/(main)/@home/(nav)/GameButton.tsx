@@ -8,6 +8,8 @@ import { ButtonOnRight } from "@components/Button/ButtonOnRight";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { makeMatchmakeHandshakeCreate } from "@common/game-payload-builder-client";
 import { BattleField, GameMode } from "@common/game-payloads";
+import { MatchMakingAtom } from "@atoms/GameAtom";
+import { useAtom, useSetAtom } from "jotai";
 
 export function CreateGameButton() {
     const [open, setOpen] = useState(false);
@@ -132,6 +134,14 @@ function CreateNewGameRoom() {
 }
 
 export function QuickMatchButton() {
-    //TODO: enter queue
-    return <RoundButtonBase>Quick Match</RoundButtonBase>;
+    const [isMatchMaking, setMatchMaking] = useAtom(MatchMakingAtom);
+
+    return (
+        <RoundButtonBase
+            onClick={() => setMatchMaking(true)}
+            disabled={isMatchMaking}
+        >
+            Quick Match
+        </RoundButtonBase>
+    );
 }
