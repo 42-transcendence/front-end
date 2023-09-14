@@ -9,10 +9,10 @@ import {
 } from "react";
 import { Game, Icon } from "@components/ImageLibrary";
 import { ChatBubble, NoticeBubble } from "./ChatBubble";
+import type { MessageSchema } from "@akasha-utils/idb/chat-store";
 import {
     extractTargetFromDirectChatKey,
     isDirectChatKey,
-    type MessageSchema,
 } from "@akasha-utils/idb/chat-store";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import type { ByteBuffer } from "@akasha-lib";
@@ -284,6 +284,7 @@ export function ChatDialog() {
     if (currentChatRoomUUID === "") {
         return <NoChatRoomSelected />;
     }
+    console.log(isMessageEndInView);
 
     return (
         <div className="flex h-full w-full shrink items-start justify-end gap-4 overflow-auto">
@@ -301,7 +302,7 @@ export function ChatDialog() {
                             messages={messages}
                         />
                     )}
-                    <div ref={messagesEndRef}></div>
+                    <div ref={messagesEndRef}>asdf</div>
                 </div>
                 <ChatMessageInputArea />
             </div>
@@ -311,9 +312,15 @@ export function ChatDialog() {
 
 function GoToBottomButton({ onClick }: { onClick: () => void }) {
     return (
-        <button type="button" onClick={onClick}>
-            밑으로
-        </button>
+        <div className="absolute bottom-20 left-0 w-full px-20">
+            <button
+                className="relative h-8 w-full rounded-[4px_4px_28px_28px] bg-secondary/90"
+                type="button"
+                onClick={onClick}
+            >
+                새로운 메시지가 도착했습니다
+            </button>
+        </div>
     );
 }
 
