@@ -9,17 +9,12 @@ import { useCallback, useMemo } from "react";
 import { ByteBuffer } from "../../akasha-lib/library/byte-buffer";
 import { GameMatchmakeType } from "@common/game-payloads";
 import { ACCESS_TOKEN_KEY, HOST } from "@hooks/fetcher";
+import { makeMatchmakeHandshakeQueue } from "@common/game-payload-builder-client";
 
 export function MatchMakerPanel() {
     const props = useMemo(
         () => ({
-            handshake: () => {
-                const buf = ByteBuffer.createWithOpcode(
-                    GameServerOpcode.HANDSHAKE_MATCHMAKE,
-                );
-                buf.write1(GameMatchmakeType.QUEUE);
-                return buf.toArray();
-            },
+            handshake: () => makeMatchmakeHandshakeQueue().toArray(),
         }),
         [],
     );
@@ -33,6 +28,7 @@ export function MatchMakerPanel() {
     }, []);
 
     useWebSocketConnector("game", getURL, props);
+
     const { sendPayload } = useWebSocket(
         "game",
         [
@@ -58,7 +54,7 @@ export function MatchMakerPanel() {
     return (
         <div className="relative flex flex-col items-start justify-center gap-2 rounded-lg bg-black/30 p-2">
             <div className="flex w-fit shrink-0 rounded">
-                <span className="w-fit shrink-0 bg-black/30 px-1 py-0.5 text-sm font-bold">
+                <span className="w-fit shrink-0 bg-windowGlass/30 px-1 py-0.5 text-sm font-bold">
                     {config.field}
                 </span>
                 <span
