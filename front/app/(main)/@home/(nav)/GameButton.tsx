@@ -1,10 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RoundButtonBase } from "@components/Button/RoundButton";
 import { GlassWindow } from "@components/Frame/GlassWindow";
-import { useRefArray } from "@hooks/useRefArray";
 import { ButtonOnRight } from "@components/Button/ButtonOnRight";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 
@@ -27,90 +26,51 @@ function GameModeBlock({
     keyName: string;
     config: string[];
 }) {
-    const [selected, setSelected] = useState(-1);
-    const [refArray, refCallbackAt] = useRefArray<HTMLButtonElement | null>(
-        config.length,
-        null,
-    );
-
-    useEffect(() => {
-        if (selected >= refArray.length || selected === -1) {
-            return;
-        }
-        const current = refArray[selected];
-        if (current === null) {
-            throw new Error();
-        }
-        current.focus();
-    }, [refArray, selected]);
+    const [selected, setSelected] = useState("");
 
     return (
         <div className="flex flex-row items-center justify-center gap-2">
             <span
                 className={`w-20 shrink-0 p-2 text-lg ${
-                    selected !== -1 ? "text-white" : "text-gray-500/70"
+                    selected !== "" ? "text-white" : "text-gray-500/70"
                 }`}
             >
                 {keyName}
             </span>
             <div className="flex w-full flex-row justify-between px-2">
-                {config.map((item, index) => {
-                    return (
-                        <>
-                            <input
-                                key={index}
-                                type="radio"
-                                name={item}
-                                checked={index === selected}
-                                className="hidden"
-                                readOnly
-                                required
-                            />
-                            <button
-                                type="button"
-                                tabIndex={selected === index ? 0 : -1}
-                                ref={refCallbackAt(index)}
-                                onClick={() => {
-                                    setSelected(index);
-                                }}
-                                onKeyDown={(event) => {
-                                    if (
-                                        event.key === "ArrowLeft" &&
-                                        selected > 0
-                                    ) {
-                                        setSelected((value) => value - 1);
-                                    }
-                                    if (
-                                        event.key === "ArrowRight" &&
-                                        selected < config.length
-                                    ) {
-                                        setSelected((value) => value + 1);
-                                    }
-                                }}
-                                key={item}
-                                className={`flex w-20 justify-center rounded-lg p-2 outline-none  focus-visible:outline-primary/70 ${
-                                    selected === index
-                                        ? "bg-secondary/30"
-                                        : "bg-gray-300/30"
-                                }`}
-                            >
-                                {item}
-                            </button>
-                        </>
-                    );
-                })}
+                {config.map((item) => (
+                    <label
+                        key={item}
+                        className={`flex w-20 justify-center rounded-lg p-2 outline-none  focus-within:outline-primary/70 ${
+                            selected === item
+                                ? "bg-secondary/30"
+                                : "bg-gray-300/30"
+                        }`}
+                    >
+                        <input
+                            type="radio"
+                            name={keyName}
+                            value={item}
+                            checked={selected === item}
+                            onChange={() => setSelected(item)}
+                            className="sr-only"
+                        />
+                        {item}
+                    </label>
+                ))}
             </div>
         </div>
     );
 }
 
+const configs = {
+    field: ["동글동글", "네모네모"],
+    mode: ["기본", "중력"],
+    team: ["개인전", "협동전"],
+};
+
 function CreateNewGameRoom() {
-    const configs = {
-        FIELD: ["동글동글", "네모네모"],
-        MODE: ["기본", "중력"],
-        TEAM: ["개인전", "협동전"],
-    };
-    const { sendPayload } = useWebSocket("game");
+    const { sendPayload } = useWebSocket("game", []);
 
     return (
         <GlassWindow>
@@ -136,8 +96,8 @@ function CreateNewGameRoom() {
                     })}
                 </div>
                 <ButtonOnRight
-                    buttonText={"만들기"}
-                    className={"w-20 rounded-lg bg-gray-300/30 p-2"}
+                    buttonText="만들기"
+                    className="w-20 rounded-lg bg-gray-300/30 p-2"
                 />
             </form>
         </GlassWindow>
