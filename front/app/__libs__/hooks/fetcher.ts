@@ -146,11 +146,14 @@ export async function fetcher<T>(key: string): Promise<T> {
     return fetchBase(url);
 }
 
-export async function fetcherPOST<T>(key: string, body: object): Promise<T> {
+export async function fetcherPOST<T>(
+    key: string,
+    body?: object | undefined,
+): Promise<T> {
     const url = new URL(key, URL_BASE);
     return fetchBase(url, {
         method: "POST",
-        ...(body instanceof FormData
+        ...(body === undefined || body instanceof FormData
             ? { body }
             : {
                   headers: {
@@ -161,16 +164,7 @@ export async function fetcherPOST<T>(key: string, body: object): Promise<T> {
     });
 }
 
-export async function fetchToggle(
-    key: string,
-    searchParams: URLSearchParams,
-    enable: boolean,
-) {
+export async function fetchMethod(key: string, method: string) {
     const url = new URL(key, URL_BASE);
-    for (const [key, value] of searchParams) {
-        url.searchParams.set(key, value);
-    }
-    return await fetchBase(url, {
-        method: enable ? "POST" : "DELETE",
-    });
+    return await fetchBase(url, { method });
 }

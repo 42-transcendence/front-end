@@ -4,32 +4,20 @@ import { Avatar } from "../Avatar";
 import { Separator } from "./GameHistoryPanel";
 import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
-import { QRCodeCanvas } from "@components/QRCodeCanvas";
-import { OTPToggleBlocks } from "@/app/(main)/@otp/OTPInputBlocks";
-import { useGetOTP } from "@hooks/useOTP";
-import type { OTPSecret } from "@common/auth-payloads";
 import { SelectAvatar } from "@components/SelectAvatar/SelectAvatar";
+import { OTPRegistration } from "@components/OTPRegistration";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
     const profile = usePublicProfile(accountUUID);
     const [editAvatar, setEditAvatar] = useState(false);
-    const [authInfo, setAuthInfo] = useState<OTPSecret | null>(null);
     const [showOTP, setShowOTP] = useState(false);
-    const { data, conflict } = useGetOTP();
 
     if (profile === undefined) {
         return <div>loading...</div>;
     }
 
     const handleClick = () => {
-        if (!showOTP) {
-            if (!conflict) {
-                setAuthInfo(data ?? null);
-            }
-        } else {
-            setAuthInfo(null);
-        }
         setShowOTP(!showOTP);
     };
 
@@ -75,24 +63,7 @@ export function EditPanel() {
                         </button>
                     </EditPanelItemHeaderTitle>
                     <EditPanelItemHeaderContent>
-                        {authInfo !== null && (
-                            <QRCodeCanvas authInfo={authInfo} />
-                        )}
-                        {showOTP &&
-                            (!conflict ? (
-                                <>
-                                    <div>OTP를 등록하려면 입력하세요</div>
-                                    <OTPToggleBlocks length={6} enable={true} />
-                                </>
-                            ) : (
-                                <>
-                                    <div>OTP를 해제하려면 입력하세요 </div>
-                                    <OTPToggleBlocks
-                                        length={6}
-                                        enable={false}
-                                    />
-                                </>
-                            ))}
+                        {showOTP && <OTPRegistration />}
                     </EditPanelItemHeaderContent>
                 </EditPanelItemHeader>
             </EditPanelItem>
@@ -124,6 +95,6 @@ function EditPanelItemHeaderTitle({ children }: PropsWithChildren) {
     );
 }
 
-function EditPanelItemDetail({ children }: PropsWithChildren) {
-    return <div className="relative flex flex-col">{children}</div>;
-}
+// function EditPanelItemDetail({ children }: PropsWithChildren) {
+//     return <div className="relative flex flex-col">{children}</div>;
+// }

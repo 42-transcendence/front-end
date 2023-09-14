@@ -101,7 +101,7 @@ export function isAuthPayload(value: unknown): value is AuthPayload {
                     hasProperty("string", value, "user_id") &&
                     hasProperty("object", value, "bans")
                 ) {
-                    //FIXME: narrow bans
+                    //FIXME: narrow `bans`
                     // value satisfies BlockedAuthPayload;
                     return true;
                 }

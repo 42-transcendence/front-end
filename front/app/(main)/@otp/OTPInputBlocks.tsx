@@ -83,12 +83,12 @@ export function OTPToggleBlocks({
             sendOTP(values.join(""))
                 .then((r) => {
                     if (r !== undefined) {
-                        alert("설정되었습니다");
+                        alert(enable ? "설정되었습니다" : "해제되었습니다");
                     }
                 })
                 .catch(() => {});
         }
-    }, [currentIndex, sendOTP, values]);
+    }, [enable, currentIndex, sendOTP, values]);
 
     useEffect(() => {
         if (error) {
