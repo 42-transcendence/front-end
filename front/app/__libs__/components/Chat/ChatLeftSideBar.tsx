@@ -47,13 +47,19 @@ export default function ChatLeftSideBar() {
         "chat",
         ChatClientOpcode.PUBLIC_ROOM_LIST,
         (_, buffer) => {
-            const list = handlePublicRoomList(buffer);
-            setChatPublicRoomList(list);
+            setChatPublicRoomList(handlePublicRoomList(buffer));
         },
     );
+
+    const refreshPublicRoomList = useCallback(
+        () => sendPayload(makePublicRoomListRequest()),
+        [sendPayload],
+    );
+
     useEffect(() => {
-        sendPayload(makePublicRoomListRequest());
-    }, [sendPayload, selectedIndex, currentChatRoomUUID]);
+        refreshPublicRoomList();
+    }, [selectedIndex, currentChatRoomUUID, refreshPublicRoomList]);
+
     const chatJoinRoomList = useAtomValue(ChatRoomListAtom);
     const chatDirectRoomList = useAtomValue(DirectRoomListAtom);
     const [chatPublicRoomList, setChatPublicRoomList] = useState(
@@ -85,7 +91,7 @@ export default function ChatLeftSideBar() {
     const selectLabel = useCallback(
         (
             e: React.KeyboardEvent<HTMLLabelElement>,
-            callback: (args_0: React.SetStateAction<boolean>) => void,
+            callback: (x: boolean) => void,
             value: boolean,
         ) => {
             if (e.key === " " || e.key === "Enter") {
