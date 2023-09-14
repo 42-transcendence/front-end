@@ -187,7 +187,10 @@ export function ChatDialog() {
         useChatRoomMessages(currentChatRoomUUID);
     const chatDialogRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const isMessageEndInView = useInView(messagesEndRef, { amount: 1 });
+    const isMessageEndInView = useInView(messagesEndRef, {
+        root: chatDialogRef,
+        amount: 1,
+    });
     const { sendPayload } = useWebSocket("chat", []);
     const [, setChatRoomList] = useChatRoomListAtom();
     const [, setDirectRoomList] = useDirectRoomListAtom();
@@ -298,7 +301,7 @@ export function ChatDialog() {
                             messages={messages}
                         />
                     )}
-                    <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef}></div>
                 </div>
                 <ChatMessageInputArea />
             </div>
