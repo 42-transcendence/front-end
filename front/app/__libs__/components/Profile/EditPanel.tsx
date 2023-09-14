@@ -4,11 +4,11 @@ import { Avatar } from "../Avatar";
 import { Separator } from "./GameHistoryPanel";
 import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
-import { SelectAvatar } from "@/app/(main)/@home/welcome2/SelectAvatar";
 import { QRCodeCanvas } from "@components/QRCodeCanvas";
 import { OTPToggleBlocks } from "@/app/(main)/@otp/OTPInputBlocks";
 import { useGetOTP } from "@hooks/useOTP";
 import type { OTPSecret } from "@common/auth-payloads";
+import { SelectAvatar } from "@components/SelectAvatar/SelectAvatar";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();

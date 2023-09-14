@@ -1,4 +1,3 @@
-import { byteToReadable } from "./byteConversion";
 import { useRef, useEffect, useState } from "react";
 import { DragDropArea } from "./DragDropArea";
 import Image from "next/image";
@@ -10,10 +9,8 @@ type ImageInfoType = {
 };
 
 export function ImageUploadBox({
-    maxFileSize,
     setImage,
 }: {
-    maxFileSize?: number | undefined;
     setImage: (target: HTMLImageElement) => void;
 }) {
     const [imageInfo, setImageInfo] = useState<ImageInfoType>({
@@ -31,12 +28,6 @@ export function ImageUploadBox({
         }
 
         const firstFile = fileList[0];
-
-        // check firstFile size
-        if (maxFileSize !== undefined && firstFile.size > maxFileSize) {
-            alert(`최대 파일 용량: ${byteToReadable(maxFileSize)}`);
-            return;
-        }
 
         URL.revokeObjectURL(imageInfo.src);
 
