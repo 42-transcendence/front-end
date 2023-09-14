@@ -14,7 +14,7 @@ import { InvitationAtom } from "@atoms/GameAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import { handleInvitationPayload } from "@common/game-gateway-helper-client";
 
-export function useGameWebSocketConnector(buf: ByteBuffer) {
+export function useGameMatchMakeConnector(buf: ByteBuffer) {
     const router = useRouter();
     const setInvitation = useSetAtom(InvitationAtom, { store: GlobalStore });
     const props = useMemo(
@@ -38,4 +38,23 @@ export function useGameWebSocketConnector(buf: ByteBuffer) {
         setInvitation(handleInvitationPayload(buffer));
         router.push("/game");
     });
+}
+
+export function useGamePlayConnector(buf: ByteBuffer) {
+    const props = useMemo(
+        () => ({
+            handshake: () => buf.toArray(),
+        }),
+        [buf],
+    );
+
+    const getURL = useCallback(() => {
+        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+        if (accessToken === null) {
+            return "";
+        }
+        return `wss://${HOST}/game?token=${accessToken}`;
+    }, []);
+
+    useWebSocketConnector("game", getURL, props);
 }

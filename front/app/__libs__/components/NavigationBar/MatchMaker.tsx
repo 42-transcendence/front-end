@@ -12,7 +12,7 @@ import {
 import { useAtomValue, useSetAtom } from "jotai";
 import { IsMatchMakingAtom } from "@atoms/GameAtom";
 import { BattleField, GameMode } from "@common/game-payloads";
-import { useGameWebSocketConnector } from "@hooks/useGameWebSocketConnector";
+import { useGameMatchMakeConnector } from "@hooks/useGameWebSocketConnector";
 
 export function MatchMakerWrapper() {
     const isMatchMaking = useAtomValue(IsMatchMakingAtom);
@@ -26,7 +26,7 @@ function MatchMakerPanel() {
     const [gameMode, setGameMode] = useState<GameMode>();
     const [limit, setLimit] = useState(0);
 
-    useGameWebSocketConnector(useMemo(() => makeMatchmakeHandshakeQueue(), []));
+    useGameMatchMakeConnector(useMemo(() => makeMatchmakeHandshakeQueue(), []));
 
     useWebSocket(
         "game",

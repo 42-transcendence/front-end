@@ -14,7 +14,7 @@ import { handleMatchmakeFailed } from "@common/game-gateway-helper-client";
 import { useAtom } from "jotai";
 import { IsMatchMakingAtom } from "@atoms/GameAtom";
 import { DoubleSharp } from "@components/ImageLibrary";
-import { useGameWebSocketConnector } from "@hooks/useGameWebSocketConnector";
+import { useGameMatchMakeConnector } from "@hooks/useGameWebSocketConnector";
 
 type GameInfoType = {
     battleField: BattleField;
@@ -165,7 +165,7 @@ function CreateGamePendding({
 }) {
     const [isFail, setIsFail] = useState<MatchmakeFailedReason>();
 
-    useGameWebSocketConnector(
+    useGameMatchMakeConnector(
         useMemo(
             () =>
                 makeMatchmakeHandshakeCreate(
