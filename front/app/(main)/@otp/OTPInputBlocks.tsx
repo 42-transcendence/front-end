@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DigitBlock } from "./DigitBlock";
 import { useRefArray } from "@hooks/useRefArray";
 import { useStateArray } from "@hooks/useStateArray";

@@ -170,11 +170,6 @@ function AchievementItem({
     //TODO: get date from backend
     const date = new Date();
 
-    // TODO: AchievementItem 끼리 id, htmlFor가 겹쳐 안되고 있었는데 일단 각각의 id를 덧붙여 고유하게 만들었습니다
-    //      더불어 아예 input을 label 안으로 넣었는데요, 이러면 htmlFor와 input의 id를 지워도 일단 작동되긴 합니다
-    //      혹시 제가 헤아리지 못한 다른 이유가 있어 input을 label 밖에 해두신 거라면 다시 밖으로 꺼내고, 안에
-    //      넣어도 된다면 이렇게 유지해도 될까요? 이렇게 하면 가장 밖의 div label도 하나로 합칠 수 있지 않을까 싶어
-    //      제안해봅니다
     return (
         <div className="relative flex w-full shrink-0 overflow-clip rounded-xl bg-black/30 hover:bg-black/20 active:bg-black/10">
             <label

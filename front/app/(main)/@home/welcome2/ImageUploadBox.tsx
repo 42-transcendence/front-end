@@ -88,7 +88,7 @@ function PreviewArea({
 
         oldElem.onload = () => {
             const newElem = oldElem.cloneNode(true) as HTMLImageElement;
-            newElem.onload = () => setImage(newElem); // TODO: 정말 정말 이게 최선인가???
+            newElem.onload = () => setImage(newElem);
         };
     }, [setImage]);
 
@@ -97,13 +97,11 @@ function PreviewArea({
             <Image
                 ref={imageRef}
                 className="box-content"
-                // decoding="sync"
                 src={imageInfo.src}
                 alt={imageInfo.alt}
                 data-name={imageInfo.name}
                 width="250"
                 height="250"
-                // fill={true}
             />
         </div>
     );

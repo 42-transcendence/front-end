@@ -3,10 +3,7 @@ type TextFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
     className?: string | undefined;
 };
 
-export function TextField(props: TextFieldProps) {
-    // TODO: reconsider children position or purpose?
-    const { icon, className, ...rest } = props;
-
+export function TextField({ icon, className, ...rest }: TextFieldProps) {
     return (
         <fieldset
             className={`${className} shadow-3xl group relative flex h-8 shrink-0 items-center justify-center gap-2 self-stretch rounded-xl bg-black/30 py-1`}
