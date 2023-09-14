@@ -60,7 +60,7 @@ export function FriendModal() {
     };
 
     return (
-        <GlassWindow>
+        <GlassWindow className="w-[262px]">
             <div className="w-full overflow-clip rounded-[28px] ">
                 <FriendRequestList />
                 <FriendList />
