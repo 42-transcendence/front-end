@@ -198,15 +198,18 @@ export function ChatDialog() {
     const [lastChatRoomUUID, setLastChatRoomUUID] = useState("");
     const [lastMessage, setLastMessage] = useState<MessageSchema>();
 
-    const scrollToBottom = useCallback(() => {
-        if (messagesEndRef.current === null) {
-            throw new Error();
-        }
-        messagesEndRef.current.scrollIntoView({
-            block: "end",
-            behavior: "smooth",
-        });
-    }, []);
+    const scrollToBottom = useCallback(
+        (behavior: ScrollBehavior | undefined) => {
+            if (messagesEndRef.current === null) {
+                throw new Error();
+            }
+            messagesEndRef.current.scrollIntoView({
+                block: "end",
+                behavior: behavior,
+            });
+        },
+        [],
+    );
 
     useEffect(() => {
         setLastChatRoomUUID(currentChatRoomUUID);
@@ -217,14 +220,17 @@ export function ChatDialog() {
                     ? newLastMessage
                     : lastMessage,
             );
+            if (newLastMessage.accountId === currentAccountUUID) {
+                scrollToBottom("smooth");
+            }
         } else {
             setLastMessage(undefined);
         }
-    }, [currentChatRoomUUID, messages]);
+    }, [currentAccountUUID, currentChatRoomUUID, messages, scrollToBottom]);
 
     useEffect(() => {
         if (lastChatRoomUUID !== "" && isChatMessagesLoaded) {
-            scrollToBottom();
+            scrollToBottom("instant");
         }
     }, [lastChatRoomUUID, isChatMessagesLoaded, scrollToBottom]);
 
@@ -232,13 +238,6 @@ export function ChatDialog() {
         if (lastMessage !== undefined && lastChatRoomUUID !== "") {
             if (chatDialogRef.current === null) {
                 throw new Error();
-            }
-
-            if (
-                lastMessage.accountId === currentAccountUUID ||
-                isMessageEndInView
-            ) {
-                scrollToBottom();
             }
 
             const lastChatRoomIsDirect = isDirectChatKey(lastChatRoomUUID);
@@ -284,13 +283,14 @@ export function ChatDialog() {
     if (currentChatRoomUUID === "") {
         return <NoChatRoomSelected />;
     }
-    console.log(isMessageEndInView);
 
     return (
         <div className="flex h-full w-full shrink items-start justify-end gap-4 overflow-auto">
             <div className="flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4 2xl:rounded-lg">
                 {!isMessageEndInView && (
-                    <GoToBottomButton onClick={scrollToBottom} />
+                    <GoToBottomButton
+                        onClick={() => scrollToBottom("smooth")}
+                    />
                 )}
                 <div
                     ref={chatDialogRef}
@@ -302,7 +302,10 @@ export function ChatDialog() {
                             messages={messages}
                         />
                     )}
-                    <div ref={messagesEndRef}></div>
+                    <div
+                        className="min-h-[1px] w-full bg-transparent"
+                        ref={messagesEndRef}
+                    ></div>
                 </div>
                 <ChatMessageInputArea />
             </div>
@@ -312,13 +315,13 @@ export function ChatDialog() {
 
 function GoToBottomButton({ onClick }: { onClick: () => void }) {
     return (
-        <div className="absolute bottom-20 left-0 w-full px-20">
+        <div className="absolute bottom-20 left-0 z-50 w-full px-20">
             <button
                 className="relative h-8 w-full rounded-[4px_4px_28px_28px] bg-secondary/90"
                 type="button"
                 onClick={onClick}
             >
-                새로운 메시지가 도착했습니다
+                밑으로
             </button>
         </div>
     );
