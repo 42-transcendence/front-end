@@ -3,6 +3,7 @@ import { DoubleSharp } from "@components/ImageLibrary";
 import { FriendButton } from "./FriendButton";
 import { ChatButton } from "./ChatButton";
 import { ProfileButton } from "./ProfileButton";
+import { MatchMakerPanel } from "./MatchMaker";
 
 export function NavigationBar() {
     return (
@@ -15,6 +16,7 @@ export function NavigationBar() {
                     height={48}
                 />
             </Link>
+            <MatchMakerPanel />
             {/* TODO: matching 대기중이면 중간에 정보 표시? */}
             <div className="relative flex flex-row items-center justify-between gap-4">
                 <ChatButton />

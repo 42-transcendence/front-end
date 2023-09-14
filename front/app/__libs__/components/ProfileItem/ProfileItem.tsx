@@ -68,9 +68,12 @@ export function ProfileItem({
                                         />
                                     )}
                             </div>
-                            <div className="text-normal line-clamp-1 font-sans text-sm text-gray-50">
+                            <span
+                                title={statusMessage}
+                                className="text-normal line-clamp-1 font-sans text-sm text-gray-50"
+                            >
                                 {statusMessage}
-                            </div>
+                            </span>
                         </div>
                     </div>
                 </div>
