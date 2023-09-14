@@ -71,6 +71,17 @@ export type GameRoomProps = {
     code: string | null;
 };
 
+export function readGameRoomProps(buf: ByteBuffer): GameRoomProps {
+    const id = buf.readUUID();
+    const code = buf.readNullable(buf.readString);
+    return { id, code };
+}
+
+export function writeGameRoomProps(obj: GameRoomProps, buf: ByteBuffer) {
+    buf.writeUUID(obj.id);
+    buf.writeNullable(obj.code, buf.writeString);
+}
+
 export type GameRoomParams = {
     battleField: BattleField;
     gameMode: GameMode;

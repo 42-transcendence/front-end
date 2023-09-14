@@ -1,8 +1,17 @@
 import type { ByteBuffer } from "@akasha-lib";
 import type {
     BattleField,
+    GameMemberParams,
     GameMode,
+    GameRoomEnterResult,
+    GameRoomParams,
+    GameRoomProps,
     MatchmakeFailedReason,
+} from "./game-payloads";
+import {
+    readGameRoomProps,
+    readGameRoomParams,
+    readGameMemberParams,
 } from "./game-payloads";
 
 export function handleEnqueuedAlert(
@@ -32,40 +41,31 @@ export function handleMatchmakeFailed(
     return reason;
 }
 
-export function handleGameRoom(payload: ByteBuffer) {
-    const id = payload.readUUID();
-    const code = payload.readNullable(payload.readString);
-    const battleField = payload.read4Unsigned();
-    const gameMode = payload.read1();
-    const limit = payload.read2();
-    const fair = payload.readBoolean();
+export function handleGameRoom(
+    payload: ByteBuffer,
+): [
+    props: GameRoomProps,
+    params: GameRoomParams,
+    members: GameMemberParams[],
+    ladder: boolean,
+] {
+    const props = readGameRoomProps(payload);
+    const params = readGameRoomParams(payload);
 
     const length = payload.readLength();
-
-    let members = [];
+    let members: GameMemberParams[] = [];
     for (let i = 0; i < length; ++i) {
-        members.push({
-            key: payload.readUUID(),
-            val: {
-                character: payload.read1(),
-                specification: payload.read1(),
-                team: payload.read1(),
-            },
-        });
+        members.push(readGameMemberParams(payload));
     }
 
     const ladder = payload.readBoolean();
 
-    return {
-        props: { id, code },
-        params: { battleField, gameMode, limit, fair, ladder },
-        members,
-    };
+    return [props, params, members, ladder];
 }
 
 export function handleGameFailedPayload(
     payload: ByteBuffer,
-) /* : GameRoomEnterResult */ {
+): GameRoomEnterResult {
     const errno = payload.read1();
     return errno;
 }
