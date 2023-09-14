@@ -221,7 +221,7 @@ export function ChatDialog() {
                     : lastMessage,
             );
             if (newLastMessage.accountId === currentAccountUUID) {
-                scrollToBottom("smooth");
+                scrollToBottom("instant");
             }
         } else {
             setLastMessage(undefined);
@@ -321,15 +321,14 @@ function GoToBottomButton({ onClick }: { onClick: () => void }) {
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ delay: 1 }}
             className="absolute bottom-24 right-0 flex w-full justify-end px-20"
         >
             <button
-                className="relative flex h-8 min-w-[2rem] items-center justify-center rounded-[4px_4px_32px_32px] bg-secondary"
+                className="relative z-50 flex h-8 min-w-[2rem] items-center justify-center rounded-[0px_0px_999px_999px] bg-secondary drop-shadow-[0_0_0.1rem#000000]"
                 type="button"
                 onClick={onClick}
             >
-                <Icon.Arrow1 className="rotate-90" />
+                <Icon.Arrow1 className="rotate-90 text-gray-50/80" />
             </button>
         </motion.div>
     );
