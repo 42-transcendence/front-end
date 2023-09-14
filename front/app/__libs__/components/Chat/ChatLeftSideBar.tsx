@@ -59,18 +59,6 @@ export default function ChatLeftSideBar() {
         CreateNewRoomCheckedAtom,
     );
     const setSideBarOpen = useSetAtom(LeftSideBarIsOpenAtom);
-    const selectLabel = useCallback(
-        (
-            e: React.KeyboardEvent<HTMLLabelElement>,
-            callback: (x: boolean) => void,
-            value: boolean,
-        ) => {
-            if (e.key === " " || e.key === "Enter") {
-                callback(!value);
-            }
-        },
-        [],
-    );
     const setSelectedAccountID = useSetAtom(SelectedAccountUUIDsAtom);
     useEffect(() => {
         setSelectedAccountID([]);
@@ -78,22 +66,26 @@ export default function ChatLeftSideBar() {
 
     return (
         <ChatLeftSideBarLayout>
-            <div className="flex h-fit shrink-0 flex-row items-center justify-between self-stretch py-2 peer-checked:text-gray-200/80">
+            <div
+                className={`flex h-fit shrink-0 flex-row items-center justify-between self-stretch py-2 ${
+                    createNewRoomChecked && "text-gray-200/80"
+                }`}
+            >
                 <label
-                    data-checked={createNewRoomChecked}
-                    tabIndex={0}
-                    onKeyDown={(e) =>
-                        selectLabel(
-                            e,
-                            setCreateNewRoomChecked,
-                            createNewRoomChecked,
-                        )
-                    }
-                    htmlFor="CreateNewRoom"
-                    className="relative flex h-12 items-center gap-2 rounded-md p-4 outline-none hover:bg-primary/30 hover:transition-all focus-visible:outline-primary/70 data-[checked=true]:scale-105 data-[checked=true]:bg-secondary/70"
+                    className={`relative flex h-12 items-center gap-2 rounded-md p-4 outline-none focus-within:outline-primary/70 hover:bg-primary/30 hover:transition-all ${
+                        createNewRoomChecked && "scale-105 bg-secondary/70"
+                    }`}
                 >
                     <Icon.Edit width={17} height={17} />
                     <p className="font-sans text-base leading-4">방 만들기</p>
+                    <input
+                        type="checkbox"
+                        checked={createNewRoomChecked}
+                        onChange={(e) =>
+                            setCreateNewRoomChecked(e.target.checked)
+                        }
+                        className="peer sr-only"
+                    />
                 </label>
 
                 <label
@@ -116,14 +108,6 @@ export default function ChatLeftSideBar() {
                     />
                 </label>
             </div>
-
-            <input
-                type="checkbox"
-                checked={createNewRoomChecked}
-                onChange={(e) => setCreateNewRoomChecked(e.target.checked)}
-                id="CreateNewRoom"
-                className="peer hidden"
-            />
 
             <AnimatePresence>
                 {!createNewRoomChecked ? (
