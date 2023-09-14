@@ -1,13 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import {
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { RoundButtonBase } from "@components/Button/RoundButton";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { ButtonOnRight } from "@components/Button/ButtonOnRight";
@@ -16,29 +9,40 @@ import {
     useWebSocketConnector,
 } from "@akasha-utils/react/websocket-hook";
 import { makeMatchmakeHandshakeCreate } from "@common/game-payload-builder-client";
+import type { MatchmakeFailedReason } from "@common/game-payloads";
 import { BattleField, GameMode } from "@common/game-payloads";
 import { GameClientOpcode } from "@common/game-opcodes";
-import { ByteBuffer } from "@akasha-lib";
 import { Dialog } from "@headlessui/react";
 import { ACCESS_TOKEN_KEY, HOST } from "@utils/constants";
 import {
     handleInvitationPayload,
     handleMatchmakeFailed,
 } from "@common/game-gateway-helper-client";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { InvitationAtom, IsMatchMakingAtom } from "@atoms/GameAtom";
+import { useRouter } from "next/navigation";
 
-export function CreateGameButton() {
-    const [open, setOpen] = useState(false);
-    return (
-        <div className="flex h-fit w-full flex-col gap-4">
-            <RoundButtonBase onClick={() => setOpen(!open)}>
-                Create Game
-            </RoundButtonBase>
-            {open && <CreateNewGameRoom />}
-        </div>
-    );
-}
+type GameInfoType = {
+    battleField: BattleField;
+    gameMode: GameMode;
+    limit: number;
+    fair: boolean;
+};
+
+const configs = {
+    FIELD: [
+        { name: "동글동글", value: BattleField.SQUARE },
+        { name: "네모네모", value: BattleField.ROUND },
+    ],
+    MODE: [
+        { name: "기본", value: GameMode.UNIFORM },
+        { name: "중력", value: GameMode.GRAVITY },
+    ],
+    LIMIT: [
+        { name: "개인전", value: 2 },
+        { name: "협동전", value: 4 },
+    ],
+};
 
 function GameModeBlock({
     keyName,
@@ -85,52 +89,41 @@ function GameModeBlock({
     );
 }
 
-const configs = {
-    FIELD: [
-        { name: "동글동글", value: BattleField.SQUARE },
-        { name: "네모네모", value: BattleField.ROUND },
-    ],
-    MODE: [
-        { name: "기본", value: GameMode.UNIFORM },
-        { name: "중력", value: GameMode.GRAVITY },
-    ],
-    LIMIT: [
-        { name: "개인전", value: 2 },
-        { name: "협동전", value: 4 },
-    ],
-};
-
 function CreateNewGameRoom() {
-    const [gameModeInfos, setGameModeInfos] =
-        useState<[number, number, number, boolean]>();
-    const [open, setOpen] = useState(false);
+    const [gameModeInfos, setGameModeInfos] = useState<GameInfoType>();
+
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+        event.preventDefault();
+        const target = event.target as HTMLFormElement;
+        const formData = new FormData(target);
+
+        const [battleField, gameMode, limit] = ["FIELD", "MODE", "LIMIT"].map(
+            (key) => formData.get(key),
+        );
+
+        if (
+            typeof battleField !== "string" ||
+            typeof gameMode !== "string" ||
+            typeof limit !== "string"
+        ) {
+            return;
+        }
+
+        setGameModeInfos({
+            battleField: Number(battleField),
+            gameMode: Number(gameMode),
+            limit: Number(limit),
+            fair: true,
+        });
+    };
+
+    const isOpen = gameModeInfos !== undefined;
+    const closeModal = () => setGameModeInfos(undefined);
 
     return (
         <GlassWindow>
             <form
-                onSubmit={(event) => {
-                    event.preventDefault();
-                    const target = event.target as HTMLFormElement;
-                    const formData = new FormData(target);
-
-                    const battleField = formData.get("FIELD");
-                    const gameMode = formData.get("MDOE");
-                    const limit = formData.get("LIMIT");
-
-                    if (
-                        typeof battleField === "string" &&
-                        typeof gameMode === "string" &&
-                        typeof limit === "string"
-                    ) {
-                        setGameModeInfos([
-                            Number(battleField),
-                            Number(gameMode),
-                            Number(limit),
-                            true,
-                        ]);
-                    }
-                    setOpen(true);
-                }}
+                onSubmit={handleSubmit}
                 className="group flex w-full flex-col gap-4 p-4"
             >
                 <div className="flex w-full flex-col gap-2 p-2">
@@ -147,21 +140,18 @@ function CreateNewGameRoom() {
                     className="w-20 rounded-lg bg-gray-300/30 p-2"
                 />
 
-                <Dialog
-                    open={open}
-                    onClose={() => {
-                        setOpen(false);
-                    }}
-                >
-                    <div className="fixed inset-0" aria-hidden="true" />
-                    <Dialog.Panel className="h-full w-full">
-                        <CreateGamePendding
-                            buf={gameModeInfos}
-                            setOpen={setOpen}
-                        />
-                        <button onClick={() => setOpen(false)}>취소</button>
-                    </Dialog.Panel>
-                </Dialog>
+                {isOpen && (
+                    <Dialog onClose={() => closeModal()}>
+                        <div className="fixed inset-0" aria-hidden="true" />
+                        <Dialog.Panel className="h-full w-full">
+                            <CreateGamePendding
+                                infos={gameModeInfos}
+                                closeModal={closeModal}
+                            />
+                            <button onClick={() => closeModal()}>취소</button>
+                        </Dialog.Panel>
+                    </Dialog>
+                )}
             </form>
         </GlassWindow>
     );
@@ -169,19 +159,14 @@ function CreateNewGameRoom() {
 
 function CreateGamePendding({
     infos,
-    setOpen,
+    closeModal,
 }: {
-    infos: [number, number, number, boolean];
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    infos: GameInfoType;
+    closeModal: () => void;
 }) {
-    const buf = makeMatchmakeHandshakeCreate(...infos);
-    const props = useMemo(
-        () => ({
-            handshake: () => buf.toArray(),
-        }),
-        [buf],
-    );
-    const setInvitationAtom = useSetAtom(InvitationAtom);
+    const [invitationAtom, setInvitationAtom] = useAtom(InvitationAtom);
+    const router = useRouter();
+
     const getURL = useCallback(() => {
         const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
         if (accessToken === null) {
@@ -189,21 +174,47 @@ function CreateGamePendding({
         }
         return `wss://${HOST}/game?token=${accessToken}`;
     }, []);
-    useWebSocketConnector("game", getURL, props);
-    const [isFail, setIsFail] = useState(-1);
 
-    const { sendPayload } = useWebSocket(
+    const buf = useMemo(
+        () =>
+            makeMatchmakeHandshakeCreate(
+                infos.battleField,
+                infos.gameMode,
+                infos.limit,
+                infos.fair,
+            ),
+        [infos.battleField, infos.fair, infos.gameMode, infos.limit],
+    );
+
+    const props = useMemo(
+        () => ({
+            handshake: () => buf.toArray(),
+        }),
+        [buf],
+    );
+
+    useEffect(() => {
+        if (invitationAtom !== "") {
+            router.push("/game");
+        }
+    }, [invitationAtom, router]);
+
+    useWebSocketConnector("game", getURL, props);
+
+    const [isFail, setIsFail] = useState<MatchmakeFailedReason>();
+
+    useWebSocket(
         "game",
         [GameClientOpcode.INVITATION, GameClientOpcode.MATCHMAKE_FAILED],
         (opcode, buffer) => {
             switch (opcode) {
                 case GameClientOpcode.INVITATION: {
                     setInvitationAtom(handleInvitationPayload(buffer));
-                    break;
+                    return;
                 }
                 case GameClientOpcode.MATCHMAKE_FAILED: {
                     setIsFail(handleMatchmakeFailed(buffer));
-                    break;
+                    return;
                 }
             }
         },
@@ -211,8 +222,12 @@ function CreateGamePendding({
 
     return (
         <div>
-            {isFail !== -1 && (
-                <button onClick={() => setOpen(false)}> 닫기</button>
+            {isFail === undefined ? (
+                <div>로딩중...</div>
+            ) : (
+                <button onClick={() => closeModal()}>
+                    에러가 발생했습니다. 닫기
+                </button>
             )}
         </div>
     );
@@ -228,5 +243,17 @@ export function QuickMatchButton() {
         >
             Quick Match
         </RoundButtonBase>
+    );
+}
+
+export function CreateGameButton() {
+    const [open, setOpen] = useState(false);
+    return (
+        <div className="flex h-fit w-full flex-col gap-4">
+            <RoundButtonBase onClick={() => setOpen(!open)}>
+                Create Game
+            </RoundButtonBase>
+            {open && <CreateNewGameRoom />}
+        </div>
     );
 }
