@@ -22,11 +22,7 @@ import {
 import { FzfHighlight, useFzf } from "react-fzf";
 import { Tab } from "@headlessui/react";
 
-import type {
-    ChatDirectEntry,
-    ChatRoomEntry,
-    ChatRoomViewEntry,
-} from "@common/chat-payloads";
+import type { ChatDirectEntry, ChatRoomViewEntry } from "@common/chat-payloads";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
 import { handlePublicRoomList } from "@akasha-utils/chat-gateway-client";
@@ -43,45 +39,20 @@ function classNames(...classes: string[]) {
 export default function ChatLeftSideBar() {
     const [selectedIndex, setSelectedIndex] = useAtom(ChatTabIndexAtom);
     const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
-    const { sendPayload } = useWebSocket(
-        "chat",
-        ChatClientOpcode.PUBLIC_ROOM_LIST,
-        (_, buffer) => {
-            setChatPublicRoomList(handlePublicRoomList(buffer));
-        },
-    );
 
-    const refreshPublicRoomList = useCallback(
-        () => sendPayload(makePublicRoomListRequest()),
-        [sendPayload],
-    );
-
-    useEffect(() => {
-        refreshPublicRoomList();
-    }, [selectedIndex, currentChatRoomUUID, refreshPublicRoomList]);
-
-    const chatJoinRoomList = useAtomValue(ChatRoomListAtom);
-    const chatDirectRoomList = useAtomValue(DirectRoomListAtom);
-    const [chatPublicRoomList, setChatPublicRoomList] = useState(
-        Array<ChatRoomViewEntry>(),
-    );
     const [query, setQuery] = useState("");
     const categories = [
         {
             name: "1:1",
-            Component: (
-                <DirectRoomPanel rooms={chatDirectRoomList} query={query} />
-            ),
+            Component: <DirectRoomPanel query={query} />,
         },
         {
             name: "그룹",
-            Component: <RoomPanel rooms={chatJoinRoomList} query={query} />,
+            Component: <RoomPanel query={query} />,
         },
         {
             name: "찾기",
-            Component: (
-                <PublicRoomPanel rooms={chatPublicRoomList} query={query} />
-            ),
+            Component: <PublicRoomPanel query={query} />,
         },
     ];
     const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
@@ -233,40 +204,8 @@ function ChatLeftSideBarLayout({ children }: React.PropsWithChildren) {
     );
 }
 
-function RoomPanel({
-    rooms,
-    query,
-}: {
-    rooms: ChatRoomEntry[];
-    query: string;
-}) {
-    const { results, getFzfHighlightProps } = useFzf({
-        items: rooms,
-        itemToString: (item) => item.title,
-        query,
-    });
-
-    return results
-        .toSorted((e1, e2) => compareRoomItem(e1, e2))
-        .map((item) => (
-            <ChatRoomBlock key={item.id} chatRoom={item}>
-                <FzfHighlight
-                    {...getFzfHighlightProps({
-                        item,
-                        className: "text-yellow-500",
-                    })}
-                />
-            </ChatRoomBlock>
-        ));
-}
-
-function DirectRoomPanel({
-    rooms,
-    query,
-}: {
-    rooms: ChatDirectEntry[];
-    query: string;
-}) {
+function DirectRoomPanel({ query }: { query: string }) {
+    const rooms = useAtomValue(DirectRoomListAtom);
     const profiles = usePublicProfiles(
         useId(),
         rooms,
@@ -298,13 +237,8 @@ function DirectRoomPanel({
         ));
 }
 
-function PublicRoomPanel({
-    rooms,
-    query,
-}: {
-    rooms: ChatRoomViewEntry[];
-    query: string;
-}) {
+function RoomPanel({ query }: { query: string }) {
+    const rooms = useAtomValue(ChatRoomListAtom);
     const { results, getFzfHighlightProps } = useFzf({
         items: rooms,
         itemToString: (item) => item.title,
@@ -314,15 +248,65 @@ function PublicRoomPanel({
     return results
         .toSorted((e1, e2) => compareRoomItem(e1, e2))
         .map((item) => (
-            <ChatPublicRoomBlock key={item.id} chatRoom={item}>
+            <ChatRoomBlock key={item.id} chatRoom={item}>
                 <FzfHighlight
                     {...getFzfHighlightProps({
                         item,
                         className: "text-yellow-500",
                     })}
                 />
-            </ChatPublicRoomBlock>
+            </ChatRoomBlock>
         ));
+}
+
+function PublicRoomPanel({ query }: { query: string }) {
+    const [rooms, setChatPublicRoomList] = useState(Array<ChatRoomViewEntry>());
+
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.PUBLIC_ROOM_LIST,
+        (_, buffer) => {
+            setChatPublicRoomList(handlePublicRoomList(buffer));
+        },
+    );
+
+    const refreshPublicRoomList = useCallback(() => {
+        sendPayload(makePublicRoomListRequest());
+    }, [sendPayload]);
+
+    useEffect(() => {
+        refreshPublicRoomList();
+    }, [refreshPublicRoomList]);
+
+    const { results, getFzfHighlightProps } = useFzf({
+        items: rooms,
+        itemToString: (item) => item.title,
+        query,
+    });
+
+    return (
+        <>
+            <button
+                type="button"
+                // TODO: className=""
+                onClick={refreshPublicRoomList}
+            >
+                새로고침버튼
+            </button>
+            {results
+                .toSorted((e1, e2) => compareRoomItem(e1, e2))
+                .map((item) => (
+                    <ChatPublicRoomBlock key={item.id} chatRoom={item}>
+                        <FzfHighlight
+                            {...getFzfHighlightProps({
+                                item,
+                                className: "text-yellow-500",
+                            })}
+                        />
+                    </ChatPublicRoomBlock>
+                ))}
+        </>
+    );
 }
 
 function ListQuaryTextField({
