@@ -6,6 +6,8 @@ import { RoundButtonBase } from "@components/Button/RoundButton";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { ButtonOnRight } from "@components/Button/ButtonOnRight";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
+import { makeMatchmakeHandshakeCreate } from "@common/game-payload-builder-client";
+import { BattleField, GameMode } from "@common/game-payloads";
 
 export function CreateGameButton() {
     const [open, setOpen] = useState(false);
@@ -21,10 +23,10 @@ export function CreateGameButton() {
 
 function GameModeBlock({
     keyName,
-    config,
+    options,
 }: {
     keyName: string;
-    config: string[];
+    options: { name: string; value: BattleField | GameMode | number }[];
 }) {
     const [selected, setSelected] = useState("");
 
@@ -38,11 +40,11 @@ function GameModeBlock({
                 {keyName}
             </span>
             <div className="flex w-full flex-row justify-between px-2">
-                {config.map((item) => (
+                {options.map((option) => (
                     <label
-                        key={item}
+                        key={option.name}
                         className={`flex w-20 justify-center rounded-lg p-2 outline-none  focus-within:outline-primary/70 ${
-                            selected === item
+                            selected === option.name
                                 ? "bg-secondary/30"
                                 : "bg-gray-300/30"
                         }`}
@@ -50,12 +52,13 @@ function GameModeBlock({
                         <input
                             type="radio"
                             name={keyName}
-                            value={item}
-                            checked={selected === item}
-                            onChange={() => setSelected(item)}
+                            value={option.value}
+                            checked={selected === option.name}
+                            onChange={() => setSelected(option.name)}
                             className="sr-only"
+                            required={true}
                         />
-                        {item}
+                        {option.name}
                     </label>
                 ))}
             </div>
@@ -64,9 +67,18 @@ function GameModeBlock({
 }
 
 const configs = {
-    field: ["동글동글", "네모네모"],
-    mode: ["기본", "중력"],
-    team: ["개인전", "협동전"],
+    battleField: [
+        { name: "동글동글", value: BattleField.SQUARE },
+        { name: "네모네모", value: BattleField.ROUND },
+    ],
+    gameMode: [
+        { name: "기본", value: GameMode.UNIFORM },
+        { name: "중력", value: GameMode.GRAVITY },
+    ],
+    limit: [
+        { name: "개인전", value: 2 },
+        { name: "협동전", value: 4 },
+    ],
 };
 
 function CreateNewGameRoom() {
@@ -79,21 +91,36 @@ function CreateNewGameRoom() {
                     event.preventDefault();
                     const target = event.target as HTMLFormElement;
                     const formData = new FormData(target);
-                    const configs = [...formData.keys()];
-                    console.log(configs);
+
+                    const battleField = formData.get("battleField");
+                    const gameMode = formData.get("gameMode");
+                    const limit = formData.get("limit");
+
+                    if (
+                        typeof battleField === "string" &&
+                        typeof gameMode === "string" &&
+                        typeof limit === "string"
+                    ) {
+                        sendPayload(
+                            makeMatchmakeHandshakeCreate(
+                                Number(battleField),
+                                Number(gameMode),
+                                Number(limit),
+                                true,
+                            ),
+                        );
+                    }
                 }}
                 className="group flex w-full flex-col gap-4 p-4"
             >
                 <div className="flex w-full flex-col gap-2 p-2">
-                    {Object.entries(configs).map(([key, config]) => {
-                        return (
-                            <GameModeBlock
-                                key={key}
-                                keyName={key}
-                                config={config}
-                            />
-                        );
-                    })}
+                    {Object.entries(configs).map(([key, values]) => (
+                        <GameModeBlock
+                            key={key}
+                            keyName={key}
+                            options={values}
+                        />
+                    ))}
                 </div>
                 <ButtonOnRight
                     buttonText="만들기"
