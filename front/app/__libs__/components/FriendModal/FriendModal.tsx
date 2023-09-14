@@ -8,7 +8,6 @@ import { Provider, createStore, useAtomValue } from "jotai";
 import { FriendEntryListAtom, FriendRequestListAtom } from "@atoms/FriendAtom";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
-import type { TypeWithProfile } from "@hooks/useProfile";
 import { useProtectedProfiles, usePublicProfile } from "@hooks/useProfile";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { NICK_NAME_REGEX } from "@common/profile-constants";
@@ -17,8 +16,7 @@ import {
     makeDeleteFriendRequest,
 } from "@akasha-utils/chat-payload-builder-client";
 import type { FriendEntry } from "@common/chat-payloads";
-import type { AccountProfileProtectedPayload } from "@common/profile-payloads";
-import { getActiveStatusOrder } from "@common/auth-payloads";
+import { compareProtectedFriendEntry } from "@utils/comparer";
 
 const nickTagSeparator = "#";
 
@@ -80,39 +78,6 @@ export function FriendModal() {
     );
 }
 
-// TODO: 파일로 옮길것
-type ProtectedFriendCompareType = TypeWithProfile<
-    FriendEntry,
-    AccountProfileProtectedPayload
->;
-
-function compareProtectedFriendEntry(
-    e1: ProtectedFriendCompareType,
-    e2: ProtectedFriendCompareType,
-) {
-    const profile1 = e1._profile;
-    const profile2 = e2._profile;
-
-    if (profile1 === undefined) return -1;
-    if (profile2 === undefined) return 1;
-
-    if (profile1.activeStatus !== profile2.activeStatus) {
-        return getActiveStatusOrder(profile1.activeStatus) >
-            getActiveStatusOrder(profile2.activeStatus)
-            ? -1
-            : 1;
-    }
-
-    const nick1 = profile1.nickName ?? "";
-    const nick2 = profile2.nickName ?? "";
-
-    if (nick1 !== nick2) {
-        return nick1 > nick2 ? 1 : -1;
-    }
-
-    return profile1.nickTag > profile2.nickTag ? 1 : -1;
-}
-
 function FriendList() {
     const friendEntrySet = useAtomValue(FriendEntryListAtom);
     const [selectedUUID, setSelectedUUID] = useState<string>();
@@ -170,8 +135,6 @@ function FriendRequestItem({ accountUUID }: { accountUUID: string }) {
 
     const { sendPayload } = useWebSocket("chat", []);
     const profile = usePublicProfile(accountUUID);
-    //TODO: add suspend skeleton;
-    //TODO: refactor profile part
 
     return (
         <Provider store={store}>

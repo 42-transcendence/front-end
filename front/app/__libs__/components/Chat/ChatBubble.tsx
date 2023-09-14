@@ -4,7 +4,7 @@ import type { MessageSchema } from "@akasha-utils/idb/chat-store";
 import { usePublicProfile } from "@hooks/useProfile";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
 
-export function ChatBubbleWithProfile({
+export function ChatBubble({
     chatMessage,
     isContinued = false,
     isLastContinuedMessage = false,
@@ -34,7 +34,7 @@ export function ChatBubbleWithProfile({
             >
                 <NickBlock profile={profile} />
             </div>
-            <ChatBubble
+            <ChatTextBubble
                 chatMessage={chatMessage}
                 isContinued={isContinued}
                 isLastContinuedMessage={isLastContinuedMessage}
@@ -44,7 +44,7 @@ export function ChatBubbleWithProfile({
     );
 }
 
-function ChatBubble({
+function ChatTextBubble({
     chatMessage,
     isContinued,
     isLastContinuedMessage,

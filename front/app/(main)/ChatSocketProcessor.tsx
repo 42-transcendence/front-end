@@ -43,8 +43,8 @@ import {
     useChatRoomMutation,
     useDirectRoomListAtom,
 } from "@hooks/useChatRoom";
-import { ACCESS_TOKEN_KEY, HOST } from "@hooks/fetcher";
 import { useProfileMutation } from "@hooks/useProfile";
+import { ACCESS_TOKEN_KEY, HOST } from "@utils/constants";
 
 function handleFriendSocialError(errno: SocialErrorNumber) {
     let message = "";
@@ -307,7 +307,6 @@ export function ChatSocketProcessor() {
             case ChatClientOpcode.FRIEND_REQUEST: {
                 const targetUUID = buffer.readUUID();
                 setFriendRequestList([...friendRequestList, targetUUID]);
-                //TODO: JKONG: 알림
                 break;
             }
 
@@ -482,7 +481,6 @@ export function ChatSocketProcessor() {
                 const message = readChatMessage(buffer);
                 await ChatStore.addMessage(message.chatId, message);
 
-                //TODO: JKONG: 알림
                 mutateChatRoom(message.chatId);
                 break;
             }
@@ -497,7 +495,6 @@ export function ChatSocketProcessor() {
             }
 
             case ChatClientOpcode.KICK_NOTIFY: {
-                //TODO: JKONG: 알림
                 const chatId = buffer.readUUID();
                 const ban = readChatBanSummary(buffer);
                 void chatId;
@@ -505,7 +502,6 @@ export function ChatSocketProcessor() {
                 break;
             }
             case ChatClientOpcode.MUTE_NOTIFY: {
-                //TODO: JKONG: 알림
                 const chatId = buffer.readUUID();
                 const ban = readChatBanSummary(buffer);
                 void chatId;
@@ -537,7 +533,6 @@ export function ChatSocketProcessor() {
                     },
                 ]);
 
-                //TODO: JKONG: 알림
                 mutateChatRoom(roomKey);
                 break;
             }

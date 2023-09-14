@@ -18,7 +18,6 @@ export function ProfileItemSelectable({
     const profile = usePublicProfile(accountUUID);
     const profileItemId = useId();
 
-    // TODO: div를 label로 바꾸고 useId 섰는데, 추후확인 필요
     return (
         <li
             className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className}`}

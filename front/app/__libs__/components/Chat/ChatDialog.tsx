@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from "react";
 import { Game, Icon } from "@components/ImageLibrary";
-import { ChatBubbleWithProfile, NoticeBubble } from "./ChatBubble";
+import { ChatBubble, NoticeBubble } from "./ChatBubble";
 import type { MessageSchema } from "@akasha-utils/idb/chat-store";
 import {
     extractTargetFromDirectChatKey,
@@ -31,6 +37,7 @@ import {
 import { ChatErrorNumber } from "@common/chat-payloads";
 import { prettifyBanSummaryEntries } from "./ChatRoomBlock";
 import { handleChatError } from "./handleChatError";
+import { AnimatePresence, useInView, motion } from "framer-motion";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -130,7 +137,6 @@ function ChatMessageInputArea() {
                     onChange={(event) => setValue(event.target.value)}
                     rows={1}
                     spellCheck={false}
-                    // autoFocus={true}
                     ref={textareaRef}
                     placeholder="Send a message"
                     style={{
@@ -177,49 +183,61 @@ const isLastContinuedMessage = (arr: MessageSchema[], idx: number) => {
 export function ChatDialog() {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const [chatMessages, isChatMessagesLoaded] =
+    const [messages, isChatMessagesLoaded] =
         useChatRoomMessages(currentChatRoomUUID);
     const chatDialogRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const isMessageEndInView = useInView(messagesEndRef, {
+        root: chatDialogRef,
+        amount: 1,
+    });
     const { sendPayload } = useWebSocket("chat", []);
     const [, setChatRoomList] = useChatRoomListAtom();
     const [, setDirectRoomList] = useDirectRoomListAtom();
     const mutateChatRoom = useChatRoomMutation();
     const [lastChatRoomUUID, setLastChatRoomUUID] = useState("");
     const [lastMessage, setLastMessage] = useState<MessageSchema>();
+
+    const scrollToBottom = useCallback(
+        (behavior: ScrollBehavior | undefined) => {
+            if (messagesEndRef.current === null) {
+                throw new Error();
+            }
+            messagesEndRef.current.scrollIntoView({
+                block: "end",
+                behavior: behavior,
+            });
+        },
+        [],
+    );
+
     useEffect(() => {
         setLastChatRoomUUID(currentChatRoomUUID);
-        if (chatMessages !== undefined && chatMessages.length > 0) {
-            const newLastMessage = chatMessages[chatMessages.length - 1];
+        if (messages !== undefined && messages.length > 0) {
+            const newLastMessage = messages[messages.length - 1];
             setLastMessage((lastMessage) =>
                 lastMessage?.id !== newLastMessage.id
                     ? newLastMessage
                     : lastMessage,
             );
+            if (newLastMessage.accountId === currentAccountUUID) {
+                scrollToBottom("instant");
+            }
         } else {
             setLastMessage(undefined);
         }
-    }, [currentChatRoomUUID, chatMessages]);
+    }, [currentAccountUUID, currentChatRoomUUID, messages, scrollToBottom]);
+
     useEffect(() => {
         if (lastChatRoomUUID !== "" && isChatMessagesLoaded) {
-            scrollToBottom();
+            scrollToBottom("instant");
         }
-    }, [lastChatRoomUUID, isChatMessagesLoaded]);
+    }, [lastChatRoomUUID, isChatMessagesLoaded, scrollToBottom]);
+
     useEffect(() => {
         if (lastMessage !== undefined && lastChatRoomUUID !== "") {
             if (chatDialogRef.current === null) {
                 throw new Error();
-            }
-
-            const isAtBottom =
-                chatDialogRef.current.scrollTop +
-                    chatDialogRef.current.clientHeight >=
-                chatDialogRef.current.scrollHeight -
-                    (chatDialogRef.current.lastElementChild
-                        ?.previousElementSibling?.clientHeight ?? 0) -
-                    10; //XXX: 10은 매직넘버입니다.
-            if (lastMessage.accountId === currentAccountUUID || isAtBottom) {
-                scrollToBottom();
             }
 
             const lastChatRoomIsDirect = isDirectChatKey(lastChatRoomUUID);
@@ -252,65 +270,102 @@ export function ChatDialog() {
         }
     }, [
         currentAccountUUID,
+        isMessageEndInView,
         lastChatRoomUUID,
         lastMessage,
         mutateChatRoom,
+        scrollToBottom,
         sendPayload,
         setChatRoomList,
         setDirectRoomList,
     ]);
 
-    const scrollToBottom = () => {
-        if (messagesEndRef.current === null) {
-            throw new Error();
-        }
-        messagesEndRef.current.scrollIntoView({
-            block: "end",
-            behavior: "smooth",
-        });
-    };
+    if (currentChatRoomUUID === "") {
+        return <NoChatRoomSelected />;
+    }
 
-    return currentChatRoomUUID !== "" ? (
+    return (
         <div className="flex h-full w-full shrink items-start justify-end gap-4 overflow-auto">
             <div className="flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4 2xl:rounded-lg">
+                <AnimatePresence>
+                    {!isMessageEndInView && (
+                        <GoToBottomButton
+                            onClick={() => scrollToBottom("smooth")}
+                        />
+                    )}
+                </AnimatePresence>
                 <div
                     ref={chatDialogRef}
                     className="flex flex-col gap-1 self-stretch overflow-auto"
                 >
-                    {chatMessages?.map((msg, idx, arr) => {
-                        if (
-                            msg.messageType ===
-                            (MessageTypeNumber.NOTICE as number)
-                        ) {
-                            return (
-                                <NoticeBubble key={msg.id} chatMessage={msg} />
-                            );
-                        }
-
-                        return (
-                            <ChatBubbleWithProfile
-                                key={msg.id}
-                                chatMessage={msg}
-                                isContinued={isContinuedMessage(arr, idx)}
-                                isLastContinuedMessage={isLastContinuedMessage(
-                                    arr,
-                                    idx,
-                                )}
-                                dir={
-                                    msg.accountId === currentAccountUUID
-                                        ? "right"
-                                        : "left"
-                                }
-                            />
-                        );
-                    })}
-                    <div ref={messagesEndRef} />
+                    {messages !== undefined && (
+                        <ChatMessages
+                            currentAccountUUID={currentAccountUUID}
+                            messages={messages}
+                        />
+                    )}
+                    <div
+                        className="min-h-[1px] w-full bg-transparent"
+                        ref={messagesEndRef}
+                    ></div>
                 </div>
                 <ChatMessageInputArea />
             </div>
         </div>
-    ) : (
-        <NoChatRoomSelected />
+    );
+}
+
+function GoToBottomButton({ onClick }: { onClick: () => void }) {
+    return (
+        <motion.div
+            initial={{ y: 24, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute bottom-24 right-0 flex w-full justify-end px-20"
+        >
+            <button
+                className="relative z-50 flex h-8 min-w-[2rem] items-center justify-center rounded-[0px_0px_999px_999px] bg-secondary drop-shadow-[0_0_0.1rem#000000]"
+                type="button"
+                onClick={onClick}
+            >
+                <Icon.Arrow1 className="rotate-90 text-gray-50/80" />
+            </button>
+        </motion.div>
+    );
+}
+
+function ChatMessages({
+    currentAccountUUID,
+    messages,
+}: {
+    currentAccountUUID: string;
+    messages: MessageSchema[];
+}) {
+    return (
+        <>
+            {messages.map((msg, idx, arr) => {
+                if (msg.messageType === (MessageTypeNumber.NOTICE as number)) {
+                    return <NoticeBubble key={msg.id} chatMessage={msg} />;
+                }
+
+                return (
+                    <ChatBubble
+                        key={msg.id}
+                        chatMessage={msg}
+                        isContinued={isContinuedMessage(arr, idx)}
+                        isLastContinuedMessage={isLastContinuedMessage(
+                            arr,
+                            idx,
+                        )}
+                        dir={
+                            msg.accountId === currentAccountUUID
+                                ? "right"
+                                : "left"
+                        }
+                    />
+                );
+            })}
+        </>
     );
 }
 

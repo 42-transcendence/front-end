@@ -6,7 +6,7 @@ import {
     useProtectedProfile,
     usePublicProfile,
 } from "@hooks/useProfile";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useChatMember } from "@hooks/useChatRoom";
 import {
     useCurrentAccountUUID,
@@ -27,7 +27,6 @@ function ContextMenuItem({
 }) {
     const ref = useRef<HTMLButtonElement>(null);
     const disabled = action === undefined;
-    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const elem = ref.current;
@@ -51,8 +50,6 @@ function ContextMenuItem({
         <>
             <button
                 type="button"
-                // TODO: onClick 어떻게 하지...?
-                onClick={() => setOpen(!open)}
                 ref={ref}
                 disabled={disabled}
                 className={`relative flex h-fit w-full items-center rounded py-3 ${
@@ -72,7 +69,6 @@ function ContextMenuItem({
                     )}
                 </div>
             </button>
-            {menuInfo.UI ?? (open && menuInfo.UI)}
         </>
     );
 }

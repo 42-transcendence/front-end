@@ -7,6 +7,7 @@ import { ImageUploadBox } from "./ImageUploadBox";
 import { useRefMap } from "@hooks/useRefMap";
 import { ScrollBox } from "./ScrollBox";
 import { useAvatarMutation } from "@hooks/useProfile";
+import { useIntersectionObserver } from "@hooks/useIntersectionObserver";
 
 const defaultAvatarsKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
@@ -86,34 +87,6 @@ function useImageAsFormData(): [
     return [image, setImage, sendForm];
 }
 
-function useIntersectionObserver(
-    callback: (target: Element) => void,
-    targets: Map<string, Element> | Set<Element> | Element[],
-    observerOptions: IntersectionObserverInit,
-) {
-    const handleIntersect: IntersectionObserverCallback = useCallback(
-        (entries, _observer) => {
-            entries
-                .filter((entry) => entry.isIntersecting)
-                .forEach((entry) => callback(entry.target));
-        },
-        [callback],
-    );
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            handleIntersect,
-            observerOptions,
-        );
-
-        for (const target of targets.values()) {
-            observer.observe(target);
-        }
-
-        return () => observer.disconnect();
-    }, [handleIntersect, observerOptions, targets]);
-}
-
 export function SelectAvatar() {
     const rootRef = useRef<HTMLDivElement>(null);
     const [targetRefsMap, refCallbackAt] = useRefMap<
@@ -132,7 +105,7 @@ export function SelectAvatar() {
     const [image, setImage, sendForm] = useImageAsFormData();
 
     useIntersectionObserver(
-        (x: Element) => setImage(x as HTMLImageElement), // TODO: 이게 맞나??
+        (x: Element) => setImage(x as HTMLImageElement),
         targetRefsMap,
         observerOptions,
     );
@@ -146,7 +119,6 @@ export function SelectAvatar() {
                             key={name}
                             className="z-10 flex-shrink-0 snap-center snap-always overflow-hidden"
                         >
-                            {/* TODO: priority 설정 https://nextjs.org/docs/app/api-reference/components/image#priority */}
                             <Image
                                 ref={refCallbackAt(name)}
                                 className="box-content"

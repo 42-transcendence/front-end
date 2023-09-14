@@ -11,6 +11,11 @@
         "next/core-web-vitals",
         "prettier"
     ],
+    "ignorePatterns": [
+        "/app/__libs__/common/**/*.ts",
+        "/app/__libs__/akasha-lib/**/*.ts",
+        "/app/__libs__/akasha-utils/**/*.ts"
+    ],
     "rules": {
         "eqeqeq": [
             "error"

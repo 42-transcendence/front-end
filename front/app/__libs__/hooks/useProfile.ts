@@ -1,6 +1,4 @@
-"use client";
-
-import { HTTPError, URL_BASE, fetchBase, fetcher } from "./fetcher";
+import { HTTPError, fetcher, fetcherPOST } from "./fetcher";
 import { useSWR, useSWRMutation } from "./useSWR";
 import type {
     AccountProfilePrivatePayload,
@@ -134,18 +132,16 @@ export function usePrivateProfile() {
 
 export function useProfileMutation() {
     const currentAccountUUID = useCurrentAccountUUID();
-    // TODO: mutate throwOnError?
     const { mutate } = useSWRConfig();
 
     return useCallback(
-        (accountUUID: string) =>
-            void mutate(
-                (key) =>
-                    key === `/profile/public/${accountUUID}` ||
-                    key === `/profile/protected/${accountUUID}` ||
-                    (accountUUID === currentAccountUUID &&
-                        key === "/profile/private"),
-            ),
+        (accountUUID: string) => {
+            void mutate(`/profile/public/${accountUUID}`);
+            void mutate(`/profile/protected/${accountUUID}`, undefined);
+            if (accountUUID === currentAccountUUID) {
+                void mutate("/profile/private");
+            }
+        },
         [currentAccountUUID, mutate],
     );
 }
@@ -179,11 +175,7 @@ export function useAvatarMutation() {
     const mutateProfile = useProfileMutation();
     const callback = useCallback(
         async (key: string, { arg }: { arg: FormData }) => {
-            const url = new URL(key, URL_BASE);
-            await fetchBase(url, {
-                method: "POST",
-                body: arg,
-            });
+            await fetcherPOST(key, arg);
             mutateProfile(accountUUID);
         },
         [accountUUID, mutateProfile],

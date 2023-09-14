@@ -21,7 +21,6 @@ export function NavigationBar() {
             <div className="relative flex flex-row items-center justify-between gap-4">
                 <ChatButton />
                 <FriendButton />
-                {/* TODO: on click Avatar in navbar, show context menu myinfo */}
                 <ProfileButton />
             </div>
         </div>

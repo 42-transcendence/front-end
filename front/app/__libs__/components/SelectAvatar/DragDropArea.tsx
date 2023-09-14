@@ -30,7 +30,6 @@ export function DragDropArea({
         handleFiles(e.dataTransfer.files);
     };
 
-    // TODO: 그냥 z-20 넣어버렸습니다
     return (
         <div
             className="absolute z-20 flex h-full w-full flex-col justify-center text-center"

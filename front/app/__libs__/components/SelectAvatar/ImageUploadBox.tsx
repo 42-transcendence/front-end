@@ -1,4 +1,3 @@
-import { byteToReadable } from "./byteConversion";
 import { useRef, useEffect, useState } from "react";
 import { DragDropArea } from "./DragDropArea";
 import Image from "next/image";
@@ -10,14 +9,12 @@ type ImageInfoType = {
 };
 
 export function ImageUploadBox({
-    maxFileSize,
     setImage,
 }: {
-    maxFileSize?: number | undefined;
     setImage: (target: HTMLImageElement) => void;
 }) {
     const [imageInfo, setImageInfo] = useState<ImageInfoType>({
-        src: "/jisookim.png", // TODO: placeholder image
+        src: "/game/ghost-1.svg",
         alt: "uploaded file",
         name: "uploaded file",
     });
@@ -31,12 +28,6 @@ export function ImageUploadBox({
         }
 
         const firstFile = fileList[0];
-
-        // check firstFile size
-        if (maxFileSize !== undefined && firstFile.size > maxFileSize) {
-            alert(`최대 파일 용량: ${byteToReadable(maxFileSize)}`);
-            return;
-        }
 
         URL.revokeObjectURL(imageInfo.src);
 
@@ -88,7 +79,7 @@ function PreviewArea({
 
         oldElem.onload = () => {
             const newElem = oldElem.cloneNode(true) as HTMLImageElement;
-            newElem.onload = () => setImage(newElem); // TODO: 정말 정말 이게 최선인가???
+            newElem.onload = () => setImage(newElem);
         };
     }, [setImage]);
 
@@ -97,13 +88,11 @@ function PreviewArea({
             <Image
                 ref={imageRef}
                 className="box-content"
-                // decoding="sync"
                 src={imageInfo.src}
                 alt={imageInfo.alt}
                 data-name={imageInfo.name}
                 width="250"
                 height="250"
-                // fill={true}
             />
         </div>
     );

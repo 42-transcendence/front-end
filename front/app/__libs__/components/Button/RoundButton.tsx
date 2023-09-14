@@ -1,5 +1,4 @@
-// TODO: SquareButton 과 어떻게 어떻게 잘 추상화 혹은 리팩토링 혹은 정리 혹은
-// 귀찮으면 그냥 방치
+// NOTE: SquareButton 과 어떻게 어떻게 잘 추상화 혹은 리팩토링 혹은 정리
 
 export function RoundButtonBase({
     children,
