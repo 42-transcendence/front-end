@@ -6,10 +6,12 @@ import { Providers } from "./Providers";
 
 const roboto = Roboto({ weight: "700", style: "normal", subsets: ["latin"] });
 
-// TODO: fix metadata
 export const metadata: Metadata = {
     title: "Double Sharp",
     description: "Ping Pong ++++++++",
+    applicationName: "Double Sharp𝄪",
+    viewport: { width: "device-width", initialScale: 1 },
+    formatDetection: { address: false, telephone: false, email: false },
 };
 
 export default function RootLayout({
