@@ -26,13 +26,13 @@ export function MatchMakerWrapper() {
 }
 
 function MatchMakerPanel() {
+    const router = useRouter();
     const props = useMemo(
         () => ({
             handshake: () => makeMatchmakeHandshakeQueue().toArray(),
         }),
         [],
     );
-    const router = useRouter();
 
     const getURL = useCallback(() => {
         const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);

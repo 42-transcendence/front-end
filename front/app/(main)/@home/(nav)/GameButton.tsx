@@ -1,15 +1,32 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import {
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 import { RoundButtonBase } from "@components/Button/RoundButton";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { ButtonOnRight } from "@components/Button/ButtonOnRight";
-import { useWebSocket } from "@akasha-utils/react/websocket-hook";
+import {
+    useWebSocket,
+    useWebSocketConnector,
+} from "@akasha-utils/react/websocket-hook";
 import { makeMatchmakeHandshakeCreate } from "@common/game-payload-builder-client";
 import { BattleField, GameMode } from "@common/game-payloads";
-import { MatchMakingAtom } from "@atoms/GameAtom";
+import { GameClientOpcode } from "@common/game-opcodes";
+import { ByteBuffer } from "@akasha-lib";
+import { Dialog } from "@headlessui/react";
+import { ACCESS_TOKEN_KEY, HOST } from "@utils/constants";
+import {
+    handleInvitationPayload,
+    handleMatchmakeFailed,
+} from "@common/game-gateway-helper-client";
 import { useAtom, useSetAtom } from "jotai";
+import { InvitationAtom, MatchMakingAtom } from "@atoms/GameAtom";
 
 export function CreateGameButton() {
     const [open, setOpen] = useState(false);
@@ -41,7 +58,7 @@ function GameModeBlock({
             >
                 {keyName}
             </span>
-            <div className="flex w-full flex-row justify-between px-2">
+            <div className="flex w-full flex-row justify-between gap-2 p-1">
                 {options.map((option) => (
                     <label
                         key={option.name}
@@ -69,22 +86,24 @@ function GameModeBlock({
 }
 
 const configs = {
-    battleField: [
+    FIELD: [
         { name: "동글동글", value: BattleField.SQUARE },
         { name: "네모네모", value: BattleField.ROUND },
     ],
-    gameMode: [
+    MODE: [
         { name: "기본", value: GameMode.UNIFORM },
         { name: "중력", value: GameMode.GRAVITY },
     ],
-    limit: [
+    LIMIT: [
         { name: "개인전", value: 2 },
         { name: "협동전", value: 4 },
     ],
 };
 
 function CreateNewGameRoom() {
-    const { sendPayload } = useWebSocket("game", []);
+    const [gameModeInfos, setGameModeInfos] =
+        useState<[number, number, number, boolean]>();
+    const [open, setOpen] = useState(false);
 
     return (
         <GlassWindow>
@@ -94,24 +113,23 @@ function CreateNewGameRoom() {
                     const target = event.target as HTMLFormElement;
                     const formData = new FormData(target);
 
-                    const battleField = formData.get("battleField");
-                    const gameMode = formData.get("gameMode");
-                    const limit = formData.get("limit");
+                    const battleField = formData.get("FIELD");
+                    const gameMode = formData.get("MDOE");
+                    const limit = formData.get("LIMIT");
 
                     if (
                         typeof battleField === "string" &&
                         typeof gameMode === "string" &&
                         typeof limit === "string"
                     ) {
-                        sendPayload(
-                            makeMatchmakeHandshakeCreate(
-                                Number(battleField),
-                                Number(gameMode),
-                                Number(limit),
-                                true,
-                            ),
-                        );
+                        setGameModeInfos([
+                            Number(battleField),
+                            Number(gameMode),
+                            Number(limit),
+                            true,
+                        ]);
                     }
+                    setOpen(true);
                 }}
                 className="group flex w-full flex-col gap-4 p-4"
             >
@@ -128,8 +146,75 @@ function CreateNewGameRoom() {
                     buttonText="만들기"
                     className="w-20 rounded-lg bg-gray-300/30 p-2"
                 />
+
+                <Dialog
+                    open={open}
+                    onClose={() => {
+                        setOpen(false);
+                    }}
+                >
+                    <div className="fixed inset-0" aria-hidden="true" />
+                    <Dialog.Panel className="h-full w-full">
+                        <CreateGamePendding
+                            buf={gameModeInfos}
+                            setOpen={setOpen}
+                        />
+                        <button onClick={() => setOpen(false)}>취소</button>
+                    </Dialog.Panel>
+                </Dialog>
             </form>
         </GlassWindow>
+    );
+}
+
+function CreateGamePendding({
+    infos,
+    setOpen,
+}: {
+    infos: [number, number, number, boolean];
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+    const buf = makeMatchmakeHandshakeCreate(...infos);
+    const props = useMemo(
+        () => ({
+            handshake: () => buf.toArray(),
+        }),
+        [buf],
+    );
+    const setInvitationAtom = useSetAtom(InvitationAtom);
+    const getURL = useCallback(() => {
+        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+        if (accessToken === null) {
+            return "";
+        }
+        return `wss://${HOST}/game?token=${accessToken}`;
+    }, []);
+    useWebSocketConnector("game", getURL, props);
+    const [isFail, setIsFail] = useState(-1);
+
+    const { sendPayload } = useWebSocket(
+        "game",
+        [GameClientOpcode.INVITATION, GameClientOpcode.MATCHMAKE_FAILED],
+        (opcode, buffer) => {
+            switch (opcode) {
+                case GameClientOpcode.INVITATION: {
+                    setInvitationAtom(handleInvitationPayload(buffer));
+                    break;
+                }
+                case GameClientOpcode.MATCHMAKE_FAILED: {
+                    setIsFail(handleMatchmakeFailed(buffer));
+                    break;
+                }
+            }
+        },
+    );
+
+    return (
+        <div>
+            {isFail !== -1 && (
+                <button onClick={() => setOpen(false)}> 닫기</button>
+            )}
+        </div>
     );
 }
 
