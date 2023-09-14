@@ -135,14 +135,13 @@ export function useProfileMutation() {
     const { mutate } = useSWRConfig();
 
     return useCallback(
-        (accountUUID: string) =>
-            void mutate(
-                (key) =>
-                    key === `/profile/public/${accountUUID}` ||
-                    key === `/profile/protected/${accountUUID}` ||
-                    (accountUUID === currentAccountUUID &&
-                        key === "/profile/private"),
-            ),
+        (accountUUID: string) => {
+            void mutate(`/profile/public/${accountUUID}`);
+            void mutate(`/profile/protected/${accountUUID}`, undefined);
+            if (accountUUID === currentAccountUUID) {
+                void mutate("/profile/private");
+            }
+        },
         [currentAccountUUID, mutate],
     );
 }
