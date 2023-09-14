@@ -12,12 +12,15 @@ export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     const profile = useProtectedProfile(accountUUID);
     const currentId = useCurrentAccountUUID();
 
-    const relationship =
-        accountUUID === currentId
+    const isLogined = currentId !== "";
+
+    const relationship = isLogined
+        ? accountUUID === currentId
             ? "myself"
             : profile !== undefined
             ? "friend"
-            : "stranger";
+            : "stranger"
+        : "stranger";
 
     return (
         <div className="h-20 w-full shrink-0 bg-windowGlass/30 p-4 lg:h-full lg:w-28">

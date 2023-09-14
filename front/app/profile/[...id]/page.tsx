@@ -6,9 +6,8 @@ import { AchievementPanel } from "@components/Profile/AchievementPanel";
 import { EditPanel } from "@components/Profile/EditPanel";
 import { GameHistoryPanel } from "@components/Profile/GameHistoryPanel";
 import { ProfileSection } from "@components/Profile/ProfileSection";
-import { useNickLookup, usePrivateProfile } from "@hooks/useProfile";
+import { useNickLookup } from "@hooks/useProfile";
 import { NICK_NAME_REGEX } from "@common/profile-constants";
-import type { AccountProfileProtectedPayload } from "@common/profile-payloads";
 import { useAtomValue } from "jotai";
 import Link from "next/link";
 import { useToken } from "@hooks/useToken";
@@ -33,34 +32,23 @@ function isValidProfileId(params: string[]) {
     );
 }
 
-function parseNickAndTag(
+function parseParams(
     params: string[],
-    profile: AccountProfileProtectedPayload | undefined,
 ): [nick: string, tag: number, isValid: boolean] {
     const isValid = isValidProfileId(params);
+    const [nick, tag] = isValid ? [params[0], Number(params[1])] : ["", 0];
 
-    const [nick, tag] = isValid
-        ? [params[0], Number(params[1])]
-        : profile !== undefined
-        ? [profile.nickName ?? "", profile.nickTag]
-        : ["", 0];
-
-    return [nick, tag, isValid || profile !== undefined];
+    return [nick, tag, isValid];
 }
 
 export default function ProfilePage({ params }: { params: { id: string[] } }) {
     useToken();
-    const profile = usePrivateProfile();
     const decodedParams = params.id.map((e) => decodeURIComponent(e));
-    const [nick, tag, isValid] = parseNickAndTag(decodedParams, profile);
+    const [nick, tag, isValid] = parseParams(decodedParams);
     const { accountUUID, isLoading, notFound } = useNickLookup(nick, tag);
     const editPanelVisibility = useAtomValue(EditPanelVisibilityAtom);
 
-    if (!isValid) {
-        return <ErrorPage />;
-    }
-
-    if (notFound) {
+    if (!isValid || notFound || accountUUID === "") {
         return <ErrorPage />;
     }
 
