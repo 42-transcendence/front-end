@@ -1,15 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RoundButtonBase } from "@components/Button/RoundButton";
 import { GlassWindow } from "@components/Frame/GlassWindow";
-import { TextField } from "@components/TextField";
+import { useRefArray } from "@hooks/useRefArray";
+import { ButtonOnRight } from "@components/Button/ButtonOnRight";
+import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 
 export function CreateGameButton() {
     const [open, setOpen] = useState(false);
     return (
-        <div className="flex h-fit w-full flex-col gap-4 lg:flex-row">
+        <div className="flex h-fit w-full flex-col gap-4">
             <RoundButtonBase onClick={() => setOpen(!open)}>
                 Create Game
             </RoundButtonBase>
@@ -18,13 +20,101 @@ export function CreateGameButton() {
     );
 }
 
+function GameModeBlock({ config }: { config: string[] }) {
+    const [selected, setSelected] = useState(0);
+    const [refArray, refCallbackAt] = useRefArray<HTMLButtonElement | null>(
+        config.length,
+        null,
+    );
+
+    useEffect(() => {
+        const current = refArray[selected];
+        if (selected >= refArray.length) {
+            return;
+        }
+        if (current === null) {
+            throw new Error();
+        }
+        current.focus();
+    }, [refArray, selected]);
+
+    return (
+        <div className="flex w-full flex-row justify-between px-2">
+            {config.map((item, index) => {
+                return (
+                    <>
+                        <input
+                            key={index}
+                            type="radio"
+                            name={item}
+                            checked={index === selected}
+                            className="hidden"
+                            readOnly
+                        />
+                        <button
+                            type="button"
+                            tabIndex={selected === index ? 0 : -1}
+                            ref={refCallbackAt(index)}
+                            onClick={() => {
+                                setSelected(index);
+                            }}
+                            onKeyDown={(event) => {
+                                if (event.key === "ArrowLeft" && selected > 0) {
+                                    setSelected((value) => value - 1);
+                                }
+                                if (
+                                    event.key === "ArrowRight" &&
+                                    selected < config.length
+                                ) {
+                                    setSelected((value) => value + 1);
+                                }
+                            }}
+                            key={item}
+                            className={`flex w-20 justify-center rounded-lg p-2 outline-none  focus-visible:outline-primary/70 ${
+                                selected === index
+                                    ? "bg-secondary/30"
+                                    : "bg-gray-300/30"
+                            }`}
+                        >
+                            {item}
+                        </button>
+                    </>
+                );
+            })}
+        </div>
+    );
+}
+
 function CreateNewGameRoom() {
+    const configs = {
+        field: ["동글동글", "네모네모"],
+        mode: ["기본", "중력"],
+        team: ["개인전", "협동전"],
+    };
+    const { sendPayload } = useWebSocket("game");
+
     return (
         <GlassWindow>
-            <div className="flex h-full w-full flex-row items-center justify-start gap-4 p-4">
-                <span>Title</span>
-                <TextField className="w-full" />
-            </div>
+            <form
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    const target = event.target as HTMLFormElement;
+                    const formData = new FormData(target);
+                    console.log(formData);
+                    const configs = [...formData.keys()];
+                }}
+                className="flex w-full flex-col gap-4 p-4"
+            >
+                <div className="flex w-full flex-col gap-2 p-2">
+                    {Object.values(configs).map((config, index) => {
+                        return <GameModeBlock key={index} config={config} />;
+                    })}
+                </div>
+                <ButtonOnRight
+                    buttonText={"만들기"}
+                    className={"w-20 rounded-lg bg-gray-300/30 p-2"}
+                />
+            </form>
         </GlassWindow>
     );
 }
