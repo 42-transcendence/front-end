@@ -63,7 +63,48 @@ export function handleGameRoom(payload: ByteBuffer) {
     };
 }
 
-export function handleGameFailedPayload(payload: ByteBuffer) {
+export function handleGameFailedPayload(
+    payload: ByteBuffer,
+) /* : GameRoomEnterResult */ {
     const errno = payload.read1();
     return errno;
+}
+
+export function handleEnterMember(
+    payload: ByteBuffer,
+): [
+    accountId: string,
+    character: number,
+    specification: number,
+    team: number,
+    ready: boolean,
+] {
+    const accountId = payload.readUUID();
+    const character = payload.read1();
+    const specification = payload.read1();
+    const team = payload.read1();
+    const ready = payload.readBoolean();
+    return [accountId, character, specification, team, ready];
+}
+
+export function handleUpdateMember(
+    payload: ByteBuffer,
+): [
+    accountId: string,
+    character: number,
+    specification: number,
+    team: number,
+    ready: boolean,
+] {
+    const accountId = payload.readUUID();
+    const character = payload.read1();
+    const specification = payload.read1();
+    const team = payload.read1();
+    const ready = payload.readBoolean();
+    return [accountId, character, specification, team, ready];
+}
+
+export function handleLeaveMember(payload: ByteBuffer): string {
+    const accountId = payload.readUUID();
+    return accountId;
 }
