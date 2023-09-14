@@ -87,7 +87,7 @@ export function MatchMakerPanel() {
     const min = (timer / 60).toFixed();
 
     return (
-        <div className="relative flex flex-row items-center justify-center gap-4 rounded-lg bg-black/30 p-2">
+        <div className="relative flex flex-row items-center justify-center gap-1 rounded-lg bg-black/30 p-2">
             <div className="flex w-fit shrink-0 overflow-clip rounded">
                 <span className="w-fit shrink-0 bg-windowGlass/30 px-1 py-0.5 text-sm font-bold">
                     {limit === 2 ? "1:1" : "2:2"}
