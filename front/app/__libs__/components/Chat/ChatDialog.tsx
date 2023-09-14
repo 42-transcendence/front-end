@@ -77,18 +77,11 @@ function ChatMessageInputArea() {
 
     const sendMessage = () => {
         if (value !== "") {
-            let buf: ByteBuffer;
-            if (currentChatRoomIsDirect) {
-                buf = builder.makeSendDirectRequest(
-                    extractTargetFromDirectChatKey(currentChatRoomUUID),
-                    value,
-                );
-            } else {
-                buf = builder.makeSendMessageRequest(
-                    currentChatRoomUUID,
-                    value,
-                );
-            }
+            const buf = ByteBuffer.createWithOpcode(
+                ChatServerOpcode.SEND_MESSAGE,
+            );
+            buf.writeUUID(currentChatRoomUUID);
+            buf.writeString(value);
 
             sendPayload(buf);
             setValue("");

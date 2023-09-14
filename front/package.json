@@ -19,6 +19,7 @@
         "framer-motion": "^10.16.4",
         "jose": "^4.14.6",
         "jotai": "^2.4.2",
+        "matter-js": "^0.19.0",
         "next": "latest",
         "postcss": "8.4.29",
         "qrcode": "^1.5.3",

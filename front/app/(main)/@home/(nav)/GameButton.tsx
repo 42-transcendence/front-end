@@ -1,10 +1,32 @@
 "use client";
 
-import { RoundButtonBase } from "@components/Button/RoundButton";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { RoundButtonBase } from "@components/Button/RoundButton";
+import { GlassWindow } from "@components/Frame/GlassWindow";
+import { TextField } from "@components/TextField";
 
 export function CreateGameButton() {
-    return <RoundButtonBase>Create Game</RoundButtonBase>;
+    const [open, setOpen] = useState(false);
+    return (
+        <div className="flex h-fit w-full flex-col gap-4 lg:flex-row">
+            <RoundButtonBase onClick={() => setOpen(!open)}>
+                Create Game
+            </RoundButtonBase>
+            {open && <CreateNewGameRoom />}
+        </div>
+    );
+}
+
+function CreateNewGameRoom() {
+    return (
+        <GlassWindow>
+            <div className="flex h-full w-full flex-row items-center justify-start gap-4 p-4">
+                <span>Title</span>
+                <TextField className="w-full" />
+            </div>
+        </GlassWindow>
+    );
 }
 
 export function QuickMatchButton() {
