@@ -20,6 +20,10 @@ import {
     handleInvitationPayload,
     handleMatchmakeFailed,
 } from "@common/game-gateway-helper-client";
+import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
+import { InvitationAtom } from "@atoms/GameAtom";
+import { Separator } from "@components/Profile/GameHistoryPanel";
 
 export function MatchMakerPanel() {
     const props = useMemo(
@@ -28,6 +32,7 @@ export function MatchMakerPanel() {
         }),
         [],
     );
+    const router = useRouter();
 
     const getURL = useCallback(() => {
         const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -36,11 +41,10 @@ export function MatchMakerPanel() {
         }
         return `wss://${HOST}/game?token=${accessToken}`;
     }, []);
-    const [invitation, setInvitation] = useState("");
+    const [invitation, setInvitation] = useAtom(InvitationAtom);
     const [battleField, setBattleField] = useState<BattleField>();
     const [gameMode, setGameMode] = useState<GameMode>();
     const [limit, setLimit] = useState(0);
-    const [fair, setFair] = useState(false);
     const [reason, setReason] = useState<MatchmakeFailedReason>();
 
     useWebSocketConnector("game", getURL, props);
@@ -56,21 +60,22 @@ export function MatchMakerPanel() {
             switch (opcode) {
                 case GameClientOpcode.INVITATION: {
                     setInvitation(handleInvitationPayload(buffer));
+                    router.push("/game");
                     break;
                 }
                 case GameClientOpcode.ENQUEUED: {
-                    const [battleField, gameMode, limit, fair] =
+                    const [battleField, gameMode, limit] =
                         handleEnqueueAlert(buffer);
-                    console.log(battleField, gameMode, limit, fair);
                     setBattleField(battleField);
                     setGameMode(gameMode);
                     setLimit(limit);
-                    setFair(fair);
                     break;
                 }
                 case GameClientOpcode.MATCHMAKE_FAILED: {
-                    console.log("here");
-                    setReason(handleMatchmakeFailed(buffer));
+                    alert(
+                        "매칭에 실패했습니다.\n사유:" +
+                            handleMatchmakeFailed(buffer),
+                    );
                     break;
                 }
             }
@@ -78,13 +83,15 @@ export function MatchMakerPanel() {
     );
 
     const timer = useTimer();
-
     const second = (timer % 60).toString().padStart(2, "0");
     const min = (timer / 60).toFixed();
 
     return (
-        <div className="relative flex flex-col items-start justify-center gap-2 rounded-lg bg-black/30 p-2">
-            <div className="flex w-fit shrink-0 rounded">
+        <div className="relative flex flex-row items-center justify-center gap-4 rounded-lg bg-black/30 p-2">
+            <div className="flex w-fit shrink-0 overflow-clip rounded">
+                <span className="w-fit shrink-0 bg-windowGlass/30 px-1 py-0.5 text-sm font-bold">
+                    {limit === 2 ? "1:1" : "2:2"}
+                </span>
                 <span className="w-fit shrink-0 bg-windowGlass/30 px-1 py-0.5 text-sm font-bold">
                     {battleField === BattleField.ROUND
                         ? "동글동글"
@@ -106,8 +113,8 @@ export function MatchMakerPanel() {
                         : "두근"}
                 </span>
             </div>
-            <span className="text-sm text-gray-300/80">
-                게임 찾는 중: {min}:{second}
+            <span className="relative flex w-full justify-center rounded-lg px-1 py-0.5 text-base text-gray-100/80">
+                {min}:{second}
             </span>
         </div>
     );

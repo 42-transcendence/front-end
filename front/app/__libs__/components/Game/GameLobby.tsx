@@ -1,3 +1,3 @@
 export function GameLobby() {
-    return <div></div>;
+    return <div className="h-full w-full bg-cover bg-center"></div>;
 }
