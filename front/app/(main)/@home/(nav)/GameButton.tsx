@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { RoundButtonBase } from "@components/Button/RoundButton";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { ButtonOnRight } from "@components/Button/ButtonOnRight";
@@ -10,13 +10,9 @@ import type { MatchmakeFailedReason } from "@common/game-payloads";
 import { BattleField, GameMode } from "@common/game-payloads";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { Dialog } from "@headlessui/react";
-import {
-    handleInvitationPayload,
-    handleMatchmakeFailed,
-} from "@common/game-gateway-helper-client";
+import { handleMatchmakeFailed } from "@common/game-gateway-helper-client";
 import { useAtom } from "jotai";
-import { InvitationAtom, IsMatchMakingAtom } from "@atoms/GameAtom";
-import { useRouter } from "next/navigation";
+import { IsMatchMakingAtom } from "@atoms/GameAtom";
 import { DoubleSharp } from "@components/ImageLibrary";
 import { useGameWebSocketConnector } from "@hooks/useGameWebSocketConnector";
 
@@ -167,8 +163,6 @@ function CreateGamePendding({
     infos: GameInfoType;
     closeModal: () => void;
 }) {
-    const router = useRouter();
-    const [invitationAtom, setInvitationAtom] = useAtom(InvitationAtom);
     const [isFail, setIsFail] = useState<MatchmakeFailedReason>();
 
     useGameWebSocketConnector(
@@ -184,28 +178,9 @@ function CreateGamePendding({
         ),
     );
 
-    useEffect(() => {
-        if (invitationAtom !== "") {
-            router.push("/game");
-        }
-    }, [invitationAtom, router]);
-
-    useWebSocket(
-        "game",
-        [GameClientOpcode.INVITATION, GameClientOpcode.MATCHMAKE_FAILED],
-        (opcode, buffer) => {
-            switch (opcode) {
-                case GameClientOpcode.INVITATION: {
-                    setInvitationAtom(handleInvitationPayload(buffer));
-                    return;
-                }
-                case GameClientOpcode.MATCHMAKE_FAILED: {
-                    setIsFail(handleMatchmakeFailed(buffer));
-                    return;
-                }
-            }
-        },
-    );
+    useWebSocket("game", GameClientOpcode.MATCHMAKE_FAILED, (_, buffer) => {
+        setIsFail(handleMatchmakeFailed(buffer));
+    });
 
     return (
         <div className="flex h-full w-full items-center justify-center p-4 pt-16">

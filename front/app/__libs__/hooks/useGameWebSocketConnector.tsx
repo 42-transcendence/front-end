@@ -1,10 +1,22 @@
 "use client";
+
 import { useCallback, useMemo } from "react";
-import { useWebSocketConnector } from "@akasha-utils/react/websocket-hook";
+import {
+    useWebSocket,
+    useWebSocketConnector,
+} from "@akasha-utils/react/websocket-hook";
 import { ACCESS_TOKEN_KEY, HOST } from "@utils/constants";
 import type { ByteBuffer } from "@akasha-lib";
+import { useRouter } from "next/navigation";
+import { GameClientOpcode } from "@common/game-opcodes";
+import { useSetAtom } from "jotai";
+import { InvitationAtom } from "@atoms/GameAtom";
+import { GlobalStore } from "@atoms/GlobalStore";
+import { handleInvitationPayload } from "@common/game-gateway-helper-client";
 
 export function useGameWebSocketConnector(buf: ByteBuffer) {
+    const router = useRouter();
+    const setInvitation = useSetAtom(InvitationAtom, { store: GlobalStore });
     const props = useMemo(
         () => ({
             handshake: () => buf.toArray(),
@@ -21,4 +33,9 @@ export function useGameWebSocketConnector(buf: ByteBuffer) {
     }, []);
 
     useWebSocketConnector("game", getURL, props);
+
+    useWebSocket("game", GameClientOpcode.INVITATION, (_, buffer) => {
+        setInvitation(handleInvitationPayload(buffer));
+        router.push("/game");
+    });
 }

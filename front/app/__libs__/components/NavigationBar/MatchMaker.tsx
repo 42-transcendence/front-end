@@ -7,12 +7,10 @@ import { useMemo, useState } from "react";
 import { makeMatchmakeHandshakeQueue } from "@common/game-payload-builder-client";
 import {
     handleEnqueueAlert,
-    handleInvitationPayload,
     handleMatchmakeFailed,
 } from "@common/game-gateway-helper-client";
-import { useRouter } from "next/navigation";
 import { useAtomValue, useSetAtom } from "jotai";
-import { InvitationAtom, IsMatchMakingAtom } from "@atoms/GameAtom";
+import { IsMatchMakingAtom } from "@atoms/GameAtom";
 import { BattleField, GameMode } from "@common/game-payloads";
 import { useGameWebSocketConnector } from "@hooks/useGameWebSocketConnector";
 
@@ -23,8 +21,6 @@ export function MatchMakerWrapper() {
 }
 
 function MatchMakerPanel() {
-    const router = useRouter();
-    const setInvitation = useSetAtom(InvitationAtom);
     const setMatchMaking = useSetAtom(IsMatchMakingAtom);
     const [battleField, setBattleField] = useState<BattleField>();
     const [gameMode, setGameMode] = useState<GameMode>();
@@ -34,18 +30,9 @@ function MatchMakerPanel() {
 
     useWebSocket(
         "game",
-        [
-            GameClientOpcode.INVITATION,
-            GameClientOpcode.ENQUEUED,
-            GameClientOpcode.MATCHMAKE_FAILED,
-        ],
+        [GameClientOpcode.ENQUEUED, GameClientOpcode.MATCHMAKE_FAILED],
         (opcode, buffer) => {
             switch (opcode) {
-                case GameClientOpcode.INVITATION: {
-                    setInvitation(handleInvitationPayload(buffer));
-                    router.push("/game");
-                    break;
-                }
                 case GameClientOpcode.ENQUEUED: {
                     const [battleField, gameMode, limit] =
                         handleEnqueueAlert(buffer);
@@ -55,10 +42,8 @@ function MatchMakerPanel() {
                     break;
                 }
                 case GameClientOpcode.MATCHMAKE_FAILED: {
-                    alert(
-                        "매칭에 실패했습니다.\n사유:" +
-                            handleMatchmakeFailed(buffer),
-                    );
+                    void handleMatchmakeFailed(buffer);
+                    alert("매칭에 실패했습니다.");
                     break;
                 }
             }
