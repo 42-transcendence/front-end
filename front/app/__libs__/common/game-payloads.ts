@@ -39,7 +39,6 @@ export const enum MatchmakeFailedReason {
 export enum BattleField {
     SQUARE,
     ROUND,
-    ABSOLUTE,
 
     MAX_VALUE,
 }
