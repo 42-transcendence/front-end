@@ -4,6 +4,7 @@ import { Status } from "@components/Status";
 import Image from "next/image";
 import { ActiveStatusNumber } from "@common/generated/types";
 import { useProtectedProfile, usePublicProfile } from "@hooks/useProfile";
+import { HOST } from "@hooks/fetcher";
 
 function PrivilegedSection({ accountUUID }: { accountUUID: string }) {
     const profile = useProtectedProfile(accountUUID);
@@ -28,15 +29,24 @@ const imageLoader = ({
 }) => {
     void width;
     void quality;
-    if (src.startsWith("__DEFAULT__")) {
-        // TODO: fallback avatar image
-        return `https://www.gravatar.com/avatar/${
-            src.split("#")[1]
-        }?d=identicon`;
-    }
-
-    return `https://back.stri.dev/internal/raw-avatar/${src}?a=AKASHA`;
+    return `https://${HOST}/internal/raw-avatar/${src}?a=AKASHA`;
 };
+
+const defaultImageLoader = ({ src }: { src: string }) =>
+    `https://www.gravatar.com/avatar/${src}?d=identicon`;
+
+function AvatarBase({
+    className,
+    children,
+}: React.PropsWithChildren<{ className: string }>) {
+    return (
+        <div
+            className={`${className} flex aspect-square items-start gap-2.5 rounded-full`}
+        >
+            {children}
+        </div>
+    );
+}
 
 export function Avatar({
     className,
@@ -49,19 +59,52 @@ export function Avatar({
 }) {
     const profile = usePublicProfile(accountUUID);
 
+    if (profile === undefined) {
+        return <DefaultAvatar className={className} uuid={accountUUID} />;
+    }
     return (
-        <div
-            className={`${className} flex aspect-square items-start gap-2.5 rounded-full`}
-        >
+        <AvatarBase className={className}>
+            {profile.avatarKey !== null ? (
+                <Image
+                    className="relative rounded-full"
+                    src={profile.avatarKey}
+                    alt="Avatar"
+                    sizes="100%"
+                    fill={true}
+                    loader={imageLoader}
+                />
+            ) : (
+                <Image
+                    className="relative rounded-full"
+                    src={accountUUID}
+                    alt="Avatar"
+                    sizes="100%"
+                    fill={true}
+                    loader={defaultImageLoader}
+                />
+            )}
+            {privileged && <PrivilegedSection accountUUID={accountUUID} />}
+        </AvatarBase>
+    );
+}
+
+export function DefaultAvatar({
+    className,
+    uuid,
+}: {
+    className: string;
+    uuid: string;
+}) {
+    return (
+        <AvatarBase className={className}>
             <Image
                 className="relative rounded-full"
-                src={profile?.avatarKey ?? `__DEFAULT__#${accountUUID}`}
+                src={uuid}
                 alt="Avatar"
                 sizes="100%"
                 fill={true}
-                loader={imageLoader}
+                loader={defaultImageLoader}
             />
-            {privileged && <PrivilegedSection accountUUID={accountUUID} />}
-        </div>
+        </AvatarBase>
     );
 }

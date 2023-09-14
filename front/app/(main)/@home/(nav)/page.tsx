@@ -1,6 +1,5 @@
 import { Game } from "@components/ImageLibrary";
 import { CreateGameButton, QuickMatchButton } from "./GameButton";
-import { LogoutButton } from "./LogoutButton";
 
 function HelloWorldPaper() {
     return (
@@ -18,8 +17,8 @@ function HelloWorldPaper() {
                     <div>[더블샵]에 오신 것을 환영합니다!</div>
                 </div>
                 <div className="text-center text-base font-bold not-italic leading-[28px] text-white">
-                    <p>새 게임 만들기 - Create Game</p>
                     <p>빠른 대전 - Quick Match</p>
+                    <p>게임 만들기 - Create Game</p>
                 </div>
                 <div className="pt-[20px] text-center text-base font-normal italic leading-5 text-white text-white/30">
                     @42-transcendence
@@ -40,7 +39,6 @@ export default function Home() {
                 <div className="flex h-[300px] flex-col items-center justify-center gap-[30px] px-[75px] py-[69px]">
                     <QuickMatchButton />
                     <CreateGameButton />
-                    <LogoutButton />
                 </div>
             </div>
         </div>

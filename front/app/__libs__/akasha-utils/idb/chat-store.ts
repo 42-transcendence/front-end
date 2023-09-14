@@ -1,10 +1,10 @@
-import { NULL_UUID } from "@akasha-lib";
 import { IDBCP } from "./indexed-dbcp";
 
 const DB_NAME_PREFIX = "akasha-";
 
 function getMetadataDB(): Promise<IDBDatabase> {
     return IDBCP.getOrOpen(`${DB_NAME_PREFIX}chat`, {
+        version: 5,
         onUpgradeNeeded(db: IDBDatabase) {
             try {
                 db.deleteObjectStore("rooms");
@@ -54,8 +54,9 @@ export type DirectSchema = {
     fetchedMessageId: string | null;
 };
 
-function getRoomDB(chatId: string): Promise<IDBDatabase> {
+function getDB(chatId: string): Promise<IDBDatabase> {
     return IDBCP.getOrOpen(`${DB_NAME_PREFIX}chat-${chatId}`, {
+        version: 5,
         onUpgradeNeeded(db: IDBDatabase) {
             try {
                 db.deleteObjectStore("members");
@@ -81,7 +82,7 @@ function getRoomDB(chatId: string): Promise<IDBDatabase> {
     });
 }
 
-function removeRoomDB(chatId: string): Promise<boolean> {
+function removeDB(chatId: string): Promise<boolean> {
     return IDBCP.delete(`${DB_NAME_PREFIX}chat-${chatId}`);
 }
 
@@ -89,37 +90,12 @@ export function makeDirectChatKey(accountId: string, targetId: string): string {
     return `${accountId}_${targetId}`;
 }
 
-function getDirectDB(
-    accountId: string,
-    targetId: string,
-): Promise<IDBDatabase> {
-    return IDBCP.getOrOpen(
-        `${DB_NAME_PREFIX}chat-${makeDirectChatKey(accountId, targetId)}`,
-        {
-            onUpgradeNeeded(db: IDBDatabase) {
-                try {
-                    db.deleteObjectStore("messages");
-                } catch {
-                    //NOTE: ignore
-                }
-                const messages = db.createObjectStore("messages", {
-                    keyPath: "id",
-                });
-                // accountId
-                // content
-                // messageType
-                messages.createIndex("timestamp", "timestamp", {
-                    unique: false,
-                });
-            },
-        },
-    );
+export function isDirectChatKey(chatId: string): boolean {
+    return chatId.includes("_");
 }
 
-function removeDirectDB(accountId: string, targetId: string): Promise<boolean> {
-    return IDBCP.delete(
-        `${DB_NAME_PREFIX}chat-${makeDirectChatKey(accountId, targetId)}`,
-    );
+export function extractTargetFromDirectChatKey(chatId: string): string {
+    return chatId.split("_")[1];
 }
 
 export type MemberSchema = {
@@ -166,7 +142,7 @@ export class ChatStore {
                     } satisfies RoomSchema);
 
                     roomAdd.onsuccess = () =>
-                        getRoomDB(chatId)
+                        getDB(chatId)
                             .then(() => resolve(true))
                             .catch(() => resolve(false));
                 } else {
@@ -217,7 +193,7 @@ export class ChatStore {
                         const roomDelete = rooms.delete(chatId);
 
                         roomDelete.onsuccess = () =>
-                            removeRoomDB(chatId)
+                            removeDB(chatId)
                                 .then(() => resolve(true))
                                 .catch(() => resolve(false));
                     }
@@ -352,7 +328,7 @@ export class ChatStore {
         chatId: string,
         member: MemberSchema,
     ): Promise<boolean> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve) => {
             const tx = db.transaction(["members"], "readwrite");
             tx.onerror = () => resolve(false);
@@ -368,7 +344,7 @@ export class ChatStore {
         chatId: string,
         accountId: string,
     ): Promise<boolean> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve) => {
             const tx = db.transaction(["members"], "readwrite");
             tx.onerror = () => resolve(false);
@@ -383,7 +359,7 @@ export class ChatStore {
     static async getMemberDictionary(
         chatId: string,
     ): Promise<Map<string, MemberSchema>> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["members"], "readonly");
             tx.onerror = () => reject(new Error());
@@ -406,7 +382,7 @@ export class ChatStore {
         chatId: string,
         accountId: string,
     ): Promise<MemberSchema | null> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve) => {
             const tx = db.transaction(["members"], "readonly");
             tx.onerror = () => resolve(null);
@@ -447,7 +423,7 @@ export class ChatStore {
     }
 
     static async truncateMember(chatId: string): Promise<boolean> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve) => {
             const tx = db.transaction(["members"], "readwrite");
             tx.onerror = () => resolve(false);
@@ -466,7 +442,7 @@ export class ChatStore {
         chatId: string,
         message: MessageSchema,
     ): Promise<boolean> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve) => {
             const tx = db.transaction(["messages"], "readwrite");
             tx.onerror = () => resolve(false);
@@ -482,7 +458,7 @@ export class ChatStore {
         chatId: string,
         messageList: MessageSchema[],
     ): Promise<boolean> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve) => {
             const tx = db.transaction(["messages"], "readwrite");
             tx.onerror = () => resolve(false);
@@ -508,8 +484,9 @@ export class ChatStore {
 
     static async getLatestMessage(
         chatId: string,
+        messageType?: number | undefined,
     ): Promise<MessageSchema | null> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["messages"], "readonly");
             tx.onerror = () => reject(new Error());
@@ -523,6 +500,13 @@ export class ChatStore {
                 const cursor = messageAllReverseByTimestampCursor.result;
                 if (cursor !== null) {
                     const message = cursor.value as MessageSchema;
+                    if (
+                        messageType !== undefined &&
+                        message.messageType !== messageType
+                    ) {
+                        cursor.continue();
+                        return;
+                    }
                     resolve(message);
                 } else {
                     resolve(null);
@@ -533,22 +517,21 @@ export class ChatStore {
 
     static async countAfterMessage(
         chatId: string,
-        messageId: string,
+        messageId: string | null,
     ): Promise<number> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["messages"], "readonly");
             tx.onerror = () => reject(new Error());
 
             const messages = tx.objectStore("messages");
-            if (messageId === NULL_UUID) {
-                //FIXME: 임시 처리
+
+            if (messageId === null) {
                 const messageCount = messages.count();
-                messageCount.onsuccess = () => {
-                    resolve(messageCount.result);
-                };
+                messageCount.onsuccess = () => resolve(messageCount.result);
                 return;
             }
+
             const messageGet = messages.get(messageId);
 
             messageGet.onsuccess = () => {
@@ -573,7 +556,7 @@ export class ChatStore {
         messageId: string,
         limit?: number | undefined,
     ): Promise<MessageSchema[]> {
-        const db = await getRoomDB(chatId);
+        const db = await getDB(chatId);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["messages"], "readonly");
             tx.onerror = () => reject(new Error());
@@ -618,7 +601,7 @@ export class ChatStore {
                                 // Prevent indirect exclusion checks from being invalidated by exceeding limit at the same timestamp.
                                 targetTimestamp.valueOf() !==
                                     message["timestamp"].valueOf())
-                            //TODO: 특수한 정지 표지 메시지로 fetch가 필요함을 나타내고, 표지가 관측될 때 서버로 요청을 보내면, lazy load를 만들 수 있을 것이다.
+                            //XXX: JKONG: 특수한 정지 표지 메시지로 fetch가 필요함을 나타내고, 표지가 관측될 때 서버로 요청을 보내면, lazy load를 만들 수 있을 것이다.
                         ) {
                             cursor.continue();
                             return;
@@ -653,8 +636,11 @@ export class ChatStore {
         return this.getContinueMessages(true, chatId, messageId, limit);
     }
 
-    static async getAllMessages(chatId: string): Promise<MessageSchema[]> {
-        const db = await getRoomDB(chatId);
+    static async getAllMessages(
+        chatId: string,
+        limit?: number | undefined,
+    ): Promise<MessageSchema[]> {
+        const db = await getDB(chatId);
         return new Promise((resolve, reject) => {
             const tx = db.transaction(["messages"], "readonly");
             tx.onerror = () => reject(new Error());
@@ -667,7 +653,11 @@ export class ChatStore {
             const messageAllByTimestamp = new Array<MessageSchema>();
             messageAllByTimestampCursor.onsuccess = () => {
                 const cursor = messageAllByTimestampCursor.result;
-                if (cursor !== null) {
+                if (
+                    cursor !== null &&
+                    (limit === undefined ||
+                        messageAllByTimestamp.length < limit)
+                ) {
                     const message = cursor.value as MessageSchema;
                     messageAllByTimestamp.push(message);
                     cursor.continue();
@@ -699,7 +689,7 @@ export class ChatStore {
             } satisfies DirectSchema);
 
             directAdd.onsuccess = () =>
-                getDirectDB(accountId, targetId)
+                getDB(makeDirectChatKey(accountId, targetId))
                     .then(() => resolve(true))
                     .catch(() => resolve(false));
         });
@@ -718,7 +708,7 @@ export class ChatStore {
             const directDelete = directs.delete([accountId, targetId]);
 
             directDelete.onsuccess = () =>
-                removeDirectDB(accountId, targetId)
+                removeDB(makeDirectChatKey(accountId, targetId))
                     .then(() => resolve(true))
                     .catch(() => resolve(false));
         });
@@ -738,6 +728,54 @@ export class ChatStore {
                 const directArray =
                     directAllByAccountGet.result as DirectSchema[];
                 resolve(new Set<string>(directArray.map((e) => e["target"])));
+            };
+        });
+    }
+
+    static async getDirectFetchedMessageId(
+        accountId: string,
+        targetId: string,
+    ): Promise<string | null> {
+        const db = await getMetadataDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(["directs"], "readonly");
+            tx.onerror = () => reject(new Error());
+
+            const directs = tx.objectStore("directs");
+            const directGet = directs.get([accountId, targetId]);
+            directGet.onsuccess = () => {
+                const direct = directGet.result as DirectSchema | undefined;
+                if (direct !== undefined) {
+                    resolve(direct["fetchedMessageId"]);
+                } else {
+                    reject(new Error());
+                }
+            };
+        });
+    }
+
+    static async setDirectFetchedMessageId(
+        accountId: string,
+        targetId: string,
+        fetchedMessageId: string,
+    ): Promise<void> {
+        const db = await getMetadataDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(["directs"], "readwrite");
+            tx.onerror = () => reject(new Error());
+
+            const directs = tx.objectStore("directs");
+            const directGet = directs.get([accountId, targetId]);
+            directGet.onsuccess = () => {
+                const direct = directGet.result as DirectSchema | undefined;
+                if (direct !== undefined) {
+                    direct["fetchedMessageId"] = fetchedMessageId;
+                    const directPut = directs.put(direct);
+
+                    directPut.onsuccess = () => resolve();
+                } else {
+                    reject(new Error());
+                }
             };
         });
     }

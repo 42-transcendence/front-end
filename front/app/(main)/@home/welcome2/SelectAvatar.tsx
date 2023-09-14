@@ -5,47 +5,35 @@ import Image from "next/image";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { ImageUploadBox } from "./ImageUploadBox";
 import { useRefMap } from "@hooks/useRefMap";
-import { useAtomValue } from "jotai";
-import { AccessTokenAtom } from "@atoms/AccountAtom";
 import { ScrollBox } from "./ScrollBox";
+import { useAvatarMutation } from "@hooks/useProfile";
 
 const defaultAvatarsKey = ["jisookim", "iyun", "hdoo", "jkong", "chanhpar"];
 
-//FIXME: 긴급, SWR 적용하기
-function useFormData(
-    url: string | URL,
-): [
+function useFormData(): [
     setForm: React.Dispatch<React.SetStateAction<FormData | null>>,
     sendForm: () => void,
     clearForm: () => void,
 ] {
     const [formData, setForm] = useState<FormData | null>(null);
-
-    const accessToken = useAtomValue(AccessTokenAtom);
-
-    const options = useMemo(() => {
-        return {
-            method: "POST",
-            body: formData,
-            headers: {
-                Authorization: ["Bearer", accessToken].join(" "),
-            },
-        };
-    }, [accessToken, formData]);
+    const { trigger, error } = useAvatarMutation();
 
     const clearForm = useCallback(() => {
         setForm(new FormData());
     }, []);
 
     const sendForm = useCallback(() => {
-        fetch(url, options)
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((e) => {
-                console.log(e);
-            });
-    }, [options, url]);
+        if (formData === null) {
+            return;
+        }
+        void trigger(formData);
+    }, [formData, trigger]);
+
+    useEffect(() => {
+        if (error) {
+            alert("오류가 발생했습니다. 다시 시도해 주세요");
+        }
+    }, [error]);
 
     return [setForm, sendForm, clearForm];
 }
@@ -55,8 +43,7 @@ function useImageAsFormData(): [
     setImage: (image: HTMLImageElement) => void,
     sendForm: () => void,
 ] {
-    const url = "https://back.stri.dev/profile/avatar";
-    const [setForm, sendForm, clearForm] = useFormData(url);
+    const [setForm, sendForm, clearForm] = useFormData();
     const [image, setImage] = useState<HTMLImageElement | null>(null);
     const formDataKey = "avatar";
 
@@ -134,9 +121,6 @@ export function SelectAvatar() {
         HTMLImageElement
     >();
 
-    // TODO: appropriate file size limit?
-    const maxFileSize = 4096576;
-
     const observerOptions = useMemo(() => {
         return {
             root: rootRef.current,
@@ -175,10 +159,7 @@ export function SelectAvatar() {
                             />
                         </div>
                     ))}
-                    <ImageUploadBox
-                        setImage={setImage}
-                        maxFileSize={maxFileSize}
-                    />
+                    <ImageUploadBox setImage={setImage} />
                 </ScrollBox>
             </div>
             <p>현재 아바타: {image !== null && image.dataset["name"]}</p>

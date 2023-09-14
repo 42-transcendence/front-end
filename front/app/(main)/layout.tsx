@@ -1,17 +1,14 @@
 "use client";
 
 import { AuthLevel } from "@common/auth-payloads";
-import {
-    AccessTokenAtom,
-    AuthAtom,
-    RefreshTokenAtom,
-} from "@atoms/AccountAtom";
-import { useAtomValue, useSetAtom } from "jotai";
+import { AuthAtom } from "@atoms/AccountAtom";
+import { useAtomValue } from "jotai";
 import { ChatSocketProcessor } from "./ChatSocketProcessor";
 import { usePrivateProfile } from "@hooks/useProfile";
-import React, { useEffect, useState } from "react";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@hooks/fetcher";
+import { useEffect, useState } from "react";
 import { DoubleSharp } from "@components/ImageLibrary";
+import { useToken } from "@hooks/useToken";
+import { logoutAction } from "@components/ContextMenu/logoutAction";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -50,39 +47,7 @@ export default function MainLayout({
         setHydrated(true);
     }, []);
 
-    const setAccessToken = useSetAtom(AccessTokenAtom);
-    useEffect(() => {
-        setAccessToken(window.localStorage.getItem(ACCESS_TOKEN_KEY));
-        const handleAccessTokenEvent = (ev: StorageEvent) => {
-            if (ev.storageArea === window.localStorage) {
-                if (ev.key === null || ev.key === ACCESS_TOKEN_KEY) {
-                    if (ev.oldValue !== ev.newValue) {
-                        setAccessToken(ev.newValue);
-                    }
-                }
-            }
-        };
-        window.addEventListener("storage", handleAccessTokenEvent);
-        return () =>
-            window.removeEventListener("storage", handleAccessTokenEvent);
-    }, [setAccessToken]);
-
-    const setRefreshToken = useSetAtom(RefreshTokenAtom);
-    useEffect(() => {
-        setRefreshToken(window.localStorage.getItem(REFRESH_TOKEN_KEY));
-        const handleRefreshTokenEvent = (ev: StorageEvent) => {
-            if (ev.storageArea === window.localStorage) {
-                if (ev.key === null || ev.key === REFRESH_TOKEN_KEY) {
-                    if (ev.oldValue !== ev.newValue) {
-                        setRefreshToken(ev.newValue);
-                    }
-                }
-            }
-        };
-        window.addEventListener("storage", handleRefreshTokenEvent);
-        return () =>
-            window.removeEventListener("storage", handleRefreshTokenEvent);
-    }, [setRefreshToken]);
+    useToken();
     const auth = useAtomValue(AuthAtom);
     const profile = usePrivateProfile();
 
@@ -108,12 +73,17 @@ export default function MainLayout({
         return (
             <DefaultLayout>
                 <p>정지당했습니다... 심장이 뛰질 않아요.</p>
-                {auth.bans.map((e) => (
-                    <>
-                        <p>{e.reason}</p>
-                        <p>{e.expireTimestamp?.toString() ?? "영구"}</p>
-                    </>
-                ))}
+                <div className="flex flex-col">
+                    {auth.bans.map((e) => (
+                        <>
+                            <p>{e.reason}</p>
+                            <p>{e.expireTimestamp?.toString() ?? "영구"}</p>
+                        </>
+                    ))}
+                </div>
+                <button type="button" onClick={() => logoutAction()}>
+                    로그아웃
+                </button>
             </DefaultLayout>
         );
     }
@@ -125,11 +95,6 @@ export default function MainLayout({
             </LoadingLayout>
         );
     }
-
-    //TODO: 탈퇴 유예기간인 경우
-    // if (auth?.auth_level === AuthLevel.UNREGISTERING) {
-    //     return <DefaultLayout>{???}</DefaultLayout>
-    // }
 
     // 먼저 닉네임을 설정하세요.
     if (profile.nickName === null) {

@@ -34,7 +34,7 @@ export default function LoginPage() {
                         height="100%"
                     />
                 </div>
-                <div className="relative flex h-[90%] w-fit flex-col items-center justify-center gap-1">
+                <div className="relative flex h-[90%] w-fit flex-col items-center justify-center gap-2">
                     {loginList.map((e) => (
                         <SquareButton
                             key={e.key}

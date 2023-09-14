@@ -2,8 +2,13 @@ import { TargetedAccountUUIDAtom } from "@atoms/AccountAtom";
 import { Avatar } from "@components/Avatar";
 import { useProtectedProfile, usePublicProfile } from "@hooks/useProfile";
 import { Provider, createStore } from "jotai";
-import type { Relationship } from "@components/ContextMenu";
+import type { Scope } from "@components/ContextMenu";
 import { ContextMenu } from "@components/ContextMenu";
+import type { AccountProfilePublicPayload } from "@common/profile-payloads";
+import { Icon } from "@components/ImageLibrary";
+import { useChatMember } from "@hooks/useChatRoom";
+import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
+import { RoleNumber } from "@common/generated/types";
 
 export function ProfileItem({
     className,
@@ -16,18 +21,19 @@ export function ProfileItem({
     accountUUID: string;
     selected: boolean;
     onClick?: React.MouseEventHandler | undefined;
-    type: Relationship;
+    type: Scope;
 }) {
     const profile = usePublicProfile(accountUUID);
     const protectedProfile = useProtectedProfile(accountUUID);
+    const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const currentUser = useChatMember(currentChatRoomUUID, accountUUID);
+    const roleLevel = Number(currentUser?.role ?? 0);
+    const managerRoleLevel: number = RoleNumber.MANAGER;
+    const adminRoleLevel: number = RoleNumber.ADMINISTRATOR;
 
     const store = createStore();
     store.set(TargetedAccountUUIDAtom, accountUUID);
 
-    const nick =
-        profile !== undefined
-            ? `${profile.nickName}#${profile.nickTag}`
-            : "불러오는 중...";
     const statusMessage =
         protectedProfile?.statusMessage ?? "상태 메시지를 볼 수 없습니다.";
 
@@ -49,10 +55,20 @@ export function ProfileItem({
                             />
                         </div>
                         <div className="relative flex w-fit flex-col items-start gap-1">
-                            <div className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                                {nick}
+                            <div className="flex flex-row gap-2">
+                                <NickBlock profile={profile} />
+                                {type === "ChatRoom" &&
+                                    roleLevel >= managerRoleLevel && (
+                                        <Icon.CrownFilled
+                                            className={
+                                                roleLevel === adminRoleLevel
+                                                    ? "text-tertiary"
+                                                    : ""
+                                            }
+                                        />
+                                    )}
                             </div>
-                            <div className="text-normal text-xs text-gray-300">
+                            <div className="text-normal font-sans text-sm text-gray-50">
                                 {statusMessage}
                             </div>
                         </div>
@@ -61,5 +77,26 @@ export function ProfileItem({
                 {selected && <ContextMenu type={type} />}
             </div>
         </Provider>
+    );
+}
+
+export function NickBlock({
+    profile,
+}: {
+    profile: AccountProfilePublicPayload | undefined;
+}) {
+    return profile !== undefined ? (
+        <div className="flex flex-row items-center gap-2">
+            <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
+                {profile.nickName}
+            </span>
+            <span className="relative w-fit whitespace-nowrap font-sans text-sm font-bold leading-none tracking-normal text-gray-300/70">
+                #{profile.nickTag}
+            </span>
+        </div>
+    ) : (
+        <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
+            불러오는 중...
+        </span>
     );
 }

@@ -5,7 +5,7 @@ import { useSWRConfig } from "swr";
 
 // TODO: 나중에 http response constansts 파일로 빼기?
 // 사실 제가 아직 status code 다 못외워서...
-const HTTP_RESPONSE_CONFLICT = 409 as const;
+export const HTTP_RESPONSE_CONFLICT = 409 as const;
 
 export function useRegisterNickName() {
     const { mutate } = useSWRConfig();
@@ -16,10 +16,13 @@ export function useRegisterNickName() {
         },
         [mutate],
     );
-    const result = useSWRMutation("/profile/nick", callback);
+    const result = useSWRMutation("/profile/private/nick", callback, {
+        throwOnError: false,
+    });
     const error = result.error !== undefined;
     const conflict =
-        result.error instanceof HTTPError && result.error.status === HTTP_RESPONSE_CONFLICT;
+        result.error instanceof HTTPError &&
+        result.error.status === HTTP_RESPONSE_CONFLICT;
 
     return { register: result.trigger, error, conflict };
 }

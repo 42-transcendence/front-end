@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ByteBuffer, NULL_UUID } from "@akasha-lib";
+import { ByteBuffer } from "@akasha-lib";
 import type { ChatRoomChatMessagePairEntry } from "@common/chat-payloads";
 import {
     writeChatRoomChatMessagePair,
@@ -31,6 +31,12 @@ export function makeActiveStatusManualRequest(
 export function makeIdleAutoRequest(idle: boolean) {
     const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.IDLE_AUTO);
     buf.writeBoolean(idle);
+    return buf;
+}
+
+export function makeStatusMessageRequest(statusMessage: string) {
+    const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.STATUS_MESSAGE);
+    buf.writeString(statusMessage);
     return buf;
 }
 
@@ -281,13 +287,24 @@ export function makeDestroyRoomRequest(chatId: string) {
     return buf;
 }
 
-export function makeLoadDirectsRequest(
+// export function makeLoadDirectsRequest(
+//     targetAccountId: string,
+//     fetchedMessageId: string | null,
+// ) {
+//     const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.LOAD_DIRECTS);
+//     buf.writeUUID(targetAccountId);
+//     buf.writeNullable(fetchedMessageId, buf.writeUUID, NULL_UUID);
+//     return buf;
+// }
+
+export function makeSyncCursorDirect(
     targetAccountId: string,
-    fetchedMessageId: string | null,
+    messageId: string,
 ) {
-    const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.LOAD_DIRECTS);
-    buf.writeUUID(targetAccountId);
-    buf.writeNullable(fetchedMessageId, buf.writeUUID, NULL_UUID);
+    const buf = ByteBuffer.createWithOpcode(
+        ChatServerOpcode.SYNC_CURSOR_DIRECT,
+    );
+    writeChatRoomChatMessagePair({ chatId: targetAccountId, messageId }, buf);
     return buf;
 }
 
@@ -298,5 +315,12 @@ export function makeSendDirectRequest(
     const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.SEND_DIRECT);
     buf.writeUUID(targetAccountId);
     buf.writeString(content);
+    return buf;
+}
+
+export function makeReportUser(targetAccountId: string, reason: string) {
+    const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.REPORT_USER);
+    buf.writeUUID(targetAccountId);
+    buf.writeString(reason);
     return buf;
 }

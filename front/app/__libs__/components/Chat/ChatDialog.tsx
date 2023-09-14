@@ -2,32 +2,93 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Game, Icon } from "@components/ImageLibrary";
-import { ChatBubbleWithProfile } from "./ChatBubble";
-import type { MessageSchema } from "@akasha-utils/idb/chat-store";
+import { ChatBubbleWithProfile, NoticeBubble } from "./ChatBubble";
+import {
+    extractTargetFromDirectChatKey,
+    isDirectChatKey,
+    type MessageSchema,
+} from "@akasha-utils/idb/chat-store";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { ChatServerOpcode } from "@common/chat-opcodes";
-import { ByteBuffer } from "@akasha-lib";
+import type { ByteBuffer } from "@akasha-lib";
 import {
     useCurrentAccountUUID,
     useCurrentChatRoomUUID,
 } from "@hooks/useCurrent";
-import { useChatRoomMessages } from "@hooks/useChatRoom";
+import {
+    useChatRoomListAtom,
+    useChatRoomMessages,
+    useChatRoomMutation,
+    useDirectRoomListAtom,
+} from "@hooks/useChatRoom";
+import { MessageTypeNumber } from "@common/generated/types";
+import * as builder from "@akasha-utils/chat-payload-builder-client";
+import { syncCursor, syncDirectCursor } from "@/app/(main)/ChatSocketProcessor";
+import { ChatClientOpcode } from "@common/chat-opcodes";
+import {
+    handleSendDirectResult,
+    handleSendMessageResult,
+} from "@akasha-utils/chat-gateway-client";
+import { ChatErrorNumber } from "@common/chat-payloads";
+import { prettifyBanSummaryEntries } from "./ChatRoomBlock";
+import { handleChatError } from "./handleChatError";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
 function ChatMessageInputArea() {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
+    const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState("");
-    const { sendPayload } = useWebSocket("chat", []);
+    const { sendPayload } = useWebSocket(
+        "chat",
+        [
+            ChatClientOpcode.SEND_MESSAGE_RESULT,
+            ChatClientOpcode.SEND_DIRECT_RESULT,
+        ],
+        (opcode, payload) => {
+            switch (opcode) {
+                case ChatClientOpcode.SEND_MESSAGE_RESULT: {
+                    const [errno, chatId, bans] =
+                        handleSendMessageResult(payload);
+                    if (chatId === currentChatRoomUUID) {
+                        if (errno !== ChatErrorNumber.SUCCESS) {
+                            if (bans !== undefined) {
+                                alert(
+                                    "채팅을 금지당했습니다.\n" +
+                                        prettifyBanSummaryEntries(bans),
+                                );
+                            } else {
+                                handleChatError(errno);
+                            }
+                        }
+                    }
+                    break;
+                }
+                case ChatClientOpcode.SEND_DIRECT_RESULT: {
+                    const [errno] = handleSendDirectResult(payload);
+                    if (errno !== ChatErrorNumber.SUCCESS) {
+                        handleChatError(errno);
+                    }
+                    break;
+                }
+            }
+        },
+    );
 
     const sendMessage = () => {
         if (value !== "") {
-            const buf = ByteBuffer.createWithOpcode(
-                ChatServerOpcode.SEND_MESSAGE,
-            );
-            buf.writeUUID(currentChatRoomUUID);
-            buf.writeString(value);
+            let buf: ByteBuffer;
+            if (currentChatRoomIsDirect) {
+                buf = builder.makeSendDirectRequest(
+                    extractTargetFromDirectChatKey(currentChatRoomUUID),
+                    value,
+                );
+            } else {
+                buf = builder.makeSendMessageRequest(
+                    currentChatRoomUUID,
+                    value,
+                );
+            }
 
             sendPayload(buf);
             setValue("");
@@ -53,7 +114,7 @@ function ChatMessageInputArea() {
         event,
     ) => {
         if (event.key === "Enter") {
-            if (event.shiftKey) {
+            if (event.shiftKey || event.nativeEvent.isComposing) {
                 return;
             }
             event.preventDefault();
@@ -101,57 +162,140 @@ const isContinuedMessage = (arr: MessageSchema[], idx: number) => {
     return (
         idx > 0 &&
         arr[idx].accountId === arr[idx - 1].accountId &&
+        arr[idx - 1].messageType === (MessageTypeNumber.REGULAR as number) &&
         isSameMinute(arr[idx].timestamp, arr[idx - 1].timestamp)
     );
 };
 
-export function ChatDialog({
-    outerFrame,
-    innerFrame,
-}: {
-    outerFrame: string;
-    innerFrame: string;
-}) {
+const isLastContinuedMessage = (arr: MessageSchema[], idx: number) => {
+    return (
+        idx === arr.length - 1 ||
+        (idx < arr.length - 1 && !isContinuedMessage(arr, idx + 1))
+    );
+};
+
+export function ChatDialog() {
     const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
-    const chatMessages = useChatRoomMessages(currentChatRoomUUID) ?? [];
+    const [chatMessages, isChatMessagesLoaded] =
+        useChatRoomMessages(currentChatRoomUUID);
     const chatDialogRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const { sendPayload } = useWebSocket("chat", []);
+    const [, setChatRoomList] = useChatRoomListAtom();
+    const [, setDirectRoomList] = useDirectRoomListAtom();
+    const mutateChatRoom = useChatRoomMutation();
+    const [lastChatRoomUUID, setLastChatRoomUUID] = useState("");
+    const [lastMessage, setLastMessage] = useState<MessageSchema>();
+    useEffect(() => {
+        setLastChatRoomUUID(currentChatRoomUUID);
+        if (chatMessages !== undefined && chatMessages.length > 0) {
+            const newLastMessage = chatMessages[chatMessages.length - 1];
+            setLastMessage((lastMessage) =>
+                lastMessage?.id !== newLastMessage.id
+                    ? newLastMessage
+                    : lastMessage,
+            );
+        } else {
+            setLastMessage(undefined);
+        }
+    }, [currentChatRoomUUID, chatMessages]);
+    useEffect(() => {
+        if (lastChatRoomUUID !== "" && isChatMessagesLoaded) {
+            scrollToBottom();
+        }
+    }, [lastChatRoomUUID, isChatMessagesLoaded]);
+    useEffect(() => {
+        if (lastMessage !== undefined && lastChatRoomUUID !== "") {
+            if (chatDialogRef.current === null) {
+                throw new Error();
+            }
+
+            const isAtBottom =
+                chatDialogRef.current.scrollTop +
+                    chatDialogRef.current.clientHeight >=
+                chatDialogRef.current.scrollHeight -
+                    (chatDialogRef.current.lastElementChild
+                        ?.previousElementSibling?.clientHeight ?? 0) -
+                    10; //XXX: 10은 매직넘버입니다.
+            if (lastMessage.accountId === currentAccountUUID || isAtBottom) {
+                scrollToBottom();
+            }
+
+            const lastChatRoomIsDirect = isDirectChatKey(lastChatRoomUUID);
+            let buf: ByteBuffer;
+            if (lastChatRoomIsDirect) {
+                setDirectRoomList((directRoomList) =>
+                    syncDirectCursor(directRoomList, {
+                        chatId: extractTargetFromDirectChatKey(
+                            lastChatRoomUUID,
+                        ),
+                        messageId: lastMessage.id,
+                    }),
+                );
+                buf = builder.makeSyncCursorDirect(
+                    extractTargetFromDirectChatKey(lastChatRoomUUID),
+                    lastMessage.id,
+                );
+            } else {
+                setChatRoomList((chatRoomList) =>
+                    syncCursor(chatRoomList, {
+                        chatId: lastChatRoomUUID,
+                        messageId: lastMessage.id,
+                    }),
+                );
+                buf = builder.makeSyncCursor(lastChatRoomUUID, lastMessage.id);
+            }
+
+            sendPayload(buf);
+            mutateChatRoom(lastChatRoomUUID);
+        }
+    }, [
+        currentAccountUUID,
+        lastChatRoomUUID,
+        lastMessage,
+        mutateChatRoom,
+        sendPayload,
+        setChatRoomList,
+        setDirectRoomList,
+    ]);
+
     const scrollToBottom = () => {
         if (messagesEndRef.current === null) {
             throw new Error();
         }
-        messagesEndRef.current.scrollIntoView({});
+        messagesEndRef.current.scrollIntoView({
+            block: "end",
+            behavior: "smooth",
+        });
     };
 
-    useEffect(() => {
-        if (
-            chatMessages.length > 0 &&
-            chatMessages[chatMessages.length - 1].accountId ===
-                currentAccountUUID
-        ) {
-            scrollToBottom();
-        }
-    }, [chatMessages, currentAccountUUID]);
-
     return currentChatRoomUUID !== "" ? (
-        <div
-            className={`${outerFrame} flex h-full shrink items-start justify-end gap-4 overflow-auto`}
-        >
-            <div
-                className={`${innerFrame} flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4`}
-            >
+        <div className="flex h-full w-full shrink items-start justify-end gap-4 overflow-auto">
+            <div className="flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4 2xl:rounded-lg">
                 <div
                     ref={chatDialogRef}
                     className="flex flex-col gap-1 self-stretch overflow-auto"
                 >
-                    {chatMessages.map((msg, idx, arr) => {
-                        // TODO: key for ChatBubbleWithProfile with chat message UUID
+                    {chatMessages?.map((msg, idx, arr) => {
+                        if (
+                            msg.messageType ===
+                            (MessageTypeNumber.NOTICE as number)
+                        ) {
+                            return (
+                                <NoticeBubble key={msg.id} chatMessage={msg} />
+                            );
+                        }
+
                         return (
                             <ChatBubbleWithProfile
-                                key={idx}
+                                key={msg.id}
                                 chatMessage={msg}
                                 isContinued={isContinuedMessage(arr, idx)}
+                                isLastContinuedMessage={isLastContinuedMessage(
+                                    arr,
+                                    idx,
+                                )}
                                 dir={
                                     msg.accountId === currentAccountUUID
                                         ? "right"
@@ -166,6 +310,12 @@ export function ChatDialog({
             </div>
         </div>
     ) : (
+        <NoChatRoomSelected />
+    );
+}
+
+function NoChatRoomSelected() {
+    return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4">
             <span className="text-4xl text-gray-50/80">
                 선택된 채팅창이 없습니다.

@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export function useStateArray<T>(
     length: number,
     initialValue?: T | undefined,
-): [values: T[], setValueAt: (index: number) => (newValue: T) => void] {
+): [
+    values: T[],
+    setValueAt: (index: number) => (newValue: T) => void,
+    clearValues: () => void,
+] {
     const [values, setValues] = useState<T[]>(() =>
         initialValue === undefined
             ? Array<T>(length)
@@ -14,5 +18,15 @@ export function useStateArray<T>(
         setValues(values.map((x, idx) => (idx === index ? newValue : x)));
     };
 
-    return [values, setValueAt];
+    const clearValues = useCallback(
+        () =>
+            setValues(() =>
+                initialValue === undefined
+                    ? Array<T>(length)
+                    : Array<T>(length).fill(initialValue),
+            ),
+        [initialValue, length],
+    );
+
+    return [values, setValueAt, clearValues];
 }

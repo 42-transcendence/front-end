@@ -1,80 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProfileItemBlocked } from "@components/ProfileItem/ProfileItemBlocked";
+import type { ChatBanDetailEntry } from "@common/chat-payloads";
+import { useWebSocket } from "@akasha-utils/react/websocket-hook";
+import { ChatClientOpcode } from "@common/chat-opcodes";
+import { makeBanListRequest } from "@akasha-utils/chat-payload-builder-client";
+import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
+import { handleBanList } from "@akasha-utils/chat-gateway-client";
+import { isDirectChatKey } from "@akasha-utils/idb/chat-store";
+import type { BanCategoryNumber } from "@common/generated/types";
 
-type BlockedUser = {
-    accountUUID: string;
-    memo: string;
-    expireTimeStamp: Date;
-};
-const CommitBanList: BlockedUser[] = [
-    {
-        accountUUID: "123456",
-        memo: "그냥",
-        expireTimeStamp: new Date(),
-    },
-    {
-        accountUUID: "47789",
-        memo: "그냥2",
-        expireTimeStamp: new Date(),
-    },
-    {
-        accountUUID: "5123",
-        memo: "그냥3",
-        expireTimeStamp: new Date(),
-    },
-];
-
-const AccessBanList: BlockedUser[] = [
-    {
-        accountUUID: "123",
-        memo: "그냥",
-        expireTimeStamp: new Date(),
-    },
-    {
-        accountUUID: "4",
-        memo: "그냥2",
-        expireTimeStamp: new Date(),
-    },
-    {
-        accountUUID: "5",
-        memo: "그냥3",
-        expireTimeStamp: new Date(),
-    },
-];
-
-export function ChatAccessBanList() {
-    //TODO: add selected onClick logic
-    const [selected, setSelected] = useState<number>();
-
-    return (
-        <div className="flex h-fit w-full flex-col gap-2">
-            {AccessBanList.map((user, index) => {
-                return (
-                    <ProfileItemBlocked
-                        key={index}
-                        accountUUID={user.accountUUID}
-                        selected={selected === index}
-                        onClick={() =>
-                            setSelected(selected !== index ? index : undefined)
-                        }
-                    />
-                );
-            })}
-        </div>
+export function ChatBanList({
+    banCategory,
+}: {
+    banCategory: BanCategoryNumber;
+}) {
+    const [banList, setBanList] = useState<ChatBanDetailEntry[]>();
+    const { sendPayload } = useWebSocket(
+        "chat",
+        ChatClientOpcode.BAN_LIST,
+        (_, buffer) => {
+            setBanList(
+                handleBanList(buffer).filter((e) => e.category === banCategory),
+            );
+        },
     );
-}
 
-export function ChatCommitBanList() {
-    //TODO: add selected onClick logic
     const [selected, setSelected] = useState<number>();
+    const currentChatRoomId = useCurrentChatRoomUUID();
+    useEffect(() => {
+        if (!isDirectChatKey(currentChatRoomId)) {
+            sendPayload(makeBanListRequest(currentChatRoomId));
+        }
+    }, [currentChatRoomId, sendPayload]);
 
     return (
         <div className="flex h-fit w-full flex-col gap-2">
-            {CommitBanList.map((user, index) => {
+            {banList?.map((entry, index) => {
                 return (
                     <ProfileItemBlocked
-                        key={index}
-                        accountUUID={user.accountUUID}
+                        key={entry.accountId}
+                        entry={entry}
                         selected={selected === index}
                         onClick={() =>
                             setSelected(selected !== index ? index : undefined)

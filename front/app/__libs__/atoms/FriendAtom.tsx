@@ -1,6 +1,7 @@
 import type { EnemyEntry, FriendEntry } from "@common/chat-payloads";
 import { atom } from "jotai";
 
-export const FriendEntryAtom = atom<FriendEntry[]>([]);
-export const EnemyEntryAtom = atom<EnemyEntry[]>([]);
-export const FriendRequestEntryAtom = atom<string[]>([]);
+export const FriendEntryListAtom = atom<FriendEntry[]>([]);
+export const EnemyEntryListAtom = atom<EnemyEntry[]>([]);
+export const FriendRequestListAtom = atom<string[]>([]);
+export const FriendModalIsOpen = atom(false);

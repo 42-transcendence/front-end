@@ -10,7 +10,7 @@ export function SquareButton({
         <button
             type="button"
             onClick={onClick}
-            className="gradient-border relative flex h-12 w-48 flex-col justify-center rounded bg-black/30 px-4 py-[1px] backdrop-blur-[20px] backdrop-brightness-100 before:absolute before:inset-0 before:rounded before:p-px before:content-[''] hover:bg-controlsSelected"
+            className="gradient-border relative flex h-12 w-48 flex-col justify-center rounded bg-windowGlass/30 px-4 py-[1px] backdrop-blur-[20px] backdrop-brightness-100 before:absolute before:inset-0 before:rounded before:p-px before:content-[''] hover:bg-primary/30 active:bg-secondary/70"
         >
             <div className="flex items-center gap-2 py-2.5">
                 {icon}

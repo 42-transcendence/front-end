@@ -1,11 +1,10 @@
 export function ContextMenuBase({
-    className,
     children,
 }: React.PropsWithChildren<{
     className?: string | undefined;
 }>) {
     return (
-        <div className={`${className} flex flex-col items-center text-white`}>
+        <div className="flex w-full flex-col items-center text-white">
             {children}
         </div>
     );

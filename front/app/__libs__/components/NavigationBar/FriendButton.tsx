@@ -1,16 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { Icon } from "../ImageLibrary";
 import { FriendModal } from "../FriendModal/FriendModal";
-import { useAtomValue } from "jotai";
-import { FriendRequestEntryAtom } from "@atoms/FriendAtom";
+import { useAtom, useAtomValue } from "jotai";
+import { FriendModalIsOpen, FriendRequestListAtom } from "@atoms/FriendAtom";
 import { Dialog } from "@headlessui/react";
 import { NotificationBadge } from "./NotificationBadge";
 
 export function FriendButton() {
-    const accountUUIDs = useAtomValue(FriendRequestEntryAtom);
-    const [isOpen, setIsOpen] = useState(false);
+    const accountUUIDs = useAtomValue(FriendRequestListAtom);
+    const [isOpen, setIsOpen] = useAtom(FriendModalIsOpen);
 
     const iconClassName = [
         "h-12 w-12 rounded-lg p-3 shadow-white",
@@ -39,7 +38,7 @@ export function FriendButton() {
                 className="relative flex h-fit w-fit rounded outline-none focus-visible:outline-primary/70"
             >
                 {MemberIcon}
-                {accountUUIDs.length !== 0 && <NotificationBadge />}
+                <NotificationBadge totalUnreadCount={accountUUIDs.length} />
             </button>
         </>
     );

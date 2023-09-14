@@ -1,4 +1,5 @@
 import { Avatar } from "@components/Avatar";
+import { useProtectedProfile } from "@hooks/useProfile";
 
 export function ProfileItemBase({
     className,
@@ -7,13 +8,11 @@ export function ProfileItemBase({
     className?: string | undefined;
     accountUUID: string;
 }) {
-    //TODO: get name, status from accountUUID
-    const name = "hdoo";
-    const tag = "#1234";
+    const profile = useProtectedProfile(accountUUID);
 
     return (
         <div
-            className={`relative flex h-fit w-full shrink-0 flex-col items-start rounded bg-windowGlass/30 p-1 ${className} `}
+            className={`relative flex h-fit w-full shrink-0 flex-col items-start rounded bg-windowGlass/30 p-2 ${className} `}
         >
             <div className="group relative flex w-full flex-row items-center self-stretch ">
                 <div className="disable-select relative flex items-center gap-2 space-x-4 ">
@@ -25,12 +24,12 @@ export function ProfileItemBase({
                         />
                     </div>
                     <div className="relative flex w-fit flex-row items-center justify-center gap-3">
-                        <p className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
-                            {name}
-                        </p>
-                        <p className="relative w-fit whitespace-nowrap font-sans text-xs font-normal leading-none tracking-normal text-gray-300/60">
-                            {tag}
-                        </p>
+                        <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
+                            {profile?.nickName}
+                        </span>
+                        <span className="relative w-fit whitespace-nowrap font-sans text-xs font-normal leading-none tracking-normal text-gray-300/60">
+                            #{profile?.nickTag}
+                        </span>
                     </div>
                 </div>
             </div>

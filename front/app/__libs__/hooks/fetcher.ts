@@ -6,7 +6,8 @@ import { setLocalStorageItem } from "./storage";
 
 export const ACCESS_TOKEN_KEY = "access_token";
 export const REFRESH_TOKEN_KEY = "refresh_token";
-export const URL_BASE = "https://back.stri.dev";
+export const HOST = "back.stri.dev"; // TODO: 나중에 변수 파일로 빼기
+export const URL_BASE = `https://${HOST}`;
 
 const LAST_REFRESH_TIMESTAMP = "_refresh";
 
@@ -99,7 +100,7 @@ export async function fetchRefreshAuth() {
 // TODO: 나중에 http response constansts 파일로 빼기?
 const HTTP_RESPONSE_UNAUTHORIZED = 401 as const;
 
-async function fetchBase<T>(
+export async function fetchBase<T>(
     url: URL,
     init?: RequestInit | undefined,
 ): Promise<T> {
@@ -154,5 +155,19 @@ export async function fetcherPOST<T>(key: string, body: object): Promise<T> {
             ["Content-Type"]: "application/json",
         },
         body: JSON.stringify(body),
+    });
+}
+
+export async function fetchToggle(
+    key: string,
+    searchParams: URLSearchParams,
+    enable: boolean,
+) {
+    const url = new URL(key, URL_BASE);
+    for (const [key, value] of searchParams) {
+        url.searchParams.set(key, value);
+    }
+    return await fetchBase(url, {
+        method: enable ? "POST" : "DELETE",
     });
 }

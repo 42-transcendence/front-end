@@ -339,22 +339,28 @@ export function writeChatBanDetail(obj: ChatBanDetailEntry, buf: ByteBuffer) {
 }
 
 /// ChatDirectEntry
-export type ChatDirectEntry = Pick<
-    ChatDirectEntity,
-    "sourceAccountId" | "destinationAccountId" | "content" | "timestamp"
->;
+export type ChatDirectEntry = {
+    targetAccountId: ChatDirectEntity["destinationAccountId"];
+    lastMessageId: ChatDirectEntity["id"] | null;
+};
 
 export function readChatDirect(buf: ByteBuffer): ChatDirectEntry {
-    const sourceAccountId = buf.readUUID();
-    const destinationAccountId = buf.readUUID();
-    const content = buf.readString();
-    const timestamp = buf.readDate();
-    return { sourceAccountId, destinationAccountId, content, timestamp };
+    const targetAccountId = buf.readUUID();
+    const lastMessageId = buf.readNullable(buf.readUUID, NULL_UUID);
+    return { targetAccountId, lastMessageId };
 }
 
 export function writeChatDirect(obj: ChatDirectEntry, buf: ByteBuffer) {
-    buf.writeUUID(obj.sourceAccountId);
-    buf.writeUUID(obj.destinationAccountId);
-    buf.writeString(obj.content);
-    buf.writeDate(obj.timestamp);
+    buf.writeUUID(obj.targetAccountId);
+    buf.writeNullable(obj.lastMessageId, buf.writeUUID, NULL_UUID);
+}
+
+/// ReportErrorNumber
+export const enum ReportErrorNumber {
+    SUCCESS,
+    ERROR_NOT_BUSINESS_HOURS,
+    ERROR_UNDER_MAINTENANCE,
+    ERROR_EXCEED_DAILY,
+    ERROR_REFUSED,
+    ERROR_UNKNOWN,
 }
