@@ -37,7 +37,7 @@ import {
 import { ChatErrorNumber } from "@common/chat-payloads";
 import { prettifyBanSummaryEntries } from "./ChatRoomBlock";
 import { handleChatError } from "./handleChatError";
-import { useInView } from "framer-motion";
+import { AnimatePresence, useInView, motion } from "framer-motion";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -287,11 +287,13 @@ export function ChatDialog() {
     return (
         <div className="flex h-full w-full shrink items-start justify-end gap-4 overflow-auto">
             <div className="flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4 2xl:rounded-lg">
-                {!isMessageEndInView && (
-                    <GoToBottomButton
-                        onClick={() => scrollToBottom("smooth")}
-                    />
-                )}
+                <AnimatePresence>
+                    {!isMessageEndInView && (
+                        <GoToBottomButton
+                            onClick={() => scrollToBottom("smooth")}
+                        />
+                    )}
+                </AnimatePresence>
                 <div
                     ref={chatDialogRef}
                     className="flex flex-col gap-1 self-stretch overflow-auto"
@@ -315,15 +317,20 @@ export function ChatDialog() {
 
 function GoToBottomButton({ onClick }: { onClick: () => void }) {
     return (
-        <div className="absolute bottom-20 left-0 z-50 w-full px-20">
+        <motion.div
+            initial={{ y: 24, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute bottom-24 left-0 z-50 w-full px-20"
+        >
             <button
-                className="relative h-8 w-full rounded-[4px_4px_28px_28px] bg-secondary/90"
+                className="relative h-8 w-full rounded-[4px_4px_28px_28px] bg-secondary"
                 type="button"
                 onClick={onClick}
             >
                 밑으로
             </button>
-        </div>
+        </motion.div>
     );
 }
 
