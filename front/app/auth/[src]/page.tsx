@@ -10,5 +10,5 @@ export default function StartBegin({ params }: { params: { src: string } }) {
         redirect(redirectURI);
     }
 
-    return <p>로그인 화면으로 이동 중입니다...</p>;
+    return <p className="loading">로그인 화면으로 이동 중입니다</p>;
 }
