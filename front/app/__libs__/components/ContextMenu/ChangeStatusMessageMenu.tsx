@@ -15,7 +15,7 @@ export function ChangeStatusMessageMenu({
 
     const handleClick = () => {
         const newMessage = prompt(
-            "새 상태메시지를 입력해 주세요.",
+            "새 상태 메시지를 입력해 주세요.",
             currentStatusMessage,
         );
         if (newMessage === null) {
@@ -28,7 +28,7 @@ export function ChangeStatusMessageMenu({
         <div className="relative flex h-fit w-full items-center rounded py-3">
             <div className="relative flex w-full flex-col justify-center px-4 py-1">
                 <div className="flex select-none justify-start">
-                    상태 메세지 변경
+                    상태 메시지 변경
                 </div>
                 <button
                     type="button"
