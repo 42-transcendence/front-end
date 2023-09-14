@@ -26,7 +26,7 @@ import {
     handleMatchmakeFailed,
 } from "@common/game-gateway-helper-client";
 import { useAtom, useSetAtom } from "jotai";
-import { InvitationAtom, MatchMakingAtom } from "@atoms/GameAtom";
+import { InvitationAtom, IsMatchMakingAtom } from "@atoms/GameAtom";
 
 export function CreateGameButton() {
     const [open, setOpen] = useState(false);
@@ -219,7 +219,7 @@ function CreateGamePendding({
 }
 
 export function QuickMatchButton() {
-    const [isMatchMaking, setMatchMaking] = useAtom(MatchMakingAtom);
+    const [isMatchMaking, setMatchMaking] = useAtom(IsMatchMakingAtom);
 
     return (
         <RoundButtonBase
