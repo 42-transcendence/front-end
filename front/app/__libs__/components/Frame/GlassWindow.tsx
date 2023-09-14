@@ -7,7 +7,7 @@ export function GlassWindow({
 }) {
     return (
         <div
-            className={`gradient-border ${className} flex w-fit flex-col items-start rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[20px] backdrop-brightness-100 before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']`}
+            className={`gradient-border ${className} flex w-fit flex-col items-start rounded-[28px] bg-windowGlass/30 p-px before:pointer-events-none before:absolute before:inset-0 before:rounded-[28px] before:p-px before:content-['']`}
         >
             {children}
         </div>
