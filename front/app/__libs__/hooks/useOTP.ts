@@ -1,8 +1,8 @@
 import { useSWR, useSWRMutation } from "./useSWR";
 import { useCallback } from "react";
 import { HTTPError, fetchPromotionAuth, fetchToggle, fetcher } from "./fetcher";
-import { HTTP_RESPONSE_CONFLICT } from "./useRegisterNickName";
 import type { OTPSecret } from "@common/auth-payloads";
+import { HTTPResponseCode } from "@utils/constants";
 
 export function usePromotionOTP() {
     const callback = useCallback(
@@ -19,7 +19,7 @@ export function useGetOTP() {
 
     const conflict =
         result.error instanceof HTTPError &&
-        result.error.status === HTTP_RESPONSE_CONFLICT;
+        result.error.status === HTTPResponseCode.CONFLICT;
     return { data: result.data, conflict };
 }
 
