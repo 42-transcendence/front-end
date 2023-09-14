@@ -85,9 +85,24 @@ export function isAuthPayload(value: unknown): value is AuthPayload {
     ) {
         value satisfies AuthPayloadBase;
         switch (value.auth_level) {
+            case AuthLevel.NONE:
+                value satisfies NoneAuthPayload;
+                return true;
+
             case AuthLevel.TEMPORARY:
                 if (hasProperty("string", value, "state")) {
                     value satisfies TemporaryAuthPayload;
+                    return true;
+                }
+                break;
+
+            case AuthLevel.BLOCKED:
+                if (
+                    hasProperty("string", value, "user_id") &&
+                    hasProperty("object", value, "bans")
+                ) {
+                    //FIXME: narrow bans
+                    // value satisfies BlockedAuthPayload;
                     return true;
                 }
                 break;
