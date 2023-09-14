@@ -1,19 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RoundButtonBase } from "@components/Button/RoundButton";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { ButtonOnRight } from "@components/Button/ButtonOnRight";
-import {
-    useWebSocket,
-    useWebSocketConnector,
-} from "@akasha-utils/react/websocket-hook";
+import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { makeMatchmakeHandshakeCreate } from "@common/game-payload-builder-client";
 import type { MatchmakeFailedReason } from "@common/game-payloads";
 import { BattleField, GameMode } from "@common/game-payloads";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { Dialog } from "@headlessui/react";
-import { ACCESS_TOKEN_KEY, HOST } from "@utils/constants";
 import {
     handleInvitationPayload,
     handleMatchmakeFailed,
@@ -22,6 +18,7 @@ import { useAtom } from "jotai";
 import { InvitationAtom, IsMatchMakingAtom } from "@atoms/GameAtom";
 import { useRouter } from "next/navigation";
 import { DoubleSharp } from "@components/ImageLibrary";
+import { useGameWebSocketConnector } from "@hooks/useGameWebSocketConnector";
 
 type GameInfoType = {
     battleField: BattleField;
@@ -170,33 +167,21 @@ function CreateGamePendding({
     infos: GameInfoType;
     closeModal: () => void;
 }) {
-    const [invitationAtom, setInvitationAtom] = useAtom(InvitationAtom);
     const router = useRouter();
+    const [invitationAtom, setInvitationAtom] = useAtom(InvitationAtom);
+    const [isFail, setIsFail] = useState<MatchmakeFailedReason>();
 
-    const getURL = useCallback(() => {
-        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-        if (accessToken === null) {
-            return "";
-        }
-        return `wss://${HOST}/game?token=${accessToken}`;
-    }, []);
-
-    const buf = useMemo(
-        () =>
-            makeMatchmakeHandshakeCreate(
-                infos.battleField,
-                infos.gameMode,
-                infos.limit,
-                infos.fair,
-            ),
-        [infos.battleField, infos.fair, infos.gameMode, infos.limit],
-    );
-
-    const props = useMemo(
-        () => ({
-            handshake: () => buf.toArray(),
-        }),
-        [buf],
+    useGameWebSocketConnector(
+        useMemo(
+            () =>
+                makeMatchmakeHandshakeCreate(
+                    infos.battleField,
+                    infos.gameMode,
+                    infos.limit,
+                    infos.fair,
+                ),
+            [infos],
+        ),
     );
 
     useEffect(() => {
@@ -204,10 +189,6 @@ function CreateGamePendding({
             router.push("/game");
         }
     }, [invitationAtom, router]);
-
-    useWebSocketConnector("game", getURL, props);
-
-    const [isFail, setIsFail] = useState<MatchmakeFailedReason>();
 
     useWebSocket(
         "game",

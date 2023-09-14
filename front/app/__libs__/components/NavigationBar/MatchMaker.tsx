@@ -1,12 +1,9 @@
 "use client";
 
-import {
-    useWebSocket,
-    useWebSocketConnector,
-} from "@akasha-utils/react/websocket-hook";
+import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { useTimer } from "@hooks/useTimer";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { makeMatchmakeHandshakeQueue } from "@common/game-payload-builder-client";
 import {
     handleEnqueueAlert,
@@ -16,8 +13,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useAtomValue, useSetAtom } from "jotai";
 import { InvitationAtom, IsMatchMakingAtom } from "@atoms/GameAtom";
-import { ACCESS_TOKEN_KEY, HOST } from "@utils/constants";
 import { BattleField, GameMode } from "@common/game-payloads";
+import { useGameWebSocketConnector } from "@hooks/useGameWebSocketConnector";
 
 export function MatchMakerWrapper() {
     const isMatchMaking = useAtomValue(IsMatchMakingAtom);
@@ -27,27 +24,13 @@ export function MatchMakerWrapper() {
 
 function MatchMakerPanel() {
     const router = useRouter();
-    const props = useMemo(
-        () => ({
-            handshake: () => makeMatchmakeHandshakeQueue().toArray(),
-        }),
-        [],
-    );
-
-    const getURL = useCallback(() => {
-        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-        if (accessToken === null) {
-            return "";
-        }
-        return `wss://${HOST}/game?token=${accessToken}`;
-    }, []);
     const setInvitation = useSetAtom(InvitationAtom);
     const setMatchMaking = useSetAtom(IsMatchMakingAtom);
     const [battleField, setBattleField] = useState<BattleField>();
     const [gameMode, setGameMode] = useState<GameMode>();
     const [limit, setLimit] = useState(0);
 
-    useWebSocketConnector("game", getURL, props);
+    useGameWebSocketConnector(useMemo(() => makeMatchmakeHandshakeQueue(), []));
 
     useWebSocket(
         "game",
