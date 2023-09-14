@@ -1,3 +1,5 @@
+"use client";
+
 import { HTTPError, URL_BASE, fetchBase, fetcher } from "./fetcher";
 import { useSWR, useSWRMutation } from "./useSWR";
 import type {
