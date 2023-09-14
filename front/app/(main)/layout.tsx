@@ -8,7 +8,7 @@ import { usePrivateProfile } from "@hooks/useProfile";
 import { useEffect, useState } from "react";
 import { DoubleSharp } from "@components/ImageLibrary";
 import { useToken } from "@hooks/useToken";
-import { logoutAction } from "@components/ContextMenu/logoutAction";
+import { logout } from "@utils/action";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -81,7 +81,7 @@ export default function MainLayout({
                         </>
                     ))}
                 </div>
-                <button type="button" onClick={() => logoutAction()}>
+                <button type="button" onClick={() => logout()}>
                     로그아웃
                 </button>
             </DefaultLayout>

@@ -32,7 +32,6 @@ export type ProfileMenu = {
     minRoleLevel?: number | undefined;
     scope: Scope[];
     className: string;
-    UI?: React.ReactNode | undefined;
 };
 
 export function useContextMenus(

@@ -1,17 +1,15 @@
 "use client";
 
 import type { OTPSecret } from "@common/auth-payloads";
+import { OTP_AUTH_ISSUER } from "@utils/constants";
 import QRCode from "qrcode";
 import { useEffect, useRef } from "react";
 
-// TODO: 환경변수로 빼기
-const issuer = "doublesharp";
-const subject = "foobar@helloworld.com";
-const baseURI = "otpauth://totp";
+const BASE_URI = "otpauth://totp";
 
 export function QRCodeCanvas({ authInfo }: { authInfo: OTPSecret }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const label = `${issuer}:${subject}`;
+    const label = `${OTP_AUTH_ISSUER}`;
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -21,7 +19,7 @@ export function QRCodeCanvas({ authInfo }: { authInfo: OTPSecret }) {
 
         const params = new URLSearchParams();
         params.set("secret", authInfo.data);
-        params.set("issuer", issuer);
+        params.set("issuer", OTP_AUTH_ISSUER);
         params.set("algorithm", authInfo.algorithm.replace("-", ""));
         params.set("digits", authInfo.codeDigits.toString());
         params.set("period", authInfo.movingPeriod.toString());
@@ -32,7 +30,7 @@ export function QRCodeCanvas({ authInfo }: { authInfo: OTPSecret }) {
             }
         };
 
-        const uri = `${baseURI}/${label}?${params.toString()}`;
+        const uri = `${BASE_URI}/${label}?${params.toString()}`;
 
         QRCode.toCanvas(canvas, uri, errorCallback);
     }, [authInfo, label]);

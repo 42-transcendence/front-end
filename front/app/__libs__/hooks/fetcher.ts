@@ -3,11 +3,14 @@
 import type { TokenSet } from "@common/auth-payloads";
 import type { ReadonlyURLSearchParams } from "next/navigation";
 import { setLocalStorageItem } from "./storage";
+import {
+    ACCESS_TOKEN_KEY,
+    HOST,
+    HTTPResponseCode,
+    REFRESH_TOKEN_KEY,
+} from "@utils/constants";
 
-export const ACCESS_TOKEN_KEY = "access_token";
-export const REFRESH_TOKEN_KEY = "refresh_token";
-export const HOST = "back.stri.dev"; // TODO: 나중에 변수 파일로 빼기
-export const URL_BASE = `https://${HOST}`;
+const URL_BASE = `https://${HOST}`;
 
 const LAST_REFRESH_TIMESTAMP = "_refresh";
 
@@ -77,8 +80,7 @@ export async function fetchRefreshAuth() {
         const refresh = window.localStorage.getItem(LAST_REFRESH_TIMESTAMP);
         if (refresh !== null) {
             if (Date.now() - Number(refresh) < 4000) {
-                // refresh 시도 이후 4초 이내
-                //FIXME: delay or event
+                // NOTE: refresh 시도 이후 4초 이내
                 return true;
             }
         }
@@ -97,16 +99,13 @@ export async function fetchRefreshAuth() {
     }
 }
 
-// TODO: 나중에 http response constansts 파일로 빼기?
-const HTTP_RESPONSE_UNAUTHORIZED = 401 as const;
-
 export async function fetchBase<T>(
     url: URL,
     init?: RequestInit | undefined,
 ): Promise<T> {
     let retry = 3;
     do {
-        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY); // TODO: 이것도 getItem 을 매번 해봐야하나요
+        const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
         if (accessToken === null) {
             throw new Error("Access Token이 없습니다.");
         }
@@ -119,7 +118,7 @@ export async function fetchBase<T>(
             },
         });
         if (!response.ok) {
-            if (response.status === HTTP_RESPONSE_UNAUTHORIZED) {
+            if (response.status === HTTPResponseCode.UNAUTHORIZED) {
                 if (!(await fetchRefreshAuth())) {
                     throw new Error("Token Refresh를 하지 못했습니다.");
                 }
@@ -151,10 +150,14 @@ export async function fetcherPOST<T>(key: string, body: object): Promise<T> {
     const url = new URL(key, URL_BASE);
     return fetchBase(url, {
         method: "POST",
-        headers: {
-            ["Content-Type"]: "application/json",
-        },
-        body: JSON.stringify(body),
+        ...(body instanceof FormData
+            ? { body }
+            : {
+                  headers: {
+                      ["Content-Type"]: "application/json",
+                  },
+                  body: JSON.stringify(body),
+              }),
     });
 }
 

@@ -1,7 +1,7 @@
 import { AccessTokenAtom, RefreshTokenAtom } from "@atoms/AccountAtom";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@utils/constants";
 import { useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "./fetcher";
 
 export function useToken() {
     const setAccessToken = useSetAtom(AccessTokenAtom);

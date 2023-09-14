@@ -10,7 +10,6 @@ export function usePromotionOTP() {
             fetchPromotionAuth(arg),
         [],
     );
-    // TODO: error 어떻게? throwOnError ? exception?
     const { trigger } = useSWRMutation("/auth/promotion", callback);
     return trigger;
 }

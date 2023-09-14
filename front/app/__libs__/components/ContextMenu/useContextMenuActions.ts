@@ -22,9 +22,9 @@ import {
     useChatMember,
     useSetChatRightSideBarCurrrentPageAtom,
 } from "@hooks/useChatRoom";
+import { logout } from "@utils/action";
 import { useSetAtom } from "jotai";
 import { useMemo } from "react";
-import { logoutAction } from "./logoutAction";
 
 export function useContextMenuActions(
     targetAccountUUID: string,
@@ -32,7 +32,6 @@ export function useContextMenuActions(
     currentChatRoomUUID: string,
     profile: AccountProfilePublicPayload | undefined,
 ) {
-    // TODO: profile undefined 면 뭘 어떻게 해야??
     const { sendPayload } = useWebSocket("chat", []);
     const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
     const targetUser = useChatMember(currentChatRoomUUID, targetAccountUUID);
@@ -42,8 +41,6 @@ export function useContextMenuActions(
         store: GlobalStore,
     });
 
-    // TODO: 이거 fallback 처리를 여기서 하는게 맞는가,
-    // 아니면 각각 action 함수 내부마다 따로 하나씩 해주는게 맞는가
     const nickName = profile?.nickName ?? "fallback";
     const nickTag = profile?.nickTag ?? 0;
     const setChatModalIsOpen = useSetAtom(ChatModalOpenAtom, {
@@ -62,7 +59,6 @@ export function useContextMenuActions(
     const actions = useMemo(
         () => ({
             ["copytag"]: () => {
-                // TODO: 복사되었다고 텍스트 바꾸기? setTimeout?
                 navigator.clipboard
                     .writeText(`${nickName}#${nickTag}`)
                     .then(() => {})
@@ -77,7 +73,7 @@ export function useContextMenuActions(
                 sendPayload(buf);
             },
             ["logout"]: () => {
-                logoutAction();
+                logout();
             },
             ["gotoprofile"]: () => {
                 window.open(`/profile/${nickName}/${nickTag}`);

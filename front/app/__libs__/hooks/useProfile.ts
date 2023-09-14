@@ -1,4 +1,4 @@
-import { HTTPError, URL_BASE, fetchBase, fetcher } from "./fetcher";
+import { HTTPError, fetcher, fetcherPOST } from "./fetcher";
 import { useSWR, useSWRMutation } from "./useSWR";
 import type {
     AccountProfilePrivatePayload,
@@ -132,7 +132,6 @@ export function usePrivateProfile() {
 
 export function useProfileMutation() {
     const currentAccountUUID = useCurrentAccountUUID();
-    // TODO: mutate throwOnError?
     const { mutate } = useSWRConfig();
 
     return useCallback(
@@ -177,11 +176,7 @@ export function useAvatarMutation() {
     const mutateProfile = useProfileMutation();
     const callback = useCallback(
         async (key: string, { arg }: { arg: FormData }) => {
-            const url = new URL(key, URL_BASE);
-            await fetchBase(url, {
-                method: "POST",
-                body: arg,
-            });
+            await fetcherPOST(key, arg);
             mutateProfile(accountUUID);
         },
         [accountUUID, mutateProfile],

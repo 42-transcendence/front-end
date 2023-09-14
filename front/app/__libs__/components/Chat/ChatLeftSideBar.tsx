@@ -30,7 +30,7 @@ import { makePublicRoomListRequest } from "@akasha-utils/chat-payload-builder-cl
 import { AnimatePresence, motion } from "framer-motion";
 import { usePublicProfiles } from "@hooks/useProfile";
 import { SelectedAccountUUIDsAtom } from "@atoms/AccountAtom";
-import type { AccountProfilePublicPayload } from "@common/profile-payloads";
+import { compareDirectRoomItem, compareRoomItem } from "@utils/comparer";
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
@@ -335,21 +335,4 @@ function ListQuaryTextField({
             />
         </div>
     );
-}
-
-function compareRoomItem<T extends Record<"title", string>>(e1: T, e2: T) {
-    return e1.title > e2.title ? 1 : -1;
-}
-
-function compareDirectRoomItem(
-    e1: ChatDirectEntry & {
-        _profile?: AccountProfilePublicPayload | undefined;
-    },
-    e2: ChatDirectEntry & {
-        _profile?: AccountProfilePublicPayload | undefined;
-    },
-) {
-    return (e1._profile?.nickName ?? "") > (e2._profile?.nickName ?? "")
-        ? 1
-        : -1;
 }

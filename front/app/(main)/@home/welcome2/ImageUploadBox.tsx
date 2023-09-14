@@ -17,7 +17,7 @@ export function ImageUploadBox({
     setImage: (target: HTMLImageElement) => void;
 }) {
     const [imageInfo, setImageInfo] = useState<ImageInfoType>({
-        src: "/jisookim.png", // TODO: placeholder image
+        src: "/game/ghost-1.svg",
         alt: "uploaded file",
         name: "uploaded file",
     });

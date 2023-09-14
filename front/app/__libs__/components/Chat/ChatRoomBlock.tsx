@@ -196,7 +196,6 @@ export function ChatPublicRoomBlock({
         (_, payload) => {
             const [errno, chatId, bans] = handleEnterRoomResult(payload);
             if (chatId === chatRoom.id) {
-                //FIXME: 정상 , 차단 두 경우 테스트해보기
                 if (errno !== ChatErrorNumber.SUCCESS) {
                     if (bans !== undefined) {
                         alert(
