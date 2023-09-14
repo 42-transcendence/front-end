@@ -3,8 +3,6 @@ import { Avatar } from "@components/Avatar";
 import type { Relationship } from "@components/ContextMenu";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { useProtectedProfile } from "@hooks/useProfile";
-import Link from "next/link";
-import { DoubleSharp } from "../ImageLibrary";
 import { useSetAtom } from "jotai";
 import { Icon } from "@components/ImageLibrary";
 
@@ -25,9 +23,6 @@ export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     return (
         <div className="h-20 w-full shrink-0 bg-windowGlass/30 p-4 lg:h-full lg:w-28">
             <div className="flex w-full flex-row items-center justify-between gap-4 lg:flex-col">
-                <Link href="/">
-                    <DoubleSharp className="h-8 w-8 shadow-white hover:drop-shadow-[0_0_0.3rem_#ffffff70] " />
-                </Link>
                 <div className="flex h-full w-full flex-row justify-start gap-4 lg:flex-col">
                     <Avatar
                         accountUUID={accountUUID}
