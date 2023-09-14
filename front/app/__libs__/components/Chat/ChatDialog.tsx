@@ -3,10 +3,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Game, Icon } from "@components/ImageLibrary";
 import { ChatBubbleWithProfile, NoticeBubble } from "./ChatBubble";
+import type { MessageSchema } from "@akasha-utils/idb/chat-store";
 import {
     extractTargetFromDirectChatKey,
     isDirectChatKey,
-    type MessageSchema,
 } from "@akasha-utils/idb/chat-store";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import type { ByteBuffer } from "@akasha-lib";
@@ -77,11 +77,18 @@ function ChatMessageInputArea() {
 
     const sendMessage = () => {
         if (value !== "") {
-            const buf = ByteBuffer.createWithOpcode(
-                ChatServerOpcode.SEND_MESSAGE,
-            );
-            buf.writeUUID(currentChatRoomUUID);
-            buf.writeString(value);
+            let buf: ByteBuffer;
+            if (currentChatRoomIsDirect) {
+                buf = builder.makeSendDirectRequest(
+                    extractTargetFromDirectChatKey(currentChatRoomUUID),
+                    value,
+                );
+            } else {
+                buf = builder.makeSendMessageRequest(
+                    currentChatRoomUUID,
+                    value,
+                );
+            }
 
             sendPayload(buf);
             setValue("");

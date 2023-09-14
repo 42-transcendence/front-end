@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ByteBuffer, NULL_UUID } from "@akasha-lib";
+import { ByteBuffer } from "@akasha-lib";
 import type { ChatRoomChatMessagePairEntry } from "@common/chat-payloads";
 import {
     writeChatRoomChatMessagePair,
@@ -287,13 +287,24 @@ export function makeDestroyRoomRequest(chatId: string) {
     return buf;
 }
 
-export function makeLoadDirectsRequest(
+// export function makeLoadDirectsRequest(
+//     targetAccountId: string,
+//     fetchedMessageId: string | null,
+// ) {
+//     const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.LOAD_DIRECTS);
+//     buf.writeUUID(targetAccountId);
+//     buf.writeNullable(fetchedMessageId, buf.writeUUID, NULL_UUID);
+//     return buf;
+// }
+
+export function makeSyncCursorDirect(
     targetAccountId: string,
-    fetchedMessageId: string | null,
+    messageId: string,
 ) {
-    const buf = ByteBuffer.createWithOpcode(ChatServerOpcode.LOAD_DIRECTS);
-    buf.writeUUID(targetAccountId);
-    buf.writeNullable(fetchedMessageId, buf.writeUUID, NULL_UUID);
+    const buf = ByteBuffer.createWithOpcode(
+        ChatServerOpcode.SYNC_CURSOR_DIRECT,
+    );
+    writeChatRoomChatMessagePair({ chatId: targetAccountId, messageId }, buf);
     return buf;
 }
 
