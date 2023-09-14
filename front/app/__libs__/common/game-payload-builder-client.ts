@@ -1,12 +1,44 @@
-//TODO: 작성
+import { GameServerOpcode } from "@common/game-opcodes";
+import type { BattleField, GameMode } from "@common/game-payloads";
+import { GameMatchmakeType } from "@common/game-payloads";
+import { ByteBuffer } from "@akasha-lib";
 
-import type { GameRoomParams } from "./game-payloads";
-import { BattleField, GameMode } from "./game-payloads";
+export function makeMatchmakeHandshakeQueue() {
+    const buf = ByteBuffer.createWithOpcode(
+        GameServerOpcode.HANDSHAKE_MATCHMAKE,
+    );
+    buf.write1(GameMatchmakeType.QUEUE);
+    return buf;
+}
 
-export const params: GameRoomParams = {
-    battleField: BattleField.SQUARE,
-    gameMode: GameMode.UNIFORM,
-    limit: 2,
-    fair: true,
-    ladder: true,
-  };
+export function makeMatchmakeHandshakeCreate(
+    battleField: BattleField,
+    gameMode: GameMode,
+    limit: number,
+    fair: boolean,
+) {
+    const buf = ByteBuffer.createWithOpcode(
+        GameServerOpcode.HANDSHAKE_MATCHMAKE,
+    );
+    buf.write1(GameMatchmakeType.CREATE);
+    buf.write4Unsigned(battleField);
+    buf.write1(gameMode);
+    buf.write2Unsigned(limit);
+    buf.writeBoolean(fair);
+    return buf;
+}
+
+export function makeMatchmakeHandshakeEnter(entryCode: string) {
+    const buf = ByteBuffer.createWithOpcode(
+        GameServerOpcode.HANDSHAKE_MATCHMAKE,
+    );
+    buf.write1(GameMatchmakeType.ENTER);
+    buf.writeString(entryCode);
+    return buf;
+}
+
+export function makeGameHandshake(invitation: string) {
+    const buf = ByteBuffer.createWithOpcode(GameServerOpcode.HANDSHAKE_GAME);
+    buf.writeString(invitation);
+    return buf;
+}
