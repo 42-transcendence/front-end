@@ -321,14 +321,15 @@ function GoToBottomButton({ onClick }: { onClick: () => void }) {
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute bottom-24 left-0 z-50 w-full px-20"
+            transition={{ delay: 1 }}
+            className="absolute bottom-24 right-0 flex w-full justify-end px-20"
         >
             <button
-                className="relative h-8 w-full rounded-[4px_4px_28px_28px] bg-secondary"
+                className="relative flex h-8 min-w-[2rem] items-center justify-center rounded-[4px_4px_32px_32px] bg-secondary"
                 type="button"
                 onClick={onClick}
             >
-                밑으로
+                <Icon.Arrow1 className="rotate-90" />
             </button>
         </motion.div>
     );
