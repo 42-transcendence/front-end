@@ -3,7 +3,7 @@
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { useTimer } from "@hooks/useTimer";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { makeMatchmakeHandshakeQueue } from "@common/game-payload-builder-client";
 import {
     handleEnqueuedAlert,
@@ -50,7 +50,11 @@ function MatchMakerPanel() {
         },
     );
 
-    const cancelMatchMaking = () => setMatchMaking(false);
+    useEffect(() => {
+        setMatchMaking(true);
+
+        return () => setMatchMaking(false);
+    }, [setMatchMaking]);
 
     const [isOpen, setIsOpen] = useState(false);
     const timer = useTimer();
@@ -97,7 +101,7 @@ function MatchMakerPanel() {
             <button
                 type="button"
                 className="right-3 bg-red-500/30 text-sm hover:bg-red-400/30 active:bg-red-300/30"
-                onClick={cancelMatchMaking}
+                onClick={() => setMatchMaking(false)}
             >
                 검색 취소
             </button>
