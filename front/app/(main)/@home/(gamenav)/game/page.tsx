@@ -73,5 +73,9 @@ export default function GamePage() {
         },
     );
 
-    return <GameLobby />;
+    return (
+        <div>
+            <GameLobby />
+        </div>
+    );
 }
