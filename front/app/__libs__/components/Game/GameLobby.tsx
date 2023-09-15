@@ -55,7 +55,7 @@ export function GameLobby() {
         }
     }, [gameRoomProps, setRoomCode]);
 
-    if (gameRoomProps === null) {
+    if (gameRoomProps === null || gameRoomParams === null) {
         return null;
     }
 
@@ -72,25 +72,25 @@ export function GameLobby() {
                 </span>
                 <div className="flex w-fit shrink-0 items-center justify-center overflow-clip rounded-xl bg-windowGlass/30">
                     <span className="w-fit shrink-0 px-3 py-2.5 text-xl font-bold">
-                        {gameRoomParams?.limit === 2 ? "1:1" : "2:2"}
+                        {gameRoomParams.limit === 2 ? "1:1" : "2:2"}
                     </span>
                     <span className="w-fit shrink-0 px-3 py-2.5 text-xl font-bold">
-                        {gameRoomParams?.battleField === BattleField.ROUND
+                        {gameRoomParams.battleField === BattleField.ROUND
                             ? "동글동글"
-                            : gameRoomParams?.battleField === BattleField.SQUARE
+                            : gameRoomParams.battleField === BattleField.SQUARE
                             ? "네모네모"
                             : "두근두근"}
                     </span>
                     <span
                         className={`flex h-full w-fit shrink-0 items-center  ${
-                            gameRoomParams?.gameMode === GameMode.UNIFORM
+                            gameRoomParams.gameMode === GameMode.UNIFORM
                                 ? "bg-secondary/70"
                                 : "bg-primary/70"
                         } px-3 py-2.5 text-xl font-bold `}
                     >
-                        {gameRoomParams?.gameMode === GameMode.UNIFORM
+                        {gameRoomParams.gameMode === GameMode.UNIFORM
                             ? "기본"
-                            : gameRoomParams?.gameMode === GameMode.GRAVITY
+                            : gameRoomParams.gameMode === GameMode.GRAVITY
                             ? "중력"
                             : "두근"}
                     </span>
