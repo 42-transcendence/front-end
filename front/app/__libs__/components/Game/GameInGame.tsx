@@ -6,7 +6,7 @@ import {
     GameRoomParamsAtom,
     // GameRoomPropsAtom,
 } from "@atoms/GameAtom";
-import { handleResyncAll } from "@common/game-gateway-helper-client";
+import { handleUpdateGame } from "@common/game-gateway-helper-client";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { Game } from "@gameEngine/game";
 import { useAtomValue } from "jotai";
@@ -31,46 +31,30 @@ export function GameInGame() {
         [
             GameClientOpcode.RESYNC_ALL,
             GameClientOpcode.RESYNC_PART,
-            GameClientOpcode.RESYNC_PARTOF,
+            GameClientOpcode.UPDATE_GAME,
         ],
         (opcode, buf) => {
             switch (opcode) {
                 case GameClientOpcode.RESYNC_ALL: {
+                    if (game !== null) {
+                        game.resyncAllOpcodeHandler(buf);
+                    }
                     break;
                 }
                 case GameClientOpcode.RESYNC_PART: {
+                    if (game !== null) {
+                        game.resyncPartOpcodeHandler(buf);
+                    }
+                    break;
+                }
+                case GameClientOpcode.GAME_RESULT: {
+                    // const gameResult = handleGameResult(buffer);
+                    // console.log("result", gameResult);
                     break;
                 }
             }
         },
     );
-
-    const foo = () => {
-        const frames = handleResyncAll(buf);
-        const size = frames.length;
-        const lastSyncFrameId = frames[frames.length - 1].id;
-        const diff = this.frames.length - lastSyncFrameId;
-        if (diff > 1) {
-            for (let i = 1; i < diff; i++) {
-                this.ignoreFrameIds.add(lastSyncFrameId + i);
-            }
-            this.frames.splice(lastSyncFrameId + 1, diff - 1);
-        } // 전부 리싱크하는 경우 그 이후의 프레임은 무시하고 삭제하도록 설정
-        for (let i = 0; i < size; i++) {
-            if (this.ignoreFrameIds.has(frames[i].id)) {
-                this.ignoreFrameIds.delete(frames[i].id);
-                continue;
-            }
-            if (this.team === TEAM2) {
-                this.reverseFrame(frames[i]);
-            }
-            this.pasteFrame(frames[i]);
-            this.frameQueue.push({
-                resyncType: GameClientOpcode.RESYNC_ALL,
-                frame: frames[i],
-            });
-        }
-    };
 
     useEffect(() => {
         if (

@@ -9,6 +9,10 @@ import type { Vector } from "matter-js";
 import Matter from "matter-js";
 import { ByteBuffer } from "../akasha-lib/library/byte-buffer";
 import { BattleField } from "@common/game-payloads";
+import {
+    handleResyncAll,
+    handleResyncPart,
+} from "@common/game-gateway-helper-client";
 
 const PADDLE_IMAGE_SRCS = ["/game-chip-1_dummy.png", "/game-chip-4_dummy.png"];
 const BALL_TEXTURE = "/ball.png";
@@ -697,6 +701,60 @@ export class Game {
                 },
             );
             Matter.Composite.add(this.world, attractive);
+        }
+    }
+
+    resyncAllOpcodeHandler(buf: ByteBuffer) {
+        const frames = handleResyncAll(buf);
+        const size = frames.length;
+        const lastSyncFrameId = frames[frames.length - 1].id;
+        const diff = this.frames.length - lastSyncFrameId;
+        if (diff > 1) {
+            for (let i = 1; i < diff; i++) {
+                this.ignoreFrameIds.add(lastSyncFrameId + i);
+            }
+            this.frames.splice(lastSyncFrameId + 1, diff - 1);
+        } // 전부 리싱크하는 경우 그 이후의 프레임은 무시하고 삭제하도록 설정
+        for (let i = 0; i < size; i++) {
+            if (this.ignoreFrameIds.has(frames[i].id)) {
+                this.ignoreFrameIds.delete(frames[i].id);
+                continue;
+            }
+            if (this.team === TEAM2) {
+                this.reverseFrame(frames[i]);
+            }
+            this.pasteFrame(frames[i]);
+            this.frameQueue.push({
+                resyncType: GameClientOpcode.RESYNC_ALL,
+                frame: frames[i],
+            });
+        }
+    }
+
+    resyncPartOpcodeHandler(buf: ByteBuffer) {
+        const frames = handleResyncPart(buf);
+        const size = frames.length;
+        for (let i = 0; i < size; i++) {
+            if (this.ignoreFrameIds.has(frames[i].id)) {
+                this.ignoreFrameIds.delete(frames[i].id);
+                if (this.team === TEAM2) {
+                    this.reverseFrame(frames[i]);
+                }
+                this.frameQueue.push({
+                    resyncType: GameClientOpcode.RESYNC_PARTOF,
+                    frame: frames[i],
+                });
+            } // 무시하는 프레임에 등록된 경우 상대 패들만 싱크하고 나머지는 무시
+            else {
+                if (this.team === TEAM2) {
+                    this.reverseFrame(frames[i]);
+                }
+                this.pasteFrame(frames[i]);
+                this.frameQueue.push({
+                    resyncType: GameClientOpcode.RESYNC_PART,
+                    frame: frames[i],
+                });
+            }
         }
     }
 
