@@ -43,6 +43,9 @@ import _IconMembersFilled from "/public/icon/members-filled.svg";
 import _IconMembersOutLined from "/public/icon/members-outlined.svg";
 import _IconPerson from "/public/icon/person.svg";
 import _IconPlus from "/public/icon/plus.svg";
+import _IconRefreshRegular from "/public/icon/refresh-regular.svg";
+import _IconRefreshUltraLight from "/public/icon/refresh-ultra-light.svg";
+import _IconRefreshBlack from "/public/icon/refresh-black.svg";
 import _IconSearch from "/public/icon/search.svg";
 import _IconSend from "/public/icon/send.svg";
 import _IconSetting from "/public/icon/setting.svg";
@@ -80,6 +83,9 @@ export const Icon = {
     Arrow2: _IconArrow2,
     Arrow3: _IconArrow3,
     Copy: _IconCopy,
+    RefreshRegular: _IconRefreshRegular,
+    RefreshUltraLight: _IconRefreshUltraLight,
+    RefreshBlack: _IconRefreshBlack,
     ChatAlternative: _IconChatAlternative,
     ChatFilled: _IconChatFilled,
     ChatOutlined: _IconChatOutlined,
