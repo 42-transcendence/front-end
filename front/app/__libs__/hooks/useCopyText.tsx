@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 
+// TODO: debouncing.
 export function useCopyText(
     options: {
         initial?: string | undefined;
