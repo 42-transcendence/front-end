@@ -3,7 +3,7 @@
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { useTimer } from "@hooks/useTimer";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { makeMatchmakeHandshakeQueue } from "@common/game-payload-builder-client";
 import {
     handleEnqueuedAlert,
