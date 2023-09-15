@@ -3,6 +3,7 @@ import type {
     BattleField,
     GameMemberParams,
     GameMode,
+    GameProgress,
     GameRoomEnterResult,
     GameRoomParams,
     GameRoomProps,
@@ -12,6 +13,7 @@ import {
     readGameRoomProps,
     readGameRoomParams,
     readGameMemberParams,
+    readGameProgress,
 } from "./game-payloads";
 
 export function handleEnqueuedAlert(
@@ -81,3 +83,9 @@ export function handleUpdateMember(payload: ByteBuffer): GameMemberParams {
 export function handleLeaveMember(payload: ByteBuffer): string {
     return payload.readUUID();
 }
+
+export function handleUpdateGame(payload: ByteBuffer): GameProgress | null {
+    return payload.readNullable(readGameProgress);
+}
+
+export function handleSyncchronizeResult(payload: ByteBuffer) {}

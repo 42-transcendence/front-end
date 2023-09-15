@@ -3,6 +3,7 @@
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import {
     GameMemberAtom,
+    GameProgressAtom,
     GameRoomParamsAtom,
     GameRoomPropsAtom,
     InvitationAtom,
@@ -14,6 +15,7 @@ import {
     handleGameFailedPayload,
     handleGameRoom,
     handleLeaveMember,
+    handleUpdateGame,
     handleUpdateMember,
 } from "@common/game-gateway-helper-client";
 import { GameClientOpcode } from "@common/game-opcodes";
@@ -33,6 +35,8 @@ export default function GamePage() {
     const setGameRoomProps = useSetAtom(GameRoomPropsAtom);
     const setGameRoomParams = useSetAtom(GameRoomParamsAtom);
     const setLadderAtom = useSetAtom(LadderAtom);
+
+    const [currentGameProgress, setGameProgress] = useAtom(GameProgressAtom);
 
     useGamePlayConnector(
         useMemo(() => makeGameHandshake(invitationAtom), [invitationAtom]),
@@ -85,13 +89,18 @@ export default function GamePage() {
                     );
                     break;
                 }
+                case GameClientOpcode.UPDATE_GAME: {
+                    // XXX 과거 프로그레스 필요할수도
+                    setGameProgress(handleUpdateGame(buffer));
+                    break;
+                }
             }
         },
     );
 
     return (
         <div className="h-full w-full">
-            <GameLobby />
+            {currentGameProgress === null ? <GameLobby /> : <GameInGame />}
         </div>
     );
 }
