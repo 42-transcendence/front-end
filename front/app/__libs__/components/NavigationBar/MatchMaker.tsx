@@ -25,6 +25,7 @@ function MatchMakerPanel() {
     const [battleField, setBattleField] = useState<BattleField>();
     const [gameMode, setGameMode] = useState<GameMode>();
     const [limit, setLimit] = useState(0);
+    const [start, setStart] = useState<number>();
 
     useGameMatchMakeConnector(useMemo(() => makeMatchmakeHandshakeQueue(), []));
 
@@ -36,6 +37,7 @@ function MatchMakerPanel() {
                 case GameClientOpcode.ENQUEUED: {
                     const [battleField, gameMode, limit] =
                         handleEnqueuedAlert(buffer);
+                    setStart(Date.now());
                     setBattleField(battleField);
                     setGameMode(gameMode);
                     setLimit(limit);
@@ -43,7 +45,8 @@ function MatchMakerPanel() {
                 }
                 case GameClientOpcode.MATCHMAKE_FAILED: {
                     void handleMatchmakeFailed(buffer);
-                    alert("매칭에 실패했습니다.");
+                    setMatchMaking(false);
+                    alert("이미 다른 창에서 게임에 참여중입니다.");
                     break;
                 }
             }
@@ -57,9 +60,11 @@ function MatchMakerPanel() {
     }, [setMatchMaking]);
 
     const [isOpen, setIsOpen] = useState(false);
-    const timer = useTimer();
-    const second = (timer % 60).toString().padStart(2, "0");
-    const min = (timer / 60).toFixed();
+    const timer = useTimer(start);
+
+    const elapsedTime = start !== undefined ? timer : 0;
+    const second = (elapsedTime % 60).toString().padStart(2, "0");
+    const min = (elapsedTime / 60).toFixed();
 
     return (
         <div className="relative flex flex-col gap-1 text-gray-50">
@@ -68,7 +73,9 @@ function MatchMakerPanel() {
                     onClick={() => setIsOpen(!isOpen)}
                     className="relative flex w-full justify-center px-3 py-2.5 text-base text-gray-50/80 hover:bg-primary/30 active:bg-secondary/30 "
                 >
-                    검색 중: {min}:{second}
+                    {start !== undefined
+                        ? `검색 중: ${min}:${second}`
+                        : "서버 접속 중"}
                 </button>
                 {isOpen && (
                     <div className="flex w-fit shrink-0 overflow-clip rounded p-2">

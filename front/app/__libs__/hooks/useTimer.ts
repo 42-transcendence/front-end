@@ -2,12 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export function useTimer() {
-    const start = useRef(Date.now());
+export function useTimer(start?: number | undefined) {
+    const startRef = useRef(Date.now());
+    useEffect(() => {
+        if (start !== undefined) {
+            startRef.current = start;
+        }
+    }, [start]);
     const [time, setTime] = useState(0);
     useEffect(() => {
         const intervalId = setInterval(
-            () => setTime(Date.now() - start.current),
+            () => setTime(Date.now() - startRef.current),
             1000,
         );
 
