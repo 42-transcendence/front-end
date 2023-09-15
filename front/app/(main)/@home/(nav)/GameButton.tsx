@@ -118,7 +118,7 @@ function CreateNewGameRoom() {
         <GlassWindow className="overflow-hidden">
             <form
                 onSubmit={handleSubmit}
-                className="group flex w-full flex-col gap-4 overflow-hidden rounded-[28px] p-4 backdrop-blur-[50px]"
+                className="group flex w-full flex-col gap-4 p-4"
             >
                 <div className="flex w-full flex-col gap-2 p-2">
                     {Object.entries(configs).map(([key, values]) => (
@@ -141,8 +141,8 @@ function CreateNewGameRoom() {
                             aria-hidden="true"
                         />
 
-                        <Dialog.Panel className="absolute inset-4 inset-y-8 m-auto max-h-96 max-w-sm overflow-hidden lg:inset-32">
-                            <div className="flex h-full w-full rounded-[28px] bg-windowGlass/30 backdrop-blur-[50px] ">
+                        <Dialog.Panel className="absolute inset-4 inset-y-8 m-auto max-h-96 max-w-sm overflow-hidden rounded-[28px] bg-windowGlass/30 backdrop-blur-[50px] lg:inset-32">
+                            <div className="flex h-full w-full">
                                 <CreateGamePendding
                                     infos={gameModeInfos}
                                     closeModal={closeModal}
