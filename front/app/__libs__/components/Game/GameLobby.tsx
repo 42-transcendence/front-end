@@ -5,16 +5,9 @@ import { Avatar } from "@components/Avatar";
 import { GameMemberAtom, GameRoomPropsAtom } from "@atoms/GameAtom";
 import { useAtomValue } from "jotai";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { ByteBuffer } from "@akasha-lib";
-import { GameServerOpcode } from "@common/game-opcodes";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HOST } from "@utils/constants";
-
-function makeUpdateMemberRequest(ready: boolean) {
-    const buf = ByteBuffer.createWithOpcode(GameServerOpcode.READY_STATE);
-    buf.writeBoolean(ready);
-    return buf;
-}
+import { makeUpdateMemberRequest } from "@akasha-utils/game-payload-builder-clients";
 
 export function GameLobby() {
     const currentAccountUUID = useCurrentAccountUUID();
@@ -24,9 +17,9 @@ export function GameLobby() {
 
     const { sendPayload } = useWebSocket("game", []);
 
-    const toggleReady = () => {
+    const toggleReady = useCallback(() => {
         sendPayload(makeUpdateMemberRequest(true));
-    };
+    }, [sendPayload]);
 
     useEffect(() => {
         if (gameRoomProps !== null && gameRoomProps.code !== null) {
@@ -34,11 +27,11 @@ export function GameLobby() {
         }
     }, [gameRoomProps]);
 
-    if (gameRoomProps === null) {
-        return null;
-    }
+    const copyGameRoomCode = useCallback(() => {
+        if (gameRoomProps === null) {
+            return;
+        }
 
-    const copyGameRoomCode = () => {
         const code = gameRoomProps.code;
         if (code === null) {
             alert("빠른 대전은 방 공유가 불가능합니다");
@@ -51,7 +44,11 @@ export function GameLobby() {
             .catch(() => setRoomCode("복사 실패"));
 
         setTimeout(() => setRoomCode(code), 1000);
-    };
+    }, [gameRoomProps]);
+
+    if (gameRoomProps === null) {
+        return null;
+    }
 
     return (
         <div>
