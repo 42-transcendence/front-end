@@ -15,6 +15,7 @@ import {
     readGameMemberParams,
     readGameProgress,
 } from "./game-payloads";
+import { readFrames } from "./game-physics-payloads";
 
 export function handleEnqueuedAlert(
     payload: ByteBuffer,
@@ -88,4 +89,10 @@ export function handleUpdateGame(payload: ByteBuffer): GameProgress | null {
     return payload.readNullable(readGameProgress);
 }
 
-export function handleSyncchronizeResult(payload: ByteBuffer) {}
+export function handleResyncAll(payload: ByteBuffer) {
+    return readFrames(payload);
+}
+
+export function handleResyncPart(payload: ByteBuffer) {
+    return readFrames(payload);
+}

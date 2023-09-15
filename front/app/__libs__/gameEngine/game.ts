@@ -8,24 +8,30 @@ import { readFrames, writeFrame } from "@common/game-physics-payloads";
 import type { Vector } from "matter-js";
 import Matter from "matter-js";
 import { ByteBuffer } from "../akasha-lib/library/byte-buffer";
+import { BattleField } from "@common/game-payloads";
 
 const PADDLE_IMAGE_SRCS = ["/game-chip-1_dummy.png", "/game-chip-4_dummy.png"];
+const BALL_TEXTURE = "/ball.png";
+const TEAM1 = 0;
+const TEAM2 = 1;
+
+const WIDTH = 1000;
+const HEIGHT = 1920;
+const BALL_RADIUS = 36;
+const PADDLE_RADIUS = 80;
+const GOAL_RADIUS = PADDLE_RADIUS + 8;
+const WIN_SCORE = 5;
+
+//ignore collision
+const LINE_CATEGORY = 0x0002;
 
 export class Game {
-    private WIDTH = 1000;
-    private HEIGHT = 1920;
-    private BALL_RADIUS = 36;
-    private PADDLE_RADIUS = 80;
-    private GOAL_RADIUS = this.PADDLE_RADIUS + 8;
-    private WIN_SCORE = 5;
     //score
     private team1Score = 0;
     private team2Score = 0;
     //paddle1 velocity
     private myPaddleVelocity = { x: 0, y: 0 };
     private counterPaddleVelocity = { x: 0, y: 0 };
-    //ignore collision
-    private lineCategory = 0x0002;
     // create engine
     private engine = Matter.Engine.create({ gravity: { x: 0, y: 0 } });
     private world = this.engine.world;
@@ -34,12 +40,12 @@ export class Game {
     private canvas: HTMLCanvasElement;
     private canvasContext: CanvasRenderingContext2D | null;
     // my paddle
-    private myPaddleX = this.WIDTH / 2;
-    private myPaddleY = this.HEIGHT - this.BALL_RADIUS - 50;
+    private myPaddleX = WIDTH / 2;
+    private myPaddleY = HEIGHT - BALL_RADIUS - 50;
     private myPaddle = Matter.Bodies.circle(
         this.myPaddleX,
         this.myPaddleY,
-        this.PADDLE_RADIUS,
+        PADDLE_RADIUS,
         {
             isStatic: true,
             restitution: 1,
@@ -48,7 +54,7 @@ export class Game {
             friction: 0,
             render: {
                 sprite: {
-                    texture: PADDLE_IMAGE_SRCS[this.team - 1],
+                    texture: PADDLE_IMAGE_SRCS[this.team],
                     yScale: 1,
                     xScale: 1,
                 },
@@ -56,12 +62,12 @@ export class Game {
         },
     );
     // counter paddle
-    private counterPaddleX = this.WIDTH / 2;
-    private counterPaddleY = this.BALL_RADIUS + 50;
+    private counterPaddleX = WIDTH / 2;
+    private counterPaddleY = BALL_RADIUS + 50;
     private counterPaddle = Matter.Bodies.circle(
         this.counterPaddleX,
         this.counterPaddleY,
-        this.PADDLE_RADIUS,
+        PADDLE_RADIUS,
         {
             isStatic: true,
             restitution: 1,
@@ -71,7 +77,7 @@ export class Game {
             render: {
                 sprite: {
                     texture:
-                        this.team === 1
+                        this.team === TEAM1
                             ? "/game-chip-4_dummy.png"
                             : "/game-chip-1_dummy.png",
                     yScale: 1,
@@ -83,24 +89,19 @@ export class Game {
     // create runner
     private runner = Matter.Runner.create();
     //ball
-    private circle = Matter.Bodies.circle(
-        this.WIDTH / 2,
-        this.HEIGHT / 2,
-        this.BALL_RADIUS,
-        {
-            frictionStatic: 0,
-            frictionAir: 0,
-            friction: 0,
-            restitution: 1,
-            render: {
-                sprite: {
-                    texture: "/ball.png",
-                    yScale: 0.2,
-                    xScale: 0.2,
-                },
+    private circle = Matter.Bodies.circle(WIDTH / 2, HEIGHT / 2, BALL_RADIUS, {
+        frictionStatic: 0,
+        frictionAir: 0,
+        friction: 0,
+        restitution: 1,
+        render: {
+            sprite: {
+                texture: BALL_TEXTURE,
+                yScale: 0.2,
+                xScale: 0.2,
             },
         },
-    );
+    });
     private framesPerSecond = 60;
     private frames: Frame[] = [];
     private circleVelocity = { x: 15, y: 15 };
@@ -108,20 +109,17 @@ export class Game {
     private ignoreFrameIds: Set<number> = new Set<number>();
 
     constructor(
-        private websocket: WebSocket,
+        private sendPayload: (value: ByteBuffer) => void,
         private readonly setNo: number,
         private readonly team: number,
-        private readonly field: string,
+        private readonly field: BattleField,
         private readonly gravity: GravityObj[],
         canvasRef: React.RefObject<HTMLCanvasElement>,
     ) {
-        if (this.team !== 1 && this.team !== 2) {
-            // 플레이어에 이상한 넘버가 들어갔을때 에러처리;
-        }
-        if (field !== "normal" && field !== "ellipse") {
+        if (field !== BattleField.SQUARE && field !== BattleField.ROUND) {
             // 필드에 이상한 문자열이 들어갔을때 에러처리;
         }
-        if (this.team === 2) {
+        if (this.team === TEAM2) {
             // 원점대칭할 점
             this.originSymmetry(this.circleVelocity);
             for (let i = 0; i < this.gravity.length; i++) {
@@ -137,8 +135,8 @@ export class Game {
             engine: this.engine,
             canvas: canvasRef.current, // XXX
             options: {
-                width: this.WIDTH,
-                height: this.HEIGHT,
+                width: WIDTH,
+                height: HEIGHT,
                 showAngleIndicator: true,
                 showCollisions: true,
                 wireframes: false,
@@ -177,7 +175,7 @@ export class Game {
                             this.ignoreFrameIds.delete(frames[i].id);
                             continue;
                         }
-                        if (this.team === 2) {
+                        if (this.team === TEAM2) {
                             this.reverseFrame(frames[i]);
                         }
                         this.pasteFrame(frames[i]);
@@ -192,7 +190,7 @@ export class Game {
                     for (let i = 0; i < size; i++) {
                         if (this.ignoreFrameIds.has(frames[i].id) === true) {
                             this.ignoreFrameIds.delete(frames[i].id);
-                            if (this.team === 2) {
+                            if (this.team === TEAM2) {
                                 this.reverseFrame(frames[i]);
                             }
                             this.frameQueue.push({
@@ -201,7 +199,7 @@ export class Game {
                             });
                         } // 무시하는 프레임에 등록된 경우 상대 패들만 싱크하고 나머지는 무시
                         else {
-                            if (this.team === 2) {
+                            if (this.team === TEAM2) {
                                 this.reverseFrame(frames[i]);
                             }
                             this.pasteFrame(frames[i]);
@@ -224,8 +222,8 @@ export class Game {
     }
 
     private midpointSymmetry(point: { x: number; y: number }) {
-        point.x = this.WIDTH - point.x;
-        point.y = this.HEIGHT - point.y;
+        point.x = WIDTH - point.x;
+        point.y = HEIGHT - point.y;
     }
 
     private originSymmetry(point: { x: number; y: number }) {
@@ -272,18 +270,18 @@ export class Game {
 
     private wallReflection(velocity: { x: number; y: number }) {
         //반사!
-        if (this.circle.position.x < this.BALL_RADIUS) {
+        if (this.circle.position.x < BALL_RADIUS) {
             Matter.Body.setPosition(this.circle, {
-                x: this.BALL_RADIUS,
+                x: BALL_RADIUS,
                 y: this.circle.position.y,
             });
             Matter.Body.setVelocity(this.circle, {
                 x: velocity.x * -1,
                 y: velocity.y * 1,
             });
-        } else if (this.circle.position.x > this.WIDTH - this.BALL_RADIUS) {
+        } else if (this.circle.position.x > WIDTH - BALL_RADIUS) {
             Matter.Body.setPosition(this.circle, {
-                x: this.WIDTH - this.BALL_RADIUS,
+                x: WIDTH - BALL_RADIUS,
                 y: this.circle.position.y,
             });
             Matter.Body.setVelocity(this.circle, {
@@ -295,10 +293,10 @@ export class Game {
 
     private makePointInEllipse(theta: number): { x: number; y: number } {
         const distance =
-            ((this.WIDTH / 2) * (this.HEIGHT / 2)) /
+            ((WIDTH / 2) * (HEIGHT / 2)) /
             Math.sqrt(
-                ((this.HEIGHT / 2) * Math.cos(theta)) ** 2 +
-                    ((this.WIDTH / 2) * Math.sin(theta)) ** 2,
+                ((HEIGHT / 2) * Math.cos(theta)) ** 2 +
+                    ((WIDTH / 2) * Math.sin(theta)) ** 2,
             );
         return { x: distance * Math.cos(theta), y: distance * Math.sin(theta) };
     }
@@ -308,10 +306,10 @@ export class Game {
         pointInEllipse: { x: number; y: number },
     ): number {
         return (
-            (this.WIDTH / 2) ** 2 *
+            (WIDTH / 2) ** 2 *
                 pointInEllipse.y *
                 (pointInEllipse.x - circlePos.x) -
-            (this.HEIGHT / 2) ** 2 *
+            (HEIGHT / 2) ** 2 *
                 pointInEllipse.x *
                 (pointInEllipse.y - circlePos.y)
         );
@@ -322,10 +320,10 @@ export class Game {
         pointInEllipse: { x: number; y: number },
     ): number {
         return (
-            ((this.WIDTH / 2) ** 2 *
+            ((WIDTH / 2) ** 2 *
                 pointInEllipse.y *
                 (pointInEllipse.x - circlePos.x)) /
-            ((this.HEIGHT / 2) ** 2 *
+            ((HEIGHT / 2) ** 2 *
                 pointInEllipse.x *
                 (pointInEllipse.y - circlePos.y))
         );
@@ -358,8 +356,8 @@ export class Game {
 
     private ellipseReflection() {
         const circlePos = {
-            x: this.circle.position.x - this.WIDTH / 2,
-            y: this.circle.position.y - this.HEIGHT / 2,
+            x: this.circle.position.x - WIDTH / 2,
+            y: this.circle.position.y - HEIGHT / 2,
         };
         const normal = { x: 0, y: 0 };
         // x축 대칭
@@ -397,19 +395,13 @@ export class Game {
             normal.y = pointInEllipse.y - circlePos.y;
             normal.y *= -1;
         }
-        if (
-            this.circle.position.y === 0 ||
-            this.circle.position.y === this.HEIGHT
-        ) {
+        if (this.circle.position.y === 0 || this.circle.position.y === HEIGHT) {
             Matter.Body.setVelocity(this.circle, {
                 x: this.circle.velocity.x,
                 y: this.circle.velocity.y * -1,
             });
         }
-        if (
-            this.circle.position.x === 0 ||
-            this.circle.position.x === this.WIDTH
-        ) {
+        if (this.circle.position.x === 0 || this.circle.position.x === WIDTH) {
             Matter.Body.setVelocity(this.circle, {
                 x: this.circle.velocity.x * -1,
                 y: this.circle.velocity.y,
@@ -420,7 +412,7 @@ export class Game {
 
         const inOutCheck = this.ellipseInOut(this.circle.position);
         if (
-            Math.sqrt(normal.x ** 2 + normal.y ** 2) <= this.BALL_RADIUS &&
+            Math.sqrt(normal.x ** 2 + normal.y ** 2) <= BALL_RADIUS &&
             inOutCheck < 1
         ) {
             const velocity = Matter.Body.getVelocity(this.circle);
@@ -447,19 +439,19 @@ export class Game {
     }
 
     private setEllipse() {
-        const ellipseMajorAxis = this.HEIGHT;
-        const ellipseMinorAxis = this.WIDTH;
+        const ellipseMajorAxis = HEIGHT;
+        const ellipseMinorAxis = WIDTH;
         const ellipseVerticesArray: Vector[] = [];
         const ellipseVertices = 1000;
         const focus = Math.sqrt(
             (ellipseMajorAxis / 2) ** 2 - (ellipseMinorAxis / 2) ** 2,
         );
-        const focusPos1 = this.HEIGHT / 2 + focus;
-        const focusPos2 = this.HEIGHT / 2 - focus;
+        const focusPos1 = HEIGHT / 2 + focus;
+        const focusPos2 = HEIGHT / 2 - focus;
         for (let i = 0; i < 350; i++) {
             const a = Matter.Bodies.circle(
-                this.WIDTH / 2 + Math.cos(i) * (ellipseMinorAxis / 2 + 20),
-                this.HEIGHT / 2 + Math.sin(i) * (ellipseMajorAxis / 2 + 20),
+                WIDTH / 2 + Math.cos(i) * (ellipseMinorAxis / 2 + 20),
+                HEIGHT / 2 + Math.sin(i) * (ellipseMajorAxis / 2 + 20),
                 20,
                 {
                     isStatic: true,
@@ -477,13 +469,13 @@ export class Game {
         }
 
         const ellipse = Matter.Bodies.fromVertices(
-            this.WIDTH / 2,
-            this.HEIGHT / 2,
+            WIDTH / 2,
+            HEIGHT / 2,
             [ellipseVerticesArray],
             {
                 isStatic: true,
                 collisionFilter: {
-                    mask: this.lineCategory,
+                    mask: LINE_CATEGORY,
                 },
                 // render: {
                 // 	sprite: {
@@ -495,42 +487,32 @@ export class Game {
             },
         );
         Matter.Composite.add(this.world, ellipse);
-        const goal1 = Matter.Bodies.circle(
-            this.WIDTH / 2,
-            focusPos1,
-            this.GOAL_RADIUS,
-            {
-                isStatic: true,
-                collisionFilter: {
-                    mask: this.lineCategory,
-                },
-                render: {
-                    sprite: {
-                        texture: "/blackhole.png",
-                        yScale: 0.45,
-                        xScale: 0.45,
-                    },
+        const goal1 = Matter.Bodies.circle(WIDTH / 2, focusPos1, GOAL_RADIUS, {
+            isStatic: true,
+            collisionFilter: {
+                mask: LINE_CATEGORY,
+            },
+            render: {
+                sprite: {
+                    texture: "/blackhole.png",
+                    yScale: 0.45,
+                    xScale: 0.45,
                 },
             },
-        );
-        const goal2 = Matter.Bodies.circle(
-            this.WIDTH / 2,
-            focusPos2,
-            this.GOAL_RADIUS,
-            {
-                isStatic: true,
-                collisionFilter: {
-                    mask: this.lineCategory,
-                },
-                render: {
-                    sprite: {
-                        texture: "/blackhole.png",
-                        yScale: 0.45,
-                        xScale: 0.45,
-                    },
+        });
+        const goal2 = Matter.Bodies.circle(WIDTH / 2, focusPos2, GOAL_RADIUS, {
+            isStatic: true,
+            collisionFilter: {
+                mask: LINE_CATEGORY,
+            },
+            render: {
+                sprite: {
+                    texture: "/blackhole.png",
+                    yScale: 0.45,
+                    xScale: 0.45,
                 },
             },
-        );
+        });
         Matter.Composite.add(this.world, [goal1, goal2]);
     }
 
@@ -553,43 +535,43 @@ export class Game {
 
     private drawScore() {
         if (this.canvasContext === null) return;
-        const team1DrawPos = this.team === 1 ? 1900 : 25;
+        const team1DrawPos = this.team === TEAM1 ? 1900 : 25;
         const team2DrawPos = team1DrawPos === 1900 ? 25 : 1900;
         this.canvasContext.fillText(
-            "Team 2 score: " + this.team2Score + `/${this.WIN_SCORE}`,
-            this.WIDTH / 2 - 150,
+            "Team 2 score: " + this.team2Score + `/${WIN_SCORE}`,
+            WIDTH / 2 - 150,
             team2DrawPos,
         );
         this.canvasContext.fillText(
-            "Team 1 score: " + this.team1Score + `/${this.WIN_SCORE}`,
-            this.WIDTH / 2 - 150,
+            "Team 1 score: " + this.team1Score + `/${WIN_SCORE}`,
+            WIDTH / 2 - 150,
             team1DrawPos,
         );
         if (this.team1Score !== 5 || this.team2Score !== 5) {
             this.canvasContext.fillText(
                 `Set: ${this.setNo}`,
-                this.WIDTH / 2 - 50,
-                this.HEIGHT / 2 + 25,
+                WIDTH / 2 - 50,
+                HEIGHT / 2 + 25,
             );
         }
     }
 
     private judgeWinner() {
         if (this.canvasContext === null) return;
-        if (this.team1Score >= this.WIN_SCORE) {
+        if (this.team1Score >= WIN_SCORE) {
             this.canvasContext.fillText(
                 "Team 1 Wins!",
-                this.WIDTH / 2 - 100,
-                this.HEIGHT / 2 - 25,
+                WIDTH / 2 - 100,
+                HEIGHT / 2 - 25,
             );
             Matter.Engine.clear(this.engine);
             Matter.Render.stop(this.render);
             Matter.Runner.stop(this.runner);
-        } else if (this.team2Score >= this.WIN_SCORE) {
+        } else if (this.team2Score >= WIN_SCORE) {
             this.canvasContext.fillText(
                 "Team 2 Wins!",
-                this.WIDTH / 2 - 100,
-                this.HEIGHT / 2 - 25,
+                WIDTH / 2 - 100,
+                HEIGHT / 2 - 25,
             );
             Matter.Engine.clear(this.engine);
             Matter.Render.stop(this.render);
@@ -608,16 +590,13 @@ export class Game {
 
     private ellipseInOut(point: { x: number; y: number }) {
         return (
-            (point.x - this.WIDTH / 2) ** 2 / (this.WIDTH / 2) ** 2 +
-            (point.y - this.HEIGHT / 2) ** 2 / (this.HEIGHT / 2) ** 2
+            (point.x - WIDTH / 2) ** 2 / (WIDTH / 2) ** 2 +
+            (point.y - HEIGHT / 2) ** 2 / (HEIGHT / 2) ** 2
         );
     }
 
     private sendFrame(paddle1Hit: boolean, paddle2Hit: boolean) {
-        if (
-            this.team1Score === this.WIN_SCORE ||
-            this.team2Score === this.WIN_SCORE
-        ) {
+        if (this.team1Score === WIN_SCORE || this.team2Score === WIN_SCORE) {
             return;
         }
         const myPaddle: PhysicsAttribute = {
@@ -639,9 +618,9 @@ export class Game {
         };
         const frame: Frame = {
             id: this.frames.length,
-            paddle1: this.team === 1 ? myPaddle : counterPaddle,
+            paddle1: this.team === TEAM1 ? myPaddle : counterPaddle,
             paddle1Hit,
-            paddle2: this.team === 1 ? counterPaddle : myPaddle,
+            paddle2: this.team === TEAM1 ? counterPaddle : myPaddle,
             paddle2Hit,
             ball: {
                 position: {
@@ -654,7 +633,7 @@ export class Game {
                 },
             },
         };
-        if (this.team === 2) {
+        if (this.team === TEAM2) {
             this.reverseFrame(frame);
         }
         this.frames.push(frame);
@@ -662,7 +641,7 @@ export class Game {
         buf.write1(this.setNo);
         buf.write1(this.team);
         writeFrame(buf, frame);
-        this.websocket.send(buf.toArray());
+        this.sendPayload(buf);
     }
 
     //gravity
@@ -706,7 +685,7 @@ export class Game {
                 {
                     isStatic: true,
                     collisionFilter: {
-                        mask: this.lineCategory,
+                        mask: LINE_CATEGORY,
                     },
                     render: {
                         sprite: {
@@ -729,20 +708,17 @@ export class Game {
             const prevPointX = this.myPaddle.position.x;
             const prevPointY = this.myPaddle.position.y;
             const mousePos = this.calculatePos(event);
-            this.myPaddleY = mousePos.y - this.PADDLE_RADIUS / 2;
-            this.myPaddleX = mousePos.x - this.PADDLE_RADIUS / 2;
+            this.myPaddleY = mousePos.y - PADDLE_RADIUS / 2;
+            this.myPaddleX = mousePos.x - PADDLE_RADIUS / 2;
             Matter.Body.setPosition(this.myPaddle, {
                 x: this.myPaddleX,
                 y: this.myPaddleY,
             });
             // 패들 중앙선 침범 금지~!
-            if (
-                this.myPaddle.position.y <
-                this.HEIGHT / 2 + this.PADDLE_RADIUS
-            ) {
+            if (this.myPaddle.position.y < HEIGHT / 2 + PADDLE_RADIUS) {
                 Matter.Body.setPosition(this.myPaddle, {
                     x: this.myPaddle.position.x,
-                    y: this.HEIGHT / 2 + this.PADDLE_RADIUS,
+                    y: HEIGHT / 2 + PADDLE_RADIUS,
                 });
             }
             const deltaT = Date.now() - prevTimestamp + 1;
@@ -757,20 +733,17 @@ export class Game {
             const prevPointX = this.myPaddle.position.x;
             const prevPointY = this.myPaddle.position.y;
             const mousePos = this.calculatePos(event);
-            this.myPaddleY = mousePos.y - this.PADDLE_RADIUS / 2;
-            this.myPaddleX = mousePos.x - this.PADDLE_RADIUS / 2;
+            this.myPaddleY = mousePos.y - PADDLE_RADIUS / 2;
+            this.myPaddleX = mousePos.x - PADDLE_RADIUS / 2;
             Matter.Body.setPosition(this.myPaddle, {
                 x: this.myPaddleX,
                 y: this.myPaddleY,
             });
             // 패들 중앙선 침범 금지~!
-            if (
-                this.myPaddle.position.y <
-                this.HEIGHT / 2 + this.PADDLE_RADIUS
-            ) {
+            if (this.myPaddle.position.y < HEIGHT / 2 + PADDLE_RADIUS) {
                 Matter.Body.setPosition(this.myPaddle, {
                     x: this.myPaddle.position.x,
-                    y: this.HEIGHT / 2 + this.PADDLE_RADIUS,
+                    y: HEIGHT / 2 + PADDLE_RADIUS,
                 });
             }
             const deltaT = Date.now() - prevTimestamp + 1;
@@ -780,7 +753,7 @@ export class Game {
             };
         });
         //add Ellipse
-        if (this.field === "ellipse") {
+        if (this.field === BattleField.ROUND) {
             this.setEllipse();
         }
         //중력객체 추가
@@ -793,25 +766,19 @@ export class Game {
         //add line
         Matter.Composite.add(
             this.world,
-            Matter.Bodies.rectangle(
-                this.WIDTH / 2,
-                this.HEIGHT / 2,
-                this.WIDTH,
-                2,
-                {
-                    isStatic: true,
-                    collisionFilter: {
-                        mask: this.lineCategory,
-                    },
+            Matter.Bodies.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, 2, {
+                isStatic: true,
+                collisionFilter: {
+                    mask: LINE_CATEGORY,
                 },
-            ),
+            }),
         );
         Matter.Runner.run(this.runner, this.engine);
         //add ball
         Matter.Composite.add(this.world, this.circle);
         Matter.Render.lookAt(this.render, {
             min: { x: 0, y: 0 },
-            max: { x: this.WIDTH, y: this.HEIGHT },
+            max: { x: WIDTH, y: HEIGHT },
         });
 
         // Event On!
@@ -831,13 +798,13 @@ export class Game {
                         // setTimeout(() => {
                         Matter.Body.setPosition(
                             this.counterPaddle,
-                            this.team === 1
+                            this.team === TEAM1
                                 ? frame.paddle2.position
                                 : frame.paddle1.position,
                         );
                         Matter.Body.setVelocity(
                             this.counterPaddle,
-                            this.team === 1
+                            this.team === TEAM1
                                 ? frame.paddle2.velocity
                                 : frame.paddle1.velocity,
                         );
@@ -850,13 +817,13 @@ export class Game {
                         // setTimeout(() => {
                         Matter.Body.setPosition(
                             this.counterPaddle,
-                            this.team === 1
+                            this.team === TEAM1
                                 ? frame.paddle2.position
                                 : frame.paddle1.position,
                         );
                         Matter.Body.setVelocity(
                             this.counterPaddle,
-                            this.team === 1
+                            this.team === TEAM1
                                 ? frame.paddle2.velocity
                                 : frame.paddle1.velocity,
                         );
@@ -870,13 +837,13 @@ export class Game {
                         // setTimeout(() => {
                         Matter.Body.setPosition(
                             this.counterPaddle,
-                            this.team === 1
+                            this.team === TEAM1
                                 ? frame.paddle2.position
                                 : frame.paddle1.position,
                         );
                         Matter.Body.setVelocity(
                             this.counterPaddle,
-                            this.team === 1
+                            this.team === TEAM1
                                 ? frame.paddle2.velocity
                                 : frame.paddle1.velocity,
                         );
@@ -901,7 +868,7 @@ export class Game {
             let paddle2Hit = false;
 
             if (collided?.collided === true) {
-                if (collided.bodyA.position.y > this.HEIGHT / 2) {
+                if (collided.bodyA.position.y > HEIGHT / 2) {
                     paddle1Hit = true;
                 } else {
                     paddle2Hit = true;
@@ -919,7 +886,7 @@ export class Game {
                 y: this.counterPaddle.position.y + this.counterPaddleVelocity.y,
             });
             // 타원 반사!
-            if (this.field === "ellipse") {
+            if (this.field === BattleField.ROUND) {
                 this.ellipseReflection();
             }
             this.wallReflection(velocity);

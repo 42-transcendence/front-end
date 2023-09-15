@@ -21,6 +21,7 @@ import {
 import { GameClientOpcode } from "@common/game-opcodes";
 import { makeGameHandshake } from "@common/game-payload-builder-client";
 import { GameRoomEnterResult } from "@common/game-payloads";
+import { GameInGame } from "@components/Game/GameInGame";
 import { GameLobby } from "@components/Game/GameLobby";
 import { handleGameError } from "@components/Game/handleGameError";
 import { useGamePlayConnector } from "@hooks/useGameWebSocketConnector";
