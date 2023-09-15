@@ -156,69 +156,6 @@ export class Game {
         this.canvasContext.font = "30px arial";
         Matter.Body.setInertia(this.circle, 0.00000001);
         Matter.Body.setVelocity(this.circle, this.circleVelocity);
-
-        websocket.binaryType = "arraybuffer";
-        websocket.addEventListener(
-            "message",
-            (event: MessageEvent<ArrayBuffer>) => {
-                const buf = ByteBuffer.from(event.data);
-                const opcode = buf.readOpcode();
-                if (opcode === GameClientOpcode.RESYNC_ALL) {
-                    const frames = readFrames(buf);
-                    const size = frames.length;
-                    const lastSyncFrameId = frames[frames.length - 1].id;
-                    const diff = this.frames.length - lastSyncFrameId;
-                    if (diff > 1) {
-                        for (let i = 1; i < diff; i++) {
-                            this.ignoreFrameIds.add(lastSyncFrameId + i);
-                        }
-                        this.frames.splice(lastSyncFrameId + 1, diff - 1);
-                    } // 전부 리싱크하는 경우 그 이후의 프레임은 무시하고 삭제하도록 설정
-                    for (let i = 0; i < size; i++) {
-                        if (this.ignoreFrameIds.has(frames[i].id)) {
-                            this.ignoreFrameIds.delete(frames[i].id);
-                            continue;
-                        }
-                        if (this.team === TEAM2) {
-                            this.reverseFrame(frames[i]);
-                        }
-                        this.pasteFrame(frames[i]);
-                        this.frameQueue.push({
-                            resyncType: GameClientOpcode.RESYNC_ALL,
-                            frame: frames[i],
-                        });
-                    }
-                } else if (opcode === GameClientOpcode.RESYNC_PART) {
-                    const frames: Frame[] = readFrames(buf);
-                    const size = frames.length;
-                    for (let i = 0; i < size; i++) {
-                        if (this.ignoreFrameIds.has(frames[i].id) === true) {
-                            this.ignoreFrameIds.delete(frames[i].id);
-                            if (this.team === TEAM2) {
-                                this.reverseFrame(frames[i]);
-                            }
-                            this.frameQueue.push({
-                                resyncType: GameClientOpcode.RESYNC_PARTOF,
-                                frame: frames[i],
-                            });
-                        } // 무시하는 프레임에 등록된 경우 상대 패들만 싱크하고 나머지는 무시
-                        else {
-                            if (this.team === TEAM2) {
-                                this.reverseFrame(frames[i]);
-                            }
-                            this.pasteFrame(frames[i]);
-                            this.frameQueue.push({
-                                resyncType: GameClientOpcode.RESYNC_PART,
-                                frame: frames[i],
-                            });
-                        }
-                    }
-                } else if (opcode === GameClientOpcode.FINISH) {
-                    this.team1Score = buf.read1();
-                    this.team2Score = buf.read1();
-                }
-            },
-        );
     }
 
     private pasteFrame(frame: Frame) {
