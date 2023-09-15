@@ -21,7 +21,9 @@ export function GameLobby() {
                     <Avatar accountUUID={id} className="" privileged={false} />
                 </div>
             ))}
-            <button onClick={toggleReady}>{ready ? "unready" : "ready"}</button>
+            <button className="border-red-400" onClick={toggleReady}>
+                {ready ? "unready" : "ready"}
+            </button>
             <GameUserProfile accountUUID={currentAccountUUID} />
         </div>
     );

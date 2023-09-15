@@ -64,8 +64,7 @@ function RelationshipButton({
     const nickName = targetProfile?.nickName ?? "fallback";
 
     const addfriend = () => {
-        const buf = makeAddFriendRequest(targetAccountUUID, "", 0b11111111);
-        sendPayload(buf);
+        sendPayload(makeAddFriendRequest(targetAccountUUID, "", 0b11111111));
     };
     const deletefriend = () => {
         if (

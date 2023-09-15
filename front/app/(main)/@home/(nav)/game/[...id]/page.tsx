@@ -2,6 +2,7 @@
 
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { InvitationAtom } from "@atoms/GameAtom";
+import { GlobalStore } from "@atoms/GlobalStore";
 import {
     handleEnterMember,
     handleGameFailedPayload,
@@ -20,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
 export default function GamePage() {
-    const invitationAtom = useAtomValue(InvitationAtom);
+    const invitationAtom = useAtomValue(InvitationAtom, { store: GlobalStore });
     const router = useRouter();
 
     useGamePlayConnector(
