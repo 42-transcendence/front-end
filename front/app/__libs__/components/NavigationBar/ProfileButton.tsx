@@ -2,8 +2,6 @@
 
 import { Avatar } from "@components/Avatar";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
-// import { useRouter } from "next/navigation";
-// import { usePrivateProfile } from "@hooks/useProfile";
 import { Dialog } from "@headlessui/react";
 import { ProfileModalIsOpen } from "@atoms/ProfileAtom";
 import { useAtom } from "jotai";
