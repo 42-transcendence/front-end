@@ -1,4 +1,5 @@
-import { ByteBuffer, hasProperty } from "@akasha-lib";
+import type { ByteBuffer } from "@akasha-lib";
+import { hasProperty } from "@akasha-lib";
 
 export type GameInvitationPayload = {
     user_id: string;
@@ -138,4 +139,52 @@ export const enum GameRoomEnterResult {
     EXCEED_LIMIT,
     ALREADY_STARTED,
     GAME_MISMATCH,
+    DUPLICATE,
+}
+
+export type GameProgress = {
+    currentSet: number;
+    maxSet: number;
+    score: number[];
+    initialStartTime: number;
+    totalTimespan: number;
+    suspended: boolean;
+    resumedTime: number;
+    consumedTimespanSum: number;
+    resumeScheduleTime: number | null;
+};
+
+export function readGameProgress(buf: ByteBuffer): GameProgress {
+    const currentSet = buf.read1();
+    const maxSet = buf.read1();
+    const score = buf.readArray(buf.read1);
+    const initialStartTime = buf.readDate().valueOf();
+    const totalTimespan = buf.read4Unsigned();
+    const suspended = buf.readBoolean();
+    const resumedTime = buf.readDate().valueOf();
+    const consumedTimespanSum = buf.read4Unsigned();
+    const resumeScheduleTime = buf.readNullable(buf.read4);
+    return {
+        currentSet,
+        maxSet,
+        score,
+        initialStartTime,
+        totalTimespan,
+        suspended,
+        resumedTime,
+        consumedTimespanSum,
+        resumeScheduleTime,
+    };
+}
+
+export function writeGameProgress(obj: GameProgress, buf: ByteBuffer) {
+    buf.write1(obj.currentSet);
+    buf.write1(obj.maxSet);
+    buf.writeArray(obj.score, buf.read1);
+    buf.writeDate(new Date(obj.initialStartTime));
+    buf.write4Unsigned(obj.totalTimespan);
+    buf.writeBoolean(obj.suspended);
+    buf.writeDate(new Date(obj.resumedTime));
+    buf.write4Unsigned(obj.consumedTimespanSum);
+    buf.writeNullable(obj.resumeScheduleTime, buf.read4);
 }
