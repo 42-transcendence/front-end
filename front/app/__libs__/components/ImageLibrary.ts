@@ -23,6 +23,7 @@ import _IconChatAlternative from "/public/icon/chat-alternative.svg";
 import _IconChatFilled from "/public/icon/chat-filled.svg";
 import _IconChatOutlined from "/public/icon/chat-outlined.svg";
 import _IconCheck from "/public/icon/check.svg";
+import _IconCopy from "/public/icon/copy.svg";
 import _IconCrownFilled from "/public/icon/crown-filled.svg";
 import _IconCrownOutlined from "/public/icon/crown-outlined.svg";
 import _IconDots from "/public/icon/dots.svg";
@@ -78,6 +79,7 @@ export const Icon = {
     Arrow1: _IconArrow1,
     Arrow2: _IconArrow2,
     Arrow3: _IconArrow3,
+    Copy: _IconCopy,
     ChatAlternative: _IconChatAlternative,
     ChatFilled: _IconChatFilled,
     ChatOutlined: _IconChatOutlined,
