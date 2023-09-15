@@ -14,6 +14,7 @@ export function ChangeStatusMessageMenu({
     const protectedProfile = useProtectedProfile(targetAccountUUID);
     const [value, setValue] = useState("");
     const [isOpen, setIsOpen] = useState(false);
+    const [isStatusMessageOpen, setIsStatusMessageOpen] = useState(false);
 
     const currentStatusMessage = protectedProfile?.statusMessage ?? "";
 
@@ -32,7 +33,7 @@ export function ChangeStatusMessageMenu({
                         setValue("");
                     }}
                 >
-                    <div className="flex w-fit select-none items-center justify-start gap-2 rounded p-2 px-4 hover:bg-primary/30 active:bg-secondary/70">
+                    <div className="flex w-fit select-none items-center justify-start gap-1 rounded p-2 px-2 hover:bg-primary/30 active:bg-secondary/70">
                         <Icon.Edit />
                         상태 메시지 변경
                     </div>
@@ -47,7 +48,7 @@ export function ChangeStatusMessageMenu({
                             placeholder={currentStatusMessage}
                             onChange={(event) => setValue(event.target.value)}
                             required
-                            className="peer w-full pl-2"
+                            className="peer w-full px-2"
                         />
                         <button
                             type="submit"
@@ -58,7 +59,16 @@ export function ChangeStatusMessageMenu({
                         </button>
                     </div>
                 ) : (
-                    <span className="px-2 text-gray-300/80">
+                    <span
+                        onClick={() =>
+                            setIsStatusMessageOpen(!isStatusMessageOpen)
+                        }
+                        className={`relative w-full ${
+                            isStatusMessageOpen
+                                ? "break-all"
+                                : "overflow-hidden whitespace-nowrap transition-all ease-linear hover:-translate-x-[150%] hover:overflow-visible hover:delay-300 hover:duration-[5000ms]"
+                        } px-2 text-gray-300/80`}
+                    >
                         {currentStatusMessage}
                     </span>
                 )}

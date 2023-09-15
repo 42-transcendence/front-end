@@ -43,7 +43,7 @@ export function ChangeVisibilityMenu() {
         void trigger(newActiveStatus);
     };
     return (
-        <div className="relative flex h-fit w-60 items-center rounded px-2 pt-4">
+        <div className="relative flex h-fit w-60 items-center rounded px-4 pt-4">
             <div className="flex w-full select-none flex-col justify-around rounded-xl bg-black/30 p-2 text-base">
                 <span className="p-1 text-sm">상태 변경</span>
                 <div className="flex flex-row justify-between gap-1">
