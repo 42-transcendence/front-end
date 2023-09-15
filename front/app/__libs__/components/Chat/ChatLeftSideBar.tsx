@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useState } from "react";
-import { Icon } from "@components/ImageLibrary";
+import { Game, Icon } from "@components/ImageLibrary";
 import {
     ChatDirectRoomBlock,
     ChatPublicRoomBlock,
@@ -40,19 +40,18 @@ export default function ChatLeftSideBar() {
     const [selectedIndex, setSelectedIndex] = useAtom(ChatTabIndexAtom);
     const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
 
-    const [query, setQuery] = useState("");
     const categories = [
         {
             name: "1:1",
-            Component: <DirectRoomPanel query={query} />,
+            Component: <DirectRoomPanel />,
         },
         {
             name: "그룹",
-            Component: <RoomPanel query={query} />,
+            Component: <RoomPanel />,
         },
         {
             name: "찾기",
-            Component: <PublicRoomPanel query={query} />,
+            Component: <PublicRoomPanel />,
         },
     ];
     const [createNewRoomChecked, setCreateNewRoomChecked] = useAtom(
@@ -119,10 +118,7 @@ export default function ChatLeftSideBar() {
                         selectedIndex={selectedIndex}
                         onChange={(index) => setSelectedIndex(index)}
                     >
-                        <Tab.List
-                            onClick={() => setQuery("")}
-                            className="flex w-full rounded-lg bg-black/30 p-1"
-                        >
+                        <Tab.List className="flex w-full rounded-lg bg-black/30 p-1">
                             <motion.div
                                 animate={
                                     selectedIndex === 0
@@ -150,10 +146,6 @@ export default function ChatLeftSideBar() {
                                 </Tab>
                             ))}
                         </Tab.List>
-                        <ListQuaryTextField
-                            value={query}
-                            onChange={(event) => setQuery(event.target.value)}
-                        />
                         <Tab.Panels className="h-full w-full overflow-auto p-1">
                             {categories.map((category, idx) => (
                                 <Tab.Panel tabIndex={-1} key={idx}>
@@ -188,8 +180,9 @@ function ChatLeftSideBarLayout({ children }: React.PropsWithChildren) {
     );
 }
 
-function DirectRoomPanel({ query }: { query: string }) {
+function DirectRoomPanel() {
     const rooms = useAtomValue(DirectRoomListAtom);
+    const [query, setQuery] = useState("");
     const profiles = usePublicProfiles(
         useId(),
         rooms,
@@ -207,55 +200,79 @@ function DirectRoomPanel({ query }: { query: string }) {
         query,
     });
 
-    return results
-        .toSorted((e1, e2) => compareDirectRoomItem(e1, e2))
-        .map((item) => (
-            <ChatDirectRoomBlock key={item.targetAccountId} chatRoom={item}>
-                <FzfHighlight
-                    {...getFzfHighlightProps({
-                        item,
-                        className: "text-yellow-500",
-                    })}
-                />
-            </ChatDirectRoomBlock>
-        ));
+    return (
+        <>
+            <ListQuaryTextField
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+            />
+            {results
+                .toSorted((e1, e2) => compareDirectRoomItem(e1, e2))
+                .map((item) => (
+                    <ChatDirectRoomBlock
+                        key={item.targetAccountId}
+                        chatRoom={item}
+                    >
+                        <FzfHighlight
+                            {...getFzfHighlightProps({
+                                item,
+                                className: "text-yellow-500",
+                            })}
+                        />
+                    </ChatDirectRoomBlock>
+                ))}
+        </>
+    );
 }
 
-function RoomPanel({ query }: { query: string }) {
+function RoomPanel() {
     const rooms = useAtomValue(ChatRoomListAtom);
+    const [query, setQuery] = useState("");
     const { results, getFzfHighlightProps } = useFzf({
         items: rooms,
         itemToString: (item) => item.title,
         query,
     });
 
-    return results
-        .toSorted((e1, e2) => compareRoomItem(e1, e2))
-        .map((item) => (
-            <ChatRoomBlock key={item.id} chatRoom={item}>
-                <FzfHighlight
-                    {...getFzfHighlightProps({
-                        item,
-                        className: "text-yellow-500",
-                    })}
-                />
-            </ChatRoomBlock>
-        ));
+    return (
+        <>
+            <ListQuaryTextField
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+            />
+            {results
+                .toSorted((e1, e2) => compareRoomItem(e1, e2))
+                .map((item) => (
+                    <ChatRoomBlock key={item.id} chatRoom={item}>
+                        <FzfHighlight
+                            {...getFzfHighlightProps({
+                                item,
+                                className: "text-yellow-500",
+                            })}
+                        />
+                    </ChatRoomBlock>
+                ))}
+        </>
+    );
 }
 
-function PublicRoomPanel({ query }: { query: string }) {
+function PublicRoomPanel() {
     const [rooms, setChatPublicRoomList] = useState(Array<ChatRoomViewEntry>());
+    const [refreshing, setRefreshing] = useState(false);
+    const [query, setQuery] = useState("");
 
     const { sendPayload } = useWebSocket(
         "chat",
         ChatClientOpcode.PUBLIC_ROOM_LIST,
         (_, buffer) => {
             setChatPublicRoomList(handlePublicRoomList(buffer));
+            setRefreshing(false);
         },
     );
 
     const refreshPublicRoomList = useCallback(() => {
         sendPayload(makePublicRoomListRequest());
+        setRefreshing(true);
     }, [sendPayload]);
 
     useEffect(() => {
@@ -270,13 +287,23 @@ function PublicRoomPanel({ query }: { query: string }) {
 
     return (
         <>
-            <button
-                type="button"
-                // TODO: className=""
-                onClick={refreshPublicRoomList}
-            >
-                새로고침버튼
-            </button>
+            <div className="flex w-full items-center justify-center gap-1">
+                <ListQuaryTextField
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                />
+                <button
+                    type="button"
+                    className="mb-2"
+                    onClick={refreshPublicRoomList}
+                >
+                    {refreshing ? (
+                        <Game.Ghost2 className="relative h-5 w-5 p-2 text-gray-50" />
+                    ) : (
+                        <Icon.RefreshRegular className="relative h-5 w-5 text-gray-50/80 hover:text-gray-50/90 active:text-white" />
+                    )}
+                </button>
+            </div>
             {results
                 .toSorted((e1, e2) => compareRoomItem(e1, e2))
                 .map((item) => (
