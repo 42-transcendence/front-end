@@ -163,7 +163,7 @@ function CreateGamePendding({
     infos: GameInfoType;
     closeModal: () => void;
 }) {
-    const [isFail, setIsFail] = useState<MatchmakeFailedReason>();
+    const [failReason, setFailReason] = useState<MatchmakeFailedReason>();
 
     useGameMatchMakeConnector(
         useMemo(
@@ -179,34 +179,38 @@ function CreateGamePendding({
     );
 
     useWebSocket("game", GameClientOpcode.MATCHMAKE_FAILED, (_, buffer) => {
-        setIsFail(handleMatchmakeFailed(buffer));
+        setFailReason(handleMatchmakeFailed(buffer));
     });
 
     return (
         <div className="flex h-full w-full items-center justify-center p-4 pt-16">
-            {isFail === undefined ? (
-                <div className="flex h-full w-full flex-col items-center justify-between gap-2">
-                    <DoubleSharp
-                        tabIndex={0}
-                        className={`$ w-12 rounded-lg p-2 text-white outline-none transition-all hover:drop-shadow-[0_0_0.3rem_#ffffff90] focus-visible:outline-primary/70 ${"animate-spin-slow ease-in-out"}`}
-                        width={48}
-                        height={48}
-                    />
-                    <div className="flex w-full justify-center">
+            <div className="flex h-full w-full flex-col items-center justify-between gap-2">
+                <DoubleSharp
+                    tabIndex={0}
+                    className={`$ w-12 rounded-lg p-2 text-white outline-none transition-all hover:drop-shadow-[0_0_0.3rem_#ffffff90] focus-visible:outline-primary/70 ${
+                        failReason === undefined
+                            ? "animate-spin-slow ease-in-out"
+                            : ""
+                    }`}
+                    width={48}
+                    height={48}
+                />
+                <div className="flex w-full justify-center">
+                    {failReason === undefined ? (
                         <span className="w-16">로딩중</span>
-                    </div>
-                    <button
-                        className="z-10 w-full rounded-xl p-4 font-normal text-gray-50/80 hover:bg-windowGlass/30 hover:font-bold"
-                        onClick={() => closeModal()}
-                    >
-                        취소
-                    </button>
+                    ) : (
+                        <span className="w-fit">
+                            이미 다른 창에서 게임에 참여중입니다.
+                        </span>
+                    )}
                 </div>
-            ) : (
-                <button onClick={() => closeModal()}>
-                    에러가 발생했습니다. 닫기
+                <button
+                    className="z-10 w-full rounded-xl p-4 font-normal text-gray-50/80 hover:bg-windowGlass/30 hover:font-bold"
+                    onClick={() => closeModal()}
+                >
+                    {failReason === undefined ? "취소" : "닫기"}
                 </button>
-            )}
+            </div>
         </div>
     );
 }
