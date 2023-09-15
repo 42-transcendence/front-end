@@ -181,15 +181,28 @@ const isLastContinuedMessage = (arr: MessageSchema[], idx: number) => {
 };
 
 export function ChatDialog() {
-    const currentAccountUUID = useCurrentAccountUUID();
     const currentChatRoomUUID = useCurrentChatRoomUUID();
+
+    if (currentChatRoomUUID === "") {
+        return <NoChatRoomSelected />;
+    }
+    return <ChatRoomSelected currentChatRoomUUID={currentChatRoomUUID} />;
+}
+
+function ChatRoomSelected({
+    currentChatRoomUUID,
+}: {
+    currentChatRoomUUID: string;
+}) {
+    const currentAccountUUID = useCurrentAccountUUID();
     const [messages, isChatMessagesLoaded] =
         useChatRoomMessages(currentChatRoomUUID);
     const chatDialogRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const isMessageEndInView = useInView(messagesEndRef, {
         root: chatDialogRef,
-        amount: 1,
+        margin: "0% 0% 10% 0%",
+        amount: "some",
     });
     const { sendPayload } = useWebSocket("chat", []);
     const [, setChatRoomList] = useChatRoomListAtom();
@@ -220,13 +233,13 @@ export function ChatDialog() {
                     ? newLastMessage
                     : lastMessage,
             );
-            if (newLastMessage.accountId === currentAccountUUID) {
+            if (isMessageEndInView) {
                 scrollToBottom("instant");
             }
         } else {
             setLastMessage(undefined);
         }
-    }, [currentAccountUUID, currentChatRoomUUID, messages, scrollToBottom]);
+    }, [currentChatRoomUUID, isMessageEndInView, messages, scrollToBottom]);
 
     useEffect(() => {
         if (lastChatRoomUUID !== "" && isChatMessagesLoaded) {
@@ -280,10 +293,6 @@ export function ChatDialog() {
         setDirectRoomList,
     ]);
 
-    if (currentChatRoomUUID === "") {
-        return <NoChatRoomSelected />;
-    }
-
     return (
         <div className="flex h-full w-full shrink items-start justify-end gap-4 overflow-auto">
             <div className="flex h-full w-full flex-col justify-between gap-4 bg-black/30 p-4 2xl:rounded-lg">
@@ -305,6 +314,7 @@ export function ChatDialog() {
                         />
                     )}
                     <div
+                        key="END_REF"
                         className="min-h-[1px] w-full bg-transparent"
                         ref={messagesEndRef}
                     ></div>

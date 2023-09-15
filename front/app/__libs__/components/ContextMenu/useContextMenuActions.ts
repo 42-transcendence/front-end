@@ -24,6 +24,7 @@ import {
 } from "@hooks/useChatRoom";
 import { logout } from "@utils/action";
 import { useSetAtom } from "jotai";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
 export function useContextMenuActions(
@@ -36,6 +37,8 @@ export function useContextMenuActions(
     const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
     const targetUser = useChatMember(currentChatRoomUUID, targetAccountUUID);
     const targetRoleLevel = Number(targetUser?.role ?? 0);
+
+    const router = useRouter();
 
     const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom, {
         store: GlobalStore,
@@ -76,7 +79,7 @@ export function useContextMenuActions(
                 logout();
             },
             ["gotoprofile"]: () => {
-                window.open(`/profile/${nickName}/${nickTag}`);
+                router.push(`/profile/${nickName}/${nickTag}`);
             },
             ["addenemy"]: () => {
                 if (
