@@ -7,7 +7,7 @@ import { useAtomValue } from "jotai";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { useCallback, useEffect, useState } from "react";
 import { HOST } from "@utils/constants";
-import { makeUpdateMemberRequest } from "@akasha-utils/game-payload-builder-clients";
+import { makeReadyStateRequest } from "@akasha-utils/game-payload-builder-clients";
 
 export function GameLobby() {
     const currentAccountUUID = useCurrentAccountUUID();
@@ -17,9 +17,12 @@ export function GameLobby() {
 
     const { sendPayload } = useWebSocket("game", []);
 
-    const toggleReady = useCallback(() => {
-        sendPayload(makeUpdateMemberRequest(true));
-    }, [sendPayload]);
+    const toggleReady = useCallback(
+        (ready: boolean) => {
+            sendPayload(makeReadyStateRequest(ready));
+        },
+        [sendPayload],
+    );
 
     useEffect(() => {
         if (gameRoomProps !== null && gameRoomProps.code !== null) {
@@ -70,7 +73,7 @@ export function GameLobby() {
                         />
                         <button
                             className="border-red-400"
-                            onClick={toggleReady}
+                            onClick={() => toggleReady(!member.ready)}
                             disabled={currentAccountUUID !== member.accountId}
                         >
                             {member.ready ? "ready" : "unready"}
