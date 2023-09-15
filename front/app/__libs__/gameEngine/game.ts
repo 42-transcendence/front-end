@@ -4,7 +4,7 @@ import type {
     GravityObj,
     PhysicsAttribute,
 } from "@common/game-physics-payloads";
-import { readFrames, writeFrame } from "@common/game-physics-payloads";
+import { writeFrame } from "@common/game-physics-payloads";
 import type { Vector } from "matter-js";
 import Matter from "matter-js";
 import { ByteBuffer } from "../akasha-lib/library/byte-buffer";
@@ -14,8 +14,9 @@ import {
     handleResyncPart,
 } from "@common/game-gateway-helper-client";
 
-const PADDLE_IMAGE_SRCS = ["/game-chip-1_dummy.png", "/game-chip-4_dummy.png"];
-const BALL_TEXTURE = "/ball.png";
+// const PADDLE_IMAGE_SRCS = ["/game-chip-1_dummy.png", "/game-chip-4_dummy.png"];
+const PADDLE_IMAGE_SRCS = ["/hdoo.png", "/iyun.png"];
+const BALL_TEXTURE = "/chanhpar.png";
 const TEAM1 = 0;
 const TEAM2 = 1;
 
@@ -80,10 +81,7 @@ export class Game {
             friction: 0,
             render: {
                 sprite: {
-                    texture:
-                        this.team === TEAM1
-                            ? "/game-chip-4_dummy.png"
-                            : "/game-chip-1_dummy.png",
+                    texture: PADDLE_IMAGE_SRCS[1 - this.team],
                     yScale: 1,
                     xScale: 1,
                 },

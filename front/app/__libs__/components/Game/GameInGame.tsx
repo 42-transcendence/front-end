@@ -10,7 +10,7 @@ import { handleUpdateGame } from "@common/game-gateway-helper-client";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { Game } from "@gameEngine/game";
 import { useAtomValue } from "jotai";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export function GameInGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -20,8 +20,12 @@ export function GameInGame() {
     // const gameProps = useAtomValue(GameRoomPropsAtom);
     const gameProgress = useAtomValue(GameProgressAtom);
 
-    const currentMember = gameMembers.find(
-        (member) => member.accountId === currentAccountUUID,
+    const currentMember = useMemo(
+        () =>
+            gameMembers.find(
+                (member) => member.accountId === currentAccountUUID,
+            ),
+        [currentAccountUUID, gameMembers],
     );
 
     const [game, setGame] = useState<Game | null>(null);
@@ -84,5 +88,6 @@ export function GameInGame() {
             game.start();
         }
     }, [game]);
+
     return <canvas ref={canvasRef}></canvas>;
 }
