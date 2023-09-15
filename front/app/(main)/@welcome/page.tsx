@@ -49,6 +49,7 @@ export default function Welcome() {
                         )}
                     </div>
                     <button
+                        onClick={() => void register(value)}
                         className="z-10 h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-500/80 p-2 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white group-valid:bg-green-500/50 group-valid:text-white"
                         type="button"
                     >
