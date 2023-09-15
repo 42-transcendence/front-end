@@ -1,7 +1,13 @@
 "use client";
 
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { GameMemberAtom, InvitationAtom } from "@atoms/GameAtom";
+import {
+    GameMemberAtom,
+    GameRoomParamsAtom,
+    GameRoomPropsAtom,
+    InvitationAtom,
+    LadderAtom,
+} from "@atoms/GameAtom";
 import { GlobalStore } from "@atoms/GlobalStore";
 import {
     handleEnterMember,
@@ -16,7 +22,7 @@ import { GameRoomEnterResult } from "@common/game-payloads";
 import { GameLobby } from "@components/Game/GameLobby";
 import { handleGameError } from "@components/Game/handleGameError";
 import { useGamePlayConnector } from "@hooks/useGameWebSocketConnector";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
@@ -24,6 +30,9 @@ export default function GamePage() {
     const invitationAtom = useAtomValue(InvitationAtom, { store: GlobalStore });
     const router = useRouter();
     const [members, setMembers] = useAtom(GameMemberAtom);
+    const [gameRoomProps, setGameRoomProps] = useAtom(GameRoomPropsAtom);
+    const [gameRoomParams, setGameRoomParams] = useAtom(GameRoomParamsAtom);
+    const setLadderAtom = useSetAtom(LadderAtom);
 
     useGamePlayConnector(
         useMemo(() => makeGameHandshake(invitationAtom), [invitationAtom]),
@@ -37,7 +46,10 @@ export default function GamePage() {
                 case GameClientOpcode.GAME_ROOM: {
                     const [props, params, members, ladder] =
                         handleGameRoom(buffer);
+                    setGameRoomProps(props);
                     setMembers([...members]);
+                    setGameRoomParams(params);
+                    setLadderAtom(ladder);
                     break;
                 }
                 case GameClientOpcode.GAME_FAILED: {
@@ -45,26 +57,30 @@ export default function GamePage() {
                     if (errno !== GameRoomEnterResult.SUCCESS) {
                         handleGameError(errno);
                         router.push("/");
-                        return;
-                    } else {
                     }
                     break;
                 }
                 case GameClientOpcode.ENTER_MEMBER: {
-                    const params = handleEnterMember(buffer);
-                    setMembers([...members, params]);
+                    const newMember = handleEnterMember(buffer);
+                    setMembers([...members, newMember]);
                     break;
                 }
                 case GameClientOpcode.UPDATE_MEMBER: {
-                    const [accountId, character, specification, team, ready] =
-                        handleUpdateMember(buffer);
+                    const updatedMember = handleUpdateMember(buffer);
+                    setMembers(
+                        members.map((member) =>
+                            updatedMember.accountId === member.accountId
+                                ? updatedMember
+                                : member,
+                        ),
+                    );
                     break;
                 }
                 case GameClientOpcode.LEAVE_MEMBER: {
-                    const accountId = handleLeaveMember(buffer);
+                    const leftAccountId = handleLeaveMember(buffer);
                     setMembers(
                         members.filter(
-                            (member) => member.accountId !== accountId,
+                            (member) => member.accountId !== leftAccountId,
                         ),
                     );
                     break;
