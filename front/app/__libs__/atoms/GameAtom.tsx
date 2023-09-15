@@ -15,3 +15,4 @@ export const GameReadyAtom = atom(false);
 export const GameMemberAtom = atom(Array<GameMemberParams>());
 export const GameRoomPropsAtom = atom<GameRoomProps | null>(null);
 export const GameRoomParamsAtom = atom<GameRoomParams | null>(null);
+export const LadderAtom = atom(false);
