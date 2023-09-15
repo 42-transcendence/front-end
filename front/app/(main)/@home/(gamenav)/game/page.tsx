@@ -30,8 +30,8 @@ export default function GamePage() {
     const invitationAtom = useAtomValue(InvitationAtom, { store: GlobalStore });
     const router = useRouter();
     const [members, setMembers] = useAtom(GameMemberAtom);
-    const [gameRoomProps, setGameRoomProps] = useAtom(GameRoomPropsAtom);
-    const [gameRoomParams, setGameRoomParams] = useAtom(GameRoomParamsAtom);
+    const setGameRoomProps = useSetAtom(GameRoomPropsAtom);
+    const setGameRoomParams = useSetAtom(GameRoomParamsAtom);
     const setLadderAtom = useSetAtom(LadderAtom);
 
     useGamePlayConnector(
