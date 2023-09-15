@@ -140,8 +140,7 @@ function CreateNewGameRoom() {
                             className="fixed inset-0 bg-black/30"
                             aria-hidden="true"
                         />
-
-                        <Dialog.Panel className="absolute inset-4 inset-y-8 m-auto max-h-96 max-w-sm overflow-hidden rounded-[28px] bg-windowGlass/30 backdrop-blur-[50px] lg:inset-32">
+                        <Dialog.Panel className="gradient-border back-full absolute inset-4 inset-y-8 m-auto max-h-96 max-w-sm overflow-hidden rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[50px] before:rounded-[28px] before:p-px lg:inset-32">
                             <div className="flex h-full w-full">
                                 <CreateGamePendding
                                     infos={gameModeInfos}
@@ -197,7 +196,7 @@ function CreateGamePendding({
                 />
                 <div className="flex w-full justify-center">
                     {failReason === undefined ? (
-                        <span className="w-16">로딩중</span>
+                        <span className="loading w-16">로딩중</span>
                     ) : (
                         <span className="w-fit">
                             이미 다른 창에서 게임에 참여중입니다.

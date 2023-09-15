@@ -90,7 +90,7 @@ export default function GamePage() {
     );
 
     return (
-        <div>
+        <div className="h-full w-full">
             <GameLobby />
         </div>
     );
