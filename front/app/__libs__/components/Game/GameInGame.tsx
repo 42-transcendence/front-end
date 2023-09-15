@@ -4,9 +4,7 @@ import {
     GameMemberAtom,
     GameProgressAtom,
     GameRoomParamsAtom,
-    // GameRoomPropsAtom,
 } from "@atoms/GameAtom";
-import { handleUpdateGame } from "@common/game-gateway-helper-client";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { Game } from "@gameEngine/game";
 import { useAtomValue } from "jotai";
@@ -17,7 +15,6 @@ export function GameInGame() {
     const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
     const gameMembers = useAtomValue(GameMemberAtom);
     const gameParams = useAtomValue(GameRoomParamsAtom);
-    // const gameProps = useAtomValue(GameRoomPropsAtom);
     const gameProgress = useAtomValue(GameProgressAtom);
 
     const currentMember = useMemo(

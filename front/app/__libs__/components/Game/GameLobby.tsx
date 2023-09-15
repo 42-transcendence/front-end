@@ -35,10 +35,7 @@ export function GameLobby() {
     const gameRoomProps = useAtomValue(GameRoomPropsAtom);
     const gameRoomParams = useAtomValue(GameRoomParamsAtom);
     const ladder = useAtomValue(LadderAtom);
-    const [roomCode, setRoomCode, copyRoomCode] = useCopyText({
-        onSuccess: "복사 완료!",
-        onFailure: "복사 실패",
-    });
+    const [roomCode, setRoomCode, copyRoomCode] = useCopyText();
 
     const { sendPayload } = useWebSocket("game", []);
 

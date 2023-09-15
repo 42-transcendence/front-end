@@ -4,15 +4,11 @@ import type {
     GravityObj,
     PhysicsAttribute,
 } from "@common/game-physics-payloads";
-import { writeFrame } from "@common/game-physics-payloads";
+import { readFrame, writeFrame } from "@common/game-physics-payloads";
 import type { Vector } from "matter-js";
 import Matter from "matter-js";
 import { ByteBuffer } from "../akasha-lib/library/byte-buffer";
 import { BattleField } from "@common/game-payloads";
-import {
-    handleResyncAll,
-    handleResyncPart,
-} from "@common/game-gateway-helper-client";
 
 // const PADDLE_IMAGE_SRCS = ["/game-chip-1_dummy.png", "/game-chip-4_dummy.png"];
 const PADDLE_IMAGE_SRCS = ["/hdoo.png", "/iyun.png"];
@@ -577,8 +573,6 @@ export class Game {
         }
         this.frames.push(frame);
         const buf = ByteBuffer.createWithOpcode(GameServerOpcode.FRAME);
-        buf.write1(this.setNo);
-        buf.write1(this.team);
         writeFrame(buf, frame);
         this.sendPayload(buf);
     }
@@ -640,62 +634,65 @@ export class Game {
     }
 
     resyncAllOpcodeHandler(buf: ByteBuffer) {
-        const frames = handleResyncAll(buf);
-        const size = frames.length;
-        const lastSyncFrameId = frames[frames.length - 1].id;
+        const frame = buf.readNullable(readFrame);
+        if (frame === null) {
+            return;
+        }
+        const lastSyncFrameId = frame.id;
         const diff = this.frames.length - lastSyncFrameId;
         if (diff > 1) {
             for (let i = 1; i < diff; i++) {
                 this.ignoreFrameIds.add(lastSyncFrameId + i);
             }
             this.frames.splice(lastSyncFrameId + 1, diff - 1);
-        } // 전부 리싱크하는 경우 그 이후의 프레임은 무시하고 삭제하도록 설정
-        for (let i = 0; i < size; i++) {
-            if (this.ignoreFrameIds.has(frames[i].id)) {
-                this.ignoreFrameIds.delete(frames[i].id);
-                continue;
-            }
-            if (this.team === TEAM2) {
-                this.reverseFrame(frames[i]);
-            }
-            this.pasteFrame(frames[i]);
-            this.frameQueue.push({
-                resyncType: GameClientOpcode.RESYNC_ALL,
-                frame: frames[i],
-            });
         }
+        // 전부 리싱크하는 경우 그 이후의 프레임은 무시하고 삭제하도록 설정
+        if (this.ignoreFrameIds.has(frame.id)) {
+            this.ignoreFrameIds.delete(frame.id);
+            return;
+        }
+        if (this.team === TEAM2) {
+            this.reverseFrame(frame);
+        }
+        this.pasteFrame(frame);
+        this.frameQueue.push({
+            resyncType: GameClientOpcode.RESYNC_ALL,
+            frame: frame,
+        });
     }
 
     resyncPartOpcodeHandler(buf: ByteBuffer) {
-        const frames = handleResyncPart(buf);
-        const size = frames.length;
-        for (let i = 0; i < size; i++) {
-            if (this.ignoreFrameIds.has(frames[i].id)) {
-                this.ignoreFrameIds.delete(frames[i].id);
-                if (this.team === TEAM2) {
-                    this.reverseFrame(frames[i]);
-                }
-                this.frameQueue.push({
-                    resyncType: GameClientOpcode.RESYNC_PARTOF,
-                    frame: frames[i],
-                });
-            } // 무시하는 프레임에 등록된 경우 상대 패들만 싱크하고 나머지는 무시
-            else {
-                if (this.team === TEAM2) {
-                    this.reverseFrame(frames[i]);
-                }
-                this.pasteFrame(frames[i]);
-                this.frameQueue.push({
-                    resyncType: GameClientOpcode.RESYNC_PART,
-                    frame: frames[i],
-                });
+        const frame = buf.readNullable(readFrame);
+        if (frame === null) {
+            return;
+        }
+        if (this.ignoreFrameIds.has(frame.id)) {
+            this.ignoreFrameIds.delete(frame.id);
+            if (this.team === TEAM2) {
+                this.reverseFrame(frame);
             }
+            this.frameQueue.push({
+                resyncType: GameClientOpcode.RESYNC_PARTOF,
+                frame: frame,
+            });
+        }
+        // 무시하는 프레임에 등록된 경우 상대 패들만 싱크하고 나머지는 무시
+        else {
+            if (this.team === TEAM2) {
+                this.reverseFrame(frame);
+            }
+            this.pasteFrame(frame);
+            this.frameQueue.push({
+                resyncType: GameClientOpcode.RESYNC_PART,
+                frame: frame,
+            });
         }
     }
 
     start() {
         Matter.Render.run(this.render);
-        this.canvas.addEventListener("mousemove", (event: MouseEvent) => {
+
+        const moveEventHandler = (event: MouseEvent | TouchEvent) => {
             event.preventDefault();
             const prevTimestamp = Date.now();
             const prevPointX = this.myPaddle.position.x;
@@ -719,32 +716,11 @@ export class Game {
                 x: (this.myPaddle.position.x - prevPointX) / deltaT,
                 y: (this.myPaddle.position.y - prevPointY) / deltaT,
             };
-        });
-        this.canvas.addEventListener("touchmove", (event: TouchEvent) => {
-            event.preventDefault();
-            const prevTimestamp = Date.now();
-            const prevPointX = this.myPaddle.position.x;
-            const prevPointY = this.myPaddle.position.y;
-            const mousePos = this.calculatePos(event);
-            this.myPaddleY = mousePos.y - PADDLE_RADIUS / 2;
-            this.myPaddleX = mousePos.x - PADDLE_RADIUS / 2;
-            Matter.Body.setPosition(this.myPaddle, {
-                x: this.myPaddleX,
-                y: this.myPaddleY,
-            });
-            // 패들 중앙선 침범 금지~!
-            if (this.myPaddle.position.y < HEIGHT / 2 + PADDLE_RADIUS) {
-                Matter.Body.setPosition(this.myPaddle, {
-                    x: this.myPaddle.position.x,
-                    y: HEIGHT / 2 + PADDLE_RADIUS,
-                });
-            }
-            const deltaT = Date.now() - prevTimestamp + 1;
-            this.myPaddleVelocity = {
-                x: (this.myPaddle.position.x - prevPointX) / deltaT,
-                y: (this.myPaddle.position.y - prevPointY) / deltaT,
-            };
-        });
+        };
+
+        this.canvas.addEventListener("mousemove", moveEventHandler);
+        this.canvas.addEventListener("touchmove", moveEventHandler);
+
         //add Ellipse
         if (this.field === BattleField.ROUND) {
             this.setEllipse();
