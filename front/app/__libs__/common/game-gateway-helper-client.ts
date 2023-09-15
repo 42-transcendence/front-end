@@ -70,21 +70,8 @@ export function handleGameFailedPayload(
     return errno;
 }
 
-export function handleEnterMember(
-    payload: ByteBuffer,
-): [
-    accountId: string,
-    character: number,
-    specification: number,
-    team: number,
-    ready: boolean,
-] {
-    const accountId = payload.readUUID();
-    const character = payload.read1();
-    const specification = payload.read1();
-    const team = payload.read1();
-    const ready = payload.readBoolean();
-    return [accountId, character, specification, team, ready];
+export function handleEnterMember(payload: ByteBuffer): GameMemberParams {
+    return readGameMemberParams(payload);
 }
 
 export function handleUpdateMember(
