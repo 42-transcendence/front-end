@@ -18,15 +18,6 @@ type GameTeamParams = {
     members: GameMemberParams[];
 };
 
-// function useAudio(src: string) {
-//     useEffect(() => {
-//         const audio = new Audio(src);
-//         audio.onload = () => audio.play();
-//
-//         return () => audio.pause();
-//     }, [src]);
-// }
-
 const teamName = ["A", "B"];
 
 export function GameLobby() {
