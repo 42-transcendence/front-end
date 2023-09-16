@@ -60,11 +60,11 @@ export function FriendModal() {
     };
 
     return (
-        <GlassWindow className="">
+        <GlassWindow className="max-w-[18rem] ">
             <div className="overflow-clip rounded-[28px]">
                 <FriendRequestList />
                 <FriendList />
-                <div className="relative flex h-fit w-full shrink-0 flex-col items-start">
+                <div className="relative flex h-fit w-full flex-col items-start">
                     <div
                         className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 text-gray-300 hover:bg-primary/30"
                         onClick={sendFriendRequest}
