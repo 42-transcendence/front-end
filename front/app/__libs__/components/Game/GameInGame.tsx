@@ -98,5 +98,12 @@ export function GameInGame() {
         }
     }, [game]);
 
-    return <canvas ref={canvasRef} className="cursor-none"></canvas>;
+    return (
+        <canvas
+            ref={canvasRef}
+            width={500}
+            height={960}
+            className="fixed left-0 top-0 cursor-none"
+        ></canvas>
+    );
 }
