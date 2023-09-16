@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { TextField } from "@components/TextField";
 import { ProfileItemSelectable } from "@components/ProfileItem/ProfileItemSelectable";
 import { FriendEntryListAtom } from "@atoms/FriendAtom";
@@ -27,12 +27,15 @@ export function InviteList({
     const friendEntrySet = useAtomValue(FriendEntryListAtom, {
         store: GlobalStore,
     });
-    const filteredEntrySet =
-        filterUnjoined && currentChatMembers !== undefined
-            ? friendEntrySet.filter(
-                  (e) => !currentChatMembers.has(e.friendAccountId),
-              )
-            : [...friendEntrySet];
+    const filteredEntrySet = useMemo(
+        () =>
+            filterUnjoined && currentChatMembers !== undefined
+                ? friendEntrySet.filter(
+                      (e) => !currentChatMembers.has(e.friendAccountId),
+                  )
+                : [...friendEntrySet],
+        [currentChatMembers, filterUnjoined, friendEntrySet],
+    );
 
     const profiles = usePublicProfiles(
         useId(),
