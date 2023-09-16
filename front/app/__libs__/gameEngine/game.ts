@@ -32,6 +32,8 @@ const RATIO = WIDTH / 1000;
 const LINE_CATEGORY = 0x0002;
 
 export class Game {
+    //progress
+    private progress: GameProgress | undefined;
     //score
     private team1Score = 0;
     private team2Score = 0;
@@ -113,7 +115,6 @@ export class Game {
 
     constructor(
         private sendPayload: (value: ByteBuffer) => void,
-        private readonly setNo: number,
         private readonly team: number,
         private readonly field: BattleField,
         private readonly gravity: GravityObj[],
@@ -142,6 +143,8 @@ export class Game {
                 showAngleIndicator: true,
                 showCollisions: true,
                 wireframes: false,
+                background: "transparent",
+                // wireframeBackground: "transparent",
             },
         });
         this.canvas = this.render.canvas;
@@ -420,11 +423,11 @@ export class Game {
                     mask: LINE_CATEGORY,
                 },
                 render: {
-                    sprite: {
-                        texture: "/background.png",
-                        yScale: 0.22,
-                        xScale: 0.18,
-                    },
+                    // sprite: {
+                    //     texture: "/background.png",
+                    //     yScale: 0.22,
+                    //     xScale: 0.18,
+                    // },
                 },
             },
         );
@@ -540,9 +543,16 @@ export class Game {
     }
 
     private sendFrame(paddle1Hit: boolean, paddle2Hit: boolean) {
-        if (this.team1Score === WIN_SCORE || this.team2Score === WIN_SCORE) {
+        if (this.progress !== undefined && this.progress.suspended) {
             return;
         }
+        // if (
+        //     this.progress !== undefined &&
+        //     (this.progress.score[0] === WIN_SCORE ||
+        //         this.progress.score[1] === WIN_SCORE)
+        // ) {
+        //     return;
+        // }
         const myPaddle: PhysicsAttribute = {
             position: {
                 x: this.myPaddle.position.x,
@@ -721,12 +731,8 @@ export class Game {
         }
     }
 
-    getSetNumber() {
-        return this.setNo;
-    }
-
-    setPlayerScore(progress: GameProgress) {
-        [this.team1Score, this.team2Score] = progress.score;
+    setGameProgress(progress: GameProgress) {
+        this.progress = progress;
     }
 
     start() {
@@ -908,8 +914,14 @@ export class Game {
             this.sendFrame(paddle1Hit, paddle2Hit);
 
             //승점계산
-            this.judgeWinner();
+            // this.judgeWinner();
             // this.drawScore();
         });
+    }
+
+    stopGame() {
+        Matter.Engine.clear(this.engine);
+        Matter.Render.stop(this.render);
+        Matter.Runner.stop(this.runner);
     }
 }

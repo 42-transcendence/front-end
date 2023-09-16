@@ -71,12 +71,9 @@ export function GameInGame() {
                 }
                 case GameClientOpcode.UPDATE_GAME: {
                     const updateInfo = handleUpdateGame(buf);
-                    if (
-                        game !== null &&
-                        updateInfo !== null &&
-                        updateInfo.currentSet === game.getSetNumber()
-                    ) {
-                        game.setPlayerScore(updateInfo);
+                    if (game !== null && updateInfo !== null) {
+                        console.log(updateInfo);
+                        game.setGameProgress(updateInfo);
                     }
                     break;
                 }
@@ -87,25 +84,23 @@ export function GameInGame() {
     useEffect(() => {
         if (
             canvasRef.current === null ||
-            gameProgress === null ||
             gameParams === null ||
             currentMember === undefined
         ) {
             return;
         }
-        setGame((game) =>
-            game === null
-                ? new Game(
-                      sendPayload,
-                      gameProgress.currentSet,
-                      currentMember.team,
-                      gameParams.battleField,
-                      [],
-                      canvasRef,
-                  )
-                : game,
+        // console.log(gameParams, gameProgress);
+        const game = new Game(
+            sendPayload,
+            currentMember.team,
+            gameParams.battleField,
+            [],
+            canvasRef,
         );
-    }, [currentMember, gameParams, gameProgress, sendPayload]);
+        setGame(game);
+
+        return () => game.stopGame();
+    }, [currentMember, gameParams, sendPayload]);
 
     useEffect(() => {
         if (game !== null) {
@@ -118,7 +113,7 @@ export function GameInGame() {
             ref={canvasRef}
             width={500}
             height={960}
-            className="fixed left-0 top-0 cursor-none"
+            className="fixed left-0 top-0 cursor-none outline outline-8 outline-red-600"
         ></canvas>
     );
 }
