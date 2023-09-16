@@ -21,6 +21,8 @@ import {
 } from "@common/game-payloads";
 import { partition } from "@utils/collections";
 import { Icon } from "@components/ImageLibrary";
+import { NickBlock } from "@components/ProfileItem/ProfileItem";
+import { useProtectedProfiles } from "@hooks/useProfile";
 
 type GameTeamParams = {
     id: number;
@@ -33,9 +35,6 @@ const teamName = ["보라보라", "파랑파랑"];
 export function GameLobby() {
     const members = useAtomValue(GameMemberAtom);
     const gameRoomProps = useAtomValue(GameRoomPropsAtom);
-    const gameRoomParams = useAtomValue(GameRoomParamsAtom);
-    const ladder = useAtomValue(LadderAtom);
-    const [roomCode, setRoomCode, copyRoomCode] = useCopyText();
 
     const { sendPayload } = useWebSocket("game", []);
 
@@ -46,13 +45,7 @@ export function GameLobby() {
         [sendPayload],
     );
 
-    useEffect(() => {
-        if (gameRoomProps !== null && gameRoomProps.code !== null) {
-            setRoomCode(`https://${HOST}/game/${gameRoomProps.code}`);
-        }
-    }, [gameRoomProps, setRoomCode]);
-
-    if (gameRoomProps === null || gameRoomParams === null) {
+    if (gameRoomProps === null) {
         return null;
     }
 
@@ -62,46 +55,11 @@ export function GameLobby() {
     ).map((e, index) => ({ id: index, name: teamName[index], members: e }));
 
     return (
-        <div className="h-full w-full overflow-hidden bg-windowGlass/30 p-4 backdrop-blur-[50px]">
-            <div className="flex w-full flex-row justify-between gap-2 p-4">
-                <span className="w-full text-4xl font-extrabold italic">
-                    {ladder ? "QUICK MATCH" : "CUSTOM GAME"}
-                </span>
-                <div className="flex w-fit shrink-0 items-center justify-center overflow-clip rounded-xl bg-windowGlass/30">
-                    <span className="w-fit shrink-0 px-3 py-2.5 text-xl font-bold">
-                        {gameRoomParams.limit === 2 ? "1:1" : "2:2"}
-                    </span>
-                    <span className="w-fit shrink-0 px-3 py-2.5 text-xl font-bold">
-                        {gameRoomParams.battleField === BattleField.ROUND
-                            ? "동글동글"
-                            : gameRoomParams.battleField === BattleField.SQUARE
-                            ? "네모네모"
-                            : "두근두근"}
-                    </span>
-                    <span
-                        className={`flex h-full w-fit shrink-0 items-center  ${
-                            gameRoomParams.gameMode === GameMode.UNIFORM
-                                ? "bg-secondary/70"
-                                : "bg-primary/70"
-                        } px-3 py-2.5 text-xl font-bold `}
-                    >
-                        {gameRoomParams.gameMode === GameMode.UNIFORM
-                            ? "기본"
-                            : gameRoomParams.gameMode === GameMode.GRAVITY
-                            ? "중력"
-                            : "두근"}
-                    </span>
-                </div>
-                <button
-                    type="button"
-                    className="flex min-w-fit flex-row items-center justify-center gap-2 rounded-xl p-2 hover:bg-primary/30 hover:text-gray-50/80 active:bg-secondary active:text-white"
-                    onClick={() => copyRoomCode()}
-                >
-                    <Icon.Copy />
-                    공유 링크 복사
-                </button>
+        <div className="relative flex h-full w-full flex-col overflow-hidden bg-windowGlass/30 p-4 backdrop-blur-[50px]  lg:px-40 2xl:px-80">
+            <div className="flex w-full flex-row justify-between gap-2 p-4 lg:px-8">
+                <GameLobbyHeader />
             </div>
-            <section className="relative flex w-full flex-row justify-around">
+            <section className="relative flex h-full w-full flex-col justify-around gap-4 overflow-hidden rounded-[40px] p-6 lg:flex-row lg:gap-20 lg:px-20">
                 {[teamA, teamB].map((team) => (
                     <TeamPanel
                         key={team.id}
@@ -114,6 +72,73 @@ export function GameLobby() {
     );
 }
 
+function GameLobbyHeader() {
+    const gameRoomParams = useAtomValue(GameRoomParamsAtom);
+    const ladder = useAtomValue(LadderAtom);
+    const [roomCode, setRoomCode, copyRoomCode] = useCopyText();
+    const gameRoomProps = useAtomValue(GameRoomPropsAtom);
+    const GUEST = "front.stri.dev";
+
+    useEffect(() => {
+        if (gameRoomProps !== null && gameRoomProps.code !== null) {
+            setRoomCode(`https://${GUEST}/game/${gameRoomProps.code}`);
+        }
+    }, [gameRoomProps, setRoomCode]);
+
+    return (
+        <>
+            <span className="w-20 font-extrabold italic lg:w-full lg:text-4xl">
+                {ladder ? "QUICK MATCH" : "CUSTOM GAME"}
+            </span>
+            <div className="flex w-fit shrink-0 flex-row justify-center gap-2">
+                <div className="flex w-fit shrink-0 items-center justify-center overflow-clip rounded-xl bg-windowGlass/30">
+                    <span className="w-fit shrink-0 px-3 py-2.5 font-bold lg:text-xl">
+                        {gameRoomParams === null
+                            ? ""
+                            : gameRoomParams.limit === 2
+                            ? "1:1"
+                            : "2:2"}
+                    </span>
+                    <span className="w-fit shrink-0 px-3 py-2.5 font-bold lg:text-xl">
+                        {gameRoomParams === null
+                            ? ""
+                            : gameRoomParams.battleField === BattleField.ROUND
+                            ? "동글동글"
+                            : gameRoomParams.battleField === BattleField.SQUARE
+                            ? "네모네모"
+                            : "두근두근"}
+                    </span>
+                    <span
+                        className={`flex h-full w-fit shrink-0 items-center  ${
+                            gameRoomParams === null
+                                ? ""
+                                : gameRoomParams.gameMode === GameMode.UNIFORM
+                                ? "bg-secondary/70"
+                                : "bg-primary/70"
+                        } px-3 py-2.5 font-bold lg:text-xl `}
+                    >
+                        {gameRoomParams === null
+                            ? ""
+                            : gameRoomParams.gameMode === GameMode.UNIFORM
+                            ? "기본"
+                            : gameRoomParams.gameMode === GameMode.GRAVITY
+                            ? "중력"
+                            : "두근"}
+                    </span>
+                </div>
+                <button
+                    type="button"
+                    className="flex min-w-fit flex-row items-center justify-center rounded-xl p-2 hover:bg-primary/30 hover:text-gray-50/80 active:bg-secondary active:text-white"
+                    onClick={() => copyRoomCode()}
+                >
+                    <Icon.Copy className="h-9 w-9 p-2" />
+                    <span className="hidden p-2 lg:block">공유 링크 복사</span>
+                </button>
+            </div>
+        </>
+    );
+}
+
 function TeamPanel({
     team,
     toggleReady,
@@ -122,41 +147,45 @@ function TeamPanel({
     toggleReady: (x: boolean) => void;
 }) {
     const currentAccountUUID = useCurrentAccountUUID();
+
     return (
-        <div className="flex flex-col">
+        <div className="flex h-full w-full flex-col overflow-hidden rounded-lg">
             <span
                 className={`
-                rounded-[28px_28px_0px_0px] p-4
+                flex items-center justify-center p-4 font-black italic text-gray-50/90
                 ${
                     team.name === "보라보라"
-                        ? "bg-primary/30"
-                        : "bg-secondary/30"
-                } text-4xl`}
+                        ? "bg-primary/50"
+                        : "bg-secondary/50"
+                } text-xl lg:text-4xl`}
             >{`${team.name} 팀`}</span>
-            {team.members.map((member) => (
-                <div
-                    key={member.accountId}
-                    className={`
+            <div className="flex flex-col p-4">
+                {team.members.map((member) => (
+                    <div
+                        key={member.accountId}
+                        className={`
                     ${
                         member.accountId === currentAccountUUID
                             ? "bg-secondary/30"
                             : "bg-black/30"
-                    }`}
-                >
-                    <Avatar
-                        accountUUID={member.accountId}
-                        className="relative h-12 w-12"
-                        privileged={false}
-                    />
-                    <button
-                        className="border-red-400"
-                        onClick={() => toggleReady(!member.ready)}
-                        disabled={currentAccountUUID !== member.accountId}
+                    } rounded`}
                     >
-                        {member.ready ? "ready" : "unready"}
-                    </button>
-                </div>
-            ))}
+                        <Avatar
+                            accountUUID={member.accountId}
+                            className="relative h-12 w-12"
+                            privileged={false}
+                        />
+                        <NickBlock profile={undefined} />
+                        <button
+                            className="border-red-400"
+                            onClick={() => toggleReady(!member.ready)}
+                            disabled={currentAccountUUID !== member.accountId}
+                        >
+                            {member.ready ? "ready" : "unready"}
+                        </button>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

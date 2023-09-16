@@ -86,7 +86,7 @@ export function ProfileItem({
 export function NickBlock({
     profile,
 }: {
-    profile: AccountProfilePublicPayload | undefined;
+    profile?: AccountProfilePublicPayload | undefined;
 }) {
     return profile !== undefined ? (
         <div className="flex flex-row items-center gap-2">
