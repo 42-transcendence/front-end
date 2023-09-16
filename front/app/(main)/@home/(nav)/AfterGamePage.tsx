@@ -91,7 +91,7 @@ export function AfterGamePage() {
 
     return (
         <div className="flex h-full w-full flex-col items-center justify-start lg:p-16">
-            <GlassWindow className="h-full w-full">
+            <GlassWindow className="h-full w-full bg-windowGlass/30">
                 <div className="flex h-full w-full flex-col gap-4 p-8">
                     <div className="flex w-full items-center justify-center text-7xl italic">
                         {isWin ? (

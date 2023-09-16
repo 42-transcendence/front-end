@@ -60,7 +60,7 @@ export function FriendModal() {
     };
 
     return (
-        <GlassWindow className="min-w-[18rem] max-w-[18rem]">
+        <GlassWindow className="min-w-[18rem] max-w-[18rem] bg-windowGlass/30">
             <div className="overflow-clip rounded-[28px]">
                 <FriendRequestList />
                 <FriendList />

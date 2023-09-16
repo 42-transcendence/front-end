@@ -32,7 +32,7 @@ function HelloWorldPaper() {
 }
 
 export default function Home() {
-    const [test, setTest] = useState(false);
+    const [test, setTest] = useState(true);
 
     return test ? (
         <div className="flex h-full w-full items-center justify-center bg-black/30">

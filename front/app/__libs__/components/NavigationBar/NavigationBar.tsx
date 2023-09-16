@@ -21,7 +21,12 @@ export function NavigationBar() {
 export function GameNavigationBar() {
     return (
         <div className="relative flex h-fit w-full flex-row items-center justify-between bg-yellow-600/30 p-2 backdrop-blur-[20px] backdrop-brightness-100">
-            <div className="relative flex flex-row items-center justify-between gap-4"></div>
+            <HomeButton />
+            <div className="relative flex flex-row items-center justify-between gap-4">
+                <ChatButton />
+                <FriendButton />
+                <ProfileButton />
+            </div>
         </div>
     );
 }
