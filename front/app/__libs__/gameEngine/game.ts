@@ -134,7 +134,6 @@ export class Game {
             throw new Error("no canvas");
         }
         this.render = Matter.Render.create({
-            element: document.body,
             engine: this.engine,
             canvas: canvasRef.current, // XXX
             options: {

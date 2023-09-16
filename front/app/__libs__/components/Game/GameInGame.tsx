@@ -113,21 +113,12 @@ export function GameInGame() {
         }
     }, [game]);
 
-    useLayoutEffect(() => {
-        if (canvasRef.current !== null) {
-            drawCircle(canvasRef.current);
-        }
-    });
-
     return (
-        <>
-            <div className="bg-space h-full w-full bg-cover"></div>
-            <canvas
-                className="fixed inset-x-0 top-20 mx-auto"
-                width={500}
-                height={960}
-                ref={canvasRef}
-            ></canvas>
-        </>
+        <canvas
+            ref={canvasRef}
+            width={500}
+            height={960}
+            className="fixed left-0 top-0 cursor-none"
+        ></canvas>
     );
 }
