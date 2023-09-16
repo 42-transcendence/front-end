@@ -15,8 +15,6 @@ export function ChatBubble({
     isLastContinuedMessage: boolean;
     dir: "left" | "right";
 }) {
-    const profile = usePublicProfile(chatMessage.accountId);
-
     const hidden = dir === "right" || isContinued ? "hidden" : "";
     return (
         <div
@@ -32,7 +30,7 @@ export function ChatBubble({
             <div
                 className={`${hidden} absolute left-16 top-2 font-sans text-lg font-normal text-white `}
             >
-                <NickBlock profile={profile} />
+                <NickBlock accountUUID={chatMessage.accountId} />
             </div>
             <ChatTextBubble
                 chatMessage={chatMessage}

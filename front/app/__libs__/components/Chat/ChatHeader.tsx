@@ -11,7 +11,6 @@ import {
     extractTargetFromDirectChatKey,
     isDirectChatKey,
 } from "@akasha-utils/idb/chat-store";
-import { useProtectedProfile } from "@hooks/useProfile";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
 
 export function RightSideBarInput() {
@@ -119,14 +118,11 @@ export function ChatHeader() {
     const currentChatRoomTitle = useChatRoomTitle(currentChatRoomUUID);
     const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const roomType = currentChatRoomIsDirect ? "다이렉트 메시지" : "그룹 채팅";
-    const targetProfile = useProtectedProfile(
-        currentChatRoomIsDirect
-            ? extractTargetFromDirectChatKey(currentChatRoomUUID)
-            : "",
-    );
 
     const title = currentChatRoomIsDirect ? (
-        <NickBlock profile={targetProfile} />
+        <NickBlock
+            accountUUID={extractTargetFromDirectChatKey(currentChatRoomUUID)}
+        />
     ) : (
         currentChatRoomTitle ?? "채팅방을 선택하세요"
     );

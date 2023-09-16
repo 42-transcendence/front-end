@@ -1,9 +1,11 @@
 import { handleUnbanMemberResult } from "@akasha-utils/chat-gateway-client";
-import { makeBanListRequest, makeUnbanMemberRequest } from "@akasha-utils/chat-payload-builder-client";
+import {
+    makeBanListRequest,
+    makeUnbanMemberRequest,
+} from "@akasha-utils/chat-payload-builder-client";
 import { ChatErrorNumber } from "@common/chat-payloads";
 import type { ChatBanDetailEntry } from "@common/chat-payloads";
 import { Avatar } from "@components/Avatar";
-import { usePublicProfile } from "@hooks/useProfile";
 import { NickBlock } from "./ProfileItem";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { ChatClientOpcode } from "@common/chat-opcodes";
@@ -21,7 +23,6 @@ export function ProfileItemBlocked({
     selected: boolean;
     onClick: React.MouseEventHandler;
 }>) {
-    const profile = usePublicProfile(entry.accountId);
     const currentChatRoomId = useCurrentChatRoomUUID();
     const { sendPayload } = useWebSocket(
         "chat",
@@ -56,7 +57,7 @@ export function ProfileItemBlocked({
                     </div>
                     <div className="w-full overflow-hidden">
                         <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-[150%] group-hover/profile:overflow-visible group-hover/profile:delay-300 group-hover/profile:duration-[5000ms]">
-                            <NickBlock profile={profile} />
+                            <NickBlock accountUUID={entry.accountId} />
                         </div>
                     </div>
                 </div>

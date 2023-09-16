@@ -11,7 +11,6 @@ import {
 import { useAtomValue } from "jotai";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 import { useCallback, useEffect } from "react";
-import { HOST } from "@utils/constants";
 import { makeReadyStateRequest } from "@akasha-utils/game-payload-builder-clients";
 import { useCopyText } from "@hooks/useCopyText";
 import {
@@ -22,7 +21,6 @@ import {
 import { partition } from "@utils/collections";
 import { Icon } from "@components/ImageLibrary";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
-import { useProtectedProfiles } from "@hooks/useProfile";
 
 type GameTeamParams = {
     id: number;
@@ -175,7 +173,7 @@ function TeamPanel({
                             className="relative h-12 w-12"
                             privileged={false}
                         />
-                        <NickBlock profile={undefined} />
+                        <NickBlock accountUUID={member.accountId} />
                         <button
                             className="border-red-400"
                             onClick={() => toggleReady(!member.ready)}

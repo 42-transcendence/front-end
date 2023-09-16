@@ -4,7 +4,6 @@ import { useProtectedProfile, usePublicProfile } from "@hooks/useProfile";
 import { Provider, createStore } from "jotai";
 import type { Scope } from "@components/ContextMenu";
 import { ContextMenu } from "@components/ContextMenu";
-import type { AccountProfilePublicPayload } from "@common/profile-payloads";
 import { Icon } from "@components/ImageLibrary";
 import { useChatMember } from "@hooks/useChatRoom";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
@@ -23,7 +22,6 @@ export function ProfileItem({
     onClick?: React.MouseEventHandler | undefined;
     type: Scope;
 }) {
-    const profile = usePublicProfile(accountUUID);
     const protectedProfile = useProtectedProfile(accountUUID);
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentUser = useChatMember(currentChatRoomUUID, accountUUID);
@@ -56,7 +54,7 @@ export function ProfileItem({
                         </div>
                         <div className="relative flex w-fit flex-col items-start gap-1">
                             <div className="flex flex-row gap-2">
-                                <NickBlock profile={profile} />
+                                <NickBlock accountUUID={accountUUID} />
                                 {type === "ChatRoom" &&
                                     roleLevel >= managerRoleLevel && (
                                         <Icon.CrownFilled
@@ -83,11 +81,9 @@ export function ProfileItem({
     );
 }
 
-export function NickBlock({
-    profile,
-}: {
-    profile?: AccountProfilePublicPayload | undefined;
-}) {
+export function NickBlock({ accountUUID }: { accountUUID: string }) {
+    const profile = usePublicProfile(accountUUID);
+
     return profile !== undefined ? (
         <div className="flex flex-row items-center gap-2">
             <span className="relative w-fit whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50">
