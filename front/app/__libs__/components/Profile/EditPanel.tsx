@@ -9,6 +9,12 @@ import { OTPRegistration } from "@components/OTPRegistration";
 import { Dialog, Disclosure, Switch } from "@headlessui/react";
 import { useGetOTP } from "@hooks/useOTP";
 import { Icon } from "@components/ImageLibrary";
+import { useAtomValue } from "jotai";
+import { EnemyEntryListAtom } from "@atoms/FriendAtom";
+import {
+    ProfileItemBlocked,
+    ProfileItemEnemy,
+} from "@components/ProfileItem/ProfileItemBlocked";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
@@ -16,6 +22,8 @@ export function EditPanel() {
     const [editAvatar, setEditAvatar] = useState(false);
     const [showOTP, setShowOTP] = useState(false);
     const otpEnabled = useGetOTP();
+    const banList = useAtomValue(EnemyEntryListAtom);
+    const [selected, setSelected] = useState("");
 
     useEffect(() => {
         setShowOTP(false);
@@ -123,8 +131,8 @@ export function EditPanel() {
                     <div className="relative mx-auto w-full rounded-2xl p-2">
                         <Disclosure>
                             {({ open }) => (
-                                <>
-                                    <Disclosure.Button className="flex w-full justify-between rounded-lg bg-black/30 px-4 py-2 text-left text-sm font-medium text-purple-900 hover:bg-primary/30 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+                                <div className="overflow-hidden rounded-lg bg-black/30">
+                                    <Disclosure.Button className="flex w-full justify-between px-4 py-2 text-left text-sm font-medium text-purple-900 hover:bg-primary/30 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
                                         <span className="text-gray-50">
                                             차단 목록
                                         </span>
@@ -136,9 +144,29 @@ export function EditPanel() {
                                             } h-5 w-5 text-primary`}
                                         />
                                     </Disclosure.Button>
-                                    {/*TODO: Add ban list*/}
-                                    <Disclosure.Panel className="px-4 pb-2 pt-4 text-sm text-gray-500"></Disclosure.Panel>
-                                </>
+                                    <Disclosure.Panel className="p-1 text-sm text-gray-500">
+                                        <div className="overflow-hidden rounded bg-black/30">
+                                            {banList.map((entry) => (
+                                                <ProfileItemEnemy
+                                                    key={entry.enemyAccountId}
+                                                    entry={entry}
+                                                    selected={
+                                                        selected ===
+                                                        entry.enemyAccountId
+                                                    }
+                                                    onClick={() =>
+                                                        setSelected(
+                                                            selected !==
+                                                                entry.enemyAccountId
+                                                                ? entry.enemyAccountId
+                                                                : "",
+                                                        )
+                                                    }
+                                                />
+                                            ))}
+                                        </div>
+                                    </Disclosure.Panel>
+                                </div>
                             )}
                         </Disclosure>
                     </div>
