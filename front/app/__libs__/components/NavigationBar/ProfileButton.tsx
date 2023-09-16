@@ -3,13 +3,12 @@
 import { Avatar } from "@components/Avatar";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { Dialog } from "@headlessui/react";
-import { ProfileModalIsOpen } from "@atoms/ProfileAtom";
-import { useAtom } from "jotai";
 import { ProfileModal } from "./ProfileModal";
+import { useState } from "react";
 
 export function ProfileButton() {
     const currentAccountUUID = useCurrentAccountUUID();
-    const [isOpen, setIsOpen] = useAtom(ProfileModalIsOpen);
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <>
