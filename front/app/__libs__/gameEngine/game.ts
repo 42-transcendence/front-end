@@ -20,10 +20,12 @@ const TEAM2 = 1;
 
 const WIDTH = 500;
 const HEIGHT = 960;
-const BALL_RADIUS = 36;
-const PADDLE_RADIUS = 80;
-const GOAL_RADIUS = PADDLE_RADIUS + 8;
+const BALL_RADIUS = 18;
+const PADDLE_RADIUS = 40;
+const GOAL_RADIUS = PADDLE_RADIUS + PADDLE_RADIUS / 10;
 const WIN_SCORE = 5;
+
+const RATIO = WIDTH / 1000;
 
 //ignore collision
 const LINE_CATEGORY = 0x0002;
@@ -44,7 +46,7 @@ export class Game {
     private canvasContext: CanvasRenderingContext2D | null;
     // my paddle
     private myPaddleX = WIDTH / 2;
-    private myPaddleY = HEIGHT - BALL_RADIUS - 50;
+    private myPaddleY = HEIGHT - BALL_RADIUS - WIDTH / 20;
     private myPaddle = Matter.Bodies.circle(
         this.myPaddleX,
         this.myPaddleY,
@@ -66,7 +68,7 @@ export class Game {
     );
     // counter paddle
     private counterPaddleX = WIDTH / 2;
-    private counterPaddleY = BALL_RADIUS + 50;
+    private counterPaddleY = BALL_RADIUS + WIDTH / 20;
     private counterPaddle = Matter.Bodies.circle(
         this.counterPaddleX,
         this.counterPaddleY,
@@ -104,7 +106,7 @@ export class Game {
     });
     private framesPerSecond = 60;
     private frames: Frame[] = [];
-    private circleVelocity = { x: 15, y: 15 };
+    private circleVelocity = { x: WIDTH / 75, y: HEIGHT / 75 };
     private frameQueue: { resyncType: GameClientOpcode; frame: Frame }[] = [];
     private ignoreFrameIds: Set<number> = new Set<number>();
 
@@ -386,15 +388,17 @@ export class Game {
         );
         const focusPos1 = HEIGHT / 2 + focus;
         const focusPos2 = HEIGHT / 2 - focus;
-        for (let i = 0; i < 350; i++) {
+        const NUMBER_OF_CIRCLES = 350;
+
+        for (let i = 0; i < NUMBER_OF_CIRCLES; i++) {
             const a = Matter.Bodies.circle(
-                WIDTH / 2 + Math.cos(i) * (ellipseMinorAxis / 2 + 20),
-                HEIGHT / 2 + Math.sin(i) * (ellipseMajorAxis / 2 + 20),
-                20,
+                WIDTH / 2 + Math.cos(i) * (ellipseMinorAxis / 2 + 20 * RATIO),
+                HEIGHT / 2 + Math.sin(i) * (ellipseMajorAxis / 2 + 20 * RATIO),
+                20 * RATIO,
                 {
                     isStatic: true,
                     render: {
-                        fillStyle: "#f55a3c",
+                        visible: false,
                     },
                 },
             );
@@ -433,8 +437,8 @@ export class Game {
             render: {
                 sprite: {
                     texture: "/blackhole.png",
-                    yScale: 0.45,
-                    xScale: 0.45,
+                    yScale: 0.45 * RATIO,
+                    xScale: 0.45 * RATIO,
                 },
             },
         });
@@ -446,8 +450,8 @@ export class Game {
             render: {
                 sprite: {
                     texture: "/blackhole.png",
-                    yScale: 0.45,
-                    xScale: 0.45,
+                    yScale: 0.45 * RATIO,
+                    xScale: 0.45 * RATIO,
                 },
             },
         });
@@ -456,7 +460,7 @@ export class Game {
 
     private limitVelocity() {
         //속도제한
-        const limit = 35;
+        const limit = 35 * RATIO;
         if (this.circle.velocity.x > limit) {
             Matter.Body.setVelocity(this.circle, {
                 x: limit,
@@ -473,23 +477,25 @@ export class Game {
 
     private drawScore() {
         if (this.canvasContext === null) return;
-        const team1DrawPos = this.team === TEAM1 ? 1900 : 25;
-        const team2DrawPos = team1DrawPos === 1900 ? 25 : 1900;
+        const [team1DrawPos, team2DrawPos] =
+            this.team === TEAM1
+                ? [1900 * RATIO, 25 * RATIO]
+                : [25 * RATIO, 1900 * RATIO];
         this.canvasContext.fillText(
             "Team 2 score: " + this.team2Score + `/${WIN_SCORE}`,
-            WIDTH / 2 - 150,
+            WIDTH / 2 - 150 * RATIO,
             team2DrawPos,
         );
         this.canvasContext.fillText(
             "Team 1 score: " + this.team1Score + `/${WIN_SCORE}`,
-            WIDTH / 2 - 150,
+            WIDTH / 2 - 150 * RATIO,
             team1DrawPos,
         );
         if (this.team1Score !== 5 || this.team2Score !== 5) {
             this.canvasContext.fillText(
                 `Set: ${this.setNo}`,
-                WIDTH / 2 - 50,
-                HEIGHT / 2 + 25,
+                WIDTH / 2 - 50 * RATIO,
+                HEIGHT / 2 + 25 * RATIO,
             );
         }
     }
@@ -499,8 +505,8 @@ export class Game {
         if (this.team1Score >= WIN_SCORE) {
             this.canvasContext.fillText(
                 "Team 1 Wins!",
-                WIDTH / 2 - 100,
-                HEIGHT / 2 - 25,
+                WIDTH / 2 - 100 * RATIO,
+                HEIGHT / 2 - 25 * RATIO,
             );
             Matter.Engine.clear(this.engine);
             Matter.Render.stop(this.render);
@@ -508,8 +514,8 @@ export class Game {
         } else if (this.team2Score >= WIN_SCORE) {
             this.canvasContext.fillText(
                 "Team 2 Wins!",
-                WIDTH / 2 - 100,
-                HEIGHT / 2 - 25,
+                WIDTH / 2 - 100 * RATIO,
+                HEIGHT / 2 - 25 * RATIO,
             );
             Matter.Engine.clear(this.engine);
             Matter.Render.stop(this.render);
@@ -626,8 +632,8 @@ export class Game {
                     render: {
                         sprite: {
                             texture: i === 0 ? "/planet1.png" : "/planet2.png",
-                            yScale: 0.2,
-                            xScale: 0.2,
+                            yScale: 0.2 * RATIO,
+                            xScale: 0.2 * RATIO,
                         },
                     },
                 },
