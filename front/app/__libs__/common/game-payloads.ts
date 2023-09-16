@@ -162,7 +162,7 @@ export function readGameProgress(buf: ByteBuffer): GameProgress {
     const suspended = buf.readBoolean();
     const resumedTime = buf.readDate().valueOf();
     const consumedTimespanSum = buf.read4Unsigned();
-    const resumeScheduleTime = buf.readNullable(buf.read4);
+    const resumeScheduleTime = buf.readNullable(buf.readDate);
     return {
         currentSet,
         maxSet,

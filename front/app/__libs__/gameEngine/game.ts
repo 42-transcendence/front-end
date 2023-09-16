@@ -543,9 +543,9 @@ export class Game {
     }
 
     private sendFrame(paddle1Hit: boolean, paddle2Hit: boolean) {
-        if (this.progress !== undefined && this.progress.suspended) {
-            return;
-        }
+        // if (this.progress !== undefined && this.progress.suspended) {
+        //     return;
+        // }
         // if (
         //     this.progress !== undefined &&
         //     (this.progress.score[0] === WIN_SCORE ||
