@@ -164,6 +164,7 @@ export function useContextMenuActions(
             currentChatRoomUUID,
             nickName,
             nickTag,
+            router,
             sendPayload,
             setChatModalIsOpen,
             setChatTabIndex,

@@ -69,7 +69,9 @@ export function ChangeStatusMessageMenu({
                                 : "overflow-hidden whitespace-nowrap transition-all ease-linear hover:-translate-x-[150%] hover:overflow-visible hover:delay-300 hover:duration-[5000ms]"
                         } px-2 text-gray-300/80`}
                     >
-                        {currentStatusMessage}
+                        {currentStatusMessage !== ""
+                            ? currentStatusMessage
+                            : "상태 메시지를 입력해 주세요"}
                     </span>
                 )}
             </div>

@@ -51,17 +51,17 @@ export function ChangeVisibilityMenu() {
                         <label
                             title={state.text}
                             key={state.value}
-                            className=""
+                            className="rounded-lg outline-none focus-within:outline-1 focus-within:outline-primary"
                         >
+                            {state.icon}
                             <input
                                 type="radio"
                                 name="current-visibility"
                                 value={state.value}
-                                className="hidden"
+                                className="sr-only"
                                 defaultChecked={state.value === data}
                                 onChange={handleChange}
                             />
-                            {state.icon}
                         </label>
                     ))}
                 </div>
