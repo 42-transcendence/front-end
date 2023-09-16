@@ -24,7 +24,6 @@ const HEIGHT = 960;
 const BALL_RADIUS = 18;
 const PADDLE_RADIUS = 40;
 const GOAL_RADIUS = PADDLE_RADIUS + PADDLE_RADIUS / 10;
-const WIN_SCORE = 5;
 
 const RATIO = WIDTH / 1000;
 
@@ -34,9 +33,6 @@ const LINE_CATEGORY = 0x0002;
 export class Game {
     //progress
     private progress: GameProgress | undefined;
-    //score
-    private team1Score = 0;
-    private team2Score = 0;
     //paddle1 velocity
     private myPaddleVelocity = { x: 0, y: 0 };
     private counterPaddleVelocity = { x: 0, y: 0 };
@@ -382,8 +378,8 @@ export class Game {
     }
 
     private setEllipse() {
-        const ellipseMajorAxis = HEIGHT;
-        const ellipseMinorAxis = WIDTH;
+        const ellipseMajorAxis = Math.max(HEIGHT, WIDTH);
+        const ellipseMinorAxis = Math.min(HEIGHT, WIDTH);
         const ellipseVerticesArray: Vector[] = [];
         const ellipseVertices = 1000;
         const focus = Math.sqrt(
@@ -423,11 +419,11 @@ export class Game {
                     mask: LINE_CATEGORY,
                 },
                 render: {
-                    // sprite: {
-                    //     texture: "/background.png",
-                    //     yScale: 0.22,
-                    //     xScale: 0.18,
-                    // },
+                    sprite: {
+                        texture: "/back.png",
+                        yScale: 0.22,
+                        xScale: 0.18,
+                    },
                 },
             },
         );
@@ -478,54 +474,6 @@ export class Game {
         }
     }
 
-    // private drawScore() {
-    //     if (this.canvasContext === null) return;
-    //     const [team1DrawPos, team2DrawPos] =
-    //         this.team === TEAM1
-    //             ? [1900 * RATIO, 25 * RATIO]
-    //             : [25 * RATIO, 1900 * RATIO];
-    //     this.canvasContext.fillText(
-    //         "Team 2 score: " + this.team2Score + `/${WIN_SCORE}`,
-    //         WIDTH / 2 - 150 * RATIO,
-    //         team2DrawPos,
-    //     );
-    //     this.canvasContext.fillText(
-    //         "Team 1 score: " + this.team1Score + `/${WIN_SCORE}`,
-    //         WIDTH / 2 - 150 * RATIO,
-    //         team1DrawPos,
-    //     );
-    //     if (this.team1Score !== 5 || this.team2Score !== 5) {
-    //         this.canvasContext.fillText(
-    //             `Set: ${this.setNo}`,
-    //             WIDTH / 2 - 50 * RATIO,
-    //             HEIGHT / 2 + 25 * RATIO,
-    //         );
-    //     }
-    // }
-
-    private judgeWinner() {
-        // if (this.canvasContext === null) return;
-        if (this.team1Score >= WIN_SCORE) {
-            // this.canvasContext.fillText(
-            //     "Team 1 Wins!",
-            //     WIDTH / 2 - 100 * RATIO,
-            //     HEIGHT / 2 - 25 * RATIO,
-            // );
-            Matter.Engine.clear(this.engine);
-            Matter.Render.stop(this.render);
-            Matter.Runner.stop(this.runner);
-        } else if (this.team2Score >= WIN_SCORE) {
-            // this.canvasContext.fillText(
-            //     "Team 2 Wins!",
-            //     WIDTH / 2 - 100 * RATIO,
-            //     HEIGHT / 2 - 25 * RATIO,
-            // );
-            Matter.Engine.clear(this.engine);
-            Matter.Render.stop(this.render);
-            Matter.Runner.stop(this.runner);
-        }
-    }
-
     private reverseFrame(frame: Frame) {
         this.midpointSymmetry(frame.paddle1.position);
         this.originSymmetry(frame.paddle1.velocity);
@@ -543,16 +491,9 @@ export class Game {
     }
 
     private sendFrame(paddle1Hit: boolean, paddle2Hit: boolean) {
-        // if (this.progress !== undefined && this.progress.suspended) {
-        //     return;
-        // }
-        // if (
-        //     this.progress !== undefined &&
-        //     (this.progress.score[0] === WIN_SCORE ||
-        //         this.progress.score[1] === WIN_SCORE)
-        // ) {
-        //     return;
-        // }
+        if (this.progress !== undefined && this.progress.suspended) {
+            return;
+        }
         const myPaddle: PhysicsAttribute = {
             position: {
                 x: this.myPaddle.position.x,
@@ -618,7 +559,7 @@ export class Game {
         };
         const distance = Math.sqrt(normal.x * normal.x + normal.y * normal.y);
         const force = {
-            x: (gravityConstant * normal.x) / (distance * +1),
+            x: (gravityConstant * normal.x) / (distance + 1),
             y: (gravityConstant * normal.y) / (distance + 1),
         };
         Matter.Body.setVelocity(body, {
@@ -735,37 +676,37 @@ export class Game {
         this.progress = progress;
     }
 
+    private readonly moveEventHandler = (event: MouseEvent | TouchEvent) => {
+        event.preventDefault();
+        const prevTimestamp = Date.now();
+        const prevPointX = this.myPaddle.position.x;
+        const prevPointY = this.myPaddle.position.y;
+        const mousePos = this.calculatePos(event);
+        // this.myPaddleX = mousePos.x - PADDLE_RADIUS / 2;
+        // this.myPaddleY = mousePos.y - PADDLE_RADIUS / 2;
+        Matter.Body.setPosition(this.myPaddle, {
+            x: mousePos.x - PADDLE_RADIUS / 2,
+            y: mousePos.y - PADDLE_RADIUS / 2,
+        });
+        // 패들 중앙선 침범 금지~!
+        if (this.myPaddle.position.y < HEIGHT / 2 + PADDLE_RADIUS) {
+            Matter.Body.setPosition(this.myPaddle, {
+                x: this.myPaddle.position.x,
+                y: HEIGHT / 2 + PADDLE_RADIUS,
+            });
+        }
+        const deltaT = Date.now() - prevTimestamp + 1;
+        this.myPaddleVelocity = {
+            x: (this.myPaddle.position.x - prevPointX) / deltaT,
+            y: (this.myPaddle.position.y - prevPointY) / deltaT,
+        };
+    };
+
     start() {
         Matter.Render.run(this.render);
 
-        const moveEventHandler = (event: MouseEvent | TouchEvent) => {
-            event.preventDefault();
-            const prevTimestamp = Date.now();
-            const prevPointX = this.myPaddle.position.x;
-            const prevPointY = this.myPaddle.position.y;
-            const mousePos = this.calculatePos(event);
-            this.myPaddleY = mousePos.y - PADDLE_RADIUS / 2;
-            this.myPaddleX = mousePos.x - PADDLE_RADIUS / 2;
-            Matter.Body.setPosition(this.myPaddle, {
-                x: this.myPaddleX,
-                y: this.myPaddleY,
-            });
-            // 패들 중앙선 침범 금지~!
-            if (this.myPaddle.position.y < HEIGHT / 2 + PADDLE_RADIUS) {
-                Matter.Body.setPosition(this.myPaddle, {
-                    x: this.myPaddle.position.x,
-                    y: HEIGHT / 2 + PADDLE_RADIUS,
-                });
-            }
-            const deltaT = Date.now() - prevTimestamp + 1;
-            this.myPaddleVelocity = {
-                x: (this.myPaddle.position.x - prevPointX) / deltaT,
-                y: (this.myPaddle.position.y - prevPointY) / deltaT,
-            };
-        };
-
-        this.canvas.addEventListener("mousemove", moveEventHandler);
-        this.canvas.addEventListener("touchmove", moveEventHandler);
+        this.canvas.addEventListener("mousemove", this.moveEventHandler);
+        this.canvas.addEventListener("touchmove", this.moveEventHandler);
 
         //add Ellipse
         if (this.field === BattleField.ROUND) {
@@ -823,26 +764,6 @@ export class Game {
                                 ? frame.paddle2.velocity
                                 : frame.paddle1.velocity,
                         );
-                        // }, 1000 / (this.framesPerSecond * size) * i);
-                    } else if (
-                        this.frameQueue[i].resyncType ===
-                        GameClientOpcode.RESYNC_PARTOF
-                    ) {
-                        const frame = this.frameQueue[i].frame;
-                        // setTimeout(() => {
-                        Matter.Body.setPosition(
-                            this.counterPaddle,
-                            this.team === TEAM1
-                                ? frame.paddle2.position
-                                : frame.paddle1.position,
-                        );
-                        Matter.Body.setVelocity(
-                            this.counterPaddle,
-                            this.team === TEAM1
-                                ? frame.paddle2.velocity
-                                : frame.paddle1.velocity,
-                        );
-
                         // }, 1000 / (this.framesPerSecond * size) * i);
                     } else if (
                         this.frameQueue[i].resyncType ===
