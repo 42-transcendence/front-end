@@ -53,20 +53,24 @@ export function GameLobby() {
     ).map((e, index) => ({ id: index, name: teamName[index], members: e }));
 
     return (
-        <div className="relative flex h-full w-full flex-col overflow-hidden bg-windowGlass/30 p-4 backdrop-blur-[50px]  lg:px-40 2xl:px-80">
-            <div className="flex w-full flex-row justify-between gap-2 p-4 lg:px-8">
-                <GameLobbyHeader />
+        <>
+            <div className="relative h-full w-full overflow-hidden backdrop-blur-[50px] ">
+                <div className="flex w-full flex-row items-center justify-between gap-2 bg-windowGlass/30 p-4 lg:px-8">
+                    <GameLobbyHeader />
+                </div>
+                <div className="flex-col lg:px-40 2xl:px-80 ">
+                    <section className="relative flex h-full w-full flex-col justify-around gap-4 overflow-hidden rounded-[40px] p-6 lg:flex-row lg:gap-20 lg:px-20">
+                        {[teamA, teamB].map((team) => (
+                            <TeamPanel
+                                key={team.id}
+                                team={team}
+                                toggleReady={toggleReady}
+                            />
+                        ))}
+                    </section>
+                </div>
             </div>
-            <section className="relative flex h-full w-full flex-col justify-around gap-4 overflow-hidden rounded-[40px] p-6 lg:flex-row lg:gap-20 lg:px-20">
-                {[teamA, teamB].map((team) => (
-                    <TeamPanel
-                        key={team.id}
-                        team={team}
-                        toggleReady={toggleReady}
-                    />
-                ))}
-            </section>
-        </div>
+        </>
     );
 }
 
@@ -147,39 +151,40 @@ function TeamPanel({
     const currentAccountUUID = useCurrentAccountUUID();
 
     return (
-        <div className="flex h-full w-full flex-col overflow-hidden rounded-lg">
+        <div className="flex h-full w-full flex-col">
             <span
                 className={`
-                flex items-center justify-center p-4 font-black italic text-gray-50/90
+                flex items-center justify-center rounded-xl p-4 font-black italic text-gray-50/90
                 ${
                     team.name === "보라보라"
                         ? "bg-primary/50"
                         : "bg-secondary/50"
                 } text-xl lg:text-4xl`}
             >{`${team.name} 팀`}</span>
-            <div className="flex flex-col p-4">
+            <div className="flex p-4">
                 {team.members.map((member) => (
                     <div
                         key={member.accountId}
-                        className={`
-                    ${
-                        member.accountId === currentAccountUUID
-                            ? "bg-secondary/30"
-                            : "bg-black/30"
-                    } rounded`}
+                        className="flex w-full flex-row items-center justify-between rounded bg-black/30 p-4"
                     >
-                        <Avatar
-                            accountUUID={member.accountId}
-                            className="relative h-12 w-12"
-                            privileged={false}
-                        />
-                        <NickBlock accountUUID={member.accountId} />
+                        <div className="flex flex-row gap-2">
+                            <Avatar
+                                accountUUID={member.accountId}
+                                className="relative h-12 w-12"
+                                privileged={false}
+                            />
+                            <NickBlock accountUUID={member.accountId} />
+                        </div>
                         <button
-                            className="border-red-400"
+                            className={`${
+                                member.ready
+                                    ? "text-tertiary"
+                                    : "text-gray-500/80"
+                            } w-fit rounded border-red-400 p-4 text-xl italic transition-colors `}
                             onClick={() => toggleReady(!member.ready)}
                             disabled={currentAccountUUID !== member.accountId}
                         >
-                            {member.ready ? "ready" : "unready"}
+                            READY
                         </button>
                     </div>
                 ))}

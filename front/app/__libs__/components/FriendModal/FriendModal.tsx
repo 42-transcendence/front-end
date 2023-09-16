@@ -60,8 +60,8 @@ export function FriendModal() {
     };
 
     return (
-        <GlassWindow className="w-[262px]">
-            <div className="w-full overflow-clip rounded-[28px] ">
+        <GlassWindow className="">
+            <div className="overflow-clip rounded-[28px]">
                 <FriendRequestList />
                 <FriendList />
                 <div className="relative flex h-fit w-full shrink-0 flex-col items-start">
