@@ -20,6 +20,9 @@ import _IconArrow1 from "/public/icon/arrow-1.svg";
 import _IconArrow2 from "/public/icon/arrow-2.svg";
 import _IconArrow3 from "/public/icon/arrow-3.svg";
 import _IconChatAlternative from "/public/icon/chat-alternative.svg";
+import _IconChevronUpUltraLight from "/public/icon/chevron-up-ultra-light.svg";
+import _IconChevronUpRegular from "/public/icon/chevron-up-regular.svg";
+import _IconChevronUpBlack from "/public/icon/chevron-up-black.svg";
 import _IconChatFilled from "/public/icon/chat-filled.svg";
 import _IconChatOutlined from "/public/icon/chat-outlined.svg";
 import _IconCheck from "/public/icon/check.svg";
@@ -86,6 +89,9 @@ export const Icon = {
     RefreshRegular: _IconRefreshRegular,
     RefreshUltraLight: _IconRefreshUltraLight,
     RefreshBlack: _IconRefreshBlack,
+    ChevronUpUltraLight: _IconChevronUpUltraLight,
+    ChevronUpRegular: _IconChevronUpRegular,
+    ChevronUpBlack: _IconChevronUpBlack,
     ChatAlternative: _IconChatAlternative,
     ChatFilled: _IconChatFilled,
     ChatOutlined: _IconChatOutlined,
