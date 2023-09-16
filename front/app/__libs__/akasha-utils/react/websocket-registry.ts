@@ -82,6 +82,9 @@ export class WebSocketRegistry {
 
     register(props: WebSocketRegisterProps): () => void {
         const key = props.name;
+        if (key === "") {
+            return () => {};
+        }
         if (this.registry.has(key)) {
             throw new ReferenceError();
         }

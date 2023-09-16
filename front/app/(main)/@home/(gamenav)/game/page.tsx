@@ -25,12 +25,14 @@ import { GameInGame } from "@components/Game/GameInGame";
 import { GameLobby } from "@components/Game/GameLobby";
 import { handleGameError } from "@components/Game/handleGameError";
 import { useGamePlayConnector } from "@hooks/useGameWebSocketConnector";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 export default function GamePage() {
-    const invitationAtom = useAtomValue(InvitationAtom, { store: GlobalStore });
+    const [invitationToken, setInvitationToken] = useAtom(InvitationAtom, {
+        store: GlobalStore,
+    });
     const router = useRouter();
     const [members, setMembers] = useAtom(GameMemberAtom);
     const setGameRoomProps = useSetAtom(GameRoomPropsAtom);
@@ -40,10 +42,14 @@ export default function GamePage() {
     const [currentGameProgress, setGameProgress] = useAtom(GameProgressAtom);
 
     useGamePlayConnector(
-        useMemo(() => makeGameHandshake(invitationAtom), [invitationAtom]),
+        useMemo(() => makeGameHandshake(invitationToken), [invitationToken]),
+        invitationToken !== "",
     );
 
     useEffect(() => {
+        if (invitationToken === "") {
+            router.push("/"); // TODO
+        }
         if (currentGameProgress === null) {
             return;
         }
@@ -51,12 +57,13 @@ export default function GamePage() {
             alert("게임 끝남");
             router.push("/"); // TODO
         }
-    }, [currentGameProgress, router]);
+    }, [currentGameProgress, invitationToken, router]);
 
     useWebSocket("game", undefined, (opcode, buffer) => {
         switch (opcode) {
             case GameClientOpcode.GAME_ROOM: {
                 const [props, params, members, ladder] = handleGameRoom(buffer);
+
                 setGameRoomProps(props);
                 setMembers([...members]);
                 setGameRoomParams(params);
@@ -64,6 +71,7 @@ export default function GamePage() {
                 break;
             }
             case GameClientOpcode.GAME_FAILED: {
+                setInvitationToken("");
                 const errno = handleGameFailedPayload(buffer);
                 if (errno !== GameRoomEnterResult.SUCCESS) {
                     handleGameError(errno);
@@ -97,8 +105,12 @@ export default function GamePage() {
                 break;
             }
             case GameClientOpcode.UPDATE_GAME: {
+                const progress = handleUpdateGame(buffer);
+                if (progress === null) {
+                    setInvitationToken("");
+                }
                 // XXX 과거 프로그레스 필요할수도
-                setGameProgress(handleUpdateGame(buffer));
+                setGameProgress(progress);
                 break;
             }
         }

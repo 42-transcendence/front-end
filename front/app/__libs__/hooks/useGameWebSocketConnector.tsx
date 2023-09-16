@@ -40,7 +40,7 @@ export function useGameMatchMakeConnector(buf: ByteBuffer) {
     });
 }
 
-export function useGamePlayConnector(buf: ByteBuffer) {
+export function useGamePlayConnector(buf: ByteBuffer, connect: boolean = true) {
     const props = useMemo(
         () => ({
             handshake: () => buf.toArray(),
@@ -56,5 +56,5 @@ export function useGamePlayConnector(buf: ByteBuffer) {
         return `wss://${HOST}/game?token=${accessToken}`;
     }, []);
 
-    useWebSocketConnector("game", getURL, props);
+    useWebSocketConnector(connect ? "game" : "", getURL, props);
 }
