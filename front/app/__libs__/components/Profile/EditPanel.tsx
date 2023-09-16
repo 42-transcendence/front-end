@@ -6,8 +6,9 @@ import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { SelectAvatar } from "@components/SelectAvatar/SelectAvatar";
 import { OTPRegistration } from "@components/OTPRegistration";
-import { Dialog, Switch } from "@headlessui/react";
+import { Dialog, Disclosure, Switch } from "@headlessui/react";
 import { useGetOTP } from "@hooks/useOTP";
+import { Icon } from "@components/ImageLibrary";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
@@ -31,16 +32,16 @@ export function EditPanel() {
     return (
         <Panel className="flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1">
             <span className="p-4 text-xl font-extrabold text-white">설정</span>
-            <EditPanelItem>
-                <EditPanelItemHeader>
-                    <EditPanelItemHeaderTitle>
+            <EditPanelBlocks>
+                <EditPanelBlock>
+                    <EditPanelBlockTitle>
                         <Avatar
                             className={"relative w-12 bg-white/30"}
                             accountUUID={accountUUID}
                             privileged={false}
                         />
 
-                        <div className="absolute bottom-0 left-0 flex w-full justify-center">
+                        <div className="absolute bottom-0 left-4 flex w-12 justify-center">
                             <button
                                 type="button"
                                 className="rounded bg-secondary p-1 py-0.5 text-xs"
@@ -49,9 +50,9 @@ export function EditPanel() {
                                 변경
                             </button>
                         </div>
-                    </EditPanelItemHeaderTitle>
+                    </EditPanelBlockTitle>
                     <Separator />
-                    <EditPanelItemHeaderContent>
+                    <EditPanelBlockContent>
                         {editAvatar ? (
                             <Dialog open={editAvatar} onClose={setEditAvatar}>
                                 <div
@@ -72,15 +73,13 @@ export function EditPanel() {
                                 </span>
                             </div>
                         )}
-                    </EditPanelItemHeaderContent>
-                </EditPanelItemHeader>
+                    </EditPanelBlockContent>
+                </EditPanelBlock>
 
-                <EditPanelItemHeader>
-                    <EditPanelItemHeaderTitle>
-                        2차 인증
-                    </EditPanelItemHeaderTitle>
+                <EditPanelBlock>
+                    <EditPanelBlockTitle>2차 인증</EditPanelBlockTitle>
                     <Separator />
-                    <EditPanelItemHeaderContent>
+                    <EditPanelBlockContent>
                         {otpEnabled === undefined ? (
                             <p className="loading">로딩중</p>
                         ) : (
@@ -117,22 +116,47 @@ export function EditPanel() {
                                 </Dialog.Panel>
                             </Dialog>
                         )}
-                    </EditPanelItemHeaderContent>
-                </EditPanelItemHeader>
-            </EditPanelItem>
+                    </EditPanelBlockContent>
+                </EditPanelBlock>
+
+                <EditPanelBlock>
+                    <div className="relative mx-auto w-full rounded-2xl p-2">
+                        <Disclosure>
+                            {({ open }) => (
+                                <>
+                                    <Disclosure.Button className="flex w-full justify-between rounded-lg bg-black/30 px-4 py-2 text-left text-sm font-medium text-purple-900 hover:bg-primary/30 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+                                        <span className="text-gray-50">
+                                            차단 목록
+                                        </span>
+                                        <Icon.ChevronUpRegular
+                                            className={` ${
+                                                open
+                                                    ? "rotate-180 transform"
+                                                    : ""
+                                            } h-5 w-5 text-primary`}
+                                        />
+                                    </Disclosure.Button>
+                                    {/*TODO: Add ban list*/}
+                                    <Disclosure.Panel className="px-4 pb-2 pt-4 text-sm text-gray-500"></Disclosure.Panel>
+                                </>
+                            )}
+                        </Disclosure>
+                    </div>
+                </EditPanelBlock>
+            </EditPanelBlocks>
         </Panel>
     );
 }
 
-function EditPanelItem({ children }: PropsWithChildren) {
+function EditPanelBlocks({ children }: PropsWithChildren) {
     return <div className="flex flex-col">{children}</div>;
 }
 
-function EditPanelItemHeader({ children }: PropsWithChildren) {
+function EditPanelBlock({ children }: PropsWithChildren) {
     return <div className="flex h-fit w-full flex-row gap-4">{children}</div>;
 }
 
-function EditPanelItemHeaderContent({ children }: PropsWithChildren) {
+function EditPanelBlockContent({ children }: PropsWithChildren) {
     return (
         <div className="relative flex w-full items-center justify-start p-4">
             {children}
@@ -140,9 +164,9 @@ function EditPanelItemHeaderContent({ children }: PropsWithChildren) {
     );
 }
 
-function EditPanelItemHeaderTitle({ children }: PropsWithChildren) {
+function EditPanelBlockTitle({ children }: PropsWithChildren) {
     return (
-        <div className="relative flex w-36 items-center justify-start p-4">
+        <div className="relative flex w-40 items-center justify-start p-4">
             {children}
         </div>
     );
@@ -150,4 +174,3 @@ function EditPanelItemHeaderTitle({ children }: PropsWithChildren) {
 
 // function EditPanelItemDetail({ children }: PropsWithChildren) {
 //     return <div className="relative flex flex-col">{children}</div>;
-// }
