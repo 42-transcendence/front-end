@@ -1,5 +1,9 @@
+"use client";
 import { Game } from "@components/ImageLibrary";
 import { CreateGameButton, QuickMatchButton } from "./GameButton";
+import { useStateArray } from "@hooks/useStateArray";
+import { useState } from "react";
+import { AfterGamePage } from "./AfterGamePage";
 
 function HelloWorldPaper() {
     return (
@@ -29,7 +33,9 @@ function HelloWorldPaper() {
 }
 
 export default function Home() {
-    return (
+    const [test, setTest] = useState(false);
+
+    return test ? (
         <div className="flex h-full w-full items-center justify-center bg-black/30">
             <div className="flex w-full flex-col items-center justify-center gap-2.5 self-stretch lg:flex-row">
                 <div className="flex flex-col items-start">
@@ -42,5 +48,7 @@ export default function Home() {
                 </div>
             </div>
         </div>
+    ) : (
+        <AfterGamePage />
     );
 }
