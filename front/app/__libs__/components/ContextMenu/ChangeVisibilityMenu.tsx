@@ -20,7 +20,7 @@ export function ChangeVisibilityMenu() {
                 <Status.Idle className="h-10 w-10 rounded-lg p-2 hover:bg-primary/30 active:bg-secondary/70" />
             ),
             text: "자리비움",
-            vialue: ActiveStatus.IDLE,
+            value: ActiveStatus.IDLE,
         },
         {
             icon: (
