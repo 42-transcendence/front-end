@@ -12,7 +12,9 @@ import {
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
 
 export function ProfileSection({ accountUUID }: { accountUUID: string }) {
-    const profile = useProtectedProfile(accountUUID);
+    const profile = usePublicProfile(accountUUID);
+    //NOTE: protected는 친구 구별에 필요하다.
+    const protectedProfile = useProtectedProfile(accountUUID);
     const currentId = useCurrentAccountUUID();
 
     const isLogined = currentId !== "";
@@ -20,7 +22,7 @@ export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     const relationship = isLogined
         ? accountUUID === currentId
             ? "myself"
-            : profile !== undefined
+            : protectedProfile !== undefined
             ? "friend"
             : "stranger"
         : "stranger";

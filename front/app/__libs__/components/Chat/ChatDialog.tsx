@@ -234,7 +234,7 @@ function ChatRoomSelected({
                     : lastMessage,
             );
             if (isMessageEndInView) {
-                scrollToBottom("instant");
+                scrollToBottom("smooth");
             }
         } else {
             setLastMessage(undefined);
