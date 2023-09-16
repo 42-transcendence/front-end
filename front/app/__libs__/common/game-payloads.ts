@@ -41,6 +41,7 @@ export const enum MatchmakeFailedReason {
 export enum BattleField {
     SQUARE,
     ROUND,
+    ABSOLUTE,
 
     MAX_VALUE,
 }
@@ -139,6 +140,7 @@ export const enum GameRoomEnterResult {
     ALREADY_STARTED,
     GAME_MISMATCH,
     DUPLICATE,
+    UNKNOWN,
 }
 
 export type GameProgress = {
@@ -162,7 +164,8 @@ export function readGameProgress(buf: ByteBuffer): GameProgress {
     const suspended = buf.readBoolean();
     const resumedTime = buf.readDate().valueOf();
     const consumedTimespanSum = buf.read4Unsigned();
-    const resumeScheduleTime = buf.readNullable(buf.readDate);
+    const resumeScheduleTime =
+        buf.readNullable(buf.readDate)?.valueOf() ?? null;
     return {
         currentSet,
         maxSet,
@@ -179,11 +182,137 @@ export function readGameProgress(buf: ByteBuffer): GameProgress {
 export function writeGameProgress(obj: GameProgress, buf: ByteBuffer) {
     buf.write1(obj.currentSet);
     buf.write1(obj.maxSet);
-    buf.writeArray(obj.score, buf.read1);
+    buf.writeArray(obj.score, buf.write1);
     buf.writeDate(new Date(obj.initialStartTime));
     buf.write4Unsigned(obj.totalTimespan);
     buf.writeBoolean(obj.suspended);
     buf.writeDate(new Date(obj.resumedTime));
     buf.write4Unsigned(obj.consumedTimespanSum);
-    buf.writeNullable(obj.resumeScheduleTime, buf.read4);
+    buf.writeNullable(
+        obj.resumeScheduleTime !== null
+            ? new Date(obj.resumeScheduleTime)
+            : null,
+        buf.writeDate,
+    );
+}
+
+export const enum GameOutcome {
+    NONE,
+    WIN,
+    LOSE,
+    TIE,
+}
+
+export type GameEarnScore = {
+    accountId: string;
+    team: number;
+    value: number;
+    timestamp: Date;
+};
+
+export function readGameEarnScore(buf: ByteBuffer): GameEarnScore {
+    const accountId = buf.readUUID();
+    const team = buf.read1();
+    const value = buf.read1();
+    const timestamp = buf.readDate();
+    return {
+        accountId,
+        team,
+        value,
+        timestamp,
+    };
+}
+
+export function writeGameEarnScore(obj: GameEarnScore, buf: ByteBuffer) {
+    buf.writeUUID(obj.accountId);
+    buf.write1(obj.team);
+    buf.write1(obj.value);
+    buf.writeDate(obj.timestamp);
+}
+
+export type GameStatistics = {
+    gameId: string;
+    params: GameRoomParams;
+    ladder: boolean;
+    timestamp: Date;
+    progresses: GameProgress[];
+    earnScores: GameEarnScore[][];
+};
+
+export function readGameStatistics(buf: ByteBuffer): GameStatistics {
+    const gameId = buf.readUUID();
+    const params = readGameRoomParams(buf);
+    const ladder = buf.readBoolean();
+    const timestamp = buf.readDate();
+    const progresses = buf.readArray(readGameProgress);
+    const earnScores = buf.readArray((buf) => buf.readArray(readGameEarnScore));
+    return {
+        gameId,
+        params,
+        ladder,
+        timestamp,
+        progresses,
+        earnScores,
+    };
+}
+
+export function writeGameStatistics(obj: GameStatistics, buf: ByteBuffer) {
+    buf.writeUUID(obj.gameId);
+    writeGameRoomParams(obj.params, buf);
+    buf.writeBoolean(obj.ladder);
+    buf.writeDate(obj.timestamp);
+    buf.writeArray(obj.progresses, writeGameProgress);
+    buf.writeArray(obj.earnScores, (obj, buf) =>
+        buf.writeArray(obj, writeGameEarnScore),
+    );
+}
+
+export type GameMemberStatistics = {
+    accountId: string;
+    team: number;
+    final: boolean;
+    outcome: GameOutcome;
+    initialSkillRating: number | undefined;
+    initialRatingDeviation: number | undefined;
+    finalSkillRating: number | undefined;
+    finalRatingDeviation: number | undefined;
+};
+
+export function readGameMemberStatistics(
+    buf: ByteBuffer,
+): GameMemberStatistics {
+    const accountId = buf.readUUID();
+    const team = buf.read1();
+    const final = buf.readBoolean();
+    const outcome = buf.read1();
+    const initialSkillRating = buf.readNullable(buf.read4Unsigned) ?? undefined;
+    const initialRatingDeviation =
+        buf.readNullable(buf.read4Unsigned) ?? undefined;
+    const finalSkillRating = buf.readNullable(buf.read4Unsigned) ?? undefined;
+    const finalRatingDeviation =
+        buf.readNullable(buf.read4Unsigned) ?? undefined;
+    return {
+        accountId,
+        team,
+        final,
+        outcome,
+        initialSkillRating,
+        initialRatingDeviation,
+        finalSkillRating,
+        finalRatingDeviation,
+    };
+}
+
+export function writeGameMemberStatistics(
+    obj: GameMemberStatistics,
+    buf: ByteBuffer,
+) {
+    buf.writeUUID(obj.accountId);
+    buf.write1(obj.team);
+    buf.writeBoolean(obj.final);
+    buf.write1(obj.outcome);
+    buf.writeNullable(obj.initialSkillRating ?? null, buf.write4Unsigned);
+    buf.writeNullable(obj.initialRatingDeviation ?? null, buf.write4Unsigned);
+    buf.writeNullable(obj.finalSkillRating ?? null, buf.write4Unsigned);
+    buf.writeNullable(obj.finalRatingDeviation ?? null, buf.write4Unsigned);
 }
