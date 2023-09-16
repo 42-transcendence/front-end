@@ -10,22 +10,28 @@ export function OTPRegistration() {
     const otpEnabled = useGetOTP();
 
     if (otpEnabled === undefined) {
-        return <p>정보를 불러오는 중입니다...</p>;
+        return (
+            <p className="loading w-full justify-start">
+                정보를 불러오는 중입니다.
+            </p>
+        );
     }
     return (
-        <>
+        <div className="flex h-full w-full flex-col items-center justify-center gap-2">
             {!otpEnabled && <QRCodeCanvas />}
             <p>
                 {!otpEnabled
-                    ? "OTP를 등록하려면 입력하세요"
+                    ? "OTP를 등록하려면 입력하세요."
                     : "OTP를 해제하려면 입력하세요"}
             </p>
-            <OTPToggleBlocks
-                key={otpEnabled.toString()}
-                length={6}
-                enable={!otpEnabled}
-            />
-        </>
+            <div className="z-10 flex flex-row gap-2">
+                <OTPToggleBlocks
+                    key={otpEnabled.toString()}
+                    length={6}
+                    enable={!otpEnabled}
+                />
+            </div>
+        </div>
     );
 }
 
@@ -64,13 +70,12 @@ function QRCodeCanvas() {
         QRCode.toCanvas(canvas, uri, errorCallback);
     }, [data, label]);
 
-    // TODO: add tailwind css
     // TODO: Add link!!
     return (
-        <div className="">
+        <div className="flex flex-col items-center justify-center gap-2">
+            <canvas ref={canvasRef} />
             <button type="button">
-                <canvas ref={canvasRef} />
-                <p>TOTP 인증기에 위 코드를 등록하고 OTP를 입력하세요.</p>
+                <p>OTP 인증기에 위 코드를 등록하세요.</p>
             </button>
         </div>
     );

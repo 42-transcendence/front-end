@@ -1,4 +1,4 @@
-import { useState, type PropsWithChildren } from "react";
+import { useState, type PropsWithChildren, useEffect } from "react";
 import { Panel } from "./Panel";
 import { Avatar } from "../Avatar";
 import { Separator } from "./GameHistoryPanel";
@@ -6,13 +6,19 @@ import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { SelectAvatar } from "@components/SelectAvatar/SelectAvatar";
 import { OTPRegistration } from "@components/OTPRegistration";
-import { Dialog } from "@headlessui/react";
+import { Dialog, Switch } from "@headlessui/react";
+import { useGetOTP } from "@hooks/useOTP";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
     const profile = usePublicProfile(accountUUID);
     const [editAvatar, setEditAvatar] = useState(false);
     const [showOTP, setShowOTP] = useState(false);
+    const otpEnabled = useGetOTP();
+
+    useEffect(() => {
+        setShowOTP(false);
+    }, [otpEnabled]);
 
     if (profile === undefined) {
         return <div>loading...</div>;
@@ -71,12 +77,46 @@ export function EditPanel() {
 
                 <EditPanelItemHeader>
                     <EditPanelItemHeaderTitle>
-                        <button type="button" onClick={handleClick}>
-                            2차 인증 설정
-                        </button>
+                        2차 인증
                     </EditPanelItemHeaderTitle>
+                    <Separator />
                     <EditPanelItemHeaderContent>
-                        {showOTP && <OTPRegistration />}
+                        {otpEnabled === undefined ? (
+                            <p className="loading">로딩중</p>
+                        ) : (
+                            <Switch
+                                checked={otpEnabled}
+                                onChange={handleClick}
+                                className={`${
+                                    otpEnabled
+                                        ? "bg-secondary/80"
+                                        : "bg-black/30"
+                                }
+          relative inline-flex w-16 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-primary/30 focus-visible:ring-opacity-75`}
+                            >
+                                <span className="sr-only">Use setting</span>
+                                <span
+                                    aria-hidden="true"
+                                    className={`${
+                                        otpEnabled
+                                            ? "translate-x-7"
+                                            : "translate-x-0"
+                                    }
+            pointer-events-none inline-block h-8 w-8 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                                />
+                            </Switch>
+                        )}
+                        {showOTP && (
+                            <Dialog open={showOTP} onClose={setShowOTP}>
+                                <div
+                                    className="fixed inset-0 bg-black/30"
+                                    aria-hidden="true"
+                                />
+                                <Dialog.Panel className="gradient-border back-full absolute inset-4 inset-y-8 m-auto max-h-[36rem] max-w-lg overflow-hidden rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[50px] before:rounded-[28px] before:p-px lg:inset-32">
+                                    <OTPRegistration />
+                                </Dialog.Panel>
+                            </Dialog>
+                        )}
                     </EditPanelItemHeaderContent>
                 </EditPanelItemHeader>
             </EditPanelItem>
@@ -94,7 +134,7 @@ function EditPanelItemHeader({ children }: PropsWithChildren) {
 
 function EditPanelItemHeaderContent({ children }: PropsWithChildren) {
     return (
-        <div className="flex w-full items-center justify-start p-4">
+        <div className="relative flex w-full items-center justify-start p-4">
             {children}
         </div>
     );
@@ -102,7 +142,7 @@ function EditPanelItemHeaderContent({ children }: PropsWithChildren) {
 
 function EditPanelItemHeaderTitle({ children }: PropsWithChildren) {
     return (
-        <div className="relative flex w-20 items-center justify-start p-4">
+        <div className="relative flex w-36 items-center justify-start p-4">
             {children}
         </div>
     );
