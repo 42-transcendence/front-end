@@ -117,7 +117,11 @@ export function SelectAvatar() {
                     {defaultAvatarsKey.map((name) => (
                         <div
                             key={name}
-                            className="z-10 flex-shrink-0 snap-center snap-always overflow-hidden"
+                            className={`${
+                                image !== null && image.dataset["name"] === name
+                                    ? "bg-black/30"
+                                    : ""
+                            } z-10 h-64 w-64 flex-shrink-0 snap-center snap-always overflow-hidden rounded-xl`}
                         >
                             <Image
                                 ref={refCallbackAt(name)}
@@ -125,8 +129,8 @@ export function SelectAvatar() {
                                 src={`/${name}.png`}
                                 alt={`${name}'s Avatar`}
                                 data-name={name}
-                                width="250"
-                                height="250"
+                                width={256}
+                                height={256}
                                 priority
                             />
                         </div>

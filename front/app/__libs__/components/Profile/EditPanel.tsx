@@ -6,6 +6,7 @@ import { usePublicProfile } from "@hooks/useProfile";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { SelectAvatar } from "@components/SelectAvatar/SelectAvatar";
 import { OTPRegistration } from "@components/OTPRegistration";
+import { Dialog } from "@headlessui/react";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
@@ -28,31 +29,43 @@ export function EditPanel() {
                 <EditPanelItemHeader>
                     <EditPanelItemHeaderTitle>
                         <Avatar
-                            className={"relative w-12 "}
+                            className={"relative w-12 bg-white/30"}
                             accountUUID={accountUUID}
                             privileged={false}
                         />
+
+                        <div className="absolute bottom-0 left-0 flex w-full justify-center">
+                            <button
+                                type="button"
+                                className="rounded bg-secondary p-1 py-0.5 text-xs"
+                                onClick={() => setEditAvatar(!editAvatar)}
+                            >
+                                변경
+                            </button>
+                        </div>
                     </EditPanelItemHeaderTitle>
                     <Separator />
                     <EditPanelItemHeaderContent>
-                        <div className="flex flex-col">
-                            <span>{profile.nickName}</span>
-                            <span>{profile.nickTag}</span>
-                        </div>
-                    </EditPanelItemHeaderContent>
-                </EditPanelItemHeader>
-
-                <EditPanelItemHeader>
-                    <EditPanelItemHeaderTitle>
-                        <button
-                            type="button"
-                            onClick={() => setEditAvatar(!editAvatar)}
-                        >
-                            아바타 변경
-                        </button>
-                    </EditPanelItemHeaderTitle>
-                    <EditPanelItemHeaderContent>
-                        {editAvatar && <SelectAvatar />}
+                        {editAvatar ? (
+                            <Dialog open={editAvatar} onClose={setEditAvatar}>
+                                <div
+                                    className="fixed inset-0 bg-black/30"
+                                    aria-hidden="true"
+                                />
+                                <Dialog.Panel className="gradient-border back-full absolute inset-4 inset-y-8 m-auto max-h-[36rem] max-w-lg overflow-hidden rounded-[28px] bg-windowGlass/30 p-px backdrop-blur-[50px] before:rounded-[28px] before:p-px lg:inset-32">
+                                    <div className="flex w-full flex-col items-center justify-center gap-4 p-16">
+                                        <SelectAvatar />
+                                    </div>
+                                </Dialog.Panel>
+                            </Dialog>
+                        ) : (
+                            <div className="flex flex-col">
+                                <span>{profile.nickName}</span>
+                                <span className="text-gray-300/80">
+                                    #{profile.nickTag}
+                                </span>
+                            </div>
+                        )}
                     </EditPanelItemHeaderContent>
                 </EditPanelItemHeader>
 

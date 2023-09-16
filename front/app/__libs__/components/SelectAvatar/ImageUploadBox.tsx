@@ -14,7 +14,7 @@ export function ImageUploadBox({
     setImage: (target: HTMLImageElement) => void;
 }) {
     const [imageInfo, setImageInfo] = useState<ImageInfoType>({
-        src: "/game/ghost-1.svg",
+        src: "",
         alt: "uploaded file",
         name: "uploaded file",
     });
@@ -55,8 +55,12 @@ export function ImageUploadBox({
                         handleFiles(e.target.files);
                     }}
                 />
-                <DragDropArea handleFiles={handleFiles} />
-                <PreviewArea imageInfo={imageInfo} setImage={setImage} />
+
+                {imageInfo.src === "" ? (
+                    <DragDropArea handleFiles={handleFiles} />
+                ) : (
+                    <PreviewArea imageInfo={imageInfo} setImage={setImage} />
+                )}
             </label>
         </div>
     );
@@ -91,8 +95,8 @@ function PreviewArea({
                 src={imageInfo.src}
                 alt={imageInfo.alt}
                 data-name={imageInfo.name}
-                width="250"
-                height="250"
+                width="256"
+                height="256"
             />
         </div>
     );

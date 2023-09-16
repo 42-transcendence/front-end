@@ -32,7 +32,7 @@ export function DragDropArea({
 
     return (
         <div
-            className="absolute z-20 flex h-full w-full flex-col justify-center text-center"
+            className="absolute z-20 flex h-full w-full flex-col justify-center rounded-xl bg-windowGlass/30 text-center"
             onDrag={handleDrag}
             onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
