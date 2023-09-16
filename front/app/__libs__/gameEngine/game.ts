@@ -170,7 +170,14 @@ export class Game {
 
     private calculatePos(event: TouchEvent | MouseEvent) {
         const rect = this.canvas.getBoundingClientRect();
-        if (event instanceof TouchEvent) {
+        if (event instanceof MouseEvent) {
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            return {
+                x: mouseX,
+                y: mouseY,
+            };
+        } else {
             const mouseX = event.targetTouches[0].clientX - rect.left;
             const mouseY = event.targetTouches[0].clientY - rect.top;
             return {
@@ -178,12 +185,6 @@ export class Game {
                 y: mouseY,
             };
         }
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-        return {
-            x: mouseX,
-            y: mouseY,
-        };
     }
 
     //ball reflection
@@ -269,7 +270,7 @@ export class Game {
     private oneQuadrantLogic(circlePos: { x: number; y: number }): number {
         let upper = Math.PI / 2;
         let lower = 0;
-        while (true) {
+        for (;;) {
             const theta = (upper + lower) / 2;
             const pointInEllipse = this.makePointInEllipse(theta);
             const num = this.review(circlePos, pointInEllipse);
