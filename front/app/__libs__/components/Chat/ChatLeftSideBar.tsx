@@ -298,7 +298,7 @@ function PublicRoomPanel() {
                     onClick={refreshPublicRoomList}
                 >
                     {refreshing ? (
-                        <Game.Ghost2 className="relative h-5 w-5 p-2 text-gray-50" />
+                        <Game.Ghost2 className="relative h-5 w-5 text-gray-50" />
                     ) : (
                         <Icon.RefreshRegular className="relative h-5 w-5 text-gray-50/80 hover:text-gray-50/90 active:text-white" />
                     )}
