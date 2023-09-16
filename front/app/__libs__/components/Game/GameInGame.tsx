@@ -86,5 +86,5 @@ export function GameInGame() {
         }
     }, [game]);
 
-    return <canvas ref={canvasRef}></canvas>;
+    return <canvas ref={canvasRef} className="cursor-none"></canvas>;
 }
