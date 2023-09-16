@@ -11,9 +11,17 @@ import {
     readGameMemberStatistics,
     readGameStatistics,
 } from "@common/game-payloads";
+import { GlassWindow } from "@components/Frame/GlassWindow";
 import { Game } from "@gameEngine/game";
 import { useAtomValue } from "jotai";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+    use,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 
 function drawCircle(canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
@@ -118,11 +126,16 @@ export function GameInGame() {
     }, [game]);
 
     return (
-        <canvas
-            ref={canvasRef}
-            width={500}
-            height={960}
-            className="fixed left-0 top-0 cursor-none outline outline-8 outline-red-600"
-        ></canvas>
+        <div className="flex h-full w-full justify-center bg-space bg-cover p-4">
+            <div className="gradient-border back-full relative flex w-fit rounded-[28px] bg-black/30 p-px backdrop-blur-[28px] before:rounded-[28px] before:p-px">
+                <canvas
+                    ref={canvasRef}
+                    width={500}
+                    height={960}
+                    className="z-10 rounded-[28px]"
+                ></canvas>
+            </div>
+            <span>{gameProgress?.score}</span>
+        </div>
     );
 }
