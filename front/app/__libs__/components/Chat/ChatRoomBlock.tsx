@@ -315,13 +315,13 @@ function ChatRoomInfo({
                     )}
                 </div>
 
-                <div className="line-clamp-2 max-w-[160px] break-words text-start font-sans text-xs font-normal text-gray-200">
+                <div className="line-clamp-2 max-w-[8rem] break-words text-start font-sans text-xs font-normal text-gray-200">
                     {lastMessageContent}
                 </div>
             </div>
 
             <div className="relative flex flex-col items-end gap-4 text-xs leading-3">
-                <div className="flex shrink-0 flex-row gap-1">
+                <div className="flex w-6 shrink-0 flex-row gap-1">
                     {!isDMRoom && (
                         <Icon.Person
                             width={12}
