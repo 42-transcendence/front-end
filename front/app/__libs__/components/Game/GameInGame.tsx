@@ -5,6 +5,7 @@ import {
     GameProgressAtom,
     GameRoomParamsAtom,
 } from "@atoms/GameAtom";
+import { handleUpdateGame } from "@common/game-gateway-helper-client";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { Game } from "@gameEngine/game";
 import { useAtomValue } from "jotai";
@@ -51,6 +52,17 @@ export function GameInGame() {
                 case GameClientOpcode.GAME_RESULT: {
                     // const gameResult = handleGameResult(buffer);
                     // console.log("result", gameResult);
+                    break;
+                }
+                case GameClientOpcode.UPDATE_GAME: {
+                    const updateInfo = handleUpdateGame(buf);
+                    if (
+                        game !== null &&
+                        updateInfo !== null &&
+                        updateInfo.currentSet === game.getSetNumber()
+                    ) {
+                        game.setPlayerScore(updateInfo);
+                    }
                     break;
                 }
             }

@@ -8,6 +8,7 @@ import { readFrame, writeFrame } from "@common/game-physics-payloads";
 import type { Vector } from "matter-js";
 import Matter from "matter-js";
 import { ByteBuffer } from "../akasha-lib/library/byte-buffer";
+import type { GameProgress } from "@common/game-payloads";
 import { BattleField } from "@common/game-payloads";
 
 const PADDLE_IMAGE_SRCS = [
@@ -582,7 +583,7 @@ export class Game {
         }
         this.frames.push(frame);
         const buf = ByteBuffer.createWithOpcode(GameServerOpcode.FRAME);
-        writeFrame(buf, frame);
+        writeFrame(buf, this.scaleFrame(frame, 1 / RATIO));
         this.sendPayload(buf);
     }
 
@@ -642,12 +643,34 @@ export class Game {
         }
     }
 
+    private scaleFrame(frame: Frame, scale: number) {
+        const newFrame = { ...frame };
+
+        newFrame.ball.position.x *= scale;
+        newFrame.ball.position.y *= scale;
+        newFrame.ball.velocity.x *= scale;
+        newFrame.ball.velocity.y *= scale;
+
+        newFrame.paddle1.position.x *= scale;
+        newFrame.paddle1.position.y *= scale;
+        newFrame.paddle1.velocity.x *= scale;
+        newFrame.paddle1.velocity.y *= scale;
+
+        newFrame.paddle2.position.x *= scale;
+        newFrame.paddle2.position.y *= scale;
+        newFrame.paddle2.velocity.x *= scale;
+        newFrame.paddle2.velocity.y *= scale;
+
+        return newFrame;
+    }
+
     resyncAllOpcodeHandler(buf: ByteBuffer) {
-        const frame = buf.readNullable(readFrame);
-        if (frame === null) {
+        const rawFrame = buf.readNullable(readFrame);
+        if (rawFrame === null) {
             return;
         }
-        const lastSyncFrameId = frame.id;
+        const scaledFrame = this.scaleFrame(rawFrame, RATIO);
+        const lastSyncFrameId = scaledFrame.id;
         const diff = this.frames.length - lastSyncFrameId;
         if (diff > 1) {
             for (let i = 1; i < diff; i++) {
@@ -656,46 +679,55 @@ export class Game {
             this.frames.splice(lastSyncFrameId + 1, diff - 1);
         }
         // 전부 리싱크하는 경우 그 이후의 프레임은 무시하고 삭제하도록 설정
-        if (this.ignoreFrameIds.has(frame.id)) {
-            this.ignoreFrameIds.delete(frame.id);
+        if (this.ignoreFrameIds.has(scaledFrame.id)) {
+            this.ignoreFrameIds.delete(scaledFrame.id);
             return;
         }
         if (this.team === TEAM2) {
-            this.reverseFrame(frame);
+            this.reverseFrame(scaledFrame);
         }
-        this.pasteFrame(frame);
+        this.pasteFrame(scaledFrame);
         this.frameQueue.push({
             resyncType: GameClientOpcode.RESYNC_ALL,
-            frame: frame,
+            frame: scaledFrame,
         });
     }
 
     resyncPartOpcodeHandler(buf: ByteBuffer) {
-        const frame = buf.readNullable(readFrame);
-        if (frame === null) {
+        const rawFrame = buf.readNullable(readFrame);
+        if (rawFrame === null) {
             return;
         }
-        if (this.ignoreFrameIds.has(frame.id)) {
-            this.ignoreFrameIds.delete(frame.id);
+        const scaledFrame = this.scaleFrame(rawFrame, RATIO);
+        if (this.ignoreFrameIds.has(scaledFrame.id)) {
+            this.ignoreFrameIds.delete(scaledFrame.id);
             if (this.team === TEAM2) {
-                this.reverseFrame(frame);
+                this.reverseFrame(scaledFrame);
             }
             this.frameQueue.push({
                 resyncType: GameClientOpcode.RESYNC_PARTOF,
-                frame: frame,
+                frame: scaledFrame,
             });
         }
         // 무시하는 프레임에 등록된 경우 상대 패들만 싱크하고 나머지는 무시
         else {
             if (this.team === TEAM2) {
-                this.reverseFrame(frame);
+                this.reverseFrame(scaledFrame);
             }
-            this.pasteFrame(frame);
+            this.pasteFrame(scaledFrame);
             this.frameQueue.push({
                 resyncType: GameClientOpcode.RESYNC_PART,
-                frame: frame,
+                frame: scaledFrame,
             });
         }
+    }
+
+    getSetNumber() {
+        return this.setNo;
+    }
+
+    setPlayerScore(progress: GameProgress) {
+        [this.team1Score, this.team2Score] = progress.score;
     }
 
     start() {
