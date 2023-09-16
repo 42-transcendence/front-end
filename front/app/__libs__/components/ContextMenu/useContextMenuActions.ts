@@ -181,6 +181,7 @@ export function useContextMenuActions(
             setCurrentChatRoomUUID,
             setCurrentPage,
             setFriendModalIsOpen,
+            setLeftsideBarOpen,
             setRightsideBarIsOpen,
             targetAccountUUID,
             targetRoleLevel,
