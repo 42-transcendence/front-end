@@ -130,7 +130,7 @@ export function ChatHeader() {
     return (
         <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch bg-transparent py-4">
             <LeftSidebarButton />
-            <div className="overflow-hidden">
+            <div className="flex flex-col items-center justify-center overflow-hidden">
                 <label
                     htmlFor="headerDropDown"
                     className={[
