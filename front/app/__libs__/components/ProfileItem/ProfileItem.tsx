@@ -38,7 +38,7 @@ export function ProfileItem({
     return (
         <Provider store={store}>
             <div
-                className={`relative flex h-fit w-full shrink-0 flex-col items-start ${className}`}
+                className={`relative flex h-fit w-full flex-col items-start ${className}`}
             >
                 <div
                     className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
@@ -68,7 +68,7 @@ export function ProfileItem({
                             </div>
                             <span
                                 title={statusMessage}
-                                className="text-normal line-clamp-1 font-sans text-sm text-gray-50"
+                                className="text-normal line-clamp-1 break-all font-sans text-sm text-gray-50"
                             >
                                 {statusMessage}
                             </span>

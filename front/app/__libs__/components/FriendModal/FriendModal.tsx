@@ -60,7 +60,7 @@ export function FriendModal() {
     };
 
     return (
-        <GlassWindow className="max-w-[18rem] ">
+        <GlassWindow className="min-w-[18rem] max-w-[18rem]">
             <div className="overflow-clip rounded-[28px]">
                 <FriendRequestList />
                 <FriendList />
@@ -96,6 +96,7 @@ function FriendList() {
         .map((friend) => (
             <ProfileItem
                 type="FriendModal"
+                className="min-w-[16rem]"
                 key={friend.friendAccountId}
                 accountUUID={friend.friendAccountId}
                 selected={friend.friendAccountId === selectedUUID}
