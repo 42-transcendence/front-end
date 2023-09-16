@@ -8,6 +8,10 @@ export function useCopyText(
     const [text, setText] = useState(initial ?? "");
 
     const copyText = useCallback(() => {
+        if (!window.isSecureContext) {
+            alert("http로 연결 시에는 복사할 수 없습니다");
+            return;
+        }
         navigator.clipboard.writeText(text).catch(() => {});
     }, [text]);
 

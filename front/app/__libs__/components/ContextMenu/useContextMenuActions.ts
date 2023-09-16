@@ -22,10 +22,11 @@ import {
     useChatMember,
     useSetChatRightSideBarCurrrentPageAtom,
 } from "@hooks/useChatRoom";
+import { useCopyText } from "@hooks/useCopyText";
 import { logout } from "@utils/action";
 import { useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 export function useContextMenuActions(
     targetAccountUUID: string,
@@ -59,13 +60,16 @@ export function useContextMenuActions(
         store: GlobalStore,
     });
 
+    const [, setText, copyText] = useCopyText(`${nickName}#${nickTag}`);
+
+    useEffect(() => {
+        setText(`${nickName}#${nickTag}`);
+    }, [nickName, nickTag, setText]);
+
     const actions = useMemo(
         () => ({
             ["copytag"]: () => {
-                navigator.clipboard
-                    .writeText(`${nickName}#${nickTag}`)
-                    .then(() => {})
-                    .catch(() => {});
+                copyText();
             },
             ["addfriend"]: () => {
                 const buf = makeAddFriendRequest(
