@@ -51,7 +51,10 @@ export function ChangeVisibilityMenu() {
                         <label
                             title={state.text}
                             key={state.value}
-                            className="rounded-lg outline-none focus-within:outline-1 focus-within:outline-primary"
+                            className={`rounded-lg outline-none ${
+                                state.value === data &&
+                                "focus-within:outline-1 focus-within:outline-primary"
+                            }`}
                         >
                             {state.icon}
                             <input
