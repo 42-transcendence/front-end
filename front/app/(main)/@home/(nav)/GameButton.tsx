@@ -25,8 +25,8 @@ type GameInfoType = {
 
 const configs = {
     FIELD: [
-        { name: "동글동글", value: BattleField.SQUARE },
-        { name: "네모네모", value: BattleField.ROUND },
+        { name: "네모네모", value: BattleField.SQUARE },
+        { name: "동글동글", value: BattleField.ROUND },
     ],
     MODE: [
         { name: "기본", value: GameMode.UNIFORM },

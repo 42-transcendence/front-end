@@ -1,9 +1,8 @@
 "use client";
 import { Game } from "@components/ImageLibrary";
 import { CreateGameButton, QuickMatchButton } from "./GameButton";
-import { useStateArray } from "@hooks/useStateArray";
 import { useState } from "react";
-import { AfterGamePage } from "./AfterGamePage.1";
+import { AfterGamePage } from "./AfterGamePage";
 
 function HelloWorldPaper() {
     return (
