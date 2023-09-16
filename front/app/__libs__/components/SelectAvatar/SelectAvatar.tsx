@@ -41,7 +41,7 @@ function useFormData(): [
 
 function useImageAsFormData(): [
     image: HTMLImageElement | null,
-    setImage: (image: HTMLImageElement) => void,
+    setImage: (image: HTMLImageElement | null) => void,
     sendForm: () => void,
 ] {
     const [setForm, sendForm, clearForm] = useFormData();
@@ -103,9 +103,25 @@ export function SelectAvatar() {
     }, []);
 
     const [image, setImage, sendForm] = useImageAsFormData();
+    const [viewFileSelector, setViewFileSelector] = useState(false);
+    const [fileSelected, setFileSelected] = useState(false);
 
     useIntersectionObserver(
-        (x: Element) => setImage(x as HTMLImageElement),
+        useCallback(
+            (x: Element) => {
+                if ((x as HTMLElement).dataset["name"] === "END_REF") {
+                    setViewFileSelector(true);
+                    if (!fileSelected) {
+                        setImage(null);
+                    }
+                } else {
+                    setViewFileSelector(false);
+                    setFileSelected(false);
+                    setImage(x as HTMLImageElement);
+                }
+            },
+            [fileSelected, setImage],
+        ),
         targetRefsMap,
         observerOptions,
     );
@@ -135,11 +151,42 @@ export function SelectAvatar() {
                             />
                         </div>
                     ))}
-                    <ImageUploadBox setImage={setImage} />
+                    <div
+                        className={`z-10 flex h-64 w-64 flex-shrink-0 snap-center snap-always flex-col items-center justify-center overflow-hidden rounded-xl ${
+                            image === null ? "bg-black/30" : ""
+                        }`}
+                    >
+                        <div
+                            key="END_REF"
+                            data-name="END_REF"
+                            className="min-h-[1px] w-full"
+                            ref={refCallbackAt("END_REF")}
+                        ></div>
+                        {viewFileSelector ? (
+                            <ImageUploadBox
+                                setImage={(image) => {
+                                    setImage(image);
+                                    setFileSelected(true);
+                                }}
+                            />
+                        ) : (
+                            <></>
+                        )}
+                    </div>
                 </ScrollBox>
             </div>
-            <p>현재 아바타: {image !== null && image.dataset["name"]}</p>
-            <button className="z-50" type="button" onClick={() => sendForm()}>
+            <p>
+                현재 아바타:{" "}
+                {image !== null
+                    ? image.dataset["name"]
+                    : "(파일을 선택해주세요)"}
+            </p>
+            <button
+                className="z-50"
+                type="button"
+                onClick={() => sendForm()}
+                disabled={image === null}
+            >
                 <Icon.Arrow3 className="z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-xl bg-gray-500/80 p-3 text-gray-200/50 transition-colors duration-300 hover:bg-primary hover:text-white" />
             </button>
         </>
