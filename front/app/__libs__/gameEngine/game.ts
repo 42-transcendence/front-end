@@ -15,7 +15,7 @@ const PADDLE_IMAGE_SRCS = [
     "/game/game-chip-1_dummy.png",
     "/game/game-chip-4_dummy.png",
 ];
-const BALL_TEXTURE = "/chanhpar.png";
+const BALL_TEXTURE = "/ball.png";
 const TEAM1 = 0;
 const TEAM2 = 1;
 
@@ -61,8 +61,8 @@ export class Game {
             render: {
                 sprite: {
                     texture: PADDLE_IMAGE_SRCS[this.team],
-                    yScale: 1,
-                    xScale: 1,
+                    yScale: 1 * RATIO,
+                    xScale: 1 * RATIO,
                 },
             },
         },
@@ -83,8 +83,8 @@ export class Game {
             render: {
                 sprite: {
                     texture: PADDLE_IMAGE_SRCS[1 - this.team],
-                    yScale: 1,
-                    xScale: 1,
+                    yScale: 1 * RATIO,
+                    xScale: 1 * RATIO,
                 },
             },
         },
@@ -100,8 +100,8 @@ export class Game {
         render: {
             sprite: {
                 texture: BALL_TEXTURE,
-                yScale: 0.2,
-                xScale: 0.2,
+                yScale: 0.2 * RATIO,
+                xScale: 0.2 * RATIO,
             },
         },
     });
@@ -419,13 +419,13 @@ export class Game {
                 collisionFilter: {
                     mask: LINE_CATEGORY,
                 },
-                // render: {
-                // 	sprite: {
-                // 		texture: "/background.png",
-                // 		yScale: 0.22,
-                // 		xScale: 0.18,
-                // 	},
-                // }
+                render: {
+                    sprite: {
+                        texture: "/background.png",
+                        yScale: 0.22,
+                        xScale: 0.18,
+                    },
+                },
             },
         );
         Matter.Composite.add(this.world, ellipse);
@@ -475,48 +475,48 @@ export class Game {
         }
     }
 
-    private drawScore() {
-        if (this.canvasContext === null) return;
-        const [team1DrawPos, team2DrawPos] =
-            this.team === TEAM1
-                ? [1900 * RATIO, 25 * RATIO]
-                : [25 * RATIO, 1900 * RATIO];
-        this.canvasContext.fillText(
-            "Team 2 score: " + this.team2Score + `/${WIN_SCORE}`,
-            WIDTH / 2 - 150 * RATIO,
-            team2DrawPos,
-        );
-        this.canvasContext.fillText(
-            "Team 1 score: " + this.team1Score + `/${WIN_SCORE}`,
-            WIDTH / 2 - 150 * RATIO,
-            team1DrawPos,
-        );
-        if (this.team1Score !== 5 || this.team2Score !== 5) {
-            this.canvasContext.fillText(
-                `Set: ${this.setNo}`,
-                WIDTH / 2 - 50 * RATIO,
-                HEIGHT / 2 + 25 * RATIO,
-            );
-        }
-    }
+    // private drawScore() {
+    //     if (this.canvasContext === null) return;
+    //     const [team1DrawPos, team2DrawPos] =
+    //         this.team === TEAM1
+    //             ? [1900 * RATIO, 25 * RATIO]
+    //             : [25 * RATIO, 1900 * RATIO];
+    //     this.canvasContext.fillText(
+    //         "Team 2 score: " + this.team2Score + `/${WIN_SCORE}`,
+    //         WIDTH / 2 - 150 * RATIO,
+    //         team2DrawPos,
+    //     );
+    //     this.canvasContext.fillText(
+    //         "Team 1 score: " + this.team1Score + `/${WIN_SCORE}`,
+    //         WIDTH / 2 - 150 * RATIO,
+    //         team1DrawPos,
+    //     );
+    //     if (this.team1Score !== 5 || this.team2Score !== 5) {
+    //         this.canvasContext.fillText(
+    //             `Set: ${this.setNo}`,
+    //             WIDTH / 2 - 50 * RATIO,
+    //             HEIGHT / 2 + 25 * RATIO,
+    //         );
+    //     }
+    // }
 
     private judgeWinner() {
-        if (this.canvasContext === null) return;
+        // if (this.canvasContext === null) return;
         if (this.team1Score >= WIN_SCORE) {
-            this.canvasContext.fillText(
-                "Team 1 Wins!",
-                WIDTH / 2 - 100 * RATIO,
-                HEIGHT / 2 - 25 * RATIO,
-            );
+            // this.canvasContext.fillText(
+            //     "Team 1 Wins!",
+            //     WIDTH / 2 - 100 * RATIO,
+            //     HEIGHT / 2 - 25 * RATIO,
+            // );
             Matter.Engine.clear(this.engine);
             Matter.Render.stop(this.render);
             Matter.Runner.stop(this.runner);
         } else if (this.team2Score >= WIN_SCORE) {
-            this.canvasContext.fillText(
-                "Team 2 Wins!",
-                WIDTH / 2 - 100 * RATIO,
-                HEIGHT / 2 - 25 * RATIO,
-            );
+            // this.canvasContext.fillText(
+            //     "Team 2 Wins!",
+            //     WIDTH / 2 - 100 * RATIO,
+            //     HEIGHT / 2 - 25 * RATIO,
+            // );
             Matter.Engine.clear(this.engine);
             Matter.Render.stop(this.render);
             Matter.Runner.stop(this.runner);
@@ -909,7 +909,7 @@ export class Game {
 
             //승점계산
             this.judgeWinner();
-            this.drawScore();
+            // this.drawScore();
         });
     }
 }
