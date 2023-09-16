@@ -10,14 +10,16 @@ import Matter from "matter-js";
 import { ByteBuffer } from "../akasha-lib/library/byte-buffer";
 import { BattleField } from "@common/game-payloads";
 
-// const PADDLE_IMAGE_SRCS = ["/game-chip-1_dummy.png", "/game-chip-4_dummy.png"];
-const PADDLE_IMAGE_SRCS = ["/hdoo.png", "/iyun.png"];
+const PADDLE_IMAGE_SRCS = [
+    "/game/game-chip-1_dummy.png",
+    "/game/game-chip-4_dummy.png",
+];
 const BALL_TEXTURE = "/chanhpar.png";
 const TEAM1 = 0;
 const TEAM2 = 1;
 
-const WIDTH = 1000;
-const HEIGHT = 1920;
+const WIDTH = 500;
+const HEIGHT = 960;
 const BALL_RADIUS = 36;
 const PADDLE_RADIUS = 80;
 const GOAL_RADIUS = PADDLE_RADIUS + 8;
