@@ -41,6 +41,7 @@ export function ProfileItemSelectable({
                         className="peer hidden"
                         type="checkbox"
                         checked={selected}
+                        onChange={() => {}}
                         onClick={onClick}
                         id={profileItemId}
                     />
