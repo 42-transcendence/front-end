@@ -12,6 +12,7 @@ import {
     ChatModalOpenAtom,
     ChatTabIndexAtom,
     CurrentChatRoomUUIDAtom,
+    LeftSideBarIsOpenAtom,
     RightSideBarIsOpenAtom,
 } from "@atoms/ChatAtom";
 import { FriendModalIsOpen } from "@atoms/FriendAtom";
@@ -36,6 +37,9 @@ export function useContextMenuActions(
 ) {
     const { sendPayload } = useWebSocket("chat", []);
     const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
+    const setLeftsideBarOpen = useSetAtom(LeftSideBarIsOpenAtom, {
+        store: GlobalStore,
+    });
     const targetUser = useChatMember(currentChatRoomUUID, targetAccountUUID);
     const targetRoleLevel = Number(targetUser?.role ?? 0);
 
@@ -99,6 +103,7 @@ export function useContextMenuActions(
             },
             ["directmessage"]: () => {
                 setRightsideBarIsOpen(false);
+                setLeftsideBarOpen(false);
                 setFriendModalIsOpen(false);
                 setChatModalIsOpen(true);
                 setChatTabIndex(1);
@@ -164,6 +169,7 @@ export function useContextMenuActions(
             ["noaction"]: undefined,
         }),
         [
+            copyText,
             currentAccountUUID,
             currentChatRoomUUID,
             nickName,
