@@ -9,7 +9,22 @@ import { handleUpdateGame } from "@common/game-gateway-helper-client";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { Game } from "@gameEngine/game";
 import { useAtomValue } from "jotai";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+
+function drawCircle(canvas: HTMLCanvasElement) {
+    const context = canvas.getContext("2d");
+    const diameter = 300;
+    const left = window.innerWidth / 2;
+    const top = window.innerHeight / 2;
+
+    if (context === null) {
+        return;
+    }
+
+    context.font = "50px serif";
+    context.fillStyle = "blue";
+    context.fillText("here", 100, 100);
+}
 
 export function GameInGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -98,5 +113,21 @@ export function GameInGame() {
         }
     }, [game]);
 
-    return <canvas ref={canvasRef} className="cursor-none"></canvas>;
+    useLayoutEffect(() => {
+        if (canvasRef.current !== null) {
+            drawCircle(canvasRef.current);
+        }
+    });
+
+    return (
+        <>
+            <div className="bg-space h-full w-full bg-cover"></div>
+            <canvas
+                className="fixed inset-x-0 top-20 mx-auto"
+                width={500}
+                height={960}
+                ref={canvasRef}
+            ></canvas>
+        </>
+    );
 }

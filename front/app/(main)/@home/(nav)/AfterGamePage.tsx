@@ -20,6 +20,9 @@ const mockData = {
     time: 538,
 };
 
+import { Avatar } from "@components/Avatar";
+import { NickBlock } from "@components/ProfileItem/ProfileItem";
+
 export function AfterGamePage() {
     const gameResult = mockData;
 
@@ -29,14 +32,42 @@ export function AfterGamePage() {
     );
 
     if (myMember === undefined) {
-        // 이거 뭐지
         return <div>loading</div>;
     }
-    //hdoo님 이런 식은 어떤가요
     const myTeam = myMember.team;
-    const winTeam = gameResult.team[0].total > gameResult.team[1].total ? 0 : 1;
+    const winTeam =
+        gameResult.teams[0].total > gameResult.teams[1].total ? 0 : 1;
     const isWin = myTeam === winTeam;
+
     return (
-        <div className="">{isWin ? <span>승리</span> : <span>패배</span>}</div>
+        <div className="flex h-full w-full flex-col items-center justify-start bg-windowGlass/30 p-16 backdrop-blur-[30px]">
+            <div className="text-7xl italic">
+                {isWin ? (
+                    <span className="text-secondary">승리</span>
+                ) : (
+                    <span className="text-red-500/80">패배</span>
+                )}
+            </div>
+            <div className="flex h-full w-full flex-row p-4">
+                {Object.values(gameResult.teams).map((team, index) => (
+                    <TeamResult key={index} team={team} />
+                ))}
+            </div>
+            <div className="flex h-full w-full flex-row p-4">
+                {Object.keys(gameResult.teams).map((teamKey) =>
+                    Object.values(gameResult.members)
+                        .filter((member) => member.team === parseInt(teamKey))
+                        .map((member) => (
+                            <div key={member.accountId}>
+                                <Avatar
+                                    className="relative"
+                                    accountUUID={member.accountId}
+                                />
+                                <NickBlock accountUUID={member.accountId} />
+                            </div>
+                        )),
+                )}
+            </div>
+        </div>
     );
 }

@@ -1,3 +1,5 @@
+"use client";
+import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import GameUserProfile from "./GameUserProfile";
 import GameUserRoundScore from "./GameUserRoundScore";
 import { Icon } from "@components/Icon/Icon";
@@ -13,10 +15,12 @@ const dummyData: gameScore = {
 };
 
 export function GameUserFrame() {
+    const currentAccountUUID = useCurrentAccountUUID();
+
     return (
         <div className="flex w-[322px] flex-col items-center rounded-[35px] bg-black/70 px-[38px] pb-[23px] pt-[30px]">
             <Icon type="double-sharp" size={20} className="" />
-            <GameUserProfile />
+            <GameUserProfile accountUUID={currentAccountUUID} />
             {/* round score */}
             <GameUserRoundScore />
             <GameUserRoundScore />
