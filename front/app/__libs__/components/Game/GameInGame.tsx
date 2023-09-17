@@ -80,7 +80,6 @@ export function GameInGame() {
                     const memberStatistics = buf.readArray(
                         readGameMemberStatistics,
                     );
-                    console.log("result game", statistics, memberStatistics);
                     setGameStatistics(statistics);
                     setGameMemberStatistics(memberStatistics);
                     break;
@@ -119,7 +118,6 @@ export function GameInGame() {
                 }
                 case GameClientOpcode.GRAVITY_OBJS: {
                     const objs = readGravityObjs(buf);
-                    console.log("Gravity ", objs);
                     game?.setGravity(objs);
                     break;
                 }
