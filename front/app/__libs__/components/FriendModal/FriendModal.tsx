@@ -96,7 +96,7 @@ function FriendList() {
         .map((friend) => (
             <ProfileItem
                 type="FriendModal"
-                className="min-w-[16rem]"
+                className="min-w-[18rem]"
                 key={friend.friendAccountId}
                 accountUUID={friend.friendAccountId}
                 selected={friend.friendAccountId === selectedUUID}
