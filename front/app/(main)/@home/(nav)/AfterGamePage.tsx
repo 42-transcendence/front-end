@@ -61,11 +61,12 @@ export function AfterGamePage() {
 
     const isWin = myMember.outcome === GameOutcome.WIN;
 
-    const totalGamePlayTime =
+    const totalGamePlayTime = Math.round(
         gameResult.progresses.reduce(
             (prevSum, progress) => prevSum + progress.consumedTimespanSum,
             0,
-        ) / 1000;
+        ) / 1000,
+    );
 
     const second = (totalGamePlayTime % 60).toString().padStart(2, "0");
     const min = (totalGamePlayTime / 60).toFixed();
