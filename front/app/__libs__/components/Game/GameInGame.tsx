@@ -3,7 +3,9 @@ import { CurrentAccountUUIDAtom } from "@atoms/AccountAtom";
 import {
     GameMemberAtom,
     GameProgressAtom,
+    GameStatisticsAtom,
     GameRoomParamsAtom,
+    GameMemberStatisticsAtom,
 } from "@atoms/GameAtom";
 import { handleUpdateGame } from "@common/game-gateway-helper-client";
 import { GameClientOpcode } from "@common/game-opcodes";
@@ -11,32 +13,9 @@ import {
     readGameMemberStatistics,
     readGameStatistics,
 } from "@common/game-payloads";
-import { GlassWindow } from "@components/Frame/GlassWindow";
 import { Game } from "@gameEngine/game";
-import { useAtomValue } from "jotai";
-import {
-    use,
-    useEffect,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
-
-function drawCircle(canvas: HTMLCanvasElement) {
-    const context = canvas.getContext("2d");
-    const diameter = 300;
-    const left = window.innerWidth / 2;
-    const top = window.innerHeight / 2;
-
-    if (context === null) {
-        return;
-    }
-
-    context.font = "50px serif";
-    context.fillStyle = "blue";
-    context.fillText("here", 100, 100);
-}
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export function GameInGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -44,6 +23,8 @@ export function GameInGame() {
     const gameMembers = useAtomValue(GameMemberAtom);
     const gameParams = useAtomValue(GameRoomParamsAtom);
     const gameProgress = useAtomValue(GameProgressAtom);
+    const setGameStatistics = useSetAtom(GameStatisticsAtom);
+    const setGameMemberStatistics = useSetAtom(GameMemberStatisticsAtom);
 
     const currentMember = useMemo(
         () =>
@@ -77,19 +58,17 @@ export function GameInGame() {
                     break;
                 }
                 case GameClientOpcode.GAME_RESULT: {
-                    //TODO: 결과창 Atom 만들고 이것들 설정하고 잘 조합해서 띄워주기
                     const statistics = readGameStatistics(buf);
                     const memberStatistics = buf.readArray(
                         readGameMemberStatistics,
                     );
-                    // const gameResult = handleGameResult(buffer);
-                    // console.log("result", gameResult);
+                    setGameStatistics(statistics);
+                    setGameMemberStatistics(memberStatistics);
                     break;
                 }
                 case GameClientOpcode.UPDATE_GAME: {
                     const updateInfo = handleUpdateGame(buf);
                     if (game !== null && updateInfo !== null) {
-                        console.log(updateInfo);
                         game.setGameProgress(updateInfo);
                     }
                     break;
@@ -106,12 +85,11 @@ export function GameInGame() {
         ) {
             return;
         }
-        // console.log(gameParams, gameProgress);
         const game = new Game(
             sendPayload,
             currentMember.team,
             gameParams.battleField,
-            [],
+            [], // TODO: gravity
             canvasRef,
         );
         setGame(game);

@@ -28,6 +28,7 @@ import { useGamePlayConnector } from "@hooks/useGameWebSocketConnector";
 import { useAtom, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
+import { AfterGamePage } from "../../(nav)/AfterGamePage";
 
 export default function GamePage() {
     const [invitationToken, setInvitationToken] = useAtom(InvitationAtom, {
@@ -118,7 +119,19 @@ export default function GamePage() {
 
     return (
         <div className="h-full w-full">
-            {currentGameProgress === null ? <GameLobby /> : <GameInGame />}
+            {currentGameProgress === null ? (
+                <GameLobby />
+            ) : currentGameProgress.currentSet !==
+              currentGameProgress.maxSet ? (
+                <GameInGame />
+            ) : (
+                <AfterGamePage />
+            )}
         </div>
     );
 }
+
+// currentSet === maxSet;
+// GAME_RESULT packet;
+// currentGameProgress atom === null
+//

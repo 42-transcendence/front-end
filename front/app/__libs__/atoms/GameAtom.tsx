@@ -2,9 +2,11 @@
 
 import type {
     GameMemberParams,
+    GameMemberStatistics,
     GameProgress,
     GameRoomParams,
     GameRoomProps,
+    GameStatistics,
 } from "@common/game-payloads";
 import { atom } from "jotai";
 
@@ -19,3 +21,5 @@ export const GameRoomParamsAtom = atom<GameRoomParams | null>(null);
 export const LadderAtom = atom(false);
 
 export const GameProgressAtom = atom<GameProgress | null>(null);
+export const GameStatisticsAtom = atom<GameStatistics | null>(null);
+export const GameMemberStatisticsAtom = atom<GameMemberStatistics[]>([]);
