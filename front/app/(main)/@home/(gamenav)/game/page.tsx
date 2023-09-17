@@ -54,13 +54,20 @@ export default function GamePage() {
     useEffect(() => {
         if (invitationToken === "") {
             if (localInvitationToken === "") {
-                router.push("/"); // TODO 로직 제대로 되는지 확인하기
+                router.push("/");
             }
         } else {
+            setGameProgress(null);
             setLocalInvitationToken(invitationToken);
             setInvitationToken("");
         }
-    }, [invitationToken, localInvitationToken, router, setInvitationToken]);
+    }, [
+        invitationToken,
+        localInvitationToken,
+        router,
+        setInvitationToken,
+        setGameProgress,
+    ]);
 
     useWebSocket("game", undefined, (opcode, buffer) => {
         switch (opcode) {
@@ -109,13 +116,13 @@ export default function GamePage() {
             }
             case GameClientOpcode.UPDATE_GAME: {
                 const progress = handleUpdateGame(buffer);
-                // XXX 과거 프로그레스 필요할수도
                 setGameProgress(progress);
                 break;
             }
             case GameClientOpcode.END_OF_GAME: {
                 const incomplete = buffer.readBoolean();
                 if (incomplete) {
+                    alert("게임이 미완료 상태로 끝났습니다.");
                     router.push("/");
                 } else {
                     router.push("/game-result");

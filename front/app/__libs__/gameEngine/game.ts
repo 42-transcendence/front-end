@@ -435,6 +435,7 @@ export class Game {
                 {
                     isStatic: true,
                     render: {
+                        fillStyle: "#0e0f37",
                         visible: true,
                     },
                 },
