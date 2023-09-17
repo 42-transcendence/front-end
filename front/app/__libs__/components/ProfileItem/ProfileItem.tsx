@@ -40,7 +40,8 @@ export function ProfileItem({
             <div
                 className={`relative flex h-fit w-full flex-col items-start ${className}`}
             >
-                <div
+                <button
+                    type="button"
                     className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 hover:bg-primary/30"
                     onClick={onClick}
                 >
@@ -74,7 +75,7 @@ export function ProfileItem({
                             </span>
                         </div>
                     </div>
-                </div>
+                </button>
                 {selected && <ContextMenu type={type} />}
             </div>
         </Provider>

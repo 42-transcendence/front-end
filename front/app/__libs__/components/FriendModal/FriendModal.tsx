@@ -65,13 +65,14 @@ export function FriendModal() {
                 <FriendRequestList />
                 <FriendList />
                 <div className="relative flex h-fit w-full flex-col items-start">
-                    <div
+                    <button
+                        type="button"
                         className="group relative flex w-full flex-row items-center space-x-4 self-stretch rounded p-4 text-gray-300 hover:bg-primary/30"
                         onClick={sendFriendRequest}
                     >
                         <Icon.Plus />
                         <p className="text-normal text-xs">친구 추가하기</p>
-                    </div>
+                    </button>
                 </div>
             </div>
         </GlassWindow>
