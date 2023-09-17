@@ -28,7 +28,6 @@ import { useGamePlayConnector } from "@hooks/useGameWebSocketConnector";
 import { useAtom, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { AfterGamePage } from "../../(nav)/AfterGamePage";
 
 export default function GamePage() {
     const [invitationToken, setInvitationToken] = useAtom(InvitationAtom, {
@@ -40,6 +39,7 @@ export default function GamePage() {
     const setGameRoomParams = useSetAtom(GameRoomParamsAtom);
     const setLadderAtom = useSetAtom(LadderAtom);
     const [localInvitationToken, setLocalInvitationToken] = useState("");
+    const [isEnded, setIsEnded] = useState(false);
 
     const [currentGameProgress, setGameProgress] = useAtom(GameProgressAtom);
 
@@ -48,7 +48,7 @@ export default function GamePage() {
             () => makeGameHandshake(localInvitationToken),
             [localInvitationToken],
         ),
-        localInvitationToken !== "",
+        !isEnded && localInvitationToken !== "",
     );
 
     useEffect(() => {
@@ -121,6 +121,7 @@ export default function GamePage() {
             }
             case GameClientOpcode.END_OF_GAME: {
                 const incomplete = buffer.readBoolean();
+                setIsEnded(true);
                 if (incomplete) {
                     alert("게임이 미완료 상태로 끝났습니다.");
                     router.push("/");
@@ -134,12 +135,11 @@ export default function GamePage() {
 
     return (
         <div className="h-full w-full">
-            {currentGameProgress === null ? <GameLobby /> : <GameInGame />}
+            {!isEnded && currentGameProgress === null ? (
+                <GameLobby />
+            ) : (
+                <GameInGame />
+            )}
         </div>
     );
 }
-
-// currentSet === maxSet;
-// GAME_RESULT packet;
-// currentGameProgress atom === null
-//
