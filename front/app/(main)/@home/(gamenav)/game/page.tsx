@@ -27,7 +27,7 @@ import { handleGameError } from "@components/Game/handleGameError";
 import { useGamePlayConnector } from "@hooks/useGameWebSocketConnector";
 import { useAtom, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AfterGamePage } from "../../(nav)/AfterGamePage";
 
 export default function GamePage() {
@@ -39,26 +39,28 @@ export default function GamePage() {
     const setGameRoomProps = useSetAtom(GameRoomPropsAtom);
     const setGameRoomParams = useSetAtom(GameRoomParamsAtom);
     const setLadderAtom = useSetAtom(LadderAtom);
+    const [localInvitationToken, setLocalInvitationToken] = useState("");
 
     const [currentGameProgress, setGameProgress] = useAtom(GameProgressAtom);
 
     useGamePlayConnector(
-        useMemo(() => makeGameHandshake(invitationToken), [invitationToken]),
-        invitationToken !== "",
+        useMemo(
+            () => makeGameHandshake(localInvitationToken),
+            [localInvitationToken],
+        ),
+        localInvitationToken !== "",
     );
 
     useEffect(() => {
         if (invitationToken === "") {
-            router.push("/"); // TODO
+            if (localInvitationToken === "") {
+                router.push("/"); // TODO 로직 제대로 되는지 확인하기
+            }
+        } else {
+            setLocalInvitationToken(invitationToken);
+            setInvitationToken("");
         }
-        if (currentGameProgress === null) {
-            return;
-        }
-        if (currentGameProgress.currentSet === currentGameProgress.maxSet) {
-            alert("게임 끝남");
-            router.push("/"); // TODO
-        }
-    }, [currentGameProgress, invitationToken, router]);
+    }, [invitationToken, localInvitationToken, router, setInvitationToken]);
 
     useWebSocket("game", undefined, (opcode, buffer) => {
         switch (opcode) {
@@ -107,9 +109,6 @@ export default function GamePage() {
             }
             case GameClientOpcode.UPDATE_GAME: {
                 const progress = handleUpdateGame(buffer);
-                if (progress === null) {
-                    setInvitationToken("");
-                }
                 // XXX 과거 프로그레스 필요할수도
                 setGameProgress(progress);
                 break;
