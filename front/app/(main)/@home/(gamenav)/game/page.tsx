@@ -114,7 +114,12 @@ export default function GamePage() {
                 break;
             }
             case GameClientOpcode.END_OF_GAME: {
-                router.push("/game-result");
+                const incomplete = buffer.readBoolean();
+                if (incomplete) {
+                    router.push("/");
+                } else {
+                    router.push("/game-result");
+                }
                 break;
             }
         }

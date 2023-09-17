@@ -34,7 +34,7 @@ const configs = {
     ],
     LIMIT: [
         { name: "개인전", value: 2 },
-        { name: "협동전", value: 4 },
+        // { name: "협동전", value: 4 },
     ],
 };
 

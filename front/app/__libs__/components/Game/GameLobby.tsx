@@ -133,8 +133,11 @@ function GameLobbyHeader() {
                     className="flex min-w-fit flex-row items-center justify-center rounded-xl p-2 hover:bg-primary/30 hover:text-gray-50/80 active:bg-secondary active:text-white"
                     onClick={() => copyRoomCode()}
                 >
-                    <Icon.Copy className="h-9 w-9 p-2" />
+                    <Icon.Copy className="h-9 w-9 p-2 lg:hidden" />
                     <span className="hidden p-2 lg:block">공유 링크 복사</span>
+                    <span className="p-2 lg:hidden">
+                        코드: {roomCode.split("/").pop()}
+                    </span>
                 </button>
             </div>
         </>
