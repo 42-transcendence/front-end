@@ -22,7 +22,7 @@ export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
 
     return (
         <Panel className="flex h-fit flex-col items-start justify-start gap-4 md:col-span-2 md:row-span-1 lg:h-full">
-            <span className="text-xl font-extrabold text-white">전적</span>
+            <span className="p-4 text-xl font-extrabold text-white">전적</span>
             <div className="flex w-full flex-col gap-2 overflow-auto">
                 {gameHistory.map((gameHistory) => (
                     <GameHistoryItem
