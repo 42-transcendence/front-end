@@ -3,7 +3,7 @@
 import { SquareButton } from "@components/Button/SquareButton";
 import { DoubleSharp, Logo42, LogoGoogle } from "@components/ImageLibrary";
 
-const popupFeatures = ["popup=true", "width=600", "height=600"].join(",");
+const popupFeatures = ["popup=true", "width=600", "height=685"].join(",");
 const loginList = [
     {
         key: "intra42",

@@ -283,7 +283,6 @@ export function AccessBan({ accountUUID }: { accountUUID: string }) {
 
 const MIN_TEXTAREA_HEIGHT = 128;
 
-// TODO: NewBan와 별도로 분리할 수도 있는 컴포넌트같으므로 분리 혹은 기존 있는 다른 컴포넌트 재활용이 어떨까 합니다
 function MessageInputArea(
     props: React.TextareaHTMLAttributes<HTMLTextAreaElement>,
 ) {

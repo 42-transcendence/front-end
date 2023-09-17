@@ -6,7 +6,7 @@ import {
     useProtectedProfile,
     usePublicProfile,
 } from "@hooks/useProfile";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useChatMember } from "@hooks/useChatRoom";
 import {
     useCurrentAccountUUID,
@@ -27,7 +27,6 @@ function ContextMenuItem({
 }) {
     const ref = useRef<HTMLButtonElement>(null);
     const disabled = action === undefined;
-    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const elem = ref.current;
@@ -51,8 +50,6 @@ function ContextMenuItem({
         <>
             <button
                 type="button"
-                // TODO: onClick 어떻게 하지...?
-                onClick={() => setOpen(!open)}
                 ref={ref}
                 disabled={disabled}
                 className={`relative flex h-fit w-full items-center rounded py-3 ${
@@ -72,7 +69,6 @@ function ContextMenuItem({
                     )}
                 </div>
             </button>
-            {menuInfo.UI ?? (open && menuInfo.UI)}
         </>
     );
 }
@@ -104,13 +100,16 @@ export function ContextMenu({ type }: { type: Scope }) {
             ? "friend"
             : "stranger";
 
-    const skillRating = record?.skillRating ?? "-";
+    const ratingSummary =
+        record !== undefined
+            ? `래더 ${record.skillRating}점 (${record.winCount}승 / ${record.loseCount}패 / ${record.tieCount}무)`
+            : "-";
     const rating: ProfileMenu = {
-        name: `rating: ${skillRating}`,
+        name: ratingSummary,
         action: "noaction",
         relation: ["myself", "friend", "stranger"],
         scope: ["ChatRoom", "FriendModal", "Navigation"],
-        isImportant: false,
+        isImportant: true,
         className: "hover:bg-transparent active:bg-transparent",
     };
 

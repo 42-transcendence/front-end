@@ -1,6 +1,5 @@
 import { Avatar } from "@components/Avatar";
 import { Icon } from "@components/ImageLibrary";
-import { usePublicProfile } from "@hooks/useProfile";
 import { useId } from "react";
 import { NickBlock } from "./ProfileItem";
 
@@ -15,10 +14,8 @@ export function ProfileItemSelectable({
     selected: boolean;
     onClick: React.MouseEventHandler;
 }) {
-    const profile = usePublicProfile(accountUUID);
     const profileItemId = useId();
 
-    // TODO: div를 label로 바꾸고 useId 섰는데, 추후확인 필요
     return (
         <li
             className={`group/profile relative flex h-fit w-full shrink-0 flex-col items-start ${className}`}
@@ -37,13 +34,14 @@ export function ProfileItemSelectable({
                     </div>
                     <div className="w-full overflow-hidden">
                         <div className="relative w-full overflow-hidden whitespace-nowrap font-sans text-base font-bold leading-none tracking-normal text-gray-50 transition-all ease-linear group-hover/profile:-translate-x-[150%] group-hover/profile:overflow-visible group-hover/profile:delay-300 group-hover/profile:duration-[5000ms]">
-                            <NickBlock profile={profile} />
+                            <NickBlock accountUUID={accountUUID} />
                         </div>
                     </div>
                     <input
                         className="peer hidden"
                         type="checkbox"
                         checked={selected}
+                        onChange={() => {}}
                         onClick={onClick}
                         id={profileItemId}
                     />

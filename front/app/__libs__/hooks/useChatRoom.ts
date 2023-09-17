@@ -175,7 +175,6 @@ export function useChatMember(roomUUID: string, memberUUID: string) {
 }
 
 export function useChatRoomMutation() {
-    // TODO: mutate throwOnError?
     const { mutate } = useSWRConfig();
     const mutateOne = useCallback(
         (roomUUID: string) =>

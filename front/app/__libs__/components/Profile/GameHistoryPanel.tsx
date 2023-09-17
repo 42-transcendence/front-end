@@ -1,313 +1,58 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Avatar } from "@components/Avatar";
 import { Panel } from "./Panel";
 import { Icon } from "@components/ImageLibrary";
-
-type AccountUUID = string;
-
-type Team = {
-    player1: AccountUUID;
-    player2?: AccountUUID;
-};
-
-type SetData = {
-    set: number;
-    ally: number;
-    enemy: number;
-    mvp: AccountUUID;
-};
-
-type GameConfig = {
-    queueType: "CUSTOM" | "QUICK";
-    mode: "기본" | "중력";
-    field: "동글동글" | "네모네모";
-};
-
-type GameStatistics = {
-    startTimeStamp: string;
-    playTime: string;
-};
-
-type GameHistory = {
-    ally: Team;
-    enemy: Team;
-    set: SetData[];
-    config: GameConfig;
-    statistics: GameStatistics;
-    gameUUID: string;
-    rating: number;
-};
-
-const gameHistoryMockup: GameHistory[] = [
-    {
-        gameUUID: "1",
-        rating: 1231,
-        ally: {
-            player1: "한글로여덟자히히",
-            player2: "456",
-        },
-        enemy: {
-            player1: "1231123a",
-            player2: "456",
-        },
-        set: [
-            { set: 1, ally: 3, enemy: 2, mvp: "jisookim" },
-            { set: 2, ally: 2, enemy: 3, mvp: "jisookim" },
-            { set: 3, ally: 3, enemy: 2, mvp: "jisookim" },
-            { set: 4, ally: 2, enemy: 3, mvp: "jisookim" },
-            { set: 5, ally: 3, enemy: 2, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "CUSTOM",
-            mode: "기본",
-            field: "동글동글",
-        },
-        statistics: {
-            startTimeStamp: "3 days ago",
-            playTime: "15m 23s",
-        },
-    },
-    {
-        gameUUID: "22",
-        rating: 1231,
-        ally: {
-            player1: "789",
-            player2: "101",
-        },
-        enemy: {
-            player1: "112",
-            player2: "131",
-        },
-        set: [
-            { set: 1, ally: 2, enemy: 3, mvp: "jisookim" },
-            { set: 2, ally: 1, enemy: 3, mvp: "jisookim" },
-            { set: 3, ally: 3, enemy: 1, mvp: "jisookim" },
-            { set: 4, ally: 2, enemy: 2, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "QUICK",
-            mode: "중력",
-            field: "네모네모",
-        },
-        statistics: {
-            startTimeStamp: "5 days ago",
-            playTime: "20m 05s",
-        },
-    },
-    {
-        gameUUID: "3",
-        rating: 1231,
-        ally: {
-            player1: "415",
-        },
-        enemy: {
-            player1: "161",
-        },
-        set: [
-            { set: 1, ally: 3, enemy: 2, mvp: "jisookim" },
-            { set: 2, ally: 3, enemy: 1, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "CUSTOM",
-            mode: "기본",
-            field: "동글동글",
-        },
-        statistics: {
-            startTimeStamp: "2 days ago",
-            playTime: "10m 15s",
-        },
-    },
-    {
-        gameUUID: "4",
-        rating: 1231,
-        ally: {
-            player1: "162",
-            player2: "173",
-        },
-        enemy: {
-            player1: "184",
-            player2: "195",
-        },
-        set: [
-            { set: 1, ally: 2, enemy: 3, mvp: "jisookim" },
-            { set: 2, ally: 1, enemy: 3, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "CUSTOM",
-            mode: "중력",
-            field: "네모네모",
-        },
-        statistics: {
-            startTimeStamp: "1 day ago",
-            playTime: "17m 10s",
-        },
-    },
-    {
-        gameUUID: "5",
-        rating: 1231,
-        ally: {
-            player1: "206",
-        },
-        enemy: {
-            player1: "217",
-        },
-        set: [
-            { set: 1, ally: 3, enemy: 0, mvp: "jisookim" },
-            { set: 2, ally: 2, enemy: 1, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "QUICK",
-            mode: "기본",
-            field: "동글동글",
-        },
-        statistics: {
-            startTimeStamp: "4 days ago",
-            playTime: "12m 45s",
-        },
-    },
-    {
-        gameUUID: "6",
-        rating: 1231,
-        ally: {
-            player1: "228",
-            player2: "239",
-        },
-        enemy: {
-            player1: "240",
-            player2: "251",
-        },
-        set: [
-            { set: 1, ally: 1, enemy: 3, mvp: "jisookim" },
-            { set: 2, ally: 2, enemy: 2, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "CUSTOM",
-            mode: "중력",
-            field: "동글동글",
-        },
-        statistics: {
-            startTimeStamp: "2 days ago",
-            playTime: "14m 20s",
-        },
-    },
-    {
-        gameUUID: "7",
-        rating: 1231,
-        ally: {
-            player1: "262",
-        },
-        enemy: {
-            player1: "273",
-        },
-        set: [
-            { set: 1, ally: 3, enemy: 2, mvp: "jisookim" },
-            { set: 2, ally: 1, enemy: 3, mvp: "jisookim" },
-            { set: 3, ally: 2, enemy: 3, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "QUICK",
-            mode: "기본",
-            field: "네모네모",
-        },
-        statistics: {
-            startTimeStamp: "3 days ago",
-            playTime: "9m 50s",
-        },
-    },
-    {
-        gameUUID: "8",
-        rating: 1231,
-        ally: {
-            player1: "284",
-            player2: "295",
-        },
-        enemy: {
-            player1: "306",
-            player2: "317",
-        },
-        set: [
-            { set: 1, ally: 2, enemy: 1, mvp: "jisookim" },
-            { set: 2, ally: 2, enemy: 3, mvp: "jisookim" },
-            { set: 3, ally: 3, enemy: 0, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "CUSTOM",
-            mode: "중력",
-            field: "동글동글",
-        },
-        statistics: {
-            startTimeStamp: "6 days ago",
-            playTime: "16m 5s",
-        },
-    },
-    {
-        gameUUID: "9",
-        rating: 1231,
-        ally: {
-            player1: "328",
-        },
-        enemy: {
-            player1: "339",
-        },
-        set: [
-            { set: 1, ally: 1, enemy: 3, mvp: "jisookim" },
-            { set: 2, ally: 3, enemy: 1, mvp: "jisookim" },
-            { set: 3, ally: 1, enemy: 3, mvp: "jisookim" },
-        ],
-        config: {
-            queueType: "QUICK",
-            mode: "기본",
-            field: "네모네모",
-        },
-        statistics: {
-            startTimeStamp: "7 days ago",
-            playTime: "11m 30s",
-        },
-    },
-];
+import { useGameHistory, usePublicProfile } from "@hooks/useProfile";
+import type { GameHistoryEntity } from "@common/generated/types";
+import {
+    BattleField,
+    GameMode,
+    type GameEarnScore,
+    type GameMemberStatistics,
+    type GameStatistics,
+} from "@common/game-payloads";
+import { ErrorPage } from "@components/Error/ErrorPage";
 
 export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
-    const gameHistory = gameHistoryMockup;
+    const gameHistory = useGameHistory(accountUUID);
+
+    if (gameHistory === undefined) {
+        return <div className="loading">loading...</div>;
+    }
+
     return (
-        <>
-            <input
-                type="checkbox"
-                className="peer hidden"
-                id="GameHistoryPanel"
-            />
-            <Panel className="flex h-full flex-col items-start justify-start overflow-clip peer-checked:h-fit md:col-span-2 md:row-span-1">
-                <label
-                    htmlFor="GameHistoryPanel"
-                    className="z-10 flex w-full flex-row items-center justify-between p-4"
-                >
-                    <span className="text-xl font-extrabold text-white">
-                        전적
-                    </span>
-                </label>
-                <div className="flex w-full flex-col gap-2 overflow-auto">
-                    {gameHistory.map((gameHistory) => (
-                        <GameHistoryItem
-                            key={gameHistory.gameUUID}
-                            history={gameHistory}
-                        />
-                    ))}
-                </div>
-            </Panel>
-        </>
+        <Panel className="flex h-fit flex-col items-start justify-start gap-4 md:col-span-2 md:row-span-1 lg:h-full">
+            <span className="text-xl font-extrabold text-white">전적</span>
+            <div className="flex w-full flex-col gap-2 overflow-auto">
+                {gameHistory.map((gameHistory) => (
+                    <GameHistoryItem
+                        key={gameHistory.id}
+                        history={gameHistory}
+                        accountId={accountUUID}
+                    />
+                ))}
+            </div>
+        </Panel>
     );
 }
 
-function GameHistoryItem({ history }: { history: GameHistory }) {
+function GameHistoryItem({
+    history,
+    accountId,
+}: {
+    history: GameHistoryEntity;
+    accountId: string;
+}) {
     const [opened, setOpened] = useState(false);
-    //TODO: get state from server
     return (
         <div className="group relative flex w-full shrink-0 flex-col items-center overflow-clip rounded-xl bg-black/30 @container">
             <GameHistorySummary
                 history={history}
                 toggleOpen={() => setOpened(!opened)}
+                accountId={accountId}
             />
             <div className={`w-full ${opened ? "flex" : "hidden"}`}>
-                <GameHistoryDetail history={history} />
+                <GameHistoryDetail history={history} accountId={accountId} />
             </div>
         </div>
     );
@@ -316,86 +61,108 @@ function GameHistoryItem({ history }: { history: GameHistory }) {
 function GameHistorySummary({
     history,
     toggleOpen,
+    accountId,
 }: {
-    history: GameHistory;
+    history: GameHistoryEntity;
     toggleOpen: React.ChangeEventHandler<HTMLInputElement>;
+    accountId: string;
 }) {
-    const winCount = history.set.filter(
-        (setScore) => setScore.ally > setScore.enemy,
-    ).length;
-    const loseCount = history.set.length - winCount;
+    const statistics = history.statistic as unknown as GameStatistics;
+    const memberStatistics = history.memberStatistics as GameMemberStatistics[];
+
+    const teams = useMemo(
+        () =>
+            [...new Set(memberStatistics.map((member) => member.team))] // member 들 정보로부터 팀의 배열 얻고, 유일하게 걸러냄
+                .toSorted((a, b) => (a > b ? 1 : -1)) // 팀 이름/ 혹은 번호 정렬
+                .map((team) => ({
+                    team: team,
+                    members: memberStatistics.filter(
+                        (member) => member.team === team,
+                    ),
+                })),
+        [memberStatistics],
+    );
+
+    const myMember = useMemo(
+        () => memberStatistics.find((member) => member.accountId === accountId),
+        [accountId, memberStatistics],
+    );
+
+    if (myMember === undefined) {
+        return <ErrorPage />;
+    }
+
+    const winCount = statistics.earnScores.filter((scores) => {
+        const myTeamScore = scores.filter(
+            (score) => score.team === myMember.team,
+        ).length;
+        return myTeamScore > scores.length - myTeamScore;
+    }).length;
+
+    const loseCount = statistics.earnScores.length - winCount;
     const isWin = winCount > loseCount;
 
     return (
         <div className="flex flex-row justify-start self-stretch">
             <input
                 onChange={toggleOpen}
-                id={`history-${history.gameUUID}`}
+                id={`history-${history.id}`}
                 type="checkbox"
                 className="hidden"
             />
-            <GameModeInfo history={history} isWin={isWin} />
+            <GameModeInfo statistics={statistics} isWin={isWin} />
             <div className="flex w-full flex-row justify-around self-stretch">
                 <StatScoreResult
                     winCount={winCount}
                     loseCount={loseCount}
                     isWin={isWin}
                 />
-
-                <ItemWrapper className="hidden @lg:flex">
-                    <ProfileBlockInGame team={history.ally} />
-                </ItemWrapper>
-
-                <ItemWrapper className="hidden @lg:flex">
-                    <ProfileBlockInGame team={history.enemy} />
-                </ItemWrapper>
-
-                <ItemWrapper className="flex">
-                    <Icon.ExternalWindow
-                        width={48}
-                        height={48}
-                        className="flex rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50"
-                    />
-                </ItemWrapper>
+                {teams.map((team) => (
+                    <ItemWrapper key={team.team} className="hidden @lg:flex">
+                        <ProfileBlockInGame team={team} />
+                    </ItemWrapper>
+                ))}
             </div>
         </div>
     );
 }
 
 function GameModeInfo({
-    history,
+    statistics,
     isWin,
 }: {
-    history: GameHistory;
+    statistics: GameStatistics;
     isWin: boolean;
 }) {
     return (
         <label
-            htmlFor={`history-${history.gameUUID}`}
+            htmlFor={`history-${statistics.gameId}`}
             className="relative flex w-28 shrink-0 flex-col items-start justify-center overflow-hidden bg-black/30 p-4 hover:bg-black/20 active:bg-black/10"
         >
             <span
                 className={`w-fit rounded px-1 py-0.5 text-base font-extrabold italic ${
-                    history.config.queueType === "QUICK"
-                        ? "text-tertiary/80"
-                        : ""
+                    statistics.ladder ? "text-tertiary/80" : ""
                 }`}
             >
-                {history.config.queueType}
+                {statistics.ladder ? "QUICK" : "CUSTOM"}
             </span>
 
             <div className="flex w-fit shrink-0 rounded">
                 <span className="w-fit shrink-0 bg-black/30 px-1 py-0.5 text-xs font-bold">
-                    {history.config.field}
+                    {statistics.params.battleField === BattleField.SQUARE
+                        ? "네모네모"
+                        : "동글동글"}
                 </span>
                 <span
                     className={`w-fit shrink-0 ${
-                        history.config.mode === "기본"
+                        statistics.params.gameMode === GameMode.UNIFORM
                             ? "bg-secondary/70"
                             : "bg-primary/70"
                     } px-1 py-0.5 text-xs font-bold `}
                 >
-                    {history.config.mode}
+                    {statistics.params.gameMode === GameMode.UNIFORM
+                        ? "기본"
+                        : "중력"}
                 </span>
             </div>
             {isWin && (
@@ -441,42 +208,42 @@ function StatScoreResult({
     );
 }
 
-function StatPlayTime({ playTime }: { playTime: string }) {
-    return (
-        <ItemWrapper className="hidden @md:flex">
-            <span className="relative flex text-base font-semibold italic">
-                {playTime}
-            </span>
-        </ItemWrapper>
-    );
-}
+// function StatPlayTime({ playTime }: { playTime: string }) {
+//     return (
+//         <ItemWrapper className="hidden @md:flex">
+//             <span className="relative flex text-base font-semibold italic">
+//                 {playTime}
+//             </span>
+//         </ItemWrapper>
+//     );
+// }
+//
+// function StatTimeStamp({ timestamp }: { timestamp: string }) {
+//     return (
+//         <ItemWrapper className="hidden @lg:flex">
+//             <span className="relative flex text-base font-semibold italic">
+//                 {timestamp}
+//             </span>
+//         </ItemWrapper>
+//     );
+// }
 
-function StatTimeStamp({ timestamp }: { timestamp: string }) {
-    return (
-        <ItemWrapper className="hidden @lg:flex">
-            <span className="relative flex text-base font-semibold italic">
-                {timestamp}
-            </span>
-        </ItemWrapper>
-    );
-}
-
-function StatRating({ history }: { history: GameHistory }) {
-    return (
-        <ItemWrapper className="hidden @2xl:flex">
-            <span className="relative flex shrink-0 text-base font-semibold italic">
-                Rating
-            </span>
-            <span
-                className={` ${
-                    history.config.queueType === "QUICK" ? "text-tertiary" : ""
-                }`}
-            >
-                {history.config.queueType === "QUICK" ? history.rating : "-"}
-            </span>
-        </ItemWrapper>
-    );
-}
+// function StatRating({ history }: { history: GameHistory }) {
+//     return (
+//         <ItemWrapper className="hidden @2xl:flex">
+//             <span className="relative flex shrink-0 text-base font-semibold italic">
+//                 Rating
+//             </span>
+//             <span
+//                 className={` ${
+//                     history.config.queueType === "QUICK" ? "text-tertiary" : ""
+//                 }`}
+//             >
+//                 {history.config.queueType === "QUICK" ? history.rating : "-"}
+//             </span>
+//         </ItemWrapper>
+//     );
+// }
 
 function ItemWrapper({
     children,
@@ -499,7 +266,65 @@ function ItemWrapper({
     );
 }
 
-function GameHistoryDetail({ history }: { history: GameHistory }) {
+// function relativeTimePassed(date: Date): string {
+//     const now = new Date();
+//     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+//
+//     if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+//     if (diffInSeconds < 3600)
+//         return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+//     if (diffInSeconds < 86400)
+//         return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+//     if (diffInSeconds < 604800)
+//         return `${Math.floor(diffInSeconds / 86400)} days ago`;
+//     if (diffInSeconds < 2419200)
+//         return `${Math.floor(diffInSeconds / 604800)} weeks ago`;
+//
+//     return date.toLocaleDateString();
+// }
+
+function GameHistoryDetail({
+    history,
+    accountId,
+}: {
+    history: GameHistoryEntity;
+    accountId: string;
+}) {
+    const statistics = history.statistic as unknown as GameStatistics;
+    const memberStatistics = history.memberStatistics as GameMemberStatistics[];
+
+    const totalGamePlayTime =
+        statistics.progresses.reduce(
+            (prevSum, progress) => prevSum + progress.consumedTimespanSum,
+            0,
+        ) / 1000;
+
+    const second = (totalGamePlayTime % 60).toString().padStart(2, "0");
+    const min = (totalGamePlayTime / 60).toFixed();
+
+    const myMember = useMemo(
+        () => memberStatistics.find((member) => member.accountId === accountId),
+        [accountId, memberStatistics],
+    );
+
+    const teams = useMemo(
+        () =>
+            [...new Set(memberStatistics.map((member) => member.team))] // member 들 정보로부터 팀의 배열 얻고, 유일하게 걸러냄
+                .toSorted((a, b) => (a > b ? 1 : -1)) // 팀 이름/ 혹은 번호 정렬
+                .map((team) => ({
+                    team: team,
+                    members: memberStatistics.filter(
+                        (member) => member.team === team,
+                    ),
+                })),
+        [memberStatistics],
+    );
+
+    if (myMember === undefined) {
+        return <ErrorPage />;
+    }
+    // const relativeDate = relativeTimePassed(statistics.timestamp);
+
     return (
         <div className="flex w-full flex-col items-start justify-center">
             <div className="flex h-20 w-full flex-row items-center justify-start bg-secondary/10 @lg:hidden">
@@ -510,17 +335,22 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                 </div>
 
                 <div className="flex h-full w-full flex-row justify-around">
-                    <ProfileBlockInGame team={history.ally} />
+                    <ProfileBlockInGame team={teams[0]} />
 
                     <Separator className="flex" />
 
-                    <ProfileBlockInGame team={history.enemy} />
+                    <ProfileBlockInGame team={teams[1]} />
                 </div>
             </div>
 
             <div className="flex w-full flex-col">
-                {history.set.map((oneSet) => (
-                    <SetScore setData={oneSet} key={oneSet.set} />
+                {statistics.earnScores.map((oneSet, index) => (
+                    <SetScore
+                        setData={oneSet}
+                        key={index}
+                        index={index}
+                        myTeam={myMember.team}
+                    />
                 ))}
             </div>
 
@@ -533,18 +363,18 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
 
                 <ItemWrapper separatorDir="right" className="flex @md:hidden">
                     <span className="relative flex text-sm font-semibold italic">
-                        {history.statistics.playTime}
+                        {min}:{second}
                     </span>
                 </ItemWrapper>
 
-                <ItemWrapper separatorDir="right" className={"flex @lg:hidden"}>
+                {/* <ItemWrapper separatorDir="right" className={"flex @lg:hidden"}>
                     <span className="relative flex text-sm font-semibold italic">
-                        {history.statistics.startTimeStamp}
+                        {relativeDate}
                     </span>
-                </ItemWrapper>
+                </ItemWrapper> */}
 
                 <ItemWrapper
-                    separatorDir="right"
+                    separatorDir="none"
                     className="hidden @md:flex @2xl:hidden"
                 >
                     <span className="relative flex shrink-0 text-sm font-semibold italic">
@@ -552,41 +382,40 @@ function GameHistoryDetail({ history }: { history: GameHistory }) {
                     </span>
                     <span
                         className={` ${
-                            history.config.queueType === "QUICK"
-                                ? "text-tertiary"
-                                : ""
+                            statistics.ladder ? "text-tertiary" : ""
                         }`}
                     >
-                        {history.config.queueType === "QUICK"
-                            ? history.rating
-                            : "-"}
+                        {memberStatistics.length === 0
+                            ? "-"
+                            : memberStatistics.reduce(
+                                  (prev, member) =>
+                                      prev + (member.initialSkillRating ?? 0),
+                                  0,
+                              ) / memberStatistics.length}
                     </span>
                 </ItemWrapper>
-
-                <div className="flex w-full items-center justify-center py-4">
-                    <div className="flex w-fit flex-row rounded-md text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50">
-                        <Icon.ExternalWindow
-                            width={48}
-                            height={48}
-                            className="p-3"
-                        />
-                        <span className="hidden p-3 @2xl:flex">
-                            상세 페이지로 이동
-                        </span>
-                    </div>
-                </div>
             </div>
         </div>
     );
 }
 
-function SetScore({ setData }: { setData: SetData }) {
-    const winned = setData.ally > setData.enemy;
+function SetScore({
+    setData,
+    index,
+    myTeam,
+}: {
+    setData: GameEarnScore[];
+    index: number;
+    myTeam: number;
+}) {
+    const winCount = setData.filter((score) => score.team === myTeam).length;
+
+    const winned = winCount > setData.length - winCount;
 
     return (
         <div className={`flex w-full ${winned && "bg-black/10"}`}>
             <span className="relative flex w-28 shrink-0 items-center justify-center overflow-hidden bg-black/30 p-4 text-sm font-black italic">
-                SET {setData.set}
+                SET {index + 1}
                 <Icon.MagicCircleDoubleBorder
                     className={`absolute -right-10 -top-1 text-white/10 ${
                         winned ? "" : "hidden"
@@ -598,30 +427,23 @@ function SetScore({ setData }: { setData: SetData }) {
             <div className="flex w-full flex-row justify-around">
                 <div className="flex items-center justify-center px-4 py-2">
                     <span className="rounded p-1 pr-1.5 text-xl font-extrabold italic">
-                        {setData.ally}
+                        {winCount}
                     </span>
                 </div>
                 <Separator />
                 <div className="flex items-center justify-center px-4 py-2">
                     <span className="rounded p-1 pr-1.5 text-xl font-extrabold italic">
-                        {setData.enemy}
+                        {setData.length - winCount}
                     </span>
-                </div>
-                <Separator />
-                <div className="flex flex-col items-center justify-center p-3">
-                    <span className="rounded p-1 pr-1.5 font-extrabold italic text-tertiary/80">
-                        MVP
-                    </span>
-                    <ProfileItemMinimal accountUUID={setData.mvp} />
                 </div>
             </div>
         </div>
     );
 }
 
-function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
-    // TODO: fetch from accountUUID
-    const nickName = accountUUID;
+function ProfileItemMinimal({ accountId }: { accountId: string }) {
+    const profile = usePublicProfile(accountId);
+    const nickName = profile?.nickName ?? "...";
 
     return (
         <div
@@ -630,7 +452,7 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
         >
             <Avatar
                 className="relative h-6 w-6 bg-white/30"
-                accountUUID={accountUUID}
+                accountUUID={accountId}
                 privileged={false}
             />
             <span className="line-clamp-1 w-20 font-sans font-medium text-gray-50 @lg:hidden @2xl:line-clamp-1">
@@ -643,21 +465,27 @@ function ProfileItemMinimal({ accountUUID }: { accountUUID: AccountUUID }) {
 export function Separator({ className }: { className?: string | undefined }) {
     return (
         <div className={`${className} min-w-min py-4`}>
-            <div className="h-full w-[1px] bg-black/30"> </div>
+            <div className="h-full w-[1px] bg-white/30"> </div>
         </div>
     );
 }
 
-function ProfileBlockInGame({ team }: { team: Team }) {
-    // TODO: get from accountUUID
-
-    // TODO: add link to user profile page.
+function ProfileBlockInGame({
+    team,
+}: {
+    team: {
+        team: number;
+        members: GameMemberStatistics[];
+    };
+}) {
     return (
         <div className="flex flex-col items-start justify-center @2xl:items-center">
-            <ProfileItemMinimal accountUUID={team.player1} />
-            {team.player2 !== undefined && (
-                <ProfileItemMinimal accountUUID={team.player2} />
-            )}
+            {team.members.map((member) => (
+                <ProfileItemMinimal
+                    key={member.accountId}
+                    accountId={member.accountId}
+                />
+            ))}
         </div>
     );
 }

@@ -48,6 +48,7 @@ export function NewAchievementCard() {
         </div>
     );
 }
+
 export function TrophyCard() {
     return (
         <div className="inline-flex flex-col items-center justify-center gap-[21px] rounded-[30px] bg-white/10 px-4 py-4 shadow-[0px_8px_4px_0px_rgba(0,0,0,0.25)]">

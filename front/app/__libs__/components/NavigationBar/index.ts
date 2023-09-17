@@ -1,1 +1,1 @@
-export { NavigationBar } from "./NavigationBar";
+export { GameNavigationBar, NavigationBar } from "./NavigationBar";

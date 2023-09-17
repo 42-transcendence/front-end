@@ -51,9 +51,13 @@ export function prettifyBanSummaryEntries(bans: ChatBanSummaryEntry[]) {
     return bans
         .map((ban) => {
             const reason = ban.reason;
-            const expire = ban.expireTimestamp?.toLocaleDateString() ?? null;
+            const expire = ban.expireTimestamp;
 
-            return `사유: ${reason}\n${expire !== null && "기한: " + expire}`;
+            return `사유: ${reason}\n${
+                expire !== null
+                    ? `기한: ${expire.toLocaleDateString()} ${expire.toLocaleTimeString()} 까지`
+                    : "무제한"
+            }`;
         })
         .join("\n\n");
 }
@@ -196,7 +200,6 @@ export function ChatPublicRoomBlock({
         (_, payload) => {
             const [errno, chatId, bans] = handleEnterRoomResult(payload);
             if (chatId === chatRoom.id) {
-                //FIXME: 정상 , 차단 두 경우 테스트해보기
                 if (errno !== ChatErrorNumber.SUCCESS) {
                     if (bans !== undefined) {
                         alert(
@@ -316,13 +319,13 @@ function ChatRoomInfo({
                     )}
                 </div>
 
-                <div className="line-clamp-2 max-w-[160px] break-words text-start font-sans text-xs font-normal text-gray-200">
+                <div className="line-clamp-2 max-w-[8rem] break-words text-start font-sans text-xs font-normal text-gray-200">
                     {lastMessageContent}
                 </div>
             </div>
 
             <div className="relative flex flex-col items-end gap-4 text-xs leading-3">
-                <div className="flex shrink-0 flex-row gap-1">
+                <div className="flex w-6 shrink-0 flex-row gap-1">
                     {!isDMRoom && (
                         <Icon.Person
                             width={12}

@@ -24,6 +24,7 @@
             "@akasha-utils/*": ["./app/__libs__/akasha-utils/*"],
             "@common/*": ["./app/__libs__/common/*"],
             "@components/*": ["./app/__libs__/components/*"],
+            "@gameEngine/*": ["./app/__libs__/gameEngine/*"],
             "@hooks/*": ["./app/__libs__/hooks/*"],
             "@atoms/*": ["./app/__libs__/atoms/*"],
             "@utils/*": ["./app/__libs__/utils/*"],

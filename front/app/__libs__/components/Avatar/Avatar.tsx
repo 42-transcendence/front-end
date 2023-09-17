@@ -4,7 +4,7 @@ import { Status } from "@components/Status";
 import Image from "next/image";
 import { ActiveStatusNumber } from "@common/generated/types";
 import { useProtectedProfile, usePublicProfile } from "@hooks/useProfile";
-import { HOST } from "@hooks/fetcher";
+import { HOST } from "@utils/constants";
 
 function PrivilegedSection({ accountUUID }: { accountUUID: string }) {
     const profile = useProtectedProfile(accountUUID);

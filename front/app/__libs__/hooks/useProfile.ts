@@ -1,4 +1,4 @@
-import { HTTPError, URL_BASE, fetchBase, fetcher } from "./fetcher";
+import { HTTPError, fetcher, fetcherPOST } from "./fetcher";
 import { useSWR, useSWRMutation } from "./useSWR";
 import type {
     AccountProfilePrivatePayload,
@@ -8,11 +8,12 @@ import type {
 import { useCurrentAccountUUID } from "./useCurrent";
 import { useSWRConfig } from "swr";
 import { useCallback, useEffect } from "react";
-import {
-    getActiveStatusNumber,
-    type ActiveStatus,
-    type RecordEntity,
+import type {
+    GameHistoryEntity,
+    ActiveStatus,
+    RecordEntity,
 } from "@common/generated/types";
+import { getActiveStatusNumber } from "@common/generated/types";
 import type { ByteBuffer } from "@akasha-lib";
 import { makeActiveStatusManualRequest } from "@akasha-utils/chat-payload-builder-client";
 
@@ -132,18 +133,16 @@ export function usePrivateProfile() {
 
 export function useProfileMutation() {
     const currentAccountUUID = useCurrentAccountUUID();
-    // TODO: mutate throwOnError?
     const { mutate } = useSWRConfig();
 
     return useCallback(
-        (accountUUID: string) =>
-            void mutate(
-                (key) =>
-                    key === `/profile/public/${accountUUID}` ||
-                    key === `/profile/protected/${accountUUID}` ||
-                    (accountUUID === currentAccountUUID &&
-                        key === "/profile/private"),
-            ),
+        (accountUUID: string) => {
+            void mutate(`/profile/public/${accountUUID}`);
+            void mutate(`/profile/protected/${accountUUID}`, undefined);
+            if (accountUUID === currentAccountUUID) {
+                void mutate("/profile/private");
+            }
+        },
         [currentAccountUUID, mutate],
     );
 }
@@ -177,11 +176,7 @@ export function useAvatarMutation() {
     const mutateProfile = useProfileMutation();
     const callback = useCallback(
         async (key: string, { arg }: { arg: FormData }) => {
-            const url = new URL(key, URL_BASE);
-            await fetchBase(url, {
-                method: "POST",
-                body: arg,
-            });
+            await fetcherPOST(key, arg);
             mutateProfile(accountUUID);
         },
         [accountUUID, mutateProfile],
@@ -218,4 +213,15 @@ export function useActiveStatusMutation(
         },
     );
     return { trigger, data };
+}
+
+export function useGameHistory(accountUUID: string) {
+    const { data } = useSWR(
+        () =>
+            accountUUID !== ""
+                ? `/profile/public/${accountUUID}/history`
+                : null,
+        fetcher<GameHistoryEntity[]>,
+    );
+    return data;
 }

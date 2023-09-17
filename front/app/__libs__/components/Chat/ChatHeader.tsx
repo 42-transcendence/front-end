@@ -11,7 +11,6 @@ import {
     extractTargetFromDirectChatKey,
     isDirectChatKey,
 } from "@akasha-utils/idb/chat-store";
-import { useProtectedProfile } from "@hooks/useProfile";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
 
 export function RightSideBarInput() {
@@ -21,9 +20,8 @@ export function RightSideBarInput() {
         <input
             className="peer/right invisible absolute"
             type="radio"
-            onChange={() => {
-                setToOpen(false);
-            }}
+            onClick={() => setToOpen(false)}
+            onChange={() => {}}
             checked={close}
             name="rightRadio"
             id="rightSideBarIcon"
@@ -38,9 +36,7 @@ export function LeftSideBarInput() {
         <input
             className="peer/left invisible absolute"
             type="radio"
-            onChange={() => {
-                setToOpen(false);
-            }}
+            onChange={() => setToOpen(false)}
             checked={close}
             name="leftRadio"
             id="forCloseLeftSideBar"
@@ -65,7 +61,8 @@ function LeftSidebarButton() {
                 readOnly
                 className="peer/headerleft hidden"
                 checked={open}
-                onChange={() => setToOpen(true)}
+                onClick={() => setToOpen(true)}
+                onChange={() => {}}
                 type="radio"
                 name="leftRadio"
                 id="forOpenLeftSideBar"
@@ -121,12 +118,11 @@ export function ChatHeader() {
     const currentChatRoomTitle = useChatRoomTitle(currentChatRoomUUID);
     const currentChatRoomIsDirect = isDirectChatKey(currentChatRoomUUID);
     const roomType = currentChatRoomIsDirect ? "다이렉트 메시지" : "그룹 채팅";
-    const targetProfile = useProtectedProfile(
-        currentChatRoomIsDirect ? extractTargetFromDirectChatKey(currentChatRoomUUID) : "",
-    );
 
     const title = currentChatRoomIsDirect ? (
-        <NickBlock profile={targetProfile} />
+        <NickBlock
+            accountUUID={extractTargetFromDirectChatKey(currentChatRoomUUID)}
+        />
     ) : (
         currentChatRoomTitle ?? "채팅방을 선택하세요"
     );
@@ -134,7 +130,7 @@ export function ChatHeader() {
     return (
         <div className="group relative flex h-fit shrink-0 select-none flex-col items-center justify-center self-stretch bg-transparent py-4">
             <LeftSidebarButton />
-            <div className="overflow-hidden">
+            <div className="flex flex-col items-center justify-center overflow-hidden">
                 <label
                     htmlFor="headerDropDown"
                     className={[

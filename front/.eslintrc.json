@@ -87,6 +87,35 @@
             "parserOptions": {
                 "project": ["./**/tsconfig.json"]
             }
+        },
+        {
+            "files": [
+                "./app/__libs__/common/**/*.ts",
+                "./app/__libs__/akasha-lib/**/*.ts",
+                "./app/__libs__/akasha-utils/**/*.ts"
+            ],
+            "rules": {
+                "@typescript-eslint/unbound-method": [
+                    "warn"
+                ],
+                "@typescript-eslint/no-explicit-any": [
+                    "warn"
+                ],
+                "@typescript-eslint/ban-types": [
+                    "warn"
+                ],
+                "@typescript-eslint/strict-boolean-expressions": [
+                    "warn",
+                    {
+                        "allowString": false,
+                        "allowNumber": false,
+                        "allowNullableObject": false
+                    }
+                ],
+                "@typescript-eslint/no-unnecessary-condition": [
+                    "warn"
+                ]
+            }
         }
     ]
 }

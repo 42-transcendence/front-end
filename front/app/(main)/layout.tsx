@@ -8,7 +8,7 @@ import { usePrivateProfile } from "@hooks/useProfile";
 import { useEffect, useState } from "react";
 import { DoubleSharp } from "@components/ImageLibrary";
 import { useToken } from "@hooks/useToken";
-import { logoutAction } from "@components/ContextMenu/logoutAction";
+import { logout } from "@utils/action";
 
 function DefaultLayout({ children }: React.PropsWithChildren) {
     return (
@@ -54,7 +54,7 @@ export default function MainLayout({
     if (!hydrated) {
         return (
             <LoadingLayout>
-                <p>애플리케이션을 시작하는 중...</p>
+                <p className="loading">애플리케이션을 시작하는 중</p>
             </LoadingLayout>
         );
     }
@@ -77,11 +77,14 @@ export default function MainLayout({
                     {auth.bans.map((e) => (
                         <>
                             <p>{e.reason}</p>
-                            <p>{e.expireTimestamp?.toString() ?? "영구"}</p>
+                            <p>
+                                {e.expireTimestamp?.toLocaleDateString() ??
+                                    "영구"}
+                            </p>
                         </>
                     ))}
                 </div>
-                <button type="button" onClick={() => logoutAction()}>
+                <button type="button" onClick={() => logout()}>
                     로그아웃
                 </button>
             </DefaultLayout>
@@ -91,7 +94,7 @@ export default function MainLayout({
     if (profile === undefined) {
         return (
             <LoadingLayout>
-                <p>내 정보를 불러오는 중입니다...</p>
+                <p className="loading">내 정보를 불러오는 중입니다</p>
             </LoadingLayout>
         );
     }

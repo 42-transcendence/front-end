@@ -12,6 +12,7 @@ import {
     ChatModalOpenAtom,
     ChatTabIndexAtom,
     CurrentChatRoomUUIDAtom,
+    LeftSideBarIsOpenAtom,
     RightSideBarIsOpenAtom,
 } from "@atoms/ChatAtom";
 import { FriendModalIsOpen } from "@atoms/FriendAtom";
@@ -22,9 +23,11 @@ import {
     useChatMember,
     useSetChatRightSideBarCurrrentPageAtom,
 } from "@hooks/useChatRoom";
+import { useCopyText } from "@hooks/useCopyText";
+import { logout } from "@utils/action";
 import { useSetAtom } from "jotai";
-import { useMemo } from "react";
-import { logoutAction } from "./logoutAction";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
 
 export function useContextMenuActions(
     targetAccountUUID: string,
@@ -32,18 +35,20 @@ export function useContextMenuActions(
     currentChatRoomUUID: string,
     profile: AccountProfilePublicPayload | undefined,
 ) {
-    // TODO: profile undefined 면 뭘 어떻게 해야??
     const { sendPayload } = useWebSocket("chat", []);
     const setCurrentPage = useSetChatRightSideBarCurrrentPageAtom();
+    const setLeftsideBarOpen = useSetAtom(LeftSideBarIsOpenAtom, {
+        store: GlobalStore,
+    });
     const targetUser = useChatMember(currentChatRoomUUID, targetAccountUUID);
     const targetRoleLevel = Number(targetUser?.role ?? 0);
+
+    const router = useRouter();
 
     const setCurrentChatRoomUUID = useSetAtom(CurrentChatRoomUUIDAtom, {
         store: GlobalStore,
     });
 
-    // TODO: 이거 fallback 처리를 여기서 하는게 맞는가,
-    // 아니면 각각 action 함수 내부마다 따로 하나씩 해주는게 맞는가
     const nickName = profile?.nickName ?? "fallback";
     const nickTag = profile?.nickTag ?? 0;
     const setChatModalIsOpen = useSetAtom(ChatModalOpenAtom, {
@@ -59,14 +64,16 @@ export function useContextMenuActions(
         store: GlobalStore,
     });
 
+    const [, setText, copyText] = useCopyText(`${nickName}#${nickTag}`);
+
+    useEffect(() => {
+        setText(`${nickName}#${nickTag}`);
+    }, [nickName, nickTag, setText]);
+
     const actions = useMemo(
         () => ({
             ["copytag"]: () => {
-                // TODO: 복사되었다고 텍스트 바꾸기? setTimeout?
-                navigator.clipboard
-                    .writeText(`${nickName}#${nickTag}`)
-                    .then(() => {})
-                    .catch(() => {});
+                copyText();
             },
             ["addfriend"]: () => {
                 const buf = makeAddFriendRequest(
@@ -77,10 +84,10 @@ export function useContextMenuActions(
                 sendPayload(buf);
             },
             ["logout"]: () => {
-                logoutAction();
+                logout();
             },
             ["gotoprofile"]: () => {
-                window.open(`/profile/${nickName}/${nickTag}`);
+                router.push(`/profile/${nickName}/${nickTag}`);
             },
             ["addenemy"]: () => {
                 if (
@@ -96,6 +103,7 @@ export function useContextMenuActions(
             },
             ["directmessage"]: () => {
                 setRightsideBarIsOpen(false);
+                setLeftsideBarOpen(false);
                 setFriendModalIsOpen(false);
                 setChatModalIsOpen(true);
                 setChatTabIndex(1);
@@ -161,16 +169,19 @@ export function useContextMenuActions(
             ["noaction"]: undefined,
         }),
         [
+            copyText,
             currentAccountUUID,
             currentChatRoomUUID,
             nickName,
             nickTag,
+            router,
             sendPayload,
             setChatModalIsOpen,
             setChatTabIndex,
             setCurrentChatRoomUUID,
             setCurrentPage,
             setFriendModalIsOpen,
+            setLeftsideBarOpen,
             setRightsideBarIsOpen,
             targetAccountUUID,
             targetRoleLevel,

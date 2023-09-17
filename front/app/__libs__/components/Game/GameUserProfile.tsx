@@ -1,5 +1,6 @@
 import { Avatar } from "../Avatar/Avatar";
 import Image from "next/image";
+import { NickBlock } from "@components/ProfileItem/ProfileItem";
 
 export function GameChipStatusNotYet() {
     return (
@@ -38,17 +39,20 @@ export function GameChipProfile() {
     );
 }
 
-// 게임 끝나고 나오는 검은색 점수창. 라운드마다 몇 골을 넣었는지, 최종점수가 어떻게 되는지 확인 할 수 있다.
-export default function GameUserProfile() {
+export default function GameUserProfile({
+    accountUUID,
+}: {
+    accountUUID: string;
+}) {
     return (
-        <div className="flex w-[239px] items-center justify-center gap-[22px] py-7">
+        <div className="flex items-center justify-center gap-4">
             <Avatar
-                accountUUID="jkong"
+                accountUUID={accountUUID}
                 className="relative h-9 w-9 bg-white/30 2xl:h-12 2xl:w-12"
                 privileged={false}
             />
             <div className="flex h-[67px] shrink-0 flex-col justify-center text-center text-2xl font-bold not-italic leading-[normal] text-white">
-                jkong
+                <NickBlock accountUUID={accountUUID} />
             </div>
         </div>
     );
