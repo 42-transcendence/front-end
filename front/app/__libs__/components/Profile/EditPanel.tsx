@@ -1,4 +1,5 @@
-import { useState, type PropsWithChildren, useEffect } from "react";
+import { useState, useEffect } from "react";
+import type { PropsWithChildren } from "react";
 import { Panel } from "./Panel";
 import { Avatar } from "../Avatar";
 import { Separator } from "./GameHistoryPanel";
@@ -11,10 +12,7 @@ import { useGetOTP } from "@hooks/useOTP";
 import { Icon } from "@components/ImageLibrary";
 import { useAtomValue } from "jotai";
 import { EnemyEntryListAtom } from "@atoms/FriendAtom";
-import {
-    ProfileItemBlocked,
-    ProfileItemEnemy,
-} from "@components/ProfileItem/ProfileItemBlocked";
+import { ProfileItemEnemy } from "@components/ProfileItem/ProfileItemBlocked";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
@@ -38,8 +36,10 @@ export function EditPanel() {
     };
 
     return (
-        <Panel className="flex flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1">
-            <span className="p-4 text-xl font-extrabold text-white">설정</span>
+        <Panel className="flex h-fit flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1 lg:h-full">
+            <span className="z-10 p-4 text-xl font-extrabold text-white">
+                설정
+            </span>
             <EditPanelBlocks>
                 <EditPanelBlock>
                     <EditPanelBlockTitle>
