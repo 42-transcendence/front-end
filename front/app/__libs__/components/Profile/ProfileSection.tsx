@@ -10,6 +10,7 @@ import {
     makeDeleteFriendRequest,
 } from "@akasha-utils/chat-payload-builder-client";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
+import { useEffect } from "react";
 
 export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     const profile = usePublicProfile(accountUUID);
@@ -90,6 +91,7 @@ function RelationshipButton({
                 </button>
             );
         case "friend":
+            showEditPanel(false);
             return (
                 <button
                     type="button"
@@ -100,6 +102,7 @@ function RelationshipButton({
                 </button>
             );
         case "stranger":
+            showEditPanel(false);
             return (
                 <button
                     type="button"
