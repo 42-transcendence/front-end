@@ -107,7 +107,7 @@ function ListContent({
 export default function ChatRightSideBar() {
     const currentChatRoomUUID = useCurrentChatRoomUUID();
     const currentChatMembers = useChatRoomMembers(currentChatRoomUUID);
-    const [selectedUUID, setSelectedUUID] = useState<string>();
+    const [selectedUUID, setSelectedUUID] = useState<string>("");
     const [query, setQuery] = useState("");
     const memberArray = useMemo(
         () =>
@@ -153,6 +153,7 @@ export default function ChatRightSideBar() {
 
     useEffect(() => {
         setCurrentPage(undefined);
+        setSelectedUUID("");
     }, [setCurrentPage, currentChatRoomUUID]);
 
     return (
