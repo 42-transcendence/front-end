@@ -491,9 +491,9 @@ export class Game {
     }
 
     private sendFrame(paddle1Hit: boolean, paddle2Hit: boolean) {
-        if (this.progress !== undefined && this.progress.suspended) {
-            return;
-        }
+        // if (this.progress !== undefined && this.progress.suspended) {
+        //     return;
+        // }
         const myPaddle: PhysicsAttribute = {
             position: {
                 x: this.myPaddle.position.x,
