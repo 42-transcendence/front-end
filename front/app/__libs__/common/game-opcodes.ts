@@ -44,6 +44,7 @@ export const enum GameClientOpcode {
     END_OF_SET,
     END_OF_GAME,
     COUNTDOWN,
+    GRAVITY_OBJS,
 
     RESYNC_ALL = 0x80,
     RESYNC_PART,

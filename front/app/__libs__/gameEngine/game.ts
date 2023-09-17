@@ -108,12 +108,13 @@ export class Game {
     private circleVelocity = { x: WIDTH / 75, y: HEIGHT / 75 };
     private frameQueue: { resyncType: GameClientOpcode; frame: Frame }[] = [];
     private ignoreFrameIds: Set<number> = new Set<number>();
+    private gravity = new Array<GravityObj>();
+    private existsGravityObjs = new Array<Matter.Body>();
 
     constructor(
         private sendPayload: (value: ByteBuffer) => void,
         private readonly team: number,
         private readonly field: BattleField,
-        private readonly gravity: GravityObj[],
         canvasRef: React.RefObject<HTMLCanvasElement>,
     ) {
         if (field !== BattleField.SQUARE && field !== BattleField.ROUND) {
@@ -122,9 +123,6 @@ export class Game {
         if (this.team === TEAM2) {
             // 원점대칭할 점
             this.originSymmetry(this.circleVelocity);
-            for (let i = 0; i < this.gravity.length; i++) {
-                this.midpointSymmetry(this.gravity[i].pos);
-            }
         }
         // XXX
         if (canvasRef.current === null) {
@@ -153,6 +151,48 @@ export class Game {
         this.canvasContext.font = "30px arial";
         Matter.Body.setInertia(this.circle, 0.00000001);
         Matter.Body.setVelocity(this.circle, this.circleVelocity);
+    }
+
+    setGravity(objs: GravityObj[]) {
+        for (const obj of this.existsGravityObjs) {
+            Matter.Composite.remove(this.world, obj);
+        }
+        console.log("exists gravities?", this.existsGravityObjs);
+        this.existsGravityObjs = [];
+
+        this.gravity = objs;
+        console.log("여긴 와지나?", this.gravity);
+        if (this.team === TEAM2) {
+            // 원점대칭할 점
+            for (let i = 0; i < this.gravity.length; i++) {
+                this.midpointSymmetry(this.gravity[i].pos);
+            }
+        }
+
+        // gravity object
+        for (let i = 0; i < this.gravity.length; i++) {
+            const attractive = Matter.Bodies.circle(
+                this.gravity[i].pos.x,
+                this.gravity[i].pos.y,
+                this.gravity[i].radius,
+                {
+                    isStatic: true,
+                    collisionFilter: {
+                        mask: LINE_CATEGORY,
+                    },
+                    render: {
+                        sprite: {
+                            texture: i % 2 === 0 ? "/planet1.png" : "/planet2.png",
+                            yScale: 0.2 * RATIO,
+                            xScale: 0.2 * RATIO,
+                        },
+                    },
+                },
+            );
+            Matter.Composite.add(this.world, attractive);
+            console.log("생성은 했나?", attractive);
+            this.existsGravityObjs.push(attractive);
+        }
     }
 
     private pasteFrame(frame: Frame) {
@@ -568,31 +608,6 @@ export class Game {
         });
     }
 
-    private setGravity() {
-        // // gravity object
-        for (let i = 0; i < this.gravity.length; i++) {
-            const attractive = Matter.Bodies.circle(
-                this.gravity[i].pos.x,
-                this.gravity[i].pos.y,
-                this.gravity[i].radius,
-                {
-                    isStatic: true,
-                    collisionFilter: {
-                        mask: LINE_CATEGORY,
-                    },
-                    render: {
-                        sprite: {
-                            texture: i === 0 ? "/planet1.png" : "/planet2.png",
-                            yScale: 0.2 * RATIO,
-                            xScale: 0.2 * RATIO,
-                        },
-                    },
-                },
-            );
-            Matter.Composite.add(this.world, attractive);
-        }
-    }
-
     private scaleFrame(frame: Frame, scale: number) {
         const newFrame = { ...frame };
 
@@ -711,10 +726,6 @@ export class Game {
         //add Ellipse
         if (this.field === BattleField.ROUND) {
             this.setEllipse();
-        }
-        //중력객체 추가
-        if (this.gravity.length > 0) {
-            this.setGravity();
         }
         //add paddles
         Matter.Composite.add(this.world, this.myPaddle);

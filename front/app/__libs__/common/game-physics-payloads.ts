@@ -35,11 +35,11 @@ export function writeGravityObjs(payload: ByteBuffer, data: GravityObj[]) {
 }
 
 export function readGravityObj(payload: ByteBuffer): GravityObj {
-    const x = payload.read4Float();
-    const y = payload.read4Float();
+    const x = payload.read8Float();
+    const y = payload.read8Float();
     const pos = { x, y };
     const radius = payload.read4Unsigned();
-    const force = payload.read4Float();
+    const force = payload.read8Float();
     return { pos, radius, force };
 }
 

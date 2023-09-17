@@ -13,6 +13,7 @@ import {
     readGameMemberStatistics,
     readGameStatistics,
 } from "@common/game-payloads";
+import { readGravityObjs } from "@common/game-physics-payloads";
 import { ErrorPage } from "@components/Error/ErrorPage";
 import { Game } from "@gameEngine/game";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -58,6 +59,7 @@ export function GameInGame() {
             GameClientOpcode.END_OF_RALLY,
             GameClientOpcode.END_OF_SET,
             GameClientOpcode.COUNTDOWN,
+            GameClientOpcode.GRAVITY_OBJS,
         ],
         (opcode, buf) => {
             switch (opcode) {
@@ -115,6 +117,12 @@ export function GameInGame() {
                     setCount(buf.read1Signed());
                     break;
                 }
+                case GameClientOpcode.GRAVITY_OBJS: {
+                    const objs = readGravityObjs(buf);
+                    console.log("Gravity ", objs);
+                    game?.setGravity(objs);
+                    break;
+                }
             }
         },
     );
@@ -131,7 +139,6 @@ export function GameInGame() {
             sendPayload,
             currentMember.team,
             gameParams.battleField,
-            [], // TODO: gravity
             canvasRef,
         );
         setGame(game);
