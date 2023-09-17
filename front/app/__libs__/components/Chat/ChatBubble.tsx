@@ -113,7 +113,6 @@ function ContentBlock({
 }) {
     try {
         const url = new URL(content);
-        console.log("URL Content = " + content);
         if (content.startsWith(`https://${GUEST}/game/`)) {
             return (
                 <Link href={url.pathname}>

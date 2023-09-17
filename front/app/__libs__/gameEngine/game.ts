@@ -157,11 +157,9 @@ export class Game {
         for (const obj of this.existsGravityObjs) {
             Matter.Composite.remove(this.world, obj);
         }
-        console.log("exists gravities?", this.existsGravityObjs);
         this.existsGravityObjs = [];
 
         this.gravity = objs;
-        console.log("여긴 와지나?", this.gravity);
         if (this.team === TEAM2) {
             // 원점대칭할 점
             for (let i = 0; i < this.gravity.length; i++) {
@@ -182,7 +180,8 @@ export class Game {
                     },
                     render: {
                         sprite: {
-                            texture: i % 2 === 0 ? "/planet1.png" : "/planet2.png",
+                            texture:
+                                i % 2 === 0 ? "/planet1.png" : "/planet2.png",
                             yScale: 0.2 * RATIO,
                             xScale: 0.2 * RATIO,
                         },
@@ -190,7 +189,6 @@ export class Game {
                 },
             );
             Matter.Composite.add(this.world, attractive);
-            console.log("생성은 했나?", attractive);
             this.existsGravityObjs.push(attractive);
         }
     }
@@ -437,7 +435,7 @@ export class Game {
                 {
                     isStatic: true,
                     render: {
-                        visible: false,
+                        visible: true,
                     },
                 },
             );
@@ -449,25 +447,25 @@ export class Game {
             ellipseVerticesArray.push({ x: x, y: y });
         }
 
-        const ellipse = Matter.Bodies.fromVertices(
-            WIDTH / 2,
-            HEIGHT / 2,
-            [ellipseVerticesArray],
-            {
-                isStatic: true,
-                collisionFilter: {
-                    mask: LINE_CATEGORY,
-                },
-                render: {
-                    sprite: {
-                        texture: "/back.png",
-                        yScale: 0.22,
-                        xScale: 0.18,
-                    },
-                },
-            },
-        );
-        Matter.Composite.add(this.world, ellipse);
+        // const ellipse = Matter.Bodies.fromVertices(
+        //     WIDTH / 2,
+        //     HEIGHT / 2,
+        //     [ellipseVerticesArray],
+        //     {
+        //         isStatic: true,
+        //         collisionFilter: {
+        //             mask: LINE_CATEGORY,
+        //         },
+        //         render: {
+        //             sprite: {
+        //                 texture: "/back.jpg",
+        //                 yScale: 0.22,
+        //                 xScale: 0.18,
+        //             },
+        //         },
+        //     },
+        // );
+        // Matter.Composite.add(this.world, ellipse);
         const goal1 = Matter.Bodies.circle(WIDTH / 2, focusPos1, GOAL_RADIUS, {
             isStatic: true,
             collisionFilter: {
