@@ -1,7 +1,6 @@
 "use client";
 
 import { EditPanelVisibilityAtom } from "@atoms/ProfileAtom";
-import { RoundButtonBase } from "@components/Button/RoundButton";
 import { AchievementPanel } from "@components/Profile/AchievementPanel";
 import { EditPanel } from "@components/Profile/EditPanel";
 import { GameHistoryPanel } from "@components/Profile/GameHistoryPanel";
@@ -9,19 +8,8 @@ import { ProfileSection } from "@components/Profile/ProfileSection";
 import { useNickLookup } from "@hooks/useProfile";
 import { NICK_NAME_REGEX } from "@common/profile-constants";
 import { useAtomValue } from "jotai";
-import Link from "next/link";
 import { useToken } from "@hooks/useToken";
-
-function ErrorPage() {
-    return (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-16">
-            <span>Page not found</span>
-            <Link className="relative" href="/">
-                <RoundButtonBase>Back To Home</RoundButtonBase>
-            </Link>
-        </div>
-    );
-}
+import { ErrorPage } from "@components/Error/ErrorPage";
 
 function isValidProfileId(params: string[]) {
     const regexp = NICK_NAME_REGEX;

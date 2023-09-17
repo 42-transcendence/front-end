@@ -13,6 +13,7 @@ import {
     readGameMemberStatistics,
     readGameStatistics,
 } from "@common/game-payloads";
+import { ErrorPage } from "@components/Error/ErrorPage";
 import { Game } from "@gameEngine/game";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -118,6 +119,8 @@ export function GameInGame() {
         ]);
     }, [gameProgress, gameProgress?.currentSet, scoreOfSet]);
 
+    if (gameProgress === null) return <ErrorPage />;
+
     return (
         <div className="flex h-full w-full items-center justify-center gap-4 p-4">
             <div className="gradient-border back-full relative flex w-[500px] rounded-[28px] bg-black/30 p-px backdrop-blur-[28px] before:rounded-[28px] before:p-px">
@@ -134,7 +137,9 @@ export function GameInGame() {
                     <span className="">보라보라</span>
                     <span className="">파랑파랑</span>
                 </div>
-                <span className="">{gameProgress?.currentSet} 세트</span>
+                <span className="">
+                    {gameProgress.currentSet + 1} / {gameProgress?.maxSet} 세트
+                </span>
 
                 <div className="flex gap-4">
                     {gameProgress?.score.map((score) => (
@@ -144,34 +149,35 @@ export function GameInGame() {
                     ))}
                 </div>
 
-                <span className="">누적 세트</span>
-
-                <div className="flex flex-col gap-4">
-                    {scoreOfSet?.map((setData) => {
-                        return (
-                            <div
-                                key={setData.set}
-                                className="flex flex-row items-center justify-center gap-4 overflow-hidden rounded bg-black/30 p-4"
-                            >
-                                <span className="text-xl italic">
-                                    SET {setData.set}
-                                </span>
-                                <div className="flex flex-row gap-2">
-                                    {setData.score.map((score, index) => {
-                                        return (
-                                            <span
-                                                key={index}
-                                                className="p-2 italic"
-                                            >
-                                                {setData.score}
-                                            </span>
-                                        );
-                                    })}
+                {scoreOfSet !== undefined && (
+                    <>
+                        <span className="">누적 세트</span>
+                        <div className="flex flex-col gap-4">
+                            {scoreOfSet.map((setData) => (
+                                <div
+                                    key={setData.set}
+                                    className="flex flex-row items-center justify-center gap-4 overflow-hidden rounded bg-black/30 p-4"
+                                >
+                                    <span className="text-xl italic">
+                                        SET {setData.set}
+                                    </span>
+                                    <div className="flex flex-row gap-2">
+                                        {setData.score.map((score, index) => {
+                                            return (
+                                                <span
+                                                    key={index}
+                                                    className="p-2 italic"
+                                                >
+                                                    {score}
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
 
                 <div className="flex gap-4"></div>
             </div>
