@@ -45,7 +45,6 @@ export default function ProfilePage({ params }: { params: { id: string[] } }) {
             <ProfileSection accountUUID={accountUUID} />
             <div className="flex w-full flex-col gap-8 overflow-auto p-4 md:grid md:grid-cols-2 lg:h-full lg:grid-cols-4 lg:p-8">
                 {editPanelVisibility && <EditPanel />}
-                <AchievementPanel accountUUID={accountUUID} />
                 {!isLoading && <GameHistoryPanel accountUUID={accountUUID} />}
             </div>
         </>
