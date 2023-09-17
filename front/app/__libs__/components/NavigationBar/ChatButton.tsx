@@ -12,14 +12,19 @@ import ChatRightSideBar from "@components/Chat/ChatRightSideBar";
 import { ChatHeader } from "@components/Chat/ChatHeader";
 import { ChatDialog } from "@components/Chat/ChatDialog";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtom, useSetAtom } from "jotai";
-import { ChatModalOpenAtom, CreateNewRoomCheckedAtom } from "@atoms/ChatAtom";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+    ChatModalOpenAtom,
+    CreateNewRoomCheckedAtom,
+    CurrentChatRoomUUIDAtom,
+} from "@atoms/ChatAtom";
 
 export function ChatButton() {
     const [isOpen, setIsOpen] = useAtom(ChatModalOpenAtom);
     const ref = useRef<HTMLButtonElement>(null);
     const setCreateNewRoom = useSetAtom(CreateNewRoomCheckedAtom);
     const totalUnreadCount = useChatRoomTotalUnreadCount();
+    const currentChatRoomUUID = useAtomValue(CurrentChatRoomUUIDAtom);
 
     const iconClassName = [
         "h-12 w-12 rounded-lg p-2 shadow-white",
@@ -62,7 +67,9 @@ export function ChatButton() {
                                         <ChatDialog />
                                     </Dialog.Description>
                                 </ChatMainPage>
-                                <ChatRightSideBar />
+                                {currentChatRoomUUID !== "" && (
+                                    <ChatRightSideBar />
+                                )}
                             </ChatLayout>
                         </Dialog.Panel>
                     </Dialog>

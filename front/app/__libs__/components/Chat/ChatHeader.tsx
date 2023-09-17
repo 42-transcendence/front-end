@@ -161,7 +161,9 @@ export function ChatHeader() {
                     <ChatRoomMenu className="hidden peer-checked:flex" />
                 )}
             </div>
-            {!currentChatRoomIsDirect && <RightSidebarButton />}
+            {!currentChatRoomIsDirect && currentChatRoomUUID !== "" && (
+                <RightSidebarButton />
+            )}
         </div>
     );
 }
