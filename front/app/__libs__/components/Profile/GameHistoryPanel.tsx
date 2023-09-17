@@ -269,7 +269,7 @@ const gameHistoryMockup: GameHistory[] = [
 export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
     const gameHistory = gameHistoryMockup;
     return (
-        <Panel className="flex h-fit flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1 lg:h-full">
+        <Panel className="flex h-fit flex-col items-start justify-start md:col-span-2 md:row-span-1 lg:h-full">
             <span className="text-xl font-extrabold text-white">전적</span>
             <div className="flex w-full flex-col gap-2 overflow-auto">
                 {gameHistory.map((gameHistory) => (

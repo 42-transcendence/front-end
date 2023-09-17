@@ -36,7 +36,7 @@ export function EditPanel() {
     };
 
     return (
-        <Panel className="flex h-fit flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1 lg:h-full">
+        <Panel className="flex h-fit flex-col items-start justify-start md:col-span-2 md:row-span-1 lg:h-full">
             <span className="z-10 p-4 text-xl font-extrabold text-white">
                 설정
             </span>

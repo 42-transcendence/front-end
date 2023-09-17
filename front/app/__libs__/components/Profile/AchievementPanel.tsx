@@ -256,7 +256,7 @@ export function AchievementPanel({ accountUUID }: { accountUUID: string }) {
     const achievementList = achievementMockup;
 
     return (
-        <Panel className="flex h-fit lg:h-full flex-col items-start justify-start overflow-clip md:col-span-2 md:row-span-1">
+        <Panel className="flex h-fit flex-col items-start justify-start md:col-span-2 md:row-span-1 lg:h-full">
             <span className="p-4 text-xl font-extrabold text-white">업적</span>
             <div className="flex w-full flex-col gap-2 overflow-auto">
                 {achievementList.map((ach, index) => (
