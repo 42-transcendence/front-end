@@ -1,8 +1,10 @@
 import { Avatar } from "../Avatar";
-import { Chat } from "@components/ImageLibrary";
+import { Chat, Icon } from "@components/ImageLibrary";
 import type { MessageSchema } from "@akasha-utils/idb/chat-store";
 import { usePublicProfile } from "@hooks/useProfile";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
+import { GUEST } from "@utils/constants";
+import Link from "next/link";
 
 export function ChatBubble({
     chatMessage,
@@ -85,11 +87,10 @@ function ChatTextBubble({
             className={`relative flex h-fit w-full ${styleOption.flexDirection} ${styleOption.padding}`}
         >
             {!isContinued && styleOption.tail}
-            <span
-                className={`static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs select-text whitespace-pre-wrap break-all rounded-xl ${styleOption.bgColor} p-3 font-sans text-base font-normal text-gray-100/90`}
-            >
-                {chatMessage.content}
-            </span>
+            <ContentBlock
+                bgColor={styleOption.bgColor}
+                content={chatMessage.content}
+            />
             {isLastContinuedMessage && (
                 <p className="static self-end p-3 py-1 font-sans text-sm font-normal text-gray-100/90">
                     {chatMessage.timestamp.toLocaleString(undefined, {
@@ -100,6 +101,42 @@ function ChatTextBubble({
                 </p>
             )}
         </div>
+    );
+}
+
+function ContentBlock({
+    content,
+    bgColor,
+}: {
+    content: string;
+    bgColor: string;
+}) {
+    try {
+        const url = new URL(content);
+        console.log("URL Content = " + content);
+        if (content.startsWith(`https://${GUEST}/game/`)) {
+            return (
+                <Link href={url.pathname}>
+                    <div
+                        className={`static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs select-text whitespace-pre-wrap break-all rounded-xl ${bgColor} p-3 font-sans text-base font-normal text-gray-100/90`}
+                    >
+                        <Icon.Arrow3 />
+                        <p>게임으로 초대받았습니다!!</p>
+                        <p>초대 코드: {url.pathname.substring("/game/".length)}</p>
+                    </div>
+                </Link>
+            );
+        }
+    } catch {
+        //NOTE: content is not URL. ignore
+    }
+
+    return (
+        <span
+            className={`static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs select-text whitespace-pre-wrap break-all rounded-xl ${bgColor} p-3 font-sans text-base font-normal text-gray-100/90`}
+        >
+            {content}
+        </span>
     );
 }
 

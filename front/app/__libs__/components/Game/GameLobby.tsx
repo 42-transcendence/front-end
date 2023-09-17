@@ -21,6 +21,7 @@ import {
 import { partition } from "@utils/collections";
 import { Icon } from "@components/ImageLibrary";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
+import { GUEST } from "@utils/constants";
 
 type GameTeamParams = {
     id: number;
@@ -79,7 +80,6 @@ function GameLobbyHeader() {
     const ladder = useAtomValue(LadderAtom);
     const [roomCode, setRoomCode, copyRoomCode] = useCopyText();
     const gameRoomProps = useAtomValue(GameRoomPropsAtom);
-    const GUEST = "front.stri.dev";
 
     useEffect(() => {
         if (gameRoomProps !== null && gameRoomProps.code !== null) {
