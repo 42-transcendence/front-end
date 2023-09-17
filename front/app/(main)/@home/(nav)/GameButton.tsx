@@ -11,7 +11,7 @@ import { BattleField, GameMode } from "@common/game-payloads";
 import { GameClientOpcode } from "@common/game-opcodes";
 import { Dialog } from "@headlessui/react";
 import { handleMatchmakeFailed } from "@common/game-gateway-helper-client";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { IsMatchMakingAtom } from "@atoms/GameAtom";
 import { DoubleSharp } from "@components/ImageLibrary";
 import { useGameMatchMakeConnector } from "@hooks/useGameWebSocketConnector";
@@ -113,6 +113,7 @@ function CreateNewGameRoom() {
 
     const isOpen = gameModeInfos !== undefined;
     const closeModal = () => setGameModeInfos(undefined);
+    const isMatchMaking = useAtomValue(IsMatchMakingAtom);
 
     return (
         <GlassWindow className="overflow-hidden">
@@ -130,6 +131,7 @@ function CreateNewGameRoom() {
                     ))}
                 </div>
                 <ButtonOnRight
+                    disabled={isMatchMaking}
                     buttonText="만들기"
                     className="w-20 rounded-xl bg-gray-300/30 p-2 group-valid:bg-green-500/70"
                 />
@@ -229,9 +231,14 @@ export function QuickMatchButton() {
 
 export function CreateGameButton() {
     const [open, setOpen] = useState(false);
+
     return (
         <div className="flex h-fit w-full flex-col gap-4">
-            <RoundButtonBase onClick={() => setOpen(!open)}>
+            <RoundButtonBase
+                onClick={() => {
+                    setOpen(!open);
+                }}
+            >
                 Create Game
             </RoundButtonBase>
             {open && <CreateNewGameRoom />}
