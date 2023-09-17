@@ -334,7 +334,7 @@ function GoToBottomButton({ onClick }: { onClick: () => void }) {
             className="absolute bottom-24 right-0 flex w-full justify-end px-20"
         >
             <button
-                className="relative z-50 flex h-8 min-w-[2rem] items-center justify-center rounded-[0px_0px_999px_999px] bg-secondary drop-shadow-[0_0_0.1rem#000000]"
+                className="relative z-10 flex h-8 min-w-[2rem] items-center justify-center rounded-[0px_0px_999px_999px] bg-secondary drop-shadow-[0_0_0.1rem#000000]"
                 type="button"
                 onClick={onClick}
             >
