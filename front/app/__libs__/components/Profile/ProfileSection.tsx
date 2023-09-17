@@ -10,7 +10,6 @@ import {
     makeDeleteFriendRequest,
 } from "@akasha-utils/chat-payload-builder-client";
 import { useWebSocket } from "@akasha-utils/react/websocket-hook";
-import { useEffect } from "react";
 
 export function ProfileSection({ accountUUID }: { accountUUID: string }) {
     const profile = usePublicProfile(accountUUID);

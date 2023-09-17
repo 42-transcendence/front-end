@@ -8,7 +8,6 @@ import { readFrame, writeFrame } from "@common/game-physics-payloads";
 import type { Vector } from "matter-js";
 import Matter from "matter-js";
 import { ByteBuffer } from "../akasha-lib/library/byte-buffer";
-import type { GameProgress } from "@common/game-payloads";
 import { BattleField } from "@common/game-payloads";
 
 const PADDLE_IMAGE_SRCS = [
@@ -31,8 +30,6 @@ const RATIO = WIDTH / 1000;
 const LINE_CATEGORY = 0x0002;
 
 export class Game {
-    //progress
-    private progress: GameProgress | undefined;
     //paddle1 velocity
     private myPaddleVelocity = { x: 0, y: 0 };
     private counterPaddleVelocity = { x: 0, y: 0 };
@@ -103,7 +100,7 @@ export class Game {
             },
         },
     });
-    private framesPerSecond = 60;
+    // private framesPerSecond = 60;
     private frames: Frame[] = [];
     private circleVelocity = { x: WIDTH / 75, y: HEIGHT / 75 };
     private frameQueue: { resyncType: GameClientOpcode; frame: Frame }[] = [];
@@ -691,9 +688,9 @@ export class Game {
         }
     }
 
-    setGameProgress(progress: GameProgress) {
-        this.progress = progress;
-    }
+    // setGameProgress(progress: GameProgress) {
+    //     this.progress = progress;
+    // }
 
     private readonly moveEventHandler = (event: MouseEvent | TouchEvent) => {
         event.preventDefault();

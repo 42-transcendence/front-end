@@ -103,6 +103,17 @@
                 ],
                 "@typescript-eslint/ban-types": [
                     "warn"
+                ],
+                "@typescript-eslint/strict-boolean-expressions": [
+                    "warn",
+                    {
+                        "allowString": false,
+                        "allowNumber": false,
+                        "allowNullableObject": false
+                    }
+                ],
+                "@typescript-eslint/no-unnecessary-condition": [
+                    "warn"
                 ]
             }
         }

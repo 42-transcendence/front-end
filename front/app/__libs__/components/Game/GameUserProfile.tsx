@@ -1,4 +1,3 @@
-import { usePublicProfile } from "@hooks/useProfile";
 import { Avatar } from "../Avatar/Avatar";
 import Image from "next/image";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";

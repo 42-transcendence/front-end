@@ -2,7 +2,6 @@ import { handleUnbanMemberResult } from "@akasha-utils/chat-gateway-client";
 import {
     makeBanListRequest,
     makeDeleteEnemyRequest,
-    makeModifyFriendRequest,
     makeUnbanMemberRequest,
 } from "@akasha-utils/chat-payload-builder-client";
 import { ChatErrorNumber } from "@common/chat-payloads";

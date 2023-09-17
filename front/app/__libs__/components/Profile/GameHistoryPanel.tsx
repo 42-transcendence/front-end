@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Avatar } from "@components/Avatar";
 import { Panel } from "./Panel";
 import { Icon } from "@components/ImageLibrary";
@@ -84,27 +84,20 @@ function GameHistorySummary({
     );
 
     const myMember = useMemo(
-        () =>
-            memberStatistics.find((member) => member.accountId === accountId)!, // XXX
+        () => memberStatistics.find((member) => member.accountId === accountId),
         [accountId, memberStatistics],
     );
 
-    const teamResult = useCallback((result: GameStatistics, team: number) => {
-        const set = result.earnScores.map(
-            (scoresOfEachSet) =>
-                scoresOfEachSet.filter((score) => score.team === team).length,
-        );
-        const total = set.reduce((prev, curr) => prev + curr, 0);
-
-        return { total, set };
-    }, []);
+    if (myMember === undefined) {
+        return <ErrorPage />;
+    }
 
     const winCount = statistics.earnScores.filter((scores) => {
         const myTeamScore = scores.filter(
             (score) => score.team === myMember.team,
         ).length;
         return myTeamScore > scores.length - myTeamScore;
-    }).length; // XXX 로직 체크
+    }).length;
 
     const loseCount = statistics.earnScores.length - winCount;
     const isWin = winCount > loseCount;
@@ -273,22 +266,22 @@ function ItemWrapper({
     );
 }
 
-function relativeTimePassed(date: Date): string {
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
-    if (diffInSeconds < 3600)
-        return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-    if (diffInSeconds < 86400)
-        return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-    if (diffInSeconds < 604800)
-        return `${Math.floor(diffInSeconds / 86400)} days ago`;
-    if (diffInSeconds < 2419200)
-        return `${Math.floor(diffInSeconds / 604800)} weeks ago`;
-
-    return date.toLocaleDateString();
-}
+// function relativeTimePassed(date: Date): string {
+//     const now = new Date();
+//     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+//
+//     if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+//     if (diffInSeconds < 3600)
+//         return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+//     if (diffInSeconds < 86400)
+//         return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+//     if (diffInSeconds < 604800)
+//         return `${Math.floor(diffInSeconds / 86400)} days ago`;
+//     if (diffInSeconds < 2419200)
+//         return `${Math.floor(diffInSeconds / 604800)} weeks ago`;
+//
+//     return date.toLocaleDateString();
+// }
 
 function GameHistoryDetail({
     history,
@@ -310,7 +303,7 @@ function GameHistoryDetail({
     const min = (totalGamePlayTime / 60).toFixed();
 
     const myMember = useMemo(
-        () => memberStatistics.find((member) => member.accountId === accountId), // XXX
+        () => memberStatistics.find((member) => member.accountId === accountId),
         [accountId, memberStatistics],
     );
 

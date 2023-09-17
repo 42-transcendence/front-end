@@ -1,7 +1,6 @@
 "use client";
 
 import { EditPanelVisibilityAtom } from "@atoms/ProfileAtom";
-import { AchievementPanel } from "@components/Profile/AchievementPanel";
 import { EditPanel } from "@components/Profile/EditPanel";
 import { GameHistoryPanel } from "@components/Profile/GameHistoryPanel";
 import { ProfileSection } from "@components/Profile/ProfileSection";

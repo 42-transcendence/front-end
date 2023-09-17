@@ -7,7 +7,6 @@ import {
     GameRoomParamsAtom,
     GameMemberStatisticsAtom,
 } from "@atoms/GameAtom";
-import { handleUpdateGame } from "@common/game-gateway-helper-client";
 import { GameClientOpcode } from "@common/game-opcodes";
 import {
     readGameMemberStatistics,
@@ -33,10 +32,10 @@ export function GameInGame() {
     const setGameStatistics = useSetAtom(GameStatisticsAtom);
     const setGameMemberStatistics = useSetAtom(GameMemberStatisticsAtom);
     const [scoreOfSets, setScoreOfSets] = useState<SetOfGame[]>([]);
-    const [scoreOfcurrentSet, setScoreOfcurrentSet] = useState<SetOfGame>({
-        set: 1,
-        score: [0, 0],
-    });
+    // const [scoreOfcurrentSet, setScoreOfcurrentSet] = useState<SetOfGame>({
+    //     set: 1,
+    //     score: [0, 0],
+    // });
     const [count, setCount] = useState(-1);
 
     const currentMember = useMemo(
@@ -54,9 +53,9 @@ export function GameInGame() {
         [
             GameClientOpcode.RESYNC_ALL,
             GameClientOpcode.RESYNC_PART,
-            GameClientOpcode.UPDATE_GAME,
+            // GameClientOpcode.UPDATE_GAME,
             GameClientOpcode.GAME_RESULT,
-            GameClientOpcode.END_OF_RALLY,
+            // GameClientOpcode.END_OF_RALLY,
             GameClientOpcode.END_OF_SET,
             GameClientOpcode.COUNTDOWN,
             GameClientOpcode.GRAVITY_OBJS,
@@ -84,13 +83,13 @@ export function GameInGame() {
                     setGameMemberStatistics(memberStatistics);
                     break;
                 }
-                case GameClientOpcode.UPDATE_GAME: {
-                    const updateInfo = handleUpdateGame(buf);
-                    if (game !== null && updateInfo !== null) {
-                        game.setGameProgress(updateInfo);
-                    }
-                    break;
-                }
+                // case GameClientOpcode.UPDATE_GAME: {
+                //     const updateInfo = handleUpdateGame(buf);
+                //     if (game !== null && updateInfo !== null) {
+                //         game.setGameProgress(updateInfo);
+                //     }
+                //     break;
+                // }
                 // case GameClientOpcode.END_OF_RALLY: {
                 //     const setNumber = buf.read1();
                 //     const scoreTeam = buf.read1();
