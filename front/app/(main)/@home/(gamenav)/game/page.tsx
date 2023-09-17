@@ -113,19 +113,16 @@ export default function GamePage() {
                 setGameProgress(progress);
                 break;
             }
+            case GameClientOpcode.END_OF_GAME: {
+                router.push("/game-result");
+                break;
+            }
         }
     });
 
     return (
         <div className="h-full w-full">
-            {currentGameProgress === null ? (
-                <GameLobby />
-            ) : currentGameProgress.currentSet !==
-              currentGameProgress.maxSet ? (
-                <GameInGame />
-            ) : (
-                <AfterGamePage />
-            )}
+            {currentGameProgress === null ? <GameLobby /> : <GameInGame />}
         </div>
     );
 }

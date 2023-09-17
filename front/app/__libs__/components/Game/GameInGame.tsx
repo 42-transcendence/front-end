@@ -31,7 +31,12 @@ export function GameInGame() {
     const gameProgress = useAtomValue(GameProgressAtom);
     const setGameStatistics = useSetAtom(GameStatisticsAtom);
     const setGameMemberStatistics = useSetAtom(GameMemberStatisticsAtom);
-    const [scoreOfSet, setScoreOfSet] = useState<SetOfGame[]>();
+    const [scoreOfSets, setScoreOfSets] = useState<SetOfGame[]>([]);
+    const [scoreOfcurrentSet, setScoreOfcurrentSet] = useState<SetOfGame>({
+        set: 1,
+        score: [0, 0],
+    });
+    const [count, setCount] = useState(-1);
 
     const currentMember = useMemo(
         () =>
@@ -49,6 +54,9 @@ export function GameInGame() {
             GameClientOpcode.RESYNC_ALL,
             GameClientOpcode.RESYNC_PART,
             GameClientOpcode.UPDATE_GAME,
+            GameClientOpcode.GAME_RESULT,
+            GameClientOpcode.END_OF_RALLY,
+            GameClientOpcode.END_OF_SET,
         ],
         (opcode, buf) => {
             switch (opcode) {
@@ -69,6 +77,7 @@ export function GameInGame() {
                     const memberStatistics = buf.readArray(
                         readGameMemberStatistics,
                     );
+                    console.log("result game", statistics, memberStatistics);
                     setGameStatistics(statistics);
                     setGameMemberStatistics(memberStatistics);
                     break;
@@ -78,6 +87,31 @@ export function GameInGame() {
                     if (game !== null && updateInfo !== null) {
                         game.setGameProgress(updateInfo);
                     }
+                    break;
+                }
+                // case GameClientOpcode.END_OF_RALLY: {
+                //     const setNumber = buf.read1();
+                //     const scoreTeam = buf.read1();
+                //     const scoreValue = buf.read1();
+                //     setScoreOfcurrentSet()
+                //     break;
+                // }
+                case GameClientOpcode.END_OF_SET: {
+                    const setNumber = buf.read1();
+                    const teamScore_0 = buf.read1();
+                    const teamScore_1 = buf.read1();
+                    setScoreOfSets([
+                        ...scoreOfSets,
+                        {
+                            set: setNumber + 1,
+                            score: [teamScore_0, teamScore_1],
+                        },
+                    ]);
+                    break;
+                }
+                case GameClientOpcode.COUNTDOWN: {
+                    // 3, 2, 1 -> 표시, -1 -> 아무것도 안띄우기
+                    setCount(buf.read1());
                     break;
                 }
             }
@@ -110,15 +144,6 @@ export function GameInGame() {
         }
     }, [game]);
 
-    useEffect(() => {
-        if (gameProgress === null || scoreOfSet === undefined) return;
-
-        setScoreOfSet([
-            ...scoreOfSet,
-            { set: gameProgress.currentSet + 1, score: gameProgress.score },
-        ]);
-    }, [gameProgress, gameProgress?.currentSet, scoreOfSet]);
-
     if (gameProgress === null) return <ErrorPage />;
 
     return (
@@ -138,22 +163,22 @@ export function GameInGame() {
                     <span className="">파랑파랑</span>
                 </div>
                 <span className="">
-                    {gameProgress.currentSet + 1} / {gameProgress?.maxSet} 세트
+                    {gameProgress.currentSet + 1} / {gameProgress.maxSet} 세트
                 </span>
 
                 <div className="flex gap-4">
-                    {gameProgress?.score.map((score) => (
-                        <span className="rounded bg-black/30 p-4" key={score}>
+                    {gameProgress.score.map((score, index) => (
+                        <span className="rounded bg-black/30 p-4" key={index}>
                             {score}
                         </span>
                     ))}
                 </div>
 
-                {scoreOfSet !== undefined && (
+                {scoreOfSets !== undefined && (
                     <>
                         <span className="">누적 세트</span>
                         <div className="flex flex-col gap-4">
-                            {scoreOfSet.map((setData) => (
+                            {scoreOfSets.map((setData) => (
                                 <div
                                     key={setData.set}
                                     className="flex flex-row items-center justify-center gap-4 overflow-hidden rounded bg-black/30 p-4"

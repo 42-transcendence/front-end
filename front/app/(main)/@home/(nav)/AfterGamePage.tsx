@@ -52,6 +52,7 @@ export function AfterGamePage() {
         return { total, set };
     }, []);
 
+    console.log(myMember, gameResult);
     if (myMember === undefined || gameResult === null) {
         return <div>loading</div>;
     }
