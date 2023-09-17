@@ -4,7 +4,7 @@ import { OTPToggleBlocks } from "@/app/(main)/@otp/OTPInputBlocks";
 import { useGetInertOTP, useGetOTP } from "@hooks/useOTP";
 import { OTP_AUTH_ISSUER } from "@utils/constants";
 import QRCode from "qrcode";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function OTPRegistration() {
     const otpEnabled = useGetOTP();
@@ -21,7 +21,7 @@ export function OTPRegistration() {
             {!otpEnabled && <QRCodeCanvas />}
             <p>
                 {!otpEnabled
-                    ? "OTP를 등록하려면 입력하세요."
+                    ? "OTP를 등록하려면 입력하세요"
                     : "OTP를 해제하려면 입력하세요"}
             </p>
             <div className="z-10 flex flex-row gap-2">
@@ -41,6 +41,7 @@ function QRCodeCanvas() {
     const { data } = useGetInertOTP();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const label = `${OTP_AUTH_ISSUER}`;
+    const [uri, setURI] = useState("");
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -68,15 +69,17 @@ function QRCodeCanvas() {
         const uri = `${BASE_URI}/${label}?${params.toString()}`;
 
         QRCode.toCanvas(canvas, uri, errorCallback);
+        setURI(uri);
     }, [data, label]);
 
-    // TODO: Add link!!
     return (
-        <div className="flex flex-col items-center justify-center gap-2">
+        <button
+            type="button"
+            onClick={() => window.open(uri, "otp link window")}
+            className="z-50 flex flex-col items-center justify-center gap-2"
+        >
             <canvas ref={canvasRef} />
-            <button type="button">
-                <p>OTP 인증기에 위 코드를 등록하세요.</p>
-            </button>
-        </div>
+            <p>OTP 인증기에 위 코드를 등록하세요.</p>
+        </button>
     );
 }
