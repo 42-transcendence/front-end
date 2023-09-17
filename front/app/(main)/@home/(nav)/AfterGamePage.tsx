@@ -1,93 +1,70 @@
 "use client";
 
-type GameResult = {
-    teams: {
-        0: {
-            total: number;
-            set: number[];
-        };
-        1: {
-            total: number;
-            set: number[];
-        };
-    };
-    members: {
-        accountId: string;
-        team: number;
-        ratingBefore: number;
-        ratingAfter: number;
-    }[];
-    time: number;
-};
-
-const mockData = {
-    teams: {
-        0: {
-            total: 3,
-            set: [8, 15, 11, 4, 15, 15, 9],
-        },
-        1: {
-            total: 4,
-            set: [15, 14, 15, 15, 9, 4, 15],
-        },
-    },
-    members: [
-        {
-            accountId: "c89e1195-441a-4407-a525-17f7c35ecf8b",
-            team: 0,
-            ratingBefore: 1000,
-            ratingAfter: 984,
-        },
-        {
-            accountId: "700d36e5-5adc-4a75-97cf-aec57a571798",
-            team: 0,
-            ratingBefore: 1000,
-            ratingAfter: 985,
-        },
-        {
-            accountId: "cd775c9e-0c05-40ba-b6ce-5e54817c9bca",
-            team: 1,
-            ratingBefore: 1000,
-            ratingAfter: 1004,
-        },
-        {
-            accountId: "d041873f-2fa1-47e0-9960-3b7462f7200a",
-            team: 1,
-            ratingBefore: 1000,
-            ratingAfter: 1005,
-        },
-    ],
-    time: 538,
-};
-
+import { GameMemberStatisticsAtom, GameStatisticsAtom } from "@atoms/GameAtom";
+import type {
+    GameMemberStatistics,
+    GameStatistics,
+} from "@common/game-payloads";
+import { GameOutcome } from "@common/game-payloads";
 import { Avatar } from "@components/Avatar";
 import { GlassWindow } from "@components/Frame/GlassWindow";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
+import { useAtomValue } from "jotai";
+import { useCallback, useMemo } from "react";
 
 function GamePanel({ children }: { children: React.ReactNode }) {
     return <div className="flex w-full flex-row gap-4">{children}</div>;
 }
 
 export function AfterGamePage() {
-    const gameResult = mockData;
+    const gameResult = useAtomValue(GameStatisticsAtom);
+    const gameMemberResult = useAtomValue(GameMemberStatisticsAtom);
     const currentAccountUUID = useCurrentAccountUUID();
-    console.log(currentAccountUUID);
-
-    const myMember = gameResult.members.find(
-        (member) => member.accountId === currentAccountUUID,
+    const teams = useMemo(
+        () =>
+            [...new Set(gameMemberResult.map((member) => member.team))] // member 들 정보로부터 팀의 배열 얻고, 유일하게 걸러냄
+                .toSorted((a, b) => (a > b ? 1 : -1)) // 팀 이름/ 혹은 번호 정렬
+                .map((team) => ({
+                    team: team,
+                    members: gameMemberResult.filter(
+                        (member) => member.team === team,
+                    ),
+                })),
+        [gameMemberResult],
     );
 
-    if (myMember === undefined) {
+    const myMember = useMemo(
+        () =>
+            gameMemberResult.find(
+                (member) => member.accountId === currentAccountUUID,
+            ),
+        [currentAccountUUID, gameMemberResult],
+    );
+
+    const teamResult = useCallback((result: GameStatistics, team: number) => {
+        const set = result.earnScores.map(
+            (scoresOfEachSet) =>
+                scoresOfEachSet.filter((score) => score.team === team).length,
+        );
+        const total = set.reduce((prev, curr) => prev + curr, 0);
+
+        return { total, set };
+    }, []);
+
+    if (myMember === undefined || gameResult === null) {
         return <div>loading</div>;
     }
-    const myTeam = myMember.team;
-    const winTeam =
-        gameResult.teams[0].total > gameResult.teams[1].total ? 0 : 1;
-    const isWin = myTeam === winTeam;
 
-    const second = (gameResult.time % 60).toString().padStart(2, "0");
-    const min = (gameResult.time / 60).toFixed();
+    const isWin = myMember.outcome === GameOutcome.WIN;
+
+    const totalGamePlayTime = gameResult.progresses.reduce(
+        (prevSum, progress) => prevSum + progress.consumedTimespanSum,
+        0,
+    );
+
+    const second = (totalGamePlayTime % 60).toString().padStart(2, "0");
+    const min = (totalGamePlayTime / 60).toFixed();
 
     return (
         <div className="flex h-full w-full flex-col items-center justify-start lg:p-16">
@@ -109,10 +86,12 @@ export function AfterGamePage() {
 
                     <GamePanel>
                         <SetFrame className="items-start">
-                            <TeamResult team={gameResult.teams[0]} />
+                            <TeamResult
+                                team={teamResult(gameResult, teams[0].team)}
+                            />
                         </SetFrame>
                         <SetFrame className="items-center">
-                            {gameResult.teams[0].set.map((_, index) => (
+                            {gameResult.earnScores.map((_, index) => (
                                 <span
                                     key={index}
                                     className="font-black italic text-white"
@@ -122,16 +101,14 @@ export function AfterGamePage() {
                             ))}
                         </SetFrame>
                         <SetFrame className="items-end">
-                            <TeamResult team={gameResult.teams[1]} />
+                            <TeamResult
+                                team={teamResult(gameResult, teams[1].team)}
+                            />
                         </SetFrame>
                     </GamePanel>
                     <GamePanel>
-                        {Object.keys(gameResult.teams).map((teamKey) => (
-                            <MembersSection
-                                key={teamKey}
-                                teamKey={teamKey}
-                                gameResult={gameResult}
-                            />
+                        {teams.map((team) => (
+                            <MembersSection key={team.team} team={team} />
                         ))}
                     </GamePanel>
                 </div>
@@ -153,36 +130,25 @@ function SetFrame({
 }
 
 function MembersSection({
-    teamKey,
-    gameResult,
+    team,
 }: {
-    teamKey: string;
-    gameResult: GameResult;
+    team: {
+        team: number;
+        members: GameMemberStatistics[];
+    };
 }) {
     return (
         <div className="relative w-full overflow-hidden rounded-xl bg-black/30 p-4">
-            {Object.values(gameResult.members)
-                .filter((member) => member.team === parseInt(teamKey))
-                .map((member) => {
-                    return (
-                        <MemberSection key={member.accountId} member={member} />
-                    );
-                })}
+            {Object.values(team.members).map((member) => {
+                return <MemberSection key={member.accountId} member={member} />;
+            })}
         </div>
     );
 }
 
-function MemberSection({
-    member,
-}: {
-    member: {
-        accountId: string;
-        team: number;
-        ratingBefore: number;
-        ratingAfter: number;
-    };
-}) {
-    const delta = member.ratingAfter - member.ratingBefore;
+function MemberSection({ member }: { member: GameMemberStatistics }) {
+    const delta =
+        (member.finalSkillRating ?? 0) - (member.initialSkillRating ?? 0);
     return (
         <div className="flex flex-col items-start justify-between gap-2 p-2 lg:flex-row">
             <div className="flex flex-row gap-4">
@@ -196,10 +162,10 @@ function MemberSection({
             </div>
             <span className="flex flex-col px-1 italic text-gray-50/80">
                 <span className="text-3xl text-white">
-                    {member.ratingAfter}
+                    {member.finalSkillRating}
                 </span>
                 <div className="flex gap-1">
-                    {member.ratingBefore}
+                    {member.initialSkillRating}
                     <span className="text-tertiary/80">
                         [{delta > 0 && "+"}
                         {delta}]
