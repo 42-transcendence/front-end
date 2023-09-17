@@ -160,6 +160,11 @@ export class Game {
         this.existsGravityObjs = [];
 
         this.gravity = objs;
+        for (let i = 0; i < this.gravity.length; i++) {
+            this.gravity[i].pos.x *= RATIO;
+            this.gravity[i].pos.y *= RATIO;
+            this.gravity[i].radius *= RATIO;
+        }
         if (this.team === TEAM2) {
             // 원점대칭할 점
             for (let i = 0; i < this.gravity.length; i++) {
