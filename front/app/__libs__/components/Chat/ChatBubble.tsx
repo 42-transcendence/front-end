@@ -86,7 +86,7 @@ function ChatTextBubble({
         >
             {!isContinued && styleOption.tail}
             <span
-                className={`static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs whitespace-pre-wrap break-all rounded-xl ${styleOption.bgColor} p-3 font-sans text-base font-normal text-gray-100/90`}
+                className={`static h-fit min-h-[1rem] w-fit min-w-[3rem] max-w-xs select-text whitespace-pre-wrap break-all rounded-xl ${styleOption.bgColor} p-3 font-sans text-base font-normal text-gray-100/90`}
             >
                 {chatMessage.content}
             </span>
