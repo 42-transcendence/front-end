@@ -100,13 +100,16 @@ export function ContextMenu({ type }: { type: Scope }) {
             ? "friend"
             : "stranger";
 
-    const skillRating = record?.skillRating ?? "-";
+    const ratingSummary =
+        record !== undefined
+            ? `래더 ${record.skillRating}점 (${record.winCount}승 / ${record.loseCount}패 / ${record.tieCount}무)`
+            : "-";
     const rating: ProfileMenu = {
-        name: `rating: ${skillRating}`,
+        name: ratingSummary,
         action: "noaction",
         relation: ["myself", "friend", "stranger"],
         scope: ["ChatRoom", "FriendModal", "Navigation"],
-        isImportant: false,
+        isImportant: true,
         className: "hover:bg-transparent active:bg-transparent",
     };
 

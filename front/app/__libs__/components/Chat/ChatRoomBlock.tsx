@@ -51,9 +51,13 @@ export function prettifyBanSummaryEntries(bans: ChatBanSummaryEntry[]) {
     return bans
         .map((ban) => {
             const reason = ban.reason;
-            const expire = ban.expireTimestamp?.toLocaleDateString() ?? null;
+            const expire = ban.expireTimestamp;
 
-            return `사유: ${reason}\n${expire !== null && "기한: " + expire}`;
+            return `사유: ${reason}\n${
+                expire !== null
+                    ? `기한: ${expire.toLocaleDateString()} ${expire.toLocaleTimeString()} 까지`
+                    : "무제한"
+            }`;
         })
         .join("\n\n");
 }

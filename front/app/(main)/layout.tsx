@@ -77,7 +77,10 @@ export default function MainLayout({
                     {auth.bans.map((e) => (
                         <>
                             <p>{e.reason}</p>
-                            <p>{e.expireTimestamp?.toString() ?? "영구"}</p>
+                            <p>
+                                {e.expireTimestamp?.toLocaleDateString() ??
+                                    "영구"}
+                            </p>
                         </>
                     ))}
                 </div>
