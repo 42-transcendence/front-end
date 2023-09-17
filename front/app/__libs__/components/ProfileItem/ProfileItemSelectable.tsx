@@ -28,7 +28,7 @@ export function ProfileItemSelectable({
                     <div className="relative flex items-center justify-center">
                         <Avatar
                             accountUUID={accountUUID}
-                            className="w-[32px]"
+                            className="relative w-[32px]"
                             privileged={true}
                         />
                     </div>

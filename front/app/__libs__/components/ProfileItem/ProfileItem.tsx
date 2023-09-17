@@ -49,7 +49,7 @@ export function ProfileItem({
                         <div className="relative flex items-center justify-center">
                             <Avatar
                                 accountUUID={accountUUID}
-                                className="w-[45px]"
+                                className="relative w-[45px]"
                                 privileged={true}
                             />
                         </div>

@@ -144,7 +144,7 @@ function FriendRequestItem({ accountUUID }: { accountUUID: string }) {
                 <div className="flex flex-row gap-2">
                     <div className="relative flex items-center justify-center">
                         <Avatar
-                            className="h-10 w-10"
+                            className="relative h-10 w-10"
                             accountUUID={accountUUID}
                             privileged={false}
                         />

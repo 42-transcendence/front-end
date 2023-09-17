@@ -52,7 +52,7 @@ export function ProfileItemBlocked({
                     <div className="relative flex items-center justify-center">
                         <Avatar
                             accountUUID={entry.accountId}
-                            className="w-6"
+                            className="relative w-6"
                             privileged={true}
                         />
                     </div>
@@ -125,7 +125,7 @@ export function ProfileItemEnemy({
                     <div className="relative flex items-center justify-center">
                         <Avatar
                             accountUUID={entry.enemyAccountId}
-                            className="w-6 bg-windowGlass/30"
+                            className="relative w-6 bg-windowGlass/30"
                             privileged={true}
                         />
                     </div>

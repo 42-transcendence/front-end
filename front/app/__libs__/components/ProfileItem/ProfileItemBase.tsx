@@ -18,7 +18,7 @@ export function ProfileItemBase({
                 <div className="disable-select relative flex items-center gap-2 space-x-4 ">
                     <div className="relative flex items-center justify-center">
                         <Avatar
-                            className="w-6 p-2"
+                            className="relative w-6 p-2"
                             accountUUID={accountUUID}
                             privileged={true}
                         />
