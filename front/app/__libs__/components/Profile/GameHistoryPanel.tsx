@@ -273,6 +273,23 @@ function ItemWrapper({
     );
 }
 
+function relativeTimePassed(date: Date): string {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+    if (diffInSeconds < 3600)
+        return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400)
+        return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 604800)
+        return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    if (diffInSeconds < 2419200)
+        return `${Math.floor(diffInSeconds / 604800)} weeks ago`;
+
+    return date.toLocaleDateString();
+}
+
 function GameHistoryDetail({
     history,
     accountId,
@@ -313,6 +330,7 @@ function GameHistoryDetail({
     if (myMember === undefined) {
         return <ErrorPage />;
     }
+    // const relativeDate = relativeTimePassed(statistics.timestamp);
 
     return (
         <div className="flex w-full flex-col items-start justify-center">
@@ -356,11 +374,11 @@ function GameHistoryDetail({
                     </span>
                 </ItemWrapper>
 
-                <ItemWrapper separatorDir="right" className={"flex @lg:hidden"}>
+                {/* <ItemWrapper separatorDir="right" className={"flex @lg:hidden"}>
                     <span className="relative flex text-sm font-semibold italic">
-                        {statistics.timestamp.toString()}
+                        {relativeDate}
                     </span>
-                </ItemWrapper>
+                </ItemWrapper> */}
 
                 <ItemWrapper
                     separatorDir="none"
