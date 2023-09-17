@@ -7,10 +7,13 @@ import type {
 } from "@common/game-payloads";
 import { GameOutcome } from "@common/game-payloads";
 import { Avatar } from "@components/Avatar";
+import { ErrorPage } from "@components/Error/ErrorPage";
 import { GlassWindow } from "@components/Frame/GlassWindow";
+import { Icon } from "@components/ImageLibrary";
 import { NickBlock } from "@components/ProfileItem/ProfileItem";
 import { useCurrentAccountUUID } from "@hooks/useCurrent";
 import { useAtomValue } from "jotai";
+import Link from "next/link";
 import { useCallback, useMemo } from "react";
 
 function GamePanel({ children }: { children: React.ReactNode }) {
@@ -52,17 +55,17 @@ export function AfterGamePage() {
         return { total, set };
     }, []);
 
-    console.log(myMember, gameResult);
     if (myMember === undefined || gameResult === null) {
-        return <div>loading</div>;
+        return <ErrorPage />;
     }
 
     const isWin = myMember.outcome === GameOutcome.WIN;
 
-    const totalGamePlayTime = gameResult.progresses.reduce(
-        (prevSum, progress) => prevSum + progress.consumedTimespanSum,
-        0,
-    );
+    const totalGamePlayTime =
+        gameResult.progresses.reduce(
+            (prevSum, progress) => prevSum + progress.consumedTimespanSum,
+            0,
+        ) / 1000;
 
     const second = (totalGamePlayTime % 60).toString().padStart(2, "0");
     const min = (totalGamePlayTime / 60).toFixed();
@@ -70,48 +73,59 @@ export function AfterGamePage() {
     return (
         <div className="flex h-full w-full flex-col items-center justify-start lg:p-16">
             <GlassWindow className="h-full w-full bg-windowGlass/30">
-                <div className="flex h-full w-full flex-col gap-4 p-8">
-                    <div className="flex w-full items-center justify-center text-7xl italic">
-                        {isWin ? (
-                            <span className="text-secondary">승리</span>
-                        ) : (
-                            <span className="text-red-500/80">패배</span>
-                        )}
-                    </div>
+                <div className="flex h-full w-full flex-col justify-between p-8">
+                    <div className="flex h-full w-full flex-col gap-4">
+                        <div className="flex w-full items-center justify-center text-7xl italic">
+                            {isWin ? (
+                                <span className="text-secondary">승리</span>
+                            ) : (
+                                <span className="text-red-500/80">패배</span>
+                            )}
+                        </div>
 
-                    <div className="flex w-full justify-center">
-                        <span className="text-xl">
-                            게임 시간: {min}:{second}
-                        </span>
-                    </div>
+                        <div className="flex w-full justify-center">
+                            <span className="text-xl">
+                                게임 시간: {min}:{second}
+                            </span>
+                        </div>
 
-                    <GamePanel>
-                        <SetFrame className="items-start">
-                            <TeamResult
-                                team={teamResult(gameResult, teams[0].team)}
-                            />
-                        </SetFrame>
-                        <SetFrame className="items-center">
-                            {gameResult.earnScores.map((_, index) => (
-                                <span
-                                    key={index}
-                                    className="font-black italic text-white"
-                                >
-                                    SET {index + 1}
-                                </span>
+                        <GamePanel>
+                            <SetFrame className="items-start gap-2 pl-8">
+                                <TeamResult
+                                    team={teamResult(gameResult, teams[0].team)}
+                                />
+                            </SetFrame>
+                            <SetFrame className="items-center gap-2">
+                                {gameResult.earnScores.map((_, index) => (
+                                    <span
+                                        key={index}
+                                        className="rounded-lg bg-black/30 p-4 text-2xl font-black italic text-white"
+                                    >
+                                        SET {index + 1}
+                                    </span>
+                                ))}
+                            </SetFrame>
+                            <SetFrame className="items-end gap-2 pr-8">
+                                <TeamResult
+                                    team={teamResult(gameResult, teams[1].team)}
+                                />
+                            </SetFrame>
+                        </GamePanel>
+                        <GamePanel>
+                            {teams.map((team) => (
+                                <MembersSection key={team.team} team={team} />
                             ))}
-                        </SetFrame>
-                        <SetFrame className="items-end">
-                            <TeamResult
-                                team={teamResult(gameResult, teams[1].team)}
-                            />
-                        </SetFrame>
-                    </GamePanel>
-                    <GamePanel>
-                        {teams.map((team) => (
-                            <MembersSection key={team.team} team={team} />
-                        ))}
-                    </GamePanel>
+                        </GamePanel>
+                    </div>
+                    <div className="flex w-full justify-center">
+                        <Link
+                            className="flex flex-row items-center justify-center gap-3 rounded bg-secondary/50 p-3 hover:bg-secondary/60 active:bg-secondary/70"
+                            href="/"
+                        >
+                            <Icon.Arrow3 />
+                            홈으로 돌아가기
+                        </Link>
+                    </div>
                 </div>
             </GlassWindow>
         </div>
@@ -185,5 +199,12 @@ function TeamResult({
         set: number[];
     };
 }) {
-    return team.set.map((score, index) => <span key={index}>{score}</span>);
+    return team.set.map((score, index) => (
+        <span
+            className="rounded-lg bg-black/30 p-4 pr-5 text-2xl italic"
+            key={index}
+        >
+            {score}
+        </span>
+    ));
 }
