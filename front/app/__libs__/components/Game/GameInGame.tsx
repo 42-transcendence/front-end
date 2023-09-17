@@ -17,6 +17,11 @@ import { Game } from "@gameEngine/game";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+type SetOfGame = {
+    set: number;
+    score: number[];
+};
+
 export function GameInGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const currentAccountUUID = useAtomValue(CurrentAccountUUIDAtom);
@@ -25,6 +30,7 @@ export function GameInGame() {
     const gameProgress = useAtomValue(GameProgressAtom);
     const setGameStatistics = useSetAtom(GameStatisticsAtom);
     const setGameMemberStatistics = useSetAtom(GameMemberStatisticsAtom);
+    const [scoreOfSet, setScoreOfSet] = useState<SetOfGame[]>();
 
     const currentMember = useMemo(
         () =>
@@ -103,9 +109,18 @@ export function GameInGame() {
         }
     }, [game]);
 
+    useEffect(() => {
+        if (gameProgress === null || scoreOfSet === undefined) return;
+
+        setScoreOfSet([
+            ...scoreOfSet,
+            { set: gameProgress.currentSet + 1, score: gameProgress.score },
+        ]);
+    }, [gameProgress, gameProgress?.currentSet, scoreOfSet]);
+
     return (
-        <div className="flex h-full w-full justify-center bg-space bg-cover p-4">
-            <div className="gradient-border back-full relative flex w-fit rounded-[28px] bg-black/30 p-px backdrop-blur-[28px] before:rounded-[28px] before:p-px">
+        <div className="flex h-full w-full items-center justify-center gap-4 p-4">
+            <div className="gradient-border back-full relative flex w-[500px] rounded-[28px] bg-black/30 p-px backdrop-blur-[28px] before:rounded-[28px] before:p-px">
                 <canvas
                     ref={canvasRef}
                     width={500}
@@ -113,7 +128,53 @@ export function GameInGame() {
                     className="z-10 rounded-[28px]"
                 ></canvas>
             </div>
-            <span>{gameProgress?.score}</span>
+            <div className="flex flex-col items-center gap-4 rounded-lg bg-windowGlass/30 p-4 text-xl italic text-gray-50 backdrop-blur-[50px]">
+                <span className="pr-2 text-4xl">Score Board</span>
+                <div className="flex gap-4">
+                    <span className="">보라보라</span>
+                    <span className="">파랑파랑</span>
+                </div>
+                <span className="">{gameProgress?.currentSet} 세트</span>
+
+                <div className="flex gap-4">
+                    {gameProgress?.score.map((score) => (
+                        <span className="rounded bg-black/30 p-4" key={score}>
+                            {score}
+                        </span>
+                    ))}
+                </div>
+
+                <span className="">누적 세트</span>
+
+                <div className="flex flex-col gap-4">
+                    {scoreOfSet?.map((setData) => {
+                        return (
+                            <div
+                                key={setData.set}
+                                className="flex flex-row items-center justify-center gap-4 overflow-hidden rounded bg-black/30 p-4"
+                            >
+                                <span className="text-xl italic">
+                                    SET {setData.set}
+                                </span>
+                                <div className="flex flex-row gap-2">
+                                    {setData.score.map((score, index) => {
+                                        return (
+                                            <span
+                                                key={index}
+                                                className="p-2 italic"
+                                            >
+                                                {setData.score}
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div className="flex gap-4"></div>
+            </div>
         </div>
     );
 }
