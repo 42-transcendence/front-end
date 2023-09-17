@@ -4,10 +4,14 @@ import { Panel } from "./Panel";
 import { Icon } from "@components/ImageLibrary";
 import { useGameHistory, usePublicProfile } from "@hooks/useProfile";
 import type { GameHistoryEntity } from "@common/generated/types";
-import type {
-    GameMemberStatistics,
-    GameStatistics,
+import {
+    BattleField,
+    GameMode,
+    type GameEarnScore,
+    type GameMemberStatistics,
+    type GameStatistics,
 } from "@common/game-payloads";
+import { ErrorPage } from "@components/Error/ErrorPage";
 
 export function GameHistoryPanel({ accountUUID }: { accountUUID: string }) {
     const gameHistory = useGameHistory(accountUUID);
@@ -113,7 +117,7 @@ function GameHistorySummary({
                 type="checkbox"
                 className="hidden"
             />
-            <GameModeInfo history={history} isWin={isWin} />
+            <GameModeInfo statistics={statistics} isWin={isWin} />
             <div className="flex w-full flex-row justify-around self-stretch">
                 <StatScoreResult
                     winCount={winCount}
@@ -125,53 +129,47 @@ function GameHistorySummary({
                         <ProfileBlockInGame team={team} />
                     </ItemWrapper>
                 ))}
-
-                <ItemWrapper className="flex">
-                    <Icon.ExternalWindow
-                        width={48}
-                        height={48}
-                        className="flex rounded-md p-3 text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50"
-                    />
-                </ItemWrapper>
             </div>
         </div>
     );
 }
 
 function GameModeInfo({
-    history,
+    statistics,
     isWin,
 }: {
-    history: GameHistoryEntity;
+    statistics: GameStatistics;
     isWin: boolean;
 }) {
     return (
         <label
-            htmlFor={`history-${history.gameId}`}
+            htmlFor={`history-${statistics.gameId}`}
             className="relative flex w-28 shrink-0 flex-col items-start justify-center overflow-hidden bg-black/30 p-4 hover:bg-black/20 active:bg-black/10"
         >
             <span
                 className={`w-fit rounded px-1 py-0.5 text-base font-extrabold italic ${
-                    history.config.queueType === "QUICK"
-                        ? "text-tertiary/80"
-                        : ""
+                    statistics.ladder ? "text-tertiary/80" : ""
                 }`}
             >
-                {history.config.queueType}
+                {statistics.ladder ? "QUICK" : "CUSTOM"}
             </span>
 
             <div className="flex w-fit shrink-0 rounded">
                 <span className="w-fit shrink-0 bg-black/30 px-1 py-0.5 text-xs font-bold">
-                    {history.config.field}
+                    {statistics.params.battleField === BattleField.SQUARE
+                        ? "네모네모"
+                        : "동글동글"}
                 </span>
                 <span
                     className={`w-fit shrink-0 ${
-                        history.config.mode === "기본"
+                        statistics.params.gameMode === GameMode.UNIFORM
                             ? "bg-secondary/70"
                             : "bg-primary/70"
                     } px-1 py-0.5 text-xs font-bold `}
                 >
-                    {history.config.mode}
+                    {statistics.params.gameMode === GameMode.UNIFORM
+                        ? "기본"
+                        : "중력"}
                 </span>
             </div>
             {isWin && (
@@ -285,6 +283,20 @@ function GameHistoryDetail({
     const statistics = history.statistic as unknown as GameStatistics;
     const memberStatistics = history.memberStatistics as GameMemberStatistics[];
 
+    const totalGamePlayTime =
+        statistics.progresses.reduce(
+            (prevSum, progress) => prevSum + progress.consumedTimespanSum,
+            0,
+        ) / 1000;
+
+    const second = (totalGamePlayTime % 60).toString().padStart(2, "0");
+    const min = (totalGamePlayTime / 60).toFixed();
+
+    const myMember = useMemo(
+        () => memberStatistics.find((member) => member.accountId === accountId), // XXX
+        [accountId, memberStatistics],
+    );
+
     const teams = useMemo(
         () =>
             [...new Set(memberStatistics.map((member) => member.team))] // member 들 정보로부터 팀의 배열 얻고, 유일하게 걸러냄
@@ -297,6 +309,10 @@ function GameHistoryDetail({
                 })),
         [memberStatistics],
     );
+
+    if (myMember === undefined) {
+        return <ErrorPage />;
+    }
 
     return (
         <div className="flex w-full flex-col items-start justify-center">
@@ -317,8 +333,13 @@ function GameHistoryDetail({
             </div>
 
             <div className="flex w-full flex-col">
-                {history.set.map((oneSet) => (
-                    <SetScore setData={oneSet} key={oneSet.set} />
+                {statistics.earnScores.map((oneSet, index) => (
+                    <SetScore
+                        setData={oneSet}
+                        key={index}
+                        index={index}
+                        myTeam={myMember.team}
+                    />
                 ))}
             </div>
 
@@ -331,18 +352,18 @@ function GameHistoryDetail({
 
                 <ItemWrapper separatorDir="right" className="flex @md:hidden">
                     <span className="relative flex text-sm font-semibold italic">
-                        {history.statistics.playTime}
+                        {min}:{second}
                     </span>
                 </ItemWrapper>
 
                 <ItemWrapper separatorDir="right" className={"flex @lg:hidden"}>
                     <span className="relative flex text-sm font-semibold italic">
-                        {history.statistics.startTimeStamp}
+                        {statistics.timestamp.toString()}
                     </span>
                 </ItemWrapper>
 
                 <ItemWrapper
-                    separatorDir="right"
+                    separatorDir="none"
                     className="hidden @md:flex @2xl:hidden"
                 >
                     <span className="relative flex shrink-0 text-sm font-semibold italic">
@@ -350,41 +371,40 @@ function GameHistoryDetail({
                     </span>
                     <span
                         className={` ${
-                            history.config.queueType === "QUICK"
-                                ? "text-tertiary"
-                                : ""
+                            statistics.ladder ? "text-tertiary" : ""
                         }`}
                     >
-                        {history.config.queueType === "QUICK"
-                            ? history.rating
-                            : "-"}
+                        {memberStatistics.length === 0
+                            ? "-"
+                            : memberStatistics.reduce(
+                                  (prev, member) =>
+                                      prev + (member.initialSkillRating ?? 0),
+                                  0,
+                              ) / memberStatistics.length}
                     </span>
                 </ItemWrapper>
-
-                <div className="flex w-full items-center justify-center py-4">
-                    <div className="flex w-fit flex-row rounded-md text-gray-50/80 hover:bg-primary/30 active:bg-secondary/50">
-                        <Icon.ExternalWindow
-                            width={48}
-                            height={48}
-                            className="p-3"
-                        />
-                        <span className="hidden p-3 @2xl:flex">
-                            상세 페이지로 이동
-                        </span>
-                    </div>
-                </div>
             </div>
         </div>
     );
 }
 
-function SetScore({ setData }: { setData: SetData }) {
-    const winned = setData.ally > setData.enemy;
+function SetScore({
+    setData,
+    index,
+    myTeam,
+}: {
+    setData: GameEarnScore[];
+    index: number;
+    myTeam: number;
+}) {
+    const winCount = setData.filter((score) => score.team === myTeam).length;
+
+    const winned = winCount > setData.length - winCount;
 
     return (
         <div className={`flex w-full ${winned && "bg-black/10"}`}>
             <span className="relative flex w-28 shrink-0 items-center justify-center overflow-hidden bg-black/30 p-4 text-sm font-black italic">
-                SET {setData.set}
+                SET {index + 1}
                 <Icon.MagicCircleDoubleBorder
                     className={`absolute -right-10 -top-1 text-white/10 ${
                         winned ? "" : "hidden"
@@ -396,13 +416,13 @@ function SetScore({ setData }: { setData: SetData }) {
             <div className="flex w-full flex-row justify-around">
                 <div className="flex items-center justify-center px-4 py-2">
                     <span className="rounded p-1 pr-1.5 text-xl font-extrabold italic">
-                        {setData.ally}
+                        {winCount}
                     </span>
                 </div>
                 <Separator />
                 <div className="flex items-center justify-center px-4 py-2">
                     <span className="rounded p-1 pr-1.5 text-xl font-extrabold italic">
-                        {setData.enemy}
+                        {setData.length - winCount}
                     </span>
                 </div>
             </div>
