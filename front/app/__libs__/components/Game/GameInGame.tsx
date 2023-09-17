@@ -125,7 +125,7 @@ export function GameInGame() {
                     ref={canvasRef}
                     width={500}
                     height={960}
-                    className="z-10 rounded-[28px]"
+                    className="z-10 cursor-none rounded-[28px]"
                 ></canvas>
             </div>
             <div className="flex flex-col items-center gap-4 rounded-lg bg-windowGlass/30 p-4 text-xl italic text-gray-50 backdrop-blur-[50px]">
