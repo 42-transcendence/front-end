@@ -6,6 +6,31 @@ import type {
 } from "@common/profile-payloads";
 import type { TypeWithProfile } from "@hooks/useProfile";
 
+type PublicFriendCompareType = TypeWithProfile<
+    FriendEntry,
+    AccountProfilePublicPayload
+>;
+
+export function comparePublicFriendEntry(
+    e1: PublicFriendCompareType,
+    e2: PublicFriendCompareType,
+) {
+    const profile1 = e1._profile;
+    const profile2 = e2._profile;
+
+    if (profile1 === undefined) return -1;
+    if (profile2 === undefined) return 1;
+
+    const nick1 = profile1.nickName ?? "";
+    const nick2 = profile2.nickName ?? "";
+
+    if (nick1 !== nick2) {
+        return nick1 > nick2 ? 1 : -1;
+    }
+
+    return profile1.nickTag > profile2.nickTag ? 1 : -1;
+}
+
 type ProtectedFriendCompareType = TypeWithProfile<
     FriendEntry,
     AccountProfileProtectedPayload
@@ -37,6 +62,7 @@ export function compareProtectedFriendEntry(
 
     return profile1.nickTag > profile2.nickTag ? 1 : -1;
 }
+
 export function compareRoomItem<T extends Record<"title", string>>(
     e1: T,
     e2: T,
