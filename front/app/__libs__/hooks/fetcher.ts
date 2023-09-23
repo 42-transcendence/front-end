@@ -164,6 +164,24 @@ export async function fetcherPOST<T>(
     });
 }
 
+export async function fetcherPUT<T>(
+    key: string,
+    body?: object | undefined,
+): Promise<T> {
+    const url = new URL(key, URL_BASE);
+    return fetchBase(url, {
+        method: "PUT",
+        ...(body === undefined || body instanceof FormData
+            ? { body }
+            : {
+                  headers: {
+                      ["Content-Type"]: "application/json",
+                  },
+                  body: JSON.stringify(body),
+              }),
+    });
+}
+
 export async function fetchMethod(key: string, method: string) {
     const url = new URL(key, URL_BASE);
     return await fetchBase(url, { method });

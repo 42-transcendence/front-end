@@ -13,6 +13,8 @@ import { Icon } from "@components/ImageLibrary";
 import { useAtomValue } from "jotai";
 import { EnemyEntryListAtom } from "@atoms/FriendAtom";
 import { ProfileItemEnemy } from "@components/ProfileItem/ProfileItemBlocked";
+import { useChangeNickName } from "@hooks/useRegisterNickName";
+import { TextField } from "@components/TextField";
 
 export function EditPanel() {
     const accountUUID = useCurrentAccountUUID();
@@ -22,6 +24,9 @@ export function EditPanel() {
     const otpEnabled = useGetOTP();
     const banList = useAtomValue(EnemyEntryListAtom);
     const [selected, setSelected] = useState("");
+    const [showChangeNick, setShowChangeNick] = useState(false);
+    const [value, setValue] = useState(profile?.nickName ?? "");
+    const { register, error, conflict } = useChangeNickName();
 
     useEffect(() => {
         setShowOTP(false);
@@ -36,7 +41,7 @@ export function EditPanel() {
     };
 
     return (
-        <Panel className="flex h-fit flex-col items-start justify-start md:col-span-2 md:row-span-1 lg:h-full">
+        <Panel className="flex h-fit flex-col items-start justify-start md:col-span-2 md:row-span-1 lg:h-full 2xl:col-span-1">
             <span className="z-10 p-4 text-xl font-extrabold text-white">
                 설정
             </span>
@@ -75,7 +80,59 @@ export function EditPanel() {
                             </Dialog>
                         ) : (
                             <div className="flex flex-col">
-                                <span>{profile.nickName}</span>
+                                <div className="flex flex-row gap-2">
+                                    <button
+                                        type="button"
+                                        className=""
+                                        onClick={() =>
+                                            setShowChangeNick(!showChangeNick)
+                                        }
+                                    >
+                                        <Icon.Edit />
+                                    </button>
+                                    {showChangeNick ? (
+                                        <>
+                                            <TextField
+                                                value={value}
+                                                onKeyDown={(event) =>
+                                                    event.key === "Enter" &&
+                                                    handleClick()
+                                                }
+                                                placeholder={
+                                                    "새로운 닉네임을 입력해주세요"
+                                                }
+                                                onChange={(event) =>
+                                                    setValue(event.target.value)
+                                                }
+                                                required
+                                                className="peer w-full px-2"
+                                            />
+                                            <button
+                                                className="h-8 w-8 rounded bg-gray-500 p-2 peer-valid:bg-green-500/80"
+                                                onClick={() =>
+                                                    void register(value)
+                                                }
+                                            >
+                                                <Icon.Arrow3 />
+                                            </button>
+                                            {error && (
+                                                <span className="p-2 text-sm text-red-500/90">
+                                                    오류가 발생했습니다. 다시
+                                                    시도해주세요.
+                                                </span>
+                                            )}
+                                            {conflict && (
+                                                <span className="p-2 text-sm text-red-500/90">
+                                                    더 이상 사용할 수 없는
+                                                    닉네임입니다. 다른 닉네임을
+                                                    입력해주세요.
+                                                </span>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <span>{profile.nickName}</span>
+                                    )}
+                                </div>
                                 <span className="text-gray-300/80">
                                     #{profile.nickTag}
                                 </span>
@@ -177,7 +234,7 @@ export function EditPanel() {
 }
 
 function EditPanelBlocks({ children }: PropsWithChildren) {
-    return <div className="flex flex-col">{children}</div>;
+    return <div className="flex w-full flex-col">{children}</div>;
 }
 
 function EditPanelBlock({ children }: PropsWithChildren) {

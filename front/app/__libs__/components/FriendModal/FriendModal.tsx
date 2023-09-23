@@ -59,9 +59,10 @@ export function FriendModal() {
         sendPayload(makeAddFriendRequest(result, "", 0b11111111));
     };
 
+    //TODO: change prompt to inline input box:: friend add
     return (
         <GlassWindow className="min-w-[18rem] max-w-[18rem] bg-windowGlass/30">
-            <div className="overflow-clip rounded-[28px]">
+            <div className="w-full overflow-clip rounded-[28px]">
                 <FriendRequestList />
                 <FriendList />
                 <div className="relative flex h-fit w-full flex-col items-start">
@@ -144,7 +145,7 @@ function FriendRequestItem({ accountUUID }: { accountUUID: string }) {
                 <div className="flex flex-row gap-2">
                     <div className="relative flex items-center justify-center">
                         <Avatar
-                            className="relative h-10 w-10"
+                            className="h-10 w-10"
                             accountUUID={accountUUID}
                             privileged={false}
                         />
