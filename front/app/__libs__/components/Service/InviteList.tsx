@@ -10,9 +10,8 @@ import { useFzf } from "react-fzf";
 import type { FriendEntry } from "@common/chat-payloads";
 import { useCurrentChatRoomUUID } from "@hooks/useCurrent";
 import { useChatRoomMembers } from "@hooks/useChatRoom";
-import type { TypeWithProfile } from "@hooks/useProfile";
 import { usePublicProfiles } from "@hooks/useProfile";
-import type { AccountProfilePublicPayload } from "@common/profile-payloads";
+import { comparePublicFriendEntry } from "@utils/comparer";
 
 export function InviteList({
     className,
@@ -93,29 +92,4 @@ export function InviteList({
             </div>
         </div>
     );
-}
-
-type PublicFriendCompareType = TypeWithProfile<
-    FriendEntry,
-    AccountProfilePublicPayload
->;
-
-function comparePublicFriendEntry(
-    e1: PublicFriendCompareType,
-    e2: PublicFriendCompareType,
-) {
-    const profile1 = e1._profile;
-    const profile2 = e2._profile;
-
-    if (profile1 === undefined) return -1;
-    if (profile2 === undefined) return 1;
-
-    const nick1 = profile1.nickName ?? "";
-    const nick2 = profile2.nickName ?? "";
-
-    if (nick1 !== nick2) {
-        return nick1 > nick2 ? 1 : -1;
-    }
-
-    return profile1.nickTag > profile2.nickTag ? 1 : -1;
 }

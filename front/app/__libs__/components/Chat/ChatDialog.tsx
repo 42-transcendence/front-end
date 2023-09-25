@@ -4,6 +4,7 @@ import {
     useCallback,
     useEffect,
     useLayoutEffect,
+    useMemo,
     useRef,
     useState,
 } from "react";
@@ -38,6 +39,8 @@ import { ChatErrorNumber } from "@common/chat-payloads";
 import { prettifyBanSummaryEntries } from "./ChatRoomBlock";
 import { handleChatError } from "./handleChatError";
 import { AnimatePresence, useInView, motion } from "framer-motion";
+import { useAtomValue } from "jotai";
+import { EnemyEntryListAtom } from "@atoms/FriendAtom";
 
 const MIN_TEXTAREA_HEIGHT = 24;
 
@@ -351,30 +354,40 @@ function ChatMessages({
     currentAccountUUID: string;
     messages: MessageSchema[];
 }) {
+    const banList = useAtomValue(EnemyEntryListAtom);
+    const banIdList = useMemo(
+        () => banList.map((ban) => ban.enemyAccountId),
+        [banList],
+    ); // XXX enemy message는 채팅 dialog에서 안보이게?
+
     return (
         <>
-            {messages.map((msg, idx, arr) => {
-                if (msg.messageType === (MessageTypeNumber.NOTICE as number)) {
-                    return <NoticeBubble key={msg.id} chatMessage={msg} />;
-                }
+            {messages
+                .filter((msg) => !banIdList.includes(msg.accountId))
+                .map((msg, idx, arr) => {
+                    if (
+                        msg.messageType === (MessageTypeNumber.NOTICE as number)
+                    ) {
+                        return <NoticeBubble key={msg.id} chatMessage={msg} />;
+                    }
 
-                return (
-                    <ChatBubble
-                        key={msg.id}
-                        chatMessage={msg}
-                        isContinued={isContinuedMessage(arr, idx)}
-                        isLastContinuedMessage={isLastContinuedMessage(
-                            arr,
-                            idx,
-                        )}
-                        dir={
-                            msg.accountId === currentAccountUUID
-                                ? "right"
-                                : "left"
-                        }
-                    />
-                );
-            })}
+                    return (
+                        <ChatBubble
+                            key={msg.id}
+                            chatMessage={msg}
+                            isContinued={isContinuedMessage(arr, idx)}
+                            isLastContinuedMessage={isLastContinuedMessage(
+                                arr,
+                                idx,
+                            )}
+                            dir={
+                                msg.accountId === currentAccountUUID
+                                    ? "right"
+                                    : "left"
+                            }
+                        />
+                    );
+                })}
         </>
     );
 }
